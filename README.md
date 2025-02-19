@@ -76,9 +76,14 @@ cp .env.example .env
 #### Production Deployment
 TODO: Add production deployment instructions
 
-### Sponsoring Organizations
+## Sponsoring Organizations
 
 - [Workshop Orange](https://www.workshoporange.co) - Project Delivery Professionals
 - [amazee.io](https://www.amazee.io) - Enterprise Hosting  
 - [Freedomtech Hosting](https://www.freedomtech.hosting) - Decentralized Hosting
 
+## Contributing
+Contributions are welcome! Please feel free to submit an issue or a PR.
+
+## License
+This project is licensed under the MIT License - see the LICENSE file for details.
