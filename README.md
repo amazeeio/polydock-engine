@@ -1,5 +1,11 @@
 # Polydock Engine
 
+> **⚠️ Warning: Experimental Project**  
+> Polydock Engine is currently in active development and has not yet reached a stable production release. This project should be considered experimental.
+>
+> If you are interested in using Polydock Engine in a production setting, please contact Bryan Gruneberg (bryan@workshoporange.co) from [Workshop Orange](https://www.workshoporange.co), one of the sponsoring organizations.
+
+
 Polydock Engine is a Laravel-based application designed to simplify and manage multiple deployments of applications within a Lagoon cluster. While Lagoon empowers developers to use Kubernetes without deep technical knowledge, Polydock Engine focuses on enabling non-technical users to deploy and manage multiple instances of the same application through a user-friendly interface.
 
 ## Overview
@@ -69,3 +75,10 @@ cp .env.example .env
 
 #### Production Deployment
 TODO: Add production deployment instructions
+
+### Sponsoring Organizations
+
+- [Workshop Orange](https://www.workshoporange.co) - Project Delivery Professionals
+- [amazee.io](https://www.amazee.io) - Enterprise Hosting  
+- [Freedomtech Hosting](https://www.freedomtech.hosting) - Decentralized Hosting
+
