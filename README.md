@@ -74,7 +74,10 @@ cp .env.example .env
 6. Access the application at `http://localhost:8000`
 
 #### Production Deployment
-TODO: Add production deployment instructions
+[amazee.io](https://www.amazee.io) kindly sponsors a production instance of Polydock Engine for development purposes. This respository is connected via webhook to the production instance and will automatically deploy changes when a push is made to the `main` branch, the `dev` branch, or the `staging` branch.
+
+NB: The Polydock Enginge hosted for development purposes on amazee.io is only configured to deploy Polydock Applicaitons to a testing (non-production) Lagoon Kubernetes cluster. 
+
 
 ## Sponsoring Organizations
 
