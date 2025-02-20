@@ -17,7 +17,7 @@ tasks:
         shell: bash
     - run:
         name: Clear caches
-        command: command: php artisan -n optimize:clear
+        command: php artisan -n optimize:clear
         service: cli
         shell: bash
     - run:
