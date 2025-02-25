@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class User extends Authenticatable implements FilamentUser, HasTenants
 {
@@ -97,18 +98,46 @@ class User extends Authenticatable implements FilamentUser, HasTenants
             ->wherePivot('role', UserGroupRoleEnum::VIEWER);
     }   
 
+    /**
+     * Get all tenants the user can access
+     * 
+     * @param \Filament\Panel $panel
+     * @return \Illuminate\Support\Collection
+     */ 
     public function getTenants(Panel $panel): Collection
     {
         return $this->groups;
     }
  
+    /**
+     * Check if the user can access the tenant
+     * 
+     * @param \Illuminate\Database\Eloquent\Model $tenant
+     * @return bool
+     */ 
     public function canAccessTenant(Model $tenant): bool
     {
         return $this->groups()->whereKey($tenant)->exists();
     }
 
+    /**
+     * Check if the user can access the panel
+     * 
+     * @param \Filament\Panel $panel
+     * @return bool
+     */ 
     public function canAccessPanel(Panel $panel): bool
     {
         return true;
+    }
+
+    /**
+     * Get all remote registration requests for this user
+     * 
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function remoteRegistrations(): HasMany
+    {
+        return $this->hasMany(UserRemoteRegistration::class);
     }
 }
