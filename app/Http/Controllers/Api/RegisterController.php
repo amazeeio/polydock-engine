@@ -19,12 +19,6 @@ class RegisterController extends Controller
      */
     public function processRegister(Request $request): JsonResponse
     {
-        $registration = UserRemoteRegistration::create([
-            'email' => $request->input('email'),
-            'request_data' => $request->all(),
-            'status' => UserRemoteRegistrationStatusEnum::PENDING,
-        ]);
-
         try {
             $registration = UserRemoteRegistration::create([
                 'email' => $request->input('email'),
@@ -41,20 +35,18 @@ class RegisterController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Registration pending',
-            'id' => $registration->id,
+            'id' => $registration->uuid,
         ], Response::HTTP_ACCEPTED);
     }
 
     /**
      * Display the specified resource.
      * 
-     * @param string $id
+     * @param UserRemoteRegistration $registration
      * @return JsonResponse
      */
-    public function showRegister(string $id): JsonResponse
+    public function showRegister(UserRemoteRegistration $registration): JsonResponse
     {
-        $registration = UserRemoteRegistration::findOrFail($id);
-
         return response()->json([
             'status' => $registration->status->value,
             'email' => $registration->email,

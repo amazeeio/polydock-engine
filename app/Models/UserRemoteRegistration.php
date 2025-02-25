@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\UserRemoteRegistrationStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class UserRemoteRegistration extends Model
 {
@@ -20,6 +21,7 @@ class UserRemoteRegistration extends Model
         'request_data',
         'result_data',
         'status',
+        'uuid',
     ];
 
     /**
@@ -32,6 +34,18 @@ class UserRemoteRegistration extends Model
         'result_data' => 'array',
         'status' => UserRemoteRegistrationStatusEnum::class,
     ];
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            $model->uuid = (string) Str::uuid();
+        });
+    }
 
     /**
      * Get the user that the remote registration belongs to.
@@ -88,5 +102,15 @@ class UserRemoteRegistration extends Model
         data_set($resultData, $key, $value);
         $this->result_data = $resultData;
         return $this;
+    }
+
+    /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
     }
 }
