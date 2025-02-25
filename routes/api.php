@@ -9,4 +9,4 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::post('/register', [RegisterController::class, 'processRegister'])->name('register.process');
-Route::get('/register/{registration:uuid}', [RegisterController::class, 'showRegister'])->name('register.show');
+Route::get('/register/{uuid}', [RegisterController::class, 'showRegister'])->name('register.show');

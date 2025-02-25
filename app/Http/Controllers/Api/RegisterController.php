@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Api;
 use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\UserRemoteRegistration;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+
 class RegisterController extends Controller
 {
     /**
@@ -45,18 +47,29 @@ class RegisterController extends Controller
     /**
      * Display the specified resource.
      * 
-     * @param UserRemoteRegistration $registration
+     * @param string $uuid
      * @return JsonResponse
      */
-    public function showRegister(UserRemoteRegistration $registration): JsonResponse
+    public function showRegister(string $uuid): JsonResponse
     {   
-        Log::info('Showing user remote registration', ['registration' => $registration->toArray()]);
-        return response()->json([
-            'status' => $registration->status->value,
-            'email' => $registration->email,
-            'result_data' => $registration->result_data,
-            'created_at' => $registration->created_at,
-            'updated_at' => $registration->updated_at,
-        ]);
+        try {
+            $registration = UserRemoteRegistration::where('uuid', $uuid)->firstOrFail();
+            Log::info('Showing user remote registration', ['registration' => $registration->toArray()]);
+
+            return response()->json([
+                'status' => $registration->status->value,
+                'email' => $registration->email,
+                'result_data' => $registration->result_data,
+                'created_at' => $registration->created_at,
+                'updated_at' => $registration->updated_at,
+            ]);
+        } catch (ModelNotFoundException $e) {
+            Log::warning('Registration not found', ['uuid' => $uuid]);
+            
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Registration not found'
+            ], Response::HTTP_NOT_FOUND);
+        }
     }
 }
