@@ -65,5 +65,27 @@ class DatabaseSeeder extends Seeder
                 'role' => UserGroupRoleEnum::MEMBER->value
             ]);
         }
+
+        // Create the stores
+        $usaStore = \App\Models\PolydockStore::create([
+            'name' => 'USA Store',
+            'status' => \App\Enums\PolydockStoreStatusEnum::PUBLIC,
+            'listed_in_marketplace' => true,
+        ]);
+
+        $switzerlandStore = \App\Models\PolydockStore::create([
+            'name' => 'Switzerland Store',
+            'status' => \App\Enums\PolydockStoreStatusEnum::PUBLIC,
+            'listed_in_marketplace' => true,
+        ]);
+
+        // Add some example apps to each store
+        \App\Models\PolydockStoreApp::factory()
+            ->count(8)
+            ->sequence(
+                ['polydock_store_id' => $usaStore->id],
+                ['polydock_store_id' => $switzerlandStore->id],
+            )
+            ->create();
     }
 }
