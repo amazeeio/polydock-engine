@@ -18,7 +18,8 @@ class DatabaseSeeder extends Seeder
     {
         // Create Fred and his team
         $fred = User::create([
-            'name' => 'Fred Blogs',
+            'first_name' => 'Fred',
+            'last_name' => 'Blogs',
             'email' => 'fred@example.com',
             'password' => Hash::make('password'),
         ]);
@@ -35,15 +36,18 @@ class DatabaseSeeder extends Seeder
         // Create team members with predefined details
         $teamMembers = [
             [
-                'name' => 'Alice Smith',
+                'first_name' => 'Alice',
+                'last_name' => 'Smith',
                 'email' => 'alice@example.com',
             ],
             [
-                'name' => 'Bob Jones',
+                'first_name' => 'Bob',
+                'last_name' => 'Jones',
                 'email' => 'bob@example.com',
             ],
             [
-                'name' => 'Carol Wilson',
+                'first_name' => 'Carol',
+                'last_name' => 'Wilson',
                 'email' => 'carol@example.com',
             ],
         ];
@@ -51,7 +55,8 @@ class DatabaseSeeder extends Seeder
         // Create and attach team members
         foreach ($teamMembers as $member) {
             $user = User::create([
-                'name' => $member['name'],
+                'first_name' => $member['first_name'],
+                'last_name' => $member['last_name'],
                 'email' => $member['email'],
                 'password' => Hash::make('password'),
             ]);
