@@ -37,7 +37,36 @@ class DatabaseSeeder extends Seeder
             'role' => UserGroupRoleEnum::OWNER->value
         ]);
 
-        // Create a random user
-        $user = User::factory()->create();
+        // Create additional team members
+        $alice = User::create([
+            'name' => 'Alice Smith',
+            'email' => 'alice@example.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        $bob = User::create([
+            'name' => 'Bob Jones',
+            'email' => 'bob@example.com', 
+            'password' => Hash::make('password'),
+        ]);
+
+        $carol = User::create([
+            'name' => 'Carol Wilson',
+            'email' => 'carol@example.com',
+            'password' => Hash::make('password'),
+        ]);
+
+        // Add them as members to Fred's team
+        $alice->groups()->attach($fredsTeam, [
+            'role' => UserGroupRoleEnum::MEMBER->value
+        ]);
+
+        $bob->groups()->attach($fredsTeam, [
+            'role' => UserGroupRoleEnum::MEMBER->value
+        ]);
+
+        $carol->groups()->attach($fredsTeam, [
+            'role' => UserGroupRoleEnum::MEMBER->value
+        ]);
     }
 }
