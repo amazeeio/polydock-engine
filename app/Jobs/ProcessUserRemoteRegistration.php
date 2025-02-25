@@ -11,10 +11,28 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
+use App\Models\UserGroup;
+use App\Enums\UserGroupRoleEnum;
 
 class ProcessUserRemoteRegistration implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    /**
+     * Required fields in the request data
+     *
+     * @var array
+     */
+    private const REQUIRED_FIELDS = [
+        'register_type',
+        'email',
+        'first_name',
+        'last_name',
+        'trial_app',
+        'aup_and_privacy_acceptance',
+        'opt_in_to_product_updates',
+    ];
 
     /**
      * Create a new job instance.
@@ -28,8 +46,26 @@ class ProcessUserRemoteRegistration implements ShouldQueue
      */
     public function handle(): void
     {
-        $registerType = $this->registration->getRequestValue('register_type') ?? 'UNKNOWN';
-        Log::info('Processing user remote registration', ['registration' => $this->registration->toArray(), 'register_type' => $registerType]);
+        Log::info('Starting to process user remote registration', [
+            'registration_id' => $this->registration->id,
+            'uuid' => $this->registration->uuid
+        ]);
+
+        if (!$this->validateRequestData()) {
+            $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
+            $this->registration->setResultValue('message', 'Malformed registration request');
+            $this->registration->save();
+            
+            Log::warning('Malformed registration request', [
+                'registration_id' => $this->registration->id,
+                'uuid' => $this->registration->uuid,
+                'request_data' => $this->registration->request_data
+            ]);
+            
+            return;
+        }
+
+        $registerType = $this->registration->getRequestValue('register_type');
 
         match($registerType) {
             'TEST_FAIL' => $this->handleTestFail(),
@@ -38,6 +74,40 @@ class ProcessUserRemoteRegistration implements ShouldQueue
         };
 
         $this->registration->save();
+    }
+
+    /**
+     * Validate that all required fields are present in the request data
+     */
+    private function validateRequestData(): bool
+    {
+        // First check if all required fields exist
+        foreach (self::REQUIRED_FIELDS as $field) {
+            if (is_null($this->registration->getRequestValue($field))) {
+                Log::warning("Missing required field: {$field}", [
+                    'registration_id' => $this->registration->id,
+                    'uuid' => $this->registration->uuid
+                ]);
+                return false;
+            }
+        }
+
+        // Check if AUP and privacy acceptance is valid
+        if ($this->registration->getRequestValue('aup_and_privacy_acceptance') !== 1) {
+            Log::warning("AUP and privacy acceptance must be accepted", [
+                'registration_id' => $this->registration->id,
+                'uuid' => $this->registration->uuid,
+                'aup_and_privacy_acceptance' => $this->registration->getRequestValue('aup_and_privacy_acceptance')
+            ]);
+            
+            $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
+            $this->registration->setResultValue('message_detail', 'You must accept the AUP and Privacy Policy to proceed');
+            $this->registration->save();
+            
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -56,14 +126,69 @@ class ProcessUserRemoteRegistration implements ShouldQueue
     private function handleRequestTrial(): void
     {
         Log::info('Handling request trial registration', ['registration' => $this->registration->toArray()]);
-        $this->registration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
 
-        if ($this->registration->id % 2 === 0) {
-            $uniqueId = Str::random(10);
-            $this->registration->setResultValue('message', 'Trial created.');
-            $this->registration->setResultValue('trial_app_url', "https://www.example.com/{$uniqueId}");
-        } else {
-            $this->registration->setResultValue('message', 'You have been registered for a trial allocation. We will email you');
+        try {
+            // Find or create the user
+            $user = User::where('email', $this->registration->getRequestValue('email'))->first();
+            
+            if (!$user) {
+                $user = User::create([
+                    'first_name' => $this->registration->getRequestValue('first_name'),
+                    'last_name' => $this->registration->getRequestValue('last_name'),
+                    'email' => $this->registration->getRequestValue('email'),
+                    'password' => Str::random(32),
+                    'email_verified_at' => now(),
+                ]);
+
+                Log::info('Created new user for trial', [
+                    'user_id' => $user->id,
+                    'registration_id' => $this->registration->id
+                ]);
+            }
+
+            // Check if user has any groups
+            if ($user->groups()->count() === 0) {
+                $groupName = $user->name . ' Trials';
+                
+                $group = UserGroup::create([
+                    'name' => $groupName,
+                ]);
+
+                $user->groups()->attach($group, [
+                    'role' => UserGroupRoleEnum::OWNER->value
+                ]);
+
+                Log::info('Created new group for user', [
+                    'user_id' => $user->id,
+                    'group_id' => $group->id,
+                    'registration_id' => $this->registration->id
+                ]);
+            }
+
+            // Update registration with user info
+            $this->registration->user_id = $user->id;
+            $this->registration->user_group_id = $user->groups()->first()->id;
+            $this->registration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
+
+            // Set success message and URL if even ID
+            if ($this->registration->id % 2 === 0) {
+                $uniqueId = Str::random(10);
+                $this->registration->setResultValue('message', 'Trial created.');
+                $this->registration->setResultValue('trial_app_url', "https://www.example.com/{$uniqueId}");
+            } else {
+                $this->registration->setResultValue('message', 'You have been registered for a trial allocation. We will email you');
+            }
+
+        } catch (\Exception $e) {
+            Log::error('Failed to process trial registration', [
+                'registration_id' => $this->registration->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
+            $this->registration->setResultValue('message', 'Failed to process registration');
+            $this->registration->setResultValue('message_detail', 'An unexpected error occurred');
         }
     }
 
