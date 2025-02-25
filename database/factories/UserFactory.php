@@ -24,14 +24,12 @@ class UserFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => fake()->text(),
             'name' => fake()->name(),
             'email' => fake()->safeEmail(),
-            'email_verified_at' => fake()->safeEmail(),
+            'email_verified_at' => fake()->dateTime(),
             'password' => fake()->text(),
-            'remember_token' => fake()->text(),
-            'created_at' => $this->faker->dateTime(),
-            'updated_at' => $this->faker->dateTime(),
+            'created_at' => fake()->dateTime(),
+            'updated_at' => fake()->dateTime(),
         ];
     }
 

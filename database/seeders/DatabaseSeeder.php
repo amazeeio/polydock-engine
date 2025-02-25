@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
 
         // Create Fred's Team
         $fredsTeam = UserGroup::create([
-            'name' => "Fred's Team",
+            'name' => "freds-team",
             'friendly_name' => "Fred's Team",
             'slug' => 'freds-team',
         ]);
@@ -36,5 +36,8 @@ class DatabaseSeeder extends Seeder
         $fred->groups()->attach($fredsTeam, [
             'role' => UserGroupRoleEnum::OWNER->value
         ]);
+
+        // Create a random user
+        $user = User::factory()->create();
     }
 }
