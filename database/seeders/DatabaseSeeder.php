@@ -18,55 +18,51 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        // Create Fred
+        // Create Fred and his team
         $fred = User::create([
             'name' => 'Fred Blogs',
             'email' => 'fred@example.com',
             'password' => Hash::make('password'),
         ]);
 
-        // Create Fred's Team
         $fredsTeam = UserGroup::create([
             'name' => "freds-team",
             'friendly_name' => "Fred's Team",
             'slug' => 'freds-team',
         ]);
 
-        // Attach Fred as the owner of his team
+        // Make Fred the owner
         $fred->groups()->attach($fredsTeam, [
             'role' => UserGroupRoleEnum::OWNER->value
         ]);
 
-        // Create additional team members
-        $alice = User::create([
-            'name' => 'Alice Smith',
-            'email' => 'alice@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        // Create team members with predefined details
+        $teamMembers = [
+            [
+                'name' => 'Alice Smith',
+                'email' => 'alice@example.com',
+            ],
+            [
+                'name' => 'Bob Jones',
+                'email' => 'bob@example.com',
+            ],
+            [
+                'name' => 'Carol Wilson',
+                'email' => 'carol@example.com',
+            ],
+        ];
 
-        $bob = User::create([
-            'name' => 'Bob Jones',
-            'email' => 'bob@example.com', 
-            'password' => Hash::make('password'),
-        ]);
+        // Create and attach team members
+        foreach ($teamMembers as $member) {
+            $user = User::create([
+                'name' => $member['name'],
+                'email' => $member['email'],
+                'password' => Hash::make('password'),
+            ]);
 
-        $carol = User::create([
-            'name' => 'Carol Wilson',
-            'email' => 'carol@example.com',
-            'password' => Hash::make('password'),
-        ]);
-
-        // Add them as members to Fred's team
-        $alice->groups()->attach($fredsTeam, [
-            'role' => UserGroupRoleEnum::MEMBER->value
-        ]);
-
-        $bob->groups()->attach($fredsTeam, [
-            'role' => UserGroupRoleEnum::MEMBER->value
-        ]);
-
-        $carol->groups()->attach($fredsTeam, [
-            'role' => UserGroupRoleEnum::MEMBER->value
-        ]);
+            $user->groups()->attach($fredsTeam, [
+                'role' => UserGroupRoleEnum::MEMBER->value
+            ]);
+        }
     }
 }
