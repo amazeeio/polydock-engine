@@ -6,7 +6,9 @@ use App\Enums\UserRemoteRegistrationStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
-
+use App\Jobs\ProcessUserRemoteRegistration;
+use App\Events\UserRemoteRegistrationCreated;
+use Illuminate\Support\Facades\Log;
 class UserRemoteRegistration extends Model
 {
     /**
@@ -44,6 +46,11 @@ class UserRemoteRegistration extends Model
 
         static::creating(function ($model) {
             $model->uuid = (string) Str::uuid();
+        });
+
+        static::created(function ($model) {
+            Log::info('User remote registration created', ['registration' => $model->toArray()]);
+            UserRemoteRegistrationCreated::dispatch($model);
         });
     }
 

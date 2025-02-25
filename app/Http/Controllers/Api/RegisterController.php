@@ -8,7 +8,7 @@ use App\Models\UserRemoteRegistration;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-
+use Illuminate\Support\Facades\Log;
 class RegisterController extends Controller
 {
     /**
@@ -19,6 +19,7 @@ class RegisterController extends Controller
      */
     public function processRegister(Request $request): JsonResponse
     {
+        Log::info('Processing register request', ['request' => $request->all()]);
         try {
             $registration = UserRemoteRegistration::create([
                 'email' => $request->input('email'),
@@ -26,12 +27,14 @@ class RegisterController extends Controller
                 'status' => UserRemoteRegistrationStatusEnum::PENDING,
             ]);
         } catch (\Exception $e) {
+            Log::error('Error creating user remote registration', ['error' => $e->getMessage()]);
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
-        
+
+        Log::info('User remote registration created', ['registration' => $registration->toArray()]);
         return response()->json([
             'status' => 'success',
             'message' => 'Registration pending',
@@ -46,7 +49,8 @@ class RegisterController extends Controller
      * @return JsonResponse
      */
     public function showRegister(UserRemoteRegistration $registration): JsonResponse
-    {
+    {   
+        Log::info('Showing user remote registration', ['registration' => $registration->toArray()]);
         return response()->json([
             'status' => $registration->status->value,
             'email' => $registration->email,
