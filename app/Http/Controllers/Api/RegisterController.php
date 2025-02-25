@@ -31,14 +31,14 @@ class RegisterController extends Controller
         } catch (\Exception $e) {
             Log::error('Error creating user remote registration', ['error' => $e->getMessage()]);
             return response()->json([
-                'status' => 'error',
+                'status' => UserRemoteRegistrationStatusEnum::FAILED->value,
                 'message' => $e->getMessage()
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         Log::info('User remote registration created', ['registration' => $registration->toArray()]);
         return response()->json([
-            'status' => 'success',
+            'status' => UserRemoteRegistrationStatusEnum::PENDING->value,
             'message' => 'Registration pending',
             'id' => $registration->uuid,
         ], Response::HTTP_ACCEPTED);
