@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('lagoon_project_prefix');
             $table->enum('status', PolydockStoreAppStatusEnum::getValues())
                 ->default(PolydockStoreAppStatusEnum::AVAILABLE->value);
+            $table->boolean('available_for_trials')->default(false);
             $table->timestamps();
         });
     }

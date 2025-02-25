@@ -24,6 +24,7 @@ class PolydockStoreAppFactory extends Factory
             'lagoon_deploy_region_id' => (string) fake()->numberBetween(1, 5),
             'lagoon_project_prefix' => fake()->randomLetter() . fake()->randomLetter(),
             'status' => PolydockStoreAppStatusEnum::AVAILABLE,
+            'available_for_trials' => fake()->boolean(),
         ];
     }
 
@@ -31,6 +32,20 @@ class PolydockStoreAppFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => PolydockStoreAppStatusEnum::UNAVAILABLE,
+        ]);
+    }
+
+    public function availableForTrials(): self
+    {
+        return $this->state(fn (array $attributes) => [
+            'available_for_trials' => true,
+        ]);
+    }
+
+    public function notAvailableForTrials(): self
+    {
+        return $this->state(fn (array $attributes) => [
+            'available_for_trials' => false,
         ]);
     }
 } 

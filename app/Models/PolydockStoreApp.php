@@ -26,10 +26,12 @@ class PolydockStoreApp extends Model
         'lagoon_project_prefix',
         'status',
         'uuid',
+        'available_for_trials',
     ];
 
     protected $casts = [
         'status' => PolydockStoreAppStatusEnum::class,
+        'available_for_trials' => 'boolean',
     ];
 
     /**

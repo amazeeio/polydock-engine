@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\Log;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Enums\UserGroupRoleEnum;
+use App\Models\PolydockStoreApp;
+use App\Enums\PolydockStoreAppStatusEnum;
 
 class ProcessUserRemoteRegistration implements ShouldQueue
 {
@@ -102,6 +104,43 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             
             $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
             $this->registration->setResultValue('message_detail', 'You must accept the AUP and Privacy Policy to proceed');
+            $this->registration->save();
+            
+            return false;
+        }
+
+        // Validate trial app exists and is available for trials
+        try {
+            $trialApp = PolydockStoreApp::where('uuid', $this->registration->getRequestValue('trial_app'))->firstOrFail();
+            
+            // Check both conditions together to avoid leaking information
+            if (!$trialApp->available_for_trials || $trialApp->status !== PolydockStoreAppStatusEnum::AVAILABLE) {
+                // Still log the specific reason for monitoring purposes
+                Log::warning("Trial app validation failed", [
+                    'registration_id' => $this->registration->id,
+                    'uuid' => $this->registration->uuid,
+                    'trial_app_uuid' => $trialApp->uuid,
+                    'available_for_trials' => $trialApp->available_for_trials,
+                    'status' => $trialApp->status->value
+                ]);
+                
+                $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
+                $this->registration->setResultValue('message_detail', 'The requested trial is not available');
+                $this->registration->save();
+                
+                return false;
+            }
+
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            // Log the real reason but return a vague message
+            Log::warning("Trial app not found", [
+                'registration_id' => $this->registration->id,
+                'uuid' => $this->registration->uuid,
+                'trial_app_uuid' => $this->registration->getRequestValue('trial_app')
+            ]);
+            
+            $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
+            $this->registration->setResultValue('message_detail', 'The requested trial is not available');
             $this->registration->save();
             
             return false;
