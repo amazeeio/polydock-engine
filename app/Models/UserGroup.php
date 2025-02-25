@@ -5,15 +5,13 @@ namespace App\Models;
 use App\Enums\UserGroupRoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
+use Illuminate\Support\Str;
 class UserGroup extends Model
 {
     use HasFactory;
     
     protected $fillable = [
         'name',
-        'friendly_name',
-        'slug',
     ];
 
     /**
@@ -57,5 +55,28 @@ class UserGroup extends Model
     {
         return $this->belongsToMany(User::class, 'user_user_group')
             ->wherePivot('role', UserGroupRoleEnum::VIEWER->value);
+    }
+
+    /**
+     * Boot the model
+     */
+    protected static function booted()
+    {
+        static::saving(function ($userGroup) {
+            $userGroup->name = preg_replace('/\s+/', ' ', trim($userGroup->name));
+        });
+        
+        static::creating(function ($userGroup) {
+            if (! $userGroup->slug) {
+                $slug = Str::slug($userGroup->name);
+                $count = 1;
+
+                while (static::where('slug', $slug)->exists()) {
+                    $slug = Str::slug($userGroup->name) . '-' . $count++;
+                }
+
+                $userGroup->slug = $slug;
+            }
+        });
     }
 }

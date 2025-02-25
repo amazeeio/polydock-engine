@@ -11,7 +11,7 @@ class RegisterUserGroup extends RegisterTenant
 {
     public static function getLabel(): string
     {
-        return 'Register user group';
+        return 'Create new group';
     }
  
     public function form(Form $form): Form
@@ -20,10 +20,6 @@ class RegisterUserGroup extends RegisterTenant
             ->schema([
                 TextInput::make('name')
                     ->unique('user_groups', 'name')
-                    ->required(),
-                TextInput::make('friendly_name'),
-                TextInput::make('slug')
-                    ->unique('user_groups', 'slug')
                     ->required(),
             ]);
     }

@@ -19,6 +19,8 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Models\UserGroup;
 use App\Filament\Pages\Tenancy\RegisterUserGroup;
+use App\Filament\Pages\Tenancy\EditUserGroupProfile;
+
 class AppPanelProvider extends PanelProvider
 {
     public function panel(Panel $panel): Panel
@@ -56,7 +58,8 @@ class AppPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->tenant(UserGroup::class)
-            ->tenantRegistration(RegisterUserGroup::class);
+            ->tenant(UserGroup::class, slugAttribute: 'slug')
+            ->tenantRegistration(RegisterUserGroup::class)
+            ->tenantProfile(EditUserGroupProfile::class);
     }
 }

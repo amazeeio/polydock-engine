@@ -19,8 +19,6 @@ class UserGroupFactory extends Factory
         return [
             'id' => fake()->text(),
             'name' => fake()->name(),
-            'friendly_name' => fake()->name(),
-            'slug' => fake()->text(),
             'created_at' => $this->faker->dateTime(),
             'updated_at' => $this->faker->dateTime(),
         ];

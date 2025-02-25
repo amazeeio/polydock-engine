@@ -24,9 +24,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $fredsTeam = UserGroup::create([
-            'name' => "freds-team",
-            'friendly_name' => "Fred's Team",
-            'slug' => 'freds-team',
+            'name' => "Fracme Inc."
         ]);
 
         // Make Fred the owner
