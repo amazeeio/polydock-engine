@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5fd399570349ea1ef16f8d1a372e2550",
+    "content-hash": "576211866ed75ec9dd8725e872b9e882",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1416,11 +1416,17 @@
         },
         {
             "name": "freedomtech-hosting/ft-lagoon-php",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "/home/bryan/Projects/FT/ft-lagoon-php",
+            "version": "v0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Freedomtech-Hosting/ft-lagoon-php.git",
                 "reference": "d171a054834967d4cd94fa8975eee15584ef8b55"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/ft-lagoon-php/zipball/d171a054834967d4cd94fa8975eee15584ef8b55",
+                "reference": "d171a054834967d4cd94fa8975eee15584ef8b55",
+                "shasum": ""
             },
             "require": {
                 "softonic/graphql-client": "^3.0",
@@ -1433,6 +1439,7 @@
                     "FreedomtechHosting\\FtLagoonPhp\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1443,17 +1450,25 @@
                 }
             ],
             "description": "The Freedom Tech Lagoon PHP library",
-            "transport-options": {
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/Freedomtech-Hosting/ft-lagoon-php/issues",
+                "source": "https://github.com/Freedomtech-Hosting/ft-lagoon-php/tree/v0.0.2"
+            },
+            "time": "2025-02-23T23:16:50+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-app",
-            "version": "dev-main",
-            "dist": {
-                "type": "path",
-                "url": "/home/bryan/Projects/polydockV2/polydock-app",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Freedomtech-Hosting/polydock-app.git",
                 "reference": "57c9409155a085a975285ce4f4c4521c13f28527"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app/zipball/57c9409155a085a975285ce4f4c4521c13f28527",
+                "reference": "57c9409155a085a975285ce4f4c4521c13f28527",
+                "shasum": ""
             },
             "type": "library",
             "autoload": {
@@ -1461,6 +1476,7 @@
                     "FreedomtechHosting\\PolydockApp\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1471,21 +1487,29 @@
                 }
             ],
             "description": "Library for Polydock Apps",
-            "transport-options": {
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/Freedomtech-Hosting/polydock-app/issues",
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app/tree/v0.0.1"
+            },
+            "time": "2025-02-23T23:20:19+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "dev-main",
+            "version": "v0.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic.git",
+                "reference": "7304b7caeeda011570885c6c7eeeaafd15bf99f5"
+            },
             "dist": {
-                "type": "path",
-                "url": "/home/bryan/Projects/polydockV2/polydock-app-amazeeio-generic",
-                "reference": "34bfc8afad358a8ba802cc4f2dfee99a664f272f"
+                "type": "zip",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/7304b7caeeda011570885c6c7eeeaafd15bf99f5",
+                "reference": "7304b7caeeda011570885c6c7eeeaafd15bf99f5",
+                "shasum": ""
             },
             "require": {
-                "freedomtech-hosting/ft-lagoon-php": "@dev",
-                "freedomtech-hosting/polydock-app": "@dev"
+                "freedomtech-hosting/ft-lagoon-php": "^0.0.2",
+                "freedomtech-hosting/polydock-app": "^0.0.1"
             },
             "type": "library",
             "autoload": {
@@ -1493,6 +1517,7 @@
                     "FreedomtechHosting\\PolydockAppAmazeeioGeneric\\": "src/"
                 }
             },
+            "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
             ],
@@ -1503,9 +1528,11 @@
                 }
             ],
             "description": "Polydock App - amazee.io Generic",
-            "transport-options": {
-                "relative": false
-            }
+            "support": {
+                "issues": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/issues",
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.1"
+            },
+            "time": "2025-02-26T03:02:57+00:00"
         },
         {
             "name": "fruitcake/php-cors",
@@ -10278,11 +10305,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "freedomtech-hosting/polydock-app": 20,
-        "freedomtech-hosting/polydock-app-amazeeio-generic": 20,
-        "freedomtech-hosting/ft-lagoon-php": 20
-    },
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

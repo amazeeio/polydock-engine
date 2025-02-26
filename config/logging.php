@@ -65,6 +65,13 @@ return [
             'replace_placeholders' => true,
         ],
 
+        'polydock' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/polydock.log'),
+            'level' => env('LOG_LEVEL', 'debug'),
+            'replace_placeholders' => true,
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),
