@@ -71,14 +71,48 @@ class DatabaseSeeder extends Seeder
             'name' => 'USA Store',
             'status' => \App\Enums\PolydockStoreStatusEnum::PUBLIC,
             'listed_in_marketplace' => true,
+            'lagoon_deploy_region_id' => '1',
+            'lagoon_deploy_project_prefix' => 'ft-us',
+            'lagoon_deploy_organization_id' => '271',
         ]);
 
         $switzerlandStore = \App\Models\PolydockStore::create([
             'name' => 'Switzerland Store',
             'status' => \App\Enums\PolydockStoreStatusEnum::PUBLIC,
             'listed_in_marketplace' => true,
+            'lagoon_deploy_region_id' => '1',
+            'lagoon_deploy_project_prefix' => 'ft-ch',
+            'lagoon_deploy_organization_id' => '271',
         ]);
 
+        \App\Models\PolydockStoreApp::create([
+            'polydock_store_id' => $usaStore->id,
+            'name' => 'USA Simple amazee.io Node.js',
+            'class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
+            'description' => 'A simple amazee.io Node.js app deployed to the USA',
+            'author' => 'Bryan Gruneberg',
+            'website' => 'https://freedomtech.hosting/',
+            'support_email' => 'hello@freedomtech.hosting',
+            'lagoon_deploy_git' => 'git@github.com:Freedomtech-Hosting/polydock-demo-node-simple.git',
+            'lagoon_deploy_branch' => 'main',
+            'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
+            'available_for_trials' => true,
+        ]);
+
+        \App\Models\PolydockStoreApp::create([
+            'polydock_store_id' => $switzerlandStore->id,
+            'name' => 'Switzerland Simple amazee.io Node.js',
+            'class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
+            'description' => 'A simple amazee.io Node.js app deployed to Switzerland',
+            'author' => 'Bryan Gruneberg',
+            'website' => 'https://freedomtech.hosting/',
+            'support_email' => 'hello@freedomtech.hosting',
+            'lagoon_deploy_git' => 'git@github.com:Freedomtech-Hosting/polydock-demo-node-simple.git',
+            'lagoon_deploy_branch' => 'main',
+            'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
+            'available_for_trials' => true,
+        ]);
+        
         // Add some example apps to each store
         \App\Models\PolydockStoreApp::factory()
             ->count(8)

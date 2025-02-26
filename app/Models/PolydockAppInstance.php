@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
 
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
@@ -112,7 +113,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function setStatus(PolydockAppInstanceStatus $status, string $statusMessage = "") : self
     {
         $this->status = $status;
-        
+        $this->save();
+
         if(!empty($statusMessage)) {
             $this->setStatusMessage($statusMessage);
         }
@@ -160,6 +162,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         $resultData = $this->data ?? [];
         data_set($resultData, $key, $value);
         $this->data = $resultData;
+        $this->save();
         return $this;
     }   
 
@@ -301,5 +304,39 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function userGroup(): BelongsTo
     {
         return $this->belongsTo(UserGroup::class);
+    }
+
+    /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // Get the store app and its class
+            $storeApp = PolydockStoreApp::findOrFail($model->polydock_store_app_id);
+            
+            try {
+                // Set the app type using the store app's class
+                $model->setAppType($storeApp->class);
+
+                $model->data = [
+                    'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
+                    'lagoon-deploy-branch' => $storeApp->lagoon_deploy_branch,
+                    'lagoon-deploy-organization-id' => $storeApp->lagoon_deploy_organization_id,
+                    'lagoon-deploy-region-id' => $storeApp->lagoon_deploy_region_id,
+                    'lagoon-deploy-project-prefix' => $storeApp->lagoon_deploy_project_prefix,
+                ];
+
+            } catch (PolydockEngineAppNotFoundException $e) {
+                Log::error('Failed to set app type for new instance', [
+                    'store_app_id' => $model->polydock_store_app_id,
+                    'class' => $storeApp->class,
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
+            }
+        });
     }
 }

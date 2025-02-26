@@ -23,8 +23,6 @@ class PolydockStoreApp extends Model
         'support_email',
         'lagoon_deploy_git',
         'lagoon_deploy_branch',
-        'lagoon_deploy_region_id',
-        'lagoon_project_prefix',
         'status',
         'uuid',
         'available_for_trials',
@@ -33,6 +31,17 @@ class PolydockStoreApp extends Model
     protected $casts = [
         'status' => PolydockStoreAppStatusEnum::class,
         'available_for_trials' => 'boolean',
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'lagoon_deploy_region_id',
+        'lagoon_deploy_project_prefix',
+        'lagoon_deploy_organization_id',
     ];
 
     /**
@@ -70,5 +79,29 @@ class PolydockStoreApp extends Model
     public function instances(): HasMany
     {
         return $this->hasMany(PolydockAppInstance::class);
+    }
+
+    /**
+     * Get the Lagoon deploy region ID attribute
+     */
+    public function getLagoonDeployRegionIdAttribute(): string
+    {
+        return $this->store->lagoon_deploy_region_id;
+    }
+
+    /**
+     * Get the Lagoon project prefix attribute
+     */
+    public function getLagoonDeployProjectPrefixAttribute(): string
+    {
+        return $this->store->lagoon_deploy_project_prefix;
+    }
+
+    /**
+     * Get the Lagoon deploy organization ID attribute
+     */
+    public function getLagoonDeployOrganizationIdAttribute(): string
+    {
+        return $this->store->lagoon_deploy_organization_id;
     }
 } 

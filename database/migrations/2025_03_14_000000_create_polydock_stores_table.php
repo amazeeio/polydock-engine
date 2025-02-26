@@ -14,6 +14,9 @@ return new class extends Migration
             $table->string('name');
             $table->enum('status', PolydockStoreStatusEnum::getValues())->default(PolydockStoreStatusEnum::PRIVATE->value);
             $table->boolean('listed_in_marketplace')->default(false);
+            $table->string('lagoon_deploy_region_id');
+            $table->string('lagoon_deploy_project_prefix');
+            $table->string('lagoon_deploy_organization_id');
             $table->timestamps();
         });
     }

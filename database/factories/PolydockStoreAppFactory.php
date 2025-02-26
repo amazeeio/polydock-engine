@@ -21,8 +21,6 @@ class PolydockStoreAppFactory extends Factory
             'support_email' => fake()->email(),
             'lagoon_deploy_git' => 'git@github.com:' . fake()->userName() . '/' . fake()->slug() . '.git',
             'lagoon_deploy_branch' => 'main',
-            'lagoon_deploy_region_id' => (string) fake()->numberBetween(1, 5),
-            'lagoon_project_prefix' => fake()->randomLetter() . fake()->randomLetter(),
             'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => fake()->boolean(),
         ];

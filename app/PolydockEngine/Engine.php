@@ -112,12 +112,11 @@ class Engine implements PolydockEngineInterface
      */
     public function run(PolydockAppInstance $appInstance)
     {
-        $polydockAppClass = $this->appInstance->storeApp->class;
-
         $this->appInstance = $appInstance;
         $this->appInstance->setLogger($this->logger);
         $this->appInstance->setEngine($this);
 
+        $polydockAppClass = $this->appInstance->storeApp->class;
         if(!class_exists($polydockAppClass)) {
             throw new PolydockEngineAppNotFoundException('Class ' . $polydockAppClass . ' not found');
         }
@@ -131,14 +130,16 @@ class Engine implements PolydockEngineInterface
 
         $app->setLogger($this->logger);
 
-        $this->info("App Name: " . $app->getName());
-        $this->info("App Description: " . $app->getDescription());
-        $this->info("App Author: " . $app->getAuthor());
-        $this->info("App Website: " . $app->getWebsite());
-        $this->info("App Support Email: " . $app->getSupportEmail());
+        $this->info("App Name: " . $app->getAppName());
+        $this->info("App Description: " . $app->getAppDescription());
+        $this->info("App Author: " . $app->getAppAuthor());
+        $this->info("App Website: " . $app->getAppWebsite());
+        $this->info("App Support Email: " . $app->getAppSupportEmail());
         $this->appInstance->setApp($app);
         
         $this->info('Run has completed. Status is now ' . $this->appInstance->getStatus());
+
+        return $this->appInstance;
     }
 
     /**
