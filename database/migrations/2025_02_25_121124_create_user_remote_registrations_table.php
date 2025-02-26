@@ -14,7 +14,7 @@ return new class extends Migration
     {
         Schema::create('user_remote_registrations', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique();
+            $table->char('uuid', 36)->unique();
             $table->string('email');
             $table->foreignId('user_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('user_group_id')->nullable()->constrained()->nullOnDelete();

@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::create('polydock_store_apps', function (Blueprint $table) {
             $table->id();
-            $table->uuid('uuid')->unique();
+            $table->char('uuid', 36)->unique();
             $table->foreignId('polydock_store_id')->constrained()->cascadeOnDelete();
             $table->string('class');
             $table->string('name');
