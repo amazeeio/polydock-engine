@@ -45,7 +45,7 @@ services:
         context: .
         dockerfile: lagoon/worker.dockerfile
         args:
-            CLI_IMAGE: *cli-image
+            CLI_IMAGE: sailonlagoon
         labels:
         lagoon.type: worker-persistent
         lagoon.name: worker
