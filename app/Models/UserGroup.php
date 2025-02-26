@@ -6,6 +6,8 @@ use App\Enums\UserGroupRoleEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 class UserGroup extends Model
 {
     use HasFactory;
@@ -55,6 +57,16 @@ class UserGroup extends Model
     {
         return $this->belongsToMany(User::class, 'user_user_group')
             ->wherePivot('role', UserGroupRoleEnum::VIEWER->value);
+    }
+
+    /**
+     * Get all app instances for this group
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function appInstances(): HasMany
+    {
+        return $this->hasMany(PolydockAppInstance::class);
     }
 
     /**

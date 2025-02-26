@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Enums\PolydockStoreAppStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PolydockStoreApp extends Model
 {
@@ -59,5 +60,15 @@ class PolydockStoreApp extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(PolydockStore::class, 'polydock_store_id');
+    }
+
+    /**
+     * Get all instances of this store app
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function instances(): HasMany
+    {
+        return $this->hasMany(PolydockAppInstance::class);
     }
 } 

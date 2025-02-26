@@ -110,43 +110,35 @@ class Engine implements PolydockEngineInterface
      * @param string $polydockAppClass The class name of the app instance
      * @return void
      */
-    public function runFullTest(string $polydockAppClass, 
-        string $appName, 
-        string $appDescription, 
-        string $appAuthor, 
-        string $appWebsite, 
-        string $appSupportEmail, 
-        array $appConfiguration)
+    public function run(PolydockAppInstance $appInstance)
     {
+        $polydockAppClass = $this->appInstance->storeApp->class;
+
+        $this->appInstance = $appInstance;
+        $this->appInstance->setLogger($this->logger);
+        $this->appInstance->setEngine($this);
 
         if(!class_exists($polydockAppClass)) {
             throw new PolydockEngineAppNotFoundException('Class ' . $polydockAppClass . ' not found');
         }
-
         $app = new $polydockAppClass(
-            $appName, 
-            $appDescription, 
-            $appAuthor, 
-            $appWebsite, 
-            $appSupportEmail, 
-            $appConfiguration   
+            $this->appInstance->storeApp->name, 
+            $this->appInstance->storeApp->description, 
+            $this->appInstance->storeApp->author, 
+            $this->appInstance->storeApp->website, 
+            $this->appInstance->storeApp->support_email, 
         );
 
         $app->setLogger($this->logger);
 
-        $this->info("App Name: " . $appName);
-        $this->info("App Description: " . $appDescription);
-        $this->info("App Author: " . $appAuthor);
-        $this->info("App Website: " . $appWebsite);
-        $this->info("App Support Email: " . $appSupportEmail);
-        $this->info("App Configuration: " . json_encode($appConfiguration));
-        
-        $this->appInstance = new PolydockAppInstance();
-        $this->appInstance->setLogger($this->logger);
-        $this->appInstance->setEngine($this);
-
-        $this->appInstance->setAppType($polydockAppClass);
+        $this->info("App Name: " . $app->getName());
+        $this->info("App Description: " . $app->getDescription());
+        $this->info("App Author: " . $app->getAuthor());
+        $this->info("App Website: " . $app->getWebsite());
+        $this->info("App Support Email: " . $app->getSupportEmail());
         $this->appInstance->setApp($app);
+        
+        $this->info('Run has completed. Status is now ' . $this->appInstance->getStatus());
     }
 
     /**

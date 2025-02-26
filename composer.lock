@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "576211866ed75ec9dd8725e872b9e882",
+    "content-hash": "8321c8e437361ce3db325680ca5a9e1a",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1458,16 +1458,16 @@
         },
         {
             "name": "freedomtech-hosting/polydock-app",
-            "version": "v0.0.1",
+            "version": "v0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-app.git",
-                "reference": "57c9409155a085a975285ce4f4c4521c13f28527"
+                "reference": "5dc67be273b05e8d35331592e91c3cbff3c92bf3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app/zipball/57c9409155a085a975285ce4f4c4521c13f28527",
-                "reference": "57c9409155a085a975285ce4f4c4521c13f28527",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app/zipball/5dc67be273b05e8d35331592e91c3cbff3c92bf3",
+                "reference": "5dc67be273b05e8d35331592e91c3cbff3c92bf3",
                 "shasum": ""
             },
             "type": "library",
@@ -1489,27 +1489,27 @@
             "description": "Library for Polydock Apps",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-app/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-app/tree/v0.0.1"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app/tree/v0.0.2"
             },
-            "time": "2025-02-23T23:20:19+00:00"
+            "time": "2025-02-26T04:20:37+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "v0.0.1",
+            "version": "v0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic.git",
-                "reference": "7304b7caeeda011570885c6c7eeeaafd15bf99f5"
+                "reference": "ac826699d83d9bcc21831e525c7292af76016e16"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/7304b7caeeda011570885c6c7eeeaafd15bf99f5",
-                "reference": "7304b7caeeda011570885c6c7eeeaafd15bf99f5",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/ac826699d83d9bcc21831e525c7292af76016e16",
+                "reference": "ac826699d83d9bcc21831e525c7292af76016e16",
                 "shasum": ""
             },
             "require": {
                 "freedomtech-hosting/ft-lagoon-php": "^0.0.2",
-                "freedomtech-hosting/polydock-app": "^0.0.1"
+                "freedomtech-hosting/polydock-app": "^0.0.2"
             },
             "type": "library",
             "autoload": {
@@ -1530,9 +1530,9 @@
             "description": "Polydock App - amazee.io Generic",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.1"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.2"
             },
-            "time": "2025-02-26T03:02:57+00:00"
+            "time": "2025-02-26T04:22:16+00:00"
         },
         {
             "name": "fruitcake/php-cors",

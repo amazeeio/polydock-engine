@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('lagoon_deploy_git');
             $table->string('lagoon_deploy_branch')->default('main');
             $table->string('lagoon_deploy_region_id');
-            $table->string('lagoon_project_prefix');
+            $table->string('lagoon_deploy_project_prefix');
             $table->enum('status', PolydockStoreAppStatusEnum::getValues())
                 ->default(PolydockStoreAppStatusEnum::AVAILABLE->value);
             $table->boolean('available_for_trials')->default(false);

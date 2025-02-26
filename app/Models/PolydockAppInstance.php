@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
@@ -21,6 +22,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     protected $fillable = [
         'polydock_store_app_id',
+        'user_group_id',
         'app_type',
         'status',
         'status_message',
@@ -281,4 +283,23 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return strtolower($prefix . '-' . $verb . '-' . $color . '-' . $animal . '-' . uniqid());
     }
     
+    /**
+     * Get the store app that this instance belongs to
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function storeApp(): BelongsTo
+    {
+        return $this->belongsTo(PolydockStoreApp::class, 'polydock_store_app_id');
+    }
+
+    /**
+     * Get the user group that owns this instance
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function userGroup(): BelongsTo
+    {
+        return $this->belongsTo(UserGroup::class);
+    }
 }
