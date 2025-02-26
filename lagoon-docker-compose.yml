@@ -42,16 +42,16 @@ services:
      # SERVICE: worker
     worker:
         build:
-        context: .
-        dockerfile: lagoon/worker.dockerfile
-        args:
-            CLI_IMAGE: sailonlagoon
+            context: .
+            dockerfile: lagoon/worker.dockerfile
+            args:
+                CLI_IMAGE: sailonlagoon
         labels:
-        lagoon.type: worker-persistent
-        lagoon.name: worker
-        lagoon.persistent.name: nginx
-        lagoon.persistent: /app/storage/
-    
+            lagoon.type: worker-persistent
+            lagoon.name: worker
+            lagoon.persistent.name: nginx
+            lagoon.persistent: /app/storage/
+        
 
     mariadb:
         image: uselagoon/mysql-8.0
