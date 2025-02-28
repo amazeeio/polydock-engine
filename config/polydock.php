@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'redirect_landing_page_to' => env('POLYDOCK_REDIRECT_LANDING_PAGE_TO', "https://freedomtech.hosting/"),
     'register_only_captures' => env('POLYDOCK_REGISTER_ONLY_CAPTURES', false),
     'register_simulate_round_robin' => env('POLYDOCK_REGISTER_SIMULATE_ROUND_ROBIN', false),
     'register_simulate_error' => env('POLYDOCK_REGISTER_SIMULATE_ERROR', false),
