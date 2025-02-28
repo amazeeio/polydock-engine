@@ -222,7 +222,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                     $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
                 }
             } else if($this->registration->registerOnlyCaptures) {
-                Log::info('Simulating only captures registration', ['registration' => $this->registration->toArray()]);
+                Log::info('Only capturing registration', ['registration' => $this->registration->toArray()]);
                 $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
             } else if($this->registration->registerSimulateError) {
                 Log::info('Simulating error registration', ['registration' => $this->registration->toArray()]);
