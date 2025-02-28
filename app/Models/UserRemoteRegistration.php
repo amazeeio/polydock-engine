@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Jobs\ProcessUserRemoteRegistration;
 use App\Events\UserRemoteRegistrationCreated;
 use Illuminate\Support\Facades\Log;
+
 class UserRemoteRegistration extends Model
 {
     /**
@@ -35,6 +36,17 @@ class UserRemoteRegistration extends Model
         'request_data' => 'array',
         'result_data' => 'array',
         'status' => UserRemoteRegistrationStatusEnum::class,
+    ];
+
+    /**
+     * The accessors to append to the model's array form.
+     *
+     * @var array
+     */
+    protected $appends = [
+        'register_only_captures',
+        'register_simulate_round_robin',
+        'register_simulate_error',
     ];
 
     /**
@@ -119,5 +131,29 @@ class UserRemoteRegistration extends Model
     public function getRouteKeyName()
     {
         return 'uuid';
+    }
+
+    /**
+     * Get the register only captures attribute
+     */
+    public function getRegisterOnlyCapturesAttribute(): bool
+    {
+        return config('polydock.register_only_captures', false);
+    }
+
+    /**
+     * Get the register simulate round robin attribute
+     */
+    public function getRegisterSimulateRoundRobinAttribute(): bool
+    {
+        return config('polydock.register_simulate_round_robin', false);
+    }
+
+    /**
+     * Get the register simulate error attribute
+     */
+    public function getRegisterSimulateErrorAttribute(): bool
+    {
+        return config('polydock.register_simulate_error', false);
     }
 }

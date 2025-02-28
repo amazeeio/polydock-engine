@@ -1,6 +1,9 @@
 <?php
 
 return [
+    'register_only_captures' => env('POLYDOCK_REGISTER_ONLY_CAPTURES', false),
+    'register_simulate_round_robin' => env('POLYDOCK_REGISTER_SIMULATE_ROUND_ROBIN', false),
+    'register_simulate_error' => env('POLYDOCK_REGISTER_SIMULATE_ERROR', false),
     'service_providers_singletons' => [
          "PolydockServiceProviderFTLagoon" => [
             'class' => App\PolydockServiceProviders\PolydockServiceProviderFTLagoon::class,
