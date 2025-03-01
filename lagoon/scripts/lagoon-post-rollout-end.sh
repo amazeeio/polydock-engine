@@ -11,6 +11,8 @@ source /lagoon/entrypoints/55-generate-env.sh
 echo "Done loading Lagoon environment"
 
 if [ ! -z "$POLYDOCK_SRE_SLACK_WEBHOOK_URL" ]; then
+    RUN_CONTEXT=$SERVICE_NAME.$LAGOON_GIT_SAFE_BRANCH.$LAGOON_PROJECT
+
     echo "[$SERVICE_NAME] Sending Slack notification"
-    curl -X POST -H 'Content-type: application/json' --data '{"text":":rocket:  [$SERVICE_NAME.$LAGOON_GIT_SAFE_BRANCH.$LAGOON_PROJECT] Post-rollout Ended"}' $POLYDOCK_SRE_SLACK_WEBHOOK_URL
+    curl -X POST -H 'Content-type: application/json' --data '{"text":":rocket:  ['$RUN_CONTEXT'] Post-rollout Completed"}' $POLYDOCK_SRE_SLACK_WEBHOOK_URL
 fi
