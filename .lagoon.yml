@@ -1,10 +1,23 @@
 docker-compose-yaml: ./lagoon-docker-compose.yml
 
-project: ft-dev-polydoc-engine
-
-
 tasks:
+  pre-rollout:
+    - run:
+        name: Polydock SRE Slack Notification Pre-rollout Started
+        command: /app/lagoon/scripts/lagoon-pre-rollout-start.sh
+        service: cli
+        shell: bash
+    - run:
+        name: Polydock SRE Slack Notification Pre-rollout Ended
+        command: /app/lagoon/scripts/lagoon-pre-rollout-end.sh
+        service: cli
+        shell: bash
   post-rollout:
+    - run:
+        name: Polydock SRE Slack Notification Post-rollout Started
+        command: /app/lagoon/scripts/lagoon-post-rollout-start.sh
+        service: cli
+        shell: bash
     - run:
         name: Prepare storage
         command: mkdir -p /app/storage/framework/sessions /app/storage/framework/views /app/storage/framework/cache /app/storage/framework/cache/data
@@ -24,6 +37,11 @@ tasks:
         name: Build caches when pushing to production
         when: LAGOON_ENVIRONMENT_TYPE == "production"
         command: php artisan optimize
+        service: cli
+        shell: bash
+    - run:
+        name: Polydock SRE Slack Notification Post-rollout Ended
+        command: /app/lagoon/scripts/lagoon-post-rollout-end.sh
         service: cli
         shell: bash
 
