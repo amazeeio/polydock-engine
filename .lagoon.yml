@@ -26,3 +26,15 @@ tasks:
         command: php artisan optimize
         service: cli
         shell: bash
+
+environments:
+  main:
+    cronjobs:
+      - name: php artisan schedule run
+        schedule: "M * * * *"
+        command: php artisan schedule:run
+        service: worker
+      - name: Horizon Radiator
+        schedule: "*/10 * * * *"
+        command: /app/lagoon/workers/status-horizon.sh
+        service: worker
