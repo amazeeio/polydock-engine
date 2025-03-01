@@ -4,18 +4,18 @@ tasks:
   pre-rollout:
     - run:
         name: Polydock SRE Slack Notification Pre-rollout Started
-        command: /app/lagoon/scripts/lagoon-pre-rollout-start.sh
+        command: if [ -f "/app/lagoon/scripts/lagoon-pre-rollout-start.sh" ]; then /app/lagoon/scripts/lagoon-pre-rollout-start.sh; fi
         service: cli
         shell: bash
     - run:
         name: Polydock SRE Slack Notification Pre-rollout Ended
-        command: /app/lagoon/scripts/lagoon-pre-rollout-end.sh
+        command: if [ -f "/app/lagoon/scripts/lagoon-pre-rollout-end.sh" ]; then /app/lagoon/scripts/lagoon-pre-rollout-end.sh; fi
         service: cli
         shell: bash
   post-rollout:
     - run:
         name: Polydock SRE Slack Notification Post-rollout Started
-        command: /app/lagoon/scripts/lagoon-post-rollout-start.sh
+        command: if [ -f "/app/lagoon/scripts/lagoon-post-rollout-start.sh" ]; then /app/lagoon/scripts/lagoon-post-rollout-start.sh; fi
         service: cli
         shell: bash
     - run:
@@ -41,7 +41,7 @@ tasks:
         shell: bash
     - run:
         name: Polydock SRE Slack Notification Post-rollout Ended
-        command: /app/lagoon/scripts/lagoon-post-rollout-end.sh
+        command: if [ -f "/app/lagoon/scripts/lagoon-post-rollout-end.sh" ]; then /app/lagoon/scripts/lagoon-post-rollout-end.sh; fi
         service: cli
         shell: bash
 
