@@ -72,6 +72,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
         match($registerType) {
             'TEST_FAIL' => $this->handleTestFail(),
             'REQUEST_TRIAL' => $this->handleRequestTrial(),
+            'REQUEST_TRIAL_UNLISTED_REGION' => $this->handleRequestUnlistedRegion(),
             default => $this->handleUnknownType(),
         };
 
@@ -83,13 +84,23 @@ class ProcessUserRemoteRegistration implements ShouldQueue
      */
     private function validateRequestData(): bool
     {
+        Log::info('Validating request data', ['registration' => $this->registration->toArray()]);
+
         // First check if all required fields exist
         foreach (self::REQUIRED_FIELDS as $field) {
             if (is_null($this->registration->getRequestValue($field))) {
+
+                // Allow missing trial_app field for unlisted region requests
+                if ($field === 'trial_app' && 
+                    $this->registration->getRequestValue('register_type') === 'REQUEST_TRIAL_UNLISTED_REGION') {
+                    continue;
+                } 
+                
                 Log::warning("Missing required field: {$field}", [
                     'registration_id' => $this->registration->id,
                     'uuid' => $this->registration->uuid
                 ]);
+
                 return false;
             }
         }
@@ -109,19 +120,39 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             return false;
         }
 
-        // Validate trial app exists and is available for trials
-        try {
-            $trialApp = PolydockStoreApp::where('uuid', $this->registration->getRequestValue('trial_app'))->firstOrFail();
-            
-            // Check both conditions together to avoid leaking information
-            if (!$trialApp->available_for_trials || $trialApp->status !== PolydockStoreAppStatusEnum::AVAILABLE) {
-                // Still log the specific reason for monitoring purposes
-                Log::warning("Trial app validation failed", [
+        $registerType = $this->registration->getRequestValue('register_type');
+        $trialAppId = $this->registration->getRequestValue('trial_app');
+        
+        if($registerType != 'REQUEST_TRIAL_UNLISTED_REGION') { // Validate trial app exists and is available for trials
+            Log::info('Validating trial app', ['registration' => $this->registration->toArray()]);
+
+            try {
+                $trialApp = PolydockStoreApp::where('uuid', $trialAppId)->firstOrFail();
+                
+                // Check both conditions together to avoid leaking information
+                if (!$trialApp->available_for_trials || $trialApp->status !== PolydockStoreAppStatusEnum::AVAILABLE) {
+                    // Still log the specific reason for monitoring purposes
+                    Log::warning("Trial app validation failed", [
+                        'registration_id' => $this->registration->id,
+                        'uuid' => $this->registration->uuid,
+                        'trial_app_uuid' => $trialApp->uuid,
+                        'available_for_trials' => $trialApp->available_for_trials,
+                        'status' => $trialApp->status->value
+                    ]);
+                    
+                    $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
+                    $this->registration->setResultValue('message_detail', 'The requested trial is not available');
+                    $this->registration->save();
+                    
+                    return false;
+                }
+
+            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+                // Log the real reason but return a vague message
+                Log::warning("Trial app not found", [
                     'registration_id' => $this->registration->id,
                     'uuid' => $this->registration->uuid,
-                    'trial_app_uuid' => $trialApp->uuid,
-                    'available_for_trials' => $trialApp->available_for_trials,
-                    'status' => $trialApp->status->value
+                    'trial_app_uuid' => $this->registration->getRequestValue('trial_app')
                 ]);
                 
                 $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
@@ -130,21 +161,9 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 
                 return false;
             }
-
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            // Log the real reason but return a vague message
-            Log::warning("Trial app not found", [
-                'registration_id' => $this->registration->id,
-                'uuid' => $this->registration->uuid,
-                'trial_app_uuid' => $this->registration->getRequestValue('trial_app')
-            ]);
-            
-            $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
-            $this->registration->setResultValue('message_detail', 'The requested trial is not available');
-            $this->registration->save();
-            
-            return false;
         }
+
+        Log::info('Request data validated successfully', ['registration' => $this->registration->toArray()]);
 
         return true;
     }
@@ -262,6 +281,18 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             $this->registration->setResultValue('message_detail', 'An unexpected error occurred.');
             $this->registration->setResultValue('result_type', 'registration_failed');
         }
+    }
+
+    /**
+     * Handle unlisted region trial request registration
+     */
+    private function handleRequestUnlistedRegion(): void
+    {
+        //TODO: Implement unlisted region trial request handling
+        Log::info('Handling unlisted region trial request registration', ['registration' => $this->registration->toArray()]);
+        $this->registration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
+        $this->registration->setResultValue('result_type', 'trial_registered');
+        $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
     }
 
     /**
