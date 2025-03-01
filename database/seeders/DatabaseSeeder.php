@@ -85,6 +85,21 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_organization_id' => '271',
         ]);
 
+        // Add webhook to both stores
+        $webhookUrl = 'https://webhook.site/f167bd09-8ece-40b7-b90c-743b8a90d1dd';
+        
+        \App\Models\PolydockStoreWebhook::create([
+            'polydock_store_id' => $usaStore->id,
+            'url' => $webhookUrl,
+            'active' => true,
+        ]);
+
+        \App\Models\PolydockStoreWebhook::create([
+            'polydock_store_id' => $switzerlandStore->id,
+            'url' => $webhookUrl,
+            'active' => true,
+        ]);
+
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $usaStore->id,
             'name' => 'USA Simple amazee.io Node.js',

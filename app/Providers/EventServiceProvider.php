@@ -5,6 +5,8 @@ namespace App\Providers;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use App\Events\UserRemoteRegistrationCreated;
 use App\Listeners\ProcessNewUserRemoteRegistration;
+use App\Events\UserRemoteRegistrationStatusChanged;
+use App\Listeners\CreateWebhookCallForRegistrationStatusSuccessOrFailed;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -16,6 +18,9 @@ class EventServiceProvider extends ServiceProvider
     protected $listen = [
         UserRemoteRegistrationCreated::class => [
             ProcessNewUserRemoteRegistration::class,
+        ],
+        UserRemoteRegistrationStatusChanged::class => [
+            CreateWebhookCallForRegistrationStatusSuccessOrFailed::class,
         ],
     ];
 

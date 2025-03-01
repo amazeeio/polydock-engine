@@ -209,27 +209,45 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             $this->registration->user_group_id = $user->groups()->first()->id;
             $this->registration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
 
+            $email = $user->email;
+            $domain = null;
+            if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $emailParts = explode('@', $email);
+                if (count($emailParts) === 2) {
+                    $domain = $emailParts[1];
+                }
+            }
+            $this->registration->setResultValue('user_email_domain', $domain);
+
+            $trialApp = PolydockStoreApp::where('uuid', $this->registration->getRequestValue('trial_app'))->firstOrFail();
+            $this->registration->polydock_store_app_id = $trialApp->id;
+
             if($this->registration->registerSimulateRoundRobin) {
                 Log::info('Simulating round robin registration', ['registration' => $this->registration->toArray()]);
                 // Set success message and URL if even ID
                 if ($this->registration->id % 2 === 0) {
                     $uniqueId = Str::random(10);
+                    $this->registration->setResultValue('result_type', 'trial_created');
                     $this->registration->setResultValue('message', 'Trial created.');
                     $this->registration->setResultValue('trial_app_url', "https://www.example.com/{$uniqueId}");
                 } else if ($this->registration->id % 3 === 0) {
                     throw new \Exception('An error occurred while processing the registration.');        
                 } else {
+                    $this->registration->setResultValue('result_type', 'trial_registered');
                     $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
                 }
             } else if($this->registration->registerOnlyCaptures) {
                 Log::info('Only capturing registration', ['registration' => $this->registration->toArray()]);
+                $this->registration->setResultValue('result_type', 'trial_registered');
                 $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
             } else if($this->registration->registerSimulateError) {
                 Log::info('Simulating error registration', ['registration' => $this->registration->toArray()]);
                 throw new \Exception('An error occurred while processing the registration.');
             } else {
                 Log::info('Simulating legitimate trial creation', ['registration' => $this->registration->toArray()]);
+                
                 // TODO: Implement actual trial creation
+                $this->registration->setResultValue('result_type', 'trial_registered');
                 $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
             }
         } catch (\Exception $e) {
@@ -242,6 +260,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
             $this->registration->setResultValue('message', 'Failed to process registration.');
             $this->registration->setResultValue('message_detail', 'An unexpected error occurred.');
+            $this->registration->setResultValue('result_type', 'registration_failed');
         }
     }
 

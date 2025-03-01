@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use App\Jobs\ProcessUserRemoteRegistration;
 use App\Events\UserRemoteRegistrationCreated;
 use Illuminate\Support\Facades\Log;
+use App\Events\UserRemoteRegistrationStatusChanged;
 
 class UserRemoteRegistration extends Model
 {
@@ -21,6 +22,7 @@ class UserRemoteRegistration extends Model
         'email',
         'user_id',
         'user_group_id',
+        'polydock_store_app_id',
         'request_data',
         'result_data',
         'status',
@@ -36,6 +38,7 @@ class UserRemoteRegistration extends Model
         'request_data' => 'array',
         'result_data' => 'array',
         'status' => UserRemoteRegistrationStatusEnum::class,
+        'polydock_store_app_id' => 'integer:nullable',
     ];
 
     /**
@@ -64,6 +67,16 @@ class UserRemoteRegistration extends Model
             Log::info('User remote registration created', ['registration' => $model->toArray()]);
             UserRemoteRegistrationCreated::dispatch($model);
         });
+
+        static::updating(function ($model) {
+            // If status is changing, fire the event
+            if ($model->isDirty('status')) {
+                UserRemoteRegistrationStatusChanged::dispatch(
+                    $model,
+                    $model->getOriginal('status')
+                );
+            }
+        });
     }
 
     /**
@@ -84,6 +97,15 @@ class UserRemoteRegistration extends Model
     public function userGroup(): BelongsTo
     {
         return $this->belongsTo(UserGroup::class);
+    }
+
+    /**
+     * Get the store app that the remote registration belongs to.
+     */
+    public function storeApp(): BelongsTo
+    {
+        return $this->belongsTo(PolydockStoreApp::class, 'polydock_store_app_id')
+            ->withDefault(null);
     }
 
     /**
