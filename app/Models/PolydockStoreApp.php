@@ -42,6 +42,8 @@ class PolydockStoreApp extends Model
         'lagoon_deploy_region_id',
         'lagoon_deploy_project_prefix',
         'lagoon_deploy_organization_id',
+        'unallocated_instances_count',
+        'needs_more_unallocated_instances',
     ];
 
     /**
@@ -103,5 +105,39 @@ class PolydockStoreApp extends Model
     public function getLagoonDeployOrganizationIdAttribute(): string
     {
         return $this->store->lagoon_deploy_organization_id;
+    }
+
+    /**
+     * Get the number of unallocated instances for this app
+     */
+    public function getUnallocatedInstancesCountAttribute(): int
+    {
+        return $this->instances()
+            ->whereNull('user_group_id')
+            ->count();
+    }
+
+    /**
+     * Determine if we need more unallocated instances
+     */
+    public function getNeedsMoreUnallocatedInstancesAttribute(): bool
+    {
+        return $this->unallocated_instances_count < $this->target_unallocated_app_instances;
+    }
+
+    /**
+     * Get all unallocated instances of this store app
+     */
+    public function unallocatedInstances(): HasMany
+    {
+        return $this->instances()->whereNull('user_group_id');
+    }
+
+    /**
+     * Get all allocated instances of this store app
+     */
+    public function allocatedInstances(): HasMany
+    {
+        return $this->instances()->whereNotNull('user_group_id');
     }
 } 

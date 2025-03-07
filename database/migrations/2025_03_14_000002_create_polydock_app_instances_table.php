@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('polydock_app_instances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('polydock_store_app_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('user_group_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_group_id')->nullable()->constrained()->nullOnDelete();
             $table->string('app_type');
             $table->enum('status', array_column(PolydockAppInstanceStatus::cases(), 'value'));
             $table->string('status_message')->nullable();
