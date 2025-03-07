@@ -114,12 +114,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
     public function getLagoonClient() : Client
     {
         return $this->LagoonClient;
-    }   
-
-    public function getAppDir() : string
-    {
-        return $this->APPDIR;
-    }   
+    }      
 
     public function getMaxTokenAgeMinutes() : int
     {
