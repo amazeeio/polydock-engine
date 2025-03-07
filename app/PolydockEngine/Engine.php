@@ -34,12 +34,19 @@ class Engine implements PolydockEngineInterface
     /**
      * Constructor
      * @param PolydockAppLoggerInterface $logger The logger to set
+     * @param array<string, array<string, mixed>> $serviceProviderSingletonConfig The config for the polydock service providers
      */
-    public function __construct(PolydockAppLoggerInterface $logger)
+    public function __construct(PolydockAppLoggerInterface $logger, $serviceProviderSingletonConfig = [])
     {
+
+        if(count($serviceProviderSingletonConfig) > 0) {
+            $this->polydockServiceProviderSingletonConfig = $serviceProviderSingletonConfig;
+        } else {
+            $this->polydockServiceProviderSingletonConfig = config('polydock.service_providers_singletons');
+        }
+
         $this->logger = $logger;
         $this->polydockServiceProviderSingletonInstances = [];
-        $this->polydockServiceProviderSingletonConfig = config('polydock.service_providers_singletons');
         $this->initializePolydockServiceProviders($this->polydockServiceProviderSingletonConfig);
     }
 
