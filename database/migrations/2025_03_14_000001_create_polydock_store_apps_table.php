@@ -24,7 +24,6 @@ return new class extends Migration
             $table->enum('status', PolydockStoreAppStatusEnum::getValues())
                 ->default(PolydockStoreAppStatusEnum::AVAILABLE->value);
             $table->boolean('available_for_trials')->default(false);
-            $table->integer('target_unallocated_app_instances')->default(0);
             $table->timestamps();
         });
     }
