@@ -12,7 +12,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('polydock_app_instances', function (Blueprint $table) {
-            $table->foreignId('user_group_id')->nullable()->constrained()->nullOnDelete();
+            $table->dropForeign(['user_group_id']);
+            $table->foreignId('user_group_id')->nullable()->change();
+            $table->foreign('user_group_id')->references('id')->on('user_groups')->nullOnDelete();
         });
 
         Schema::table('polydock_store_apps', function (Blueprint $table) {
