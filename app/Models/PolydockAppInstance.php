@@ -319,7 +319,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             
             try {
                 // Set the app type using the store app's class
-                $model->setAppType($storeApp->class);
+                $model->setAppType($storeApp->polydock_app_class);
 
                 $model->data = [
                     'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
@@ -332,7 +332,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             } catch (PolydockEngineAppNotFoundException $e) {
                 Log::error('Failed to set app type for new instance', [
                     'store_app_id' => $model->polydock_store_app_id,
-                    'class' => $storeApp->class,
+                    'class' => $storeApp->polydock_app_class,
                     'error' => $e->getMessage()
                 ]);
                 throw $e;

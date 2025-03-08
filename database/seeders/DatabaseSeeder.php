@@ -86,7 +86,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Add webhook to both stores
-        $webhookUrl = 'https://webhook.site/f167bd09-8ece-40b7-b90c-743b8a90d1dd';
+        $webhookUrl = 'https://webhook.site/760fe6f6-07ce-410b-bfd0-1ca2dbc1a8b5';
         
         \App\Models\PolydockStoreWebhook::create([
             'polydock_store_id' => $usaStore->id,
@@ -103,7 +103,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $usaStore->id,
             'name' => 'USA Simple amazee.io Node.js',
-            'class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
+            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
             'description' => 'A simple amazee.io Node.js app deployed to the USA',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://freedomtech.hosting/',
@@ -118,7 +118,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $switzerlandStore->id,
             'name' => 'Switzerland Simple amazee.io Node.js',
-            'class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
+            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
             'description' => 'A simple amazee.io Node.js app deployed to Switzerland',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://freedomtech.hosting/',

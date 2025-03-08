@@ -124,7 +124,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $this->appInstance->setLogger($this->logger);
         $this->appInstance->setEngine($this);
 
-        $polydockAppClass = $this->appInstance->storeApp->class;
+        $polydockAppClass = $this->appInstance->storeApp->polydock_app_class;
         if(!class_exists($polydockAppClass)) {
             throw new PolydockEngineAppNotFoundException('Class ' . $polydockAppClass . ' not found');
         }
