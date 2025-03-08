@@ -13,9 +13,11 @@ use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
 
 use App\PolydockEngine\PolydockEngineAppNotFoundException;
+use App\Traits\HasPolydockVariables;
 
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
+    use HasPolydockVariables;
 
     /**
      * The fillable attributes for the model
@@ -55,6 +57,44 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * @var PolydockAppLoggerInterface
      */
     private PolydockAppLoggerInterface $logger;
+
+ /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            // Get the store app and its class
+            $storeApp = PolydockStoreApp::findOrFail($model->polydock_store_app_id);
+            
+            try {
+                $model->status = PolydockAppInstanceStatus::NEW->value;
+                $model->status_message = PolydockAppInstanceStatus::NEW->getStatusMessage();
+
+                // Set the app type using the store app's class
+                $model->setAppType($storeApp->polydock_app_class);
+
+                $model->data = [
+                    'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
+                    'lagoon-deploy-branch' => $storeApp->lagoon_deploy_branch,
+                    'lagoon-deploy-organization-id' => $storeApp->lagoon_deploy_organization_id,
+                    'lagoon-deploy-region-id' => $storeApp->lagoon_deploy_region_id,
+                    'lagoon-deploy-project-prefix' => $storeApp->lagoon_deploy_project_prefix,
+                    'lagoon-project-name' => $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix),
+                ];
+
+            } catch (PolydockEngineAppNotFoundException $e) {
+                Log::error('Failed to set app type for new instance', [
+                    'store_app_id' => $model->polydock_store_app_id,
+                    'class' => $storeApp->polydock_app_class,
+                    'error' => $e->getMessage()
+                ]);
+                throw $e;
+            }
+        });
+    }
 
     /**
      * Set the app for the app instance
@@ -173,7 +213,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function getKeyValue(string $key) : string
     {
-        return data_get($this->data, $key);
+        return data_get($this->data, $key) ?? "";
     }
 
     /** 
@@ -307,36 +347,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
-     * Boot the model.
+     * Get all variables for this app instance
      */
-    protected static function boot()
+    public function variables()
     {
-        parent::boot();
-
-        static::creating(function ($model) {
-            // Get the store app and its class
-            $storeApp = PolydockStoreApp::findOrFail($model->polydock_store_app_id);
-            
-            try {
-                // Set the app type using the store app's class
-                $model->setAppType($storeApp->polydock_app_class);
-
-                $model->data = [
-                    'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
-                    'lagoon-deploy-branch' => $storeApp->lagoon_deploy_branch,
-                    'lagoon-deploy-organization-id' => $storeApp->lagoon_deploy_organization_id,
-                    'lagoon-deploy-region-id' => $storeApp->lagoon_deploy_region_id,
-                    'lagoon-deploy-project-prefix' => $storeApp->lagoon_deploy_project_prefix,
-                ];
-
-            } catch (PolydockEngineAppNotFoundException $e) {
-                Log::error('Failed to set app type for new instance', [
-                    'store_app_id' => $model->polydock_store_app_id,
-                    'class' => $storeApp->polydock_app_class,
-                    'error' => $e->getMessage()
-                ]);
-                throw $e;
-            }
-        });
+        return $this->morphMany(PolydockVariable::class, 'variabled');
     }
 }

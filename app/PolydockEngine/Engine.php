@@ -145,8 +145,13 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $this->info("App Website: " . $app->getAppWebsite());
         $this->info("App Support Email: " . $app->getAppSupportEmail());
         $this->appInstance->setApp($app);
-        
-        $this->info('Run has completed. Status is now ' . $this->appInstance->getStatus());
+
+        $this->info('Validating app instance has all required variables');
+        // Throws PolydockEngineAppInstanceValidationException
+        $this->validateAppInstanceHasAllRequiredVariables($appInstance);
+        $this->info('App instance has all required variables');
+
+        $this->info('Run has completed. Status is now: ' . $this->appInstance->getStatusMessage());
 
         return $this->appInstance;
     }

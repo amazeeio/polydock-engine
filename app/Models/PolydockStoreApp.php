@@ -8,10 +8,12 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Traits\HasPolydockVariables;
 
 class PolydockStoreApp extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPolydockVariables;
 
     protected $fillable = [
         'polydock_store_id',
@@ -139,5 +141,13 @@ class PolydockStoreApp extends Model
     public function allocatedInstances(): HasMany
     {
         return $this->instances()->whereNotNull('user_group_id');
+    }
+
+    /**
+     * Get all variables for this store app
+     */
+    public function variables(): MorphMany
+    {
+        return $this->morphMany(PolydockVariable::class, 'variabled');
     }
 } 

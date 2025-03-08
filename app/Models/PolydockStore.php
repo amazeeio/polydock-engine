@@ -6,10 +6,12 @@ use App\Enums\PolydockStoreStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
+use App\Traits\HasPolydockVariables;
 
 class PolydockStore extends Model
 {
-    use HasFactory;
+    use HasFactory, HasPolydockVariables;
 
     protected $fillable = [
         'name',
@@ -35,5 +37,13 @@ class PolydockStore extends Model
     public function webhooks(): HasMany
     {
         return $this->hasMany(PolydockStoreWebhook::class);
+    }
+
+    /**
+     * Get all variables for this store
+     */
+    public function variables(): MorphMany
+    {
+        return $this->morphMany(PolydockVariable::class, 'variabled');
     }
 } 
