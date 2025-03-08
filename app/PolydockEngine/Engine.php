@@ -7,9 +7,10 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
 use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
+use FreedomtechHosting\PolydockApp\PolydockEngineBase;
 use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
 
-class Engine implements PolydockEngineInterface
+class Engine extends PolydockEngineBase implements PolydockEngineInterface
 {
     /**
      * @var PolydockAppInstanceInterface
@@ -127,6 +128,7 @@ class Engine implements PolydockEngineInterface
         if(!class_exists($polydockAppClass)) {
             throw new PolydockEngineAppNotFoundException('Class ' . $polydockAppClass . ' not found');
         }
+        
         $app = new $polydockAppClass(
             $this->appInstance->storeApp->name, 
             $this->appInstance->storeApp->description, 
