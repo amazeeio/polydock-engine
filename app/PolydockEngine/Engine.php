@@ -185,7 +185,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
             case PolydockAppInstanceStatus::PENDING_DEPLOY:
                 $stepReturn = $this->processPolydockAppUsingFunction('deployAppInstance', 
                     PolydockAppInstanceStatus::PENDING_DEPLOY, 
-                    PolydockAppInstanceStatus::DEPLOY_COMPLETED, 
+                    PolydockAppInstanceStatus::DEPLOY_RUNNING, // Note: This is not a completed status
                     PolydockAppInstanceStatus::DEPLOY_FAILED);
                 break;
             case PolydockAppInstanceStatus::PENDING_POST_DEPLOY:    
@@ -221,7 +221,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
             case PolydockAppInstanceStatus::PENDING_UPGRADE:
                 $stepReturn = $this->processPolydockAppUsingFunction('upgradeAppInstance', 
                     PolydockAppInstanceStatus::PENDING_UPGRADE, 
-                    PolydockAppInstanceStatus::UPGRADE_COMPLETED, 
+                    PolydockAppInstanceStatus::UPGRADE_RUNNING, // Note: This is not a completed status 
                     PolydockAppInstanceStatus::UPGRADE_FAILED);
                 break;
             case PolydockAppInstanceStatus::PENDING_POST_UPGRADE:   
@@ -229,6 +229,36 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     PolydockAppInstanceStatus::PENDING_POST_UPGRADE, 
                     PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED, 
                     PolydockAppInstanceStatus::POST_UPGRADE_FAILED);
+                break;
+            case PolydockAppInstanceStatus::DEPLOY_RUNNING:
+                $stepReturn = $this->processPolydockAppPollUpdateUsingFunction('pollAppInstanceDeploymentProgress', 
+                    PolydockAppInstanceStatus::DEPLOY_RUNNING, 
+                    [
+                        PolydockAppInstanceStatus::DEPLOY_RUNNING,
+                        PolydockAppInstanceStatus::DEPLOY_COMPLETED, 
+                        PolydockAppInstanceStatus::DEPLOY_FAILED
+                    ]
+                );
+                break;
+            case PolydockAppInstanceStatus::UPGRADE_RUNNING:
+                $stepReturn = $this->processPolydockAppPollUpdateUsingFunction('pollAppInstanceUpgradeProgress', 
+                    PolydockAppInstanceStatus::UPGRADE_RUNNING, 
+                    [
+                        PolydockAppInstanceStatus::UPGRADE_RUNNING,
+                        PolydockAppInstanceStatus::UPGRADE_COMPLETED, 
+                        PolydockAppInstanceStatus::UPGRADE_FAILED
+                    ]
+                );
+                break;
+            case PolydockAppInstanceStatus::RUNNING_HEALTHY:
+                $stepReturn = $this->processPolydockAppPollUpdateUsingFunction('pollAppInstanceHealthStatus', 
+                    PolydockAppInstanceStatus::RUNNING_HEALTHY, 
+                    [
+                        PolydockAppInstanceStatus::RUNNING_HEALTHY,
+                        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE
+                    ]
+                );
                 break;
             default:
                 $stepReturn = false;
@@ -238,11 +268,11 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         }
 
         if(!$stepReturn) {   
-            $this->info('Unsuccessful run - app instance status is now: ' . $this->appInstance->getStatus()->value);
+            $this->info('Unsuccessful processPolydockAppInstance run - app instance status is now: ' . $this->appInstance->getStatus()->value);
             throw new PolydockAppInstanceStatusFlowException('Run failed. Status is now ' . $this->appInstance->getStatus()->value);
         }
 
-        $this->info('Successful run - app instance status is now: ' . $this->appInstance->getStatus()->value);
+        $this->info('Successful processPolydockAppInstance run - app instance status is now: ' . $this->appInstance->getStatus()->value);
 
         return $this->appInstance;
     }
@@ -259,6 +289,23 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
             throw new PolydockAppInstanceStatusFlowException(
                 'PolydockAppInstance status expected to be ' 
                     . $status->value . ' but is ' . $this->appInstance->getStatus()->value
+            );
+        }
+    }
+
+    /** 
+     * Require the polydock app instance status to be one of a list of statuses
+     * @param array<PolydockAppInstanceStatus> $statuses The statuses to require
+     * @throws PolydockAppInstanceStatusFlowException
+     * @return void
+     */
+    protected function requirePolydockAppInstanceStatusOneOfList(array $statuses) : void
+    {
+        if(!in_array($this->appInstance->getStatus(), $statuses)) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'PolydockAppInstance status expected to be one of ' 
+                    . implode(', ', array_map(fn($status) => $status->value, $statuses)) 
+                    . ' but is ' . $this->appInstance->getStatus()->value
             );
         }
     }

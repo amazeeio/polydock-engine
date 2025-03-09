@@ -92,4 +92,67 @@ trait PolydockEngineFunctionCallerTrait
 
         return false;
     }
+
+    protected function processPolydockAppPollUpdateUsingFunction(string $appFunctionName, 
+        PolydockAppInstanceStatus $entryStatus,
+        array $expectedStatuses): bool
+    {
+        $polydockApp = null;
+        $location = __FUNCTION__;
+        $engine = self::class;
+        $outputContext = ['engine' => $engine, 'location' => $location, 'appFunction' => $appFunctionName];
+
+        $this->info('Initialising ' . $location . ' for ' . $appFunctionName, $outputContext);
+
+        // Initialise the required resources
+        try {
+            $polydockApp = $this->appInstance->getApp();
+            
+            if(!$polydockApp) {
+                $this->error($appFunctionName . ' failed - app instance not found', $outputContext);
+                return false;
+            }
+
+            if(!method_exists($polydockApp, $appFunctionName)) {
+                $this->error($appFunctionName . ' failed - app function not found', $outputContext);
+                return false;
+            }
+        } catch(Exception $e) {
+            $this->error($appFunctionName . ' failed - unknown initialisation exception', $outputContext + ['exception' => $e]);
+            return false;
+        }
+        
+        // Poll the app instance
+        try {
+            $polydockApp->info($appFunctionName . ' Status-Check: before-processing', $outputContext);
+            if($this->appInstance->getStatus() !== $entryStatus) {
+                $polydockApp->info($appFunctionName . ' Status-Check: before-processing skipped - status not as expected', $outputContext);
+                return false;
+            }
+            $polydockApp->info($appFunctionName . ' Status-Check: before-processing ok', $outputContext);
+            
+            $polydockApp->info($appFunctionName . ' starting', $outputContext);
+            $polydockApp->{$appFunctionName}($this->appInstance);
+            $polydockApp->info($appFunctionName . ' completed without exception', $outputContext);
+
+            $polydockApp->info($appFunctionName . ' Status-Check: after-processing', $outputContext);
+            $this->requirePolydockAppInstanceStatusOneOfList($expectedStatuses);
+            $polydockApp->info($appFunctionName . ' Status-Check: after-processing ok', $outputContext);
+            return true;
+        } 
+        catch(PolydockAppInstanceStatusFlowException $e) {
+            $polydockApp->error($appFunctionName . ' failed - status flow exception', $outputContext + ['exception' => $e]);
+            return false;
+        }
+        catch(PolydockEngineProcessPolydockAppInstanceException $e) {
+            $polydockApp->error($appFunctionName . ' failed - process exception', $outputContext + ['exception' => $e]);
+            return false;   
+        }
+        catch(Exception $e) {
+            $polydockApp->error($appFunctionName . ' failed - unknown exception', $outputContext + ['exception' => $e]);
+            return false;
+        }
+        
+        return true;
+    }
 }
