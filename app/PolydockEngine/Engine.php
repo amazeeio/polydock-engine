@@ -3,8 +3,12 @@
 namespace App\PolydockEngine;
 
 use App\Models\PolydockAppInstance;
+use Exception;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineProcessPolydockAppInstanceException;
+use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineProcessPolydockAppInstanceStatusException;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
+use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
 use FreedomtechHosting\PolydockApp\PolydockEngineBase;
@@ -114,11 +118,11 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
     }
 
     /**
-     * Run a test for the app instance
-     * @param string $polydockAppClass The class name of the app instance
-     * @return void
+     * Process the polydock app instance
+     * @param PolydockAppInstanceInterface $appInstance The app instance to process
+     * @return PolydockAppInstanceInterface The app instance
      */
-    public function run(PolydockAppInstance $appInstance)
+    public function processPolydockAppInstance(PolydockAppInstanceInterface $appInstance)
     {
         $this->appInstance = $appInstance;
         $this->appInstance->setLogger($this->logger);
@@ -154,6 +158,155 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $this->info('Run has completed. Status is now: ' . $this->appInstance->getStatusMessage());
 
         return $this->appInstance;
+    }
+
+    /**
+     * Require the polydock app instance status
+     * @param PolydockAppInstanceStatus $status The status to require
+     * @throws PolydockEngineProcessPolydockAppInstanceStatusException
+     * @return void
+     */
+    protected function requirePolydockAppInstanceStatus(PolydockAppInstanceStatus $status) : void
+    {
+        if($this->appInstance->getStatus() !== $status) {
+            throw new PolydockEngineProcessPolydockAppInstanceStatusException(
+                'PolydockAppInstance status expected to be ' 
+                    . $status->value . ' but is ' . $this->appInstance->getStatusMessage()
+                , 0, null, $status, $this->appInstance->getStatus()
+            );
+        }
+    }
+
+    /**
+     * Run the pre-create step
+     * @throws PolydockEngineProcessPolydockAppInstanceException
+     * @throws PolydockAppInstanceStatusFlowException
+     * @return void
+     */
+    protected function processPolydockAppInstancePreCreate()
+    {
+        $this->requirePolydockAppInstanceStatus(PolydockAppInstanceStatus::PENDING_PRE_CREATE);
+
+        $this->info('Calling pre-create', ['engine' => self::class, 'location' => 'runPreCreate']);
+
+        try {
+            $this->appInstance->getApp()->preCreateAppInstance($this->appInstance);
+        } 
+        catch(PolydockAppInstanceStatusFlowException $e) {
+            $this->error('Pre-create failed - status flow exception', ['engine' => self::class, 'location' => 'runPreCreate', 'exception' => $e]);
+            $this->appInstance->setStatus(PolydockAppInstanceStatus::PRE_CREATE_FAILED);
+            throw $e;
+        }
+        catch(PolydockEngineProcessPolydockAppInstanceException $e) {
+            $this->error('Pre-create failed - process exception', ['engine' => self::class, 'location' => 'runPreCreate', 'exception' => $e]);
+            $this->appInstance->setStatus(PolydockAppInstanceStatus::PRE_CREATE_FAILED);
+            throw $e;
+        } catch(Exception $e) {
+            $this->error('Pre-create failed - unknown exception', ['engine' => self::class, 'location' => 'runPreCreate', 'exception' => $e]);
+            $this->appInstance->setStatus(PolydockAppInstanceStatus::PRE_CREATE_FAILED);
+            throw $e;
+        }
+
+        $this->appInstance->setStatus(PolydockAppInstanceStatus::PRE_CREATE_COMPLETED);
+    }
+
+    /** 
+     * Run the create step
+     * @throws PolydockEngineProcessPolydockAppInstanceStatusException
+     * @return void
+     */
+    protected function processPolydockAppInstanceCreate()
+    {
+        $this->requirePolydockAppInstanceStatus(PolydockAppInstanceStatus::PENDING_CREATE);
+
+        $this->info('Calling create', ['engine' => self::class, 'location' => 'runCreate']);
+        $this->appInstance->getApp()->createAppInstance($this->appInstance);
+
+        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_CREATE);
+    }
+
+    /**
+     * Run the post-create step
+     * @throws PolydockEngineProcessPolydockAppInstanceStatusException
+     * @return void
+     */
+    protected function processPolydockAppInstancePostCreate()
+    {
+        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_CREATE);
+        $this->info('Calling post-create', ['engine' => self::class, 'location' => 'runPostCreate']);
+        $this->appInstance->getApp()->postCreateAppInstance($this->appInstance);
+    }
+
+    /**
+     * Run the pre-deploy step
+     * @throws PolydockEngineProcessPolydockAppInstanceStatusException
+     * @return void
+     */
+    protected function processPolydockAppInstancePreDeploy()
+    {
+        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_DEPLOY);
+        $this->info('Calling pre-deploy', ['engine' => self::class, 'location' => 'runPreDeploy']);
+        $this->appInstance->getApp()->preDeployAppInstance($this->appInstance);
+    }
+
+    /**
+     * Run the deploy step
+     * @throws PolydockEngineProcessPolydockAppInstanceStatusException
+     * @return void
+     */
+    protected function processPolydockAppInstanceDeploy()
+    {
+        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_DEPLOY);
+        $this->info('Calling deploy', ['engine' => self::class, 'location' => 'runDeploy']);
+        $this->appInstance->getApp()->deployAppInstance($this->appInstance);
+    }
+    
+    /**
+     * Run the post-deploy step
+     * @throws PolydockEngineProcessPolydockAppInstanceStatusException
+     * @return void
+     */
+    protected function processPolydockAppInstancePostDeploy()
+    {
+        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_DEPLOY);
+        $this->info('Calling post-deploy', ['engine' => self::class, 'location' => 'runPostDeploy']);
+        $this->appInstance->getApp()->postDeployAppInstance($this->appInstance);
+    }
+
+    /**
+     * Run the pre-remove step
+     * @throws PolydockEngineProcessPolydockAppInstanceStatusException
+     * @return void
+     */
+    protected function processPolydockAppInstancePreRemove()
+    {
+        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
+        $this->info('Calling pre-remove', ['engine' => self::class, 'location' => 'runPreRemove']);
+        $this->appInstance->getApp()->preRemoveAppInstance($this->appInstance);
+    }
+
+    /**
+     * Run the remove step
+     * @throws PolydockEngineProcessPolydockAppInstanceStatusException
+     * @return void
+     */
+    protected function processPolydockAppInstanceRemove()
+    {
+        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_REMOVE);
+        $this->info('Calling remove', ['engine' => self::class, 'location' => 'runRemove']);
+        $this->appInstance->getApp()->removeAppInstance($this->appInstance);
+    }
+
+    /**
+     * Run the post-remove step
+     * @throws PolydockEngineProcessPolydockAppInstanceStatusException
+     * @return void
+     */
+    protected function processPolydockAppInstancePostRemove()
+    {
+        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_REMOVE);
+        $this->info('Calling post-remove', ['engine' => self::class, 'location' => 'runPostRemove']);
+        $this->appInstance->getApp()->postRemoveAppInstance($this->appInstance);
     }
 
     /**
@@ -203,104 +356,4 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $this->logger->debug($message, $context);
         return $this;
     }   
-
-    /**
-     * Run the pre-create step
-     * @return void
-     */
-    public function runPreCreate()
-    {
-        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_CREATE);
-        $this->info('Calling pre-create', ['engine' => self::class, 'location' => 'runPreCreate']);
-        $this->appInstance->getApp()->preCreateAppInstance($this->appInstance);
-    }
-
-    /** 
-     * Run the create step
-     * @return void
-     */
-    public function runCreate()
-    {
-        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_CREATE);
-        $this->info('Calling create', ['engine' => self::class, 'location' => 'runCreate']);
-        $this->appInstance->getApp()->createAppInstance($this->appInstance);
-    }
-
-    /**
-     * Run the post-create step
-     * @return void
-     */
-    public function runPostCreate()
-    {
-        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_CREATE);
-        $this->info('Calling post-create', ['engine' => self::class, 'location' => 'runPostCreate']);
-        $this->appInstance->getApp()->postCreateAppInstance($this->appInstance);
-    }
-
-    /**
-     * Run the pre-deploy step
-     * @return void
-     */
-    public function runPreDeploy()
-    {
-        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_DEPLOY);
-        $this->info('Calling pre-deploy', ['engine' => self::class, 'location' => 'runPreDeploy']);
-        $this->appInstance->getApp()->preDeployAppInstance($this->appInstance);
-    }
-
-    /**
-     * Run the deploy step
-     * @return void
-     */
-    public function runDeploy()
-    {
-        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_DEPLOY);
-        $this->info('Calling deploy', ['engine' => self::class, 'location' => 'runDeploy']);
-        $this->appInstance->getApp()->deployAppInstance($this->appInstance);
-    }
-    
-    /**
-     * Run the post-deploy step
-     * @return void
-     */
-    public function runPostDeploy()
-    {
-        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_DEPLOY);
-        $this->info('Calling post-deploy', ['engine' => self::class, 'location' => 'runPostDeploy']);
-        $this->appInstance->getApp()->postDeployAppInstance($this->appInstance);
-    }
-
-    /**
-     * Run the pre-remove step
-     * @return void
-     */
-    public function runPreRemove()
-    {
-        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
-        $this->info('Calling pre-remove', ['engine' => self::class, 'location' => 'runPreRemove']);
-        $this->appInstance->getApp()->preRemoveAppInstance($this->appInstance);
-    }
-
-    /**
-     * Run the remove step
-     * @return void
-     */
-    public function runRemove()
-    {
-        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_REMOVE);
-        $this->info('Calling remove', ['engine' => self::class, 'location' => 'runRemove']);
-        $this->appInstance->getApp()->removeAppInstance($this->appInstance);
-    }
-
-    /**
-     * Run the post-remove step
-     * @return void
-     */
-    public function runPostRemove()
-    {
-        $this->appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_REMOVE);
-        $this->info('Calling post-remove', ['engine' => self::class, 'location' => 'runPostRemove']);
-        $this->appInstance->getApp()->postRemoveAppInstance($this->appInstance);
-    }
-    
 }
