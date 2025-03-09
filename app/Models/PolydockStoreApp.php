@@ -44,6 +44,7 @@ class PolydockStoreApp extends Model
         'lagoon_deploy_region_id',
         'lagoon_deploy_project_prefix',
         'lagoon_deploy_organization_id',
+        'lagoon_deploy_private_key',
         'unallocated_instances_count',
         'needs_more_unallocated_instances',
     ];
@@ -99,6 +100,14 @@ class PolydockStoreApp extends Model
     public function getLagoonDeployProjectPrefixAttribute(): string
     {
         return $this->store->lagoon_deploy_project_prefix;
+    }
+
+    /**
+     * Get the Lagoon deploy private key attribute
+     */
+    public function getLagoonDeployPrivateKeyAttribute(): string
+    {
+        return $this->store->lagoon_deploy_private_key;
     }
 
     /**

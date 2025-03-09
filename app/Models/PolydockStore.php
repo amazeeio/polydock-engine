@@ -19,6 +19,7 @@ class PolydockStore extends Model
         'listed_in_marketplace',
         'lagoon_deploy_region_id',
         'lagoon_deploy_project_prefix',
+        'lagoon_deploy_private_key',
     ];
 
     protected $casts = [
