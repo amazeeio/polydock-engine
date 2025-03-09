@@ -17,7 +17,7 @@ class PolydockStoreApp extends Model
 
     protected $fillable = [
         'polydock_store_id',
-        'class',
+        'polydock_app_class',
         'name',
         'description',
         'author',
