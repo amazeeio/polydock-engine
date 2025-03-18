@@ -14,6 +14,7 @@ use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
 
 use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
+use App\Events\PolydockAppInstanceCreatedWithNewStatus;
 
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
@@ -93,6 +94,12 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'error' => $e->getMessage()
                 ]);
                 throw $e;
+            }
+        });
+
+        static::created(function ($appInstance) {
+            if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
+                event(new PolydockAppInstanceCreatedWithNewStatus($appInstance));
             }
         });
     }

@@ -17,11 +17,6 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
     use PolydockEngineFunctionCallerTrait;
     
     /**
-     * @var PolydockAppInstanceInterface
-     */
-    private PolydockAppInstanceInterface $appInstance;
-
-    /**
      * @var PolydockAppLoggerInterface
      */
     protected PolydockAppLoggerInterface $logger;
@@ -124,21 +119,20 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      */
     public function processPolydockAppInstance(PolydockAppInstanceInterface $appInstance)
     {
-        $this->appInstance = $appInstance;
-        $this->appInstance->setLogger($this->logger);
-        $this->appInstance->setEngine($this);
+        $appInstance->setLogger($this->logger);
+        $appInstance->setEngine($this);
 
-        $polydockAppClass = $this->appInstance->storeApp->polydock_app_class;
+        $polydockAppClass = $appInstance->storeApp->polydock_app_class;
         if(!class_exists($polydockAppClass)) {
             throw new PolydockEngineAppNotFoundException('Class ' . $polydockAppClass . ' not found');
         }
         
         $app = new $polydockAppClass(
-            $this->appInstance->storeApp->name, 
-            $this->appInstance->storeApp->description, 
-            $this->appInstance->storeApp->author, 
-            $this->appInstance->storeApp->website, 
-            $this->appInstance->storeApp->support_email, 
+            $appInstance->storeApp->name, 
+            $appInstance->storeApp->description, 
+            $appInstance->storeApp->author, 
+            $appInstance->storeApp->website, 
+            $appInstance->storeApp->support_email, 
         );
 
         $app->setLogger($this->logger);
@@ -148,7 +142,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $this->info("App Author: " . $app->getAppAuthor());
         $this->info("App Website: " . $app->getAppWebsite());
         $this->info("App Support Email: " . $app->getAppSupportEmail());
-        $this->appInstance->setApp($app);
+        $appInstance->setApp($app);
 
         $this->info('Validating app instance has all required variables');
 
@@ -157,7 +151,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $this->info('App instance has all required variables');
 
         $stepReturn = false;
-        switch($this->appInstance->getStatus()) {
+        switch($appInstance->getStatus()) {
             case PolydockAppInstanceStatus::PENDING_PRE_CREATE:
                 $stepReturn = $this->processPolydockAppUsingFunction('preCreateAppInstance', 
                     PolydockAppInstanceStatus::PENDING_PRE_CREATE, 
@@ -263,18 +257,18 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
             default:
                 $stepReturn = false;
                 throw new PolydockAppInstanceStatusFlowException('Status ' 
-                    . $this->appInstance->getStatus()->value 
+                    . $appInstance->getStatus()->value 
                     . ' is not a status the engine can process');
-        }
+        } 
 
         if(!$stepReturn) {   
-            $this->info('Unsuccessful processPolydockAppInstance run - app instance status is now: ' . $this->appInstance->getStatus()->value);
-            throw new PolydockAppInstanceStatusFlowException('Run failed. Status is now ' . $this->appInstance->getStatus()->value);
+            $this->info('Unsuccessful processPolydockAppInstance run - app instance status is now: ' . $appInstance->getStatus()->value);
+            throw new PolydockAppInstanceStatusFlowException('Run failed. Status is now ' . $appInstance->getStatus()->value);
         }
 
-        $this->info('Successful processPolydockAppInstance run - app instance status is now: ' . $this->appInstance->getStatus()->value);
+        $this->info('Successful processPolydockAppInstance run - app instance status is now: ' . $appInstance->getStatus()->value);
 
-        return $this->appInstance;
+        return $appInstance;
     }
 
     /**
@@ -283,12 +277,12 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @throws PolydockEngineProcessPolydockAppInstanceStatusException
      * @return void
      */
-    protected function requirePolydockAppInstanceStatus(PolydockAppInstanceStatus $status) : void
+    protected function requirePolydockAppInstanceStatus(PolydockAppInstanceStatus $status, PolydockAppInstanceInterface $appInstance) : void
     {
-        if($this->appInstance->getStatus() !== $status) {
+        if($appInstance->getStatus() !== $status) {
             throw new PolydockAppInstanceStatusFlowException(
                 'PolydockAppInstance status expected to be ' 
-                    . $status->value . ' but is ' . $this->appInstance->getStatus()->value
+                    . $status->value . ' but is ' . $appInstance->getStatus()->value
             );
         }
     }
@@ -299,13 +293,13 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @throws PolydockAppInstanceStatusFlowException
      * @return void
      */
-    protected function requirePolydockAppInstanceStatusOneOfList(array $statuses) : void
+    protected function requirePolydockAppInstanceStatusOneOfList(array $statuses, PolydockAppInstanceInterface $appInstance) : void
     {
-        if(!in_array($this->appInstance->getStatus(), $statuses)) {
+        if(!in_array($appInstance->getStatus(), $statuses)) {
             throw new PolydockAppInstanceStatusFlowException(
                 'PolydockAppInstance status expected to be one of ' 
                     . implode(', ', array_map(fn($status) => $status->value, $statuses)) 
-                    . ' but is ' . $this->appInstance->getStatus()->value
+                    . ' but is ' . $appInstance->getStatus()->value
             );
         }
     }
