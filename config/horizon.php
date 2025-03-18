@@ -206,6 +206,18 @@ return [
             'timeout' => 60,
             'nice' => 0,
         ],
+        'supervisor-3' => [
+            'connection' => 'redis',
+            'queue' => ['polydock-app-instance-processing'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 128,
+            'tries' => 1,
+            'timeout' => 60,
+        ],
     ],
 
     'environments' => [
@@ -226,6 +238,12 @@ return [
             ],
             'supervisor-2' => [
                 'maxProcesses' => 10,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-3' => [
+                'maxProcesses' => 1,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
                 'tries' => 3,
