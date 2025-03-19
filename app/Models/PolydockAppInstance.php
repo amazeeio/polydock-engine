@@ -15,6 +15,7 @@ use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
 use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Events\PolydockAppInstanceCreatedWithNewStatus;
+use App\Events\PolydockAppInstanceStatusChanged;
 
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
@@ -98,6 +99,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         });
 
         static::created(function ($appInstance) {
+            // Fire status changed event with null previous status
+            event(new PolydockAppInstanceStatusChanged($appInstance, null));
+
+            // Fire the NEW status event if applicable
             if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
                 event(new PolydockAppInstanceCreatedWithNewStatus($appInstance));
             }
@@ -160,8 +165,13 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function setStatus(PolydockAppInstanceStatus $status, string $statusMessage = "") : self
     {
-        $this->status = $status;
-        $this->save();
+        if ($this->status !== $status) {
+            $previousStatus = $this->status;
+            $this->status = $status;
+            $this->save();
+            
+            event(new PolydockAppInstanceStatusChanged($this, $previousStatus));
+        }
 
         if(!empty($statusMessage)) {
             $this->setStatusMessage($statusMessage);
