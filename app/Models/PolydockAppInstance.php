@@ -16,10 +16,12 @@ use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Events\PolydockAppInstanceCreatedWithNewStatus;
 use App\Events\PolydockAppInstanceStatusChanged;
+use App\Traits\HasWebhookSensitiveData;
 
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
     use HasPolydockVariables;
+    use HasWebhookSensitiveData;
 
     /**
      * The fillable attributes for the model
@@ -60,7 +62,28 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     private PolydockAppLoggerInterface $logger;
 
- /**
+    // Add default sensitive keys specific to app instances
+    protected array $sensitiveDataKeys = [
+        // Exact matches
+        'private_key',
+        'secret',
+        'password',
+        'token',
+        'api_key',
+        'ssh_key',
+        'lagoon_deploy_private_key',
+        
+        // Regex patterns
+        '/^.*_key$/',              // Anything ending with _key
+        '/^.*_secret$/',           // Anything ending with _secret
+        '/^.*password.*$/',        // Anything containing password
+        '/^.*token.*$/',           // Anything containing token
+        '/^.*api[_-]?key.*$/i',    // Any variation of api key
+        '/^.*ssh[_-]?key.*$/i',    // Any variation of ssh key
+        '/^.*private[_-]?key.*$/i' // Any variation of private key
+    ];
+
+    /**
      * Boot the model.
      */
     protected static function boot()

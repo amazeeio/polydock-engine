@@ -11,6 +11,8 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
 use App\PolydockEngine\Engine;
 use App\PolydockEngine\PolydockLogger;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 
 class ProcessPolydockAppInstanceJob implements ShouldQueue
 {
@@ -45,9 +47,32 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
             'status' => $appInstance->status->value
         ]);
 
+        $pendingStatuses = [
+            PolydockAppInstanceStatus::PENDING_PRE_CREATE,
+            PolydockAppInstanceStatus::PENDING_CREATE,
+            PolydockAppInstanceStatus::PENDING_POST_CREATE,
+            PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
+            PolydockAppInstanceStatus::PENDING_DEPLOY,
+            PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
+            PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
+            PolydockAppInstanceStatus::PENDING_REMOVE,
+            PolydockAppInstanceStatus::PENDING_POST_REMOVE,
+            PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
+            PolydockAppInstanceStatus::PENDING_UPGRADE,
+            PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
+        ];
+
         try {
-            $polydockEngine = new Engine(new PolydockLogger());
-            $polydockEngine->processPolydockAppInstance($appInstance);
+            if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
+                Log::info('PolydockAppInstance is in status ' . $appInstance->status->value . ' - processing new instance');
+                $this->processNewPolydockAppInstance($appInstance);
+            } else if(in_array($appInstance->status, $pendingStatuses)) {
+                Log::info('PolydockAppInstance is in status ' . $appInstance->status->value . ' - processing pending status');
+                $polydockEngine = new Engine(new PolydockLogger());
+                $polydockEngine->processPolydockAppInstance($appInstance);
+            } else {
+                Log::info('PolydockAppInstance is in status ' . $appInstance->status->value . ' - skipping processing');
+            }
         } catch (\Exception $e) {
             Log::error('Error processing PolydockAppInstance', [
                 'app_instance_id' => $appInstance->id,
@@ -61,5 +86,18 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
             'store_app_name' => $appInstance->storeApp->name,
             'status' => $appInstance->status->value
         ]);
+    }
+
+    public function processNewPolydockAppInstance(PolydockAppInstance $appInstance)
+    {
+        if ($appInstance->status != PolydockAppInstanceStatus::NEW) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'New PolydockAppInstance must be in status NEW',
+                $appInstance->status
+            );
+        }
+
+        $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_CREATE)
+            ->save();
     }
 } 

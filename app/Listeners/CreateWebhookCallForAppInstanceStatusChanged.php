@@ -37,6 +37,7 @@ class CreateWebhookCallForAppInstanceStatusChanged
                     'store_app_name' => $event->appInstance->storeApp->name,
                     'previous_status' => $event->previousStatus?->value,
                     'current_status' => $event->appInstance->status->value,
+                    'data' => $event->appInstance->getWebhookSafeData(),
                     'timestamp' => now()->toIso8601String(),
                 ],
             ]);
