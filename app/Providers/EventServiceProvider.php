@@ -11,6 +11,7 @@ use App\Events\PolydockAppInstanceCreatedWithNewStatus;
 use App\Listeners\ProcessNewPolydockAppInstance;
 use App\Events\PolydockAppInstanceStatusChanged;
 use App\Listeners\CreateWebhookCallForAppInstanceStatusChanged;
+use App\Listeners\ProcessPolydockAppInstanceStatusChange;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -31,6 +32,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         PolydockAppInstanceStatusChanged::class => [
             CreateWebhookCallForAppInstanceStatusChanged::class,
+            ProcessPolydockAppInstanceStatusChange::class
         ],
     ];
 

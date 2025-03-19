@@ -2,6 +2,7 @@
 
 namespace App\PolydockEngine\Traits;
 
+use App\Models\PolydockAppInstance;
 use Exception;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineProcessPolydockAppInstanceException;
@@ -26,7 +27,7 @@ trait PolydockEngineFunctionCallerTrait
       * @return bool True if processing succeeded, false if it failed
       * @throws PolydockAppInstanceStatusFlowException If status requirements are not met
       */
-    protected function processPolydockAppUsingFunction(string $appFunctionName, 
+    protected function processPolydockAppUsingFunction(PolydockAppInstance $appInstance, string $appFunctionName, 
         PolydockAppInstanceStatus $entryStatus,
         PolydockAppInstanceStatus $completedStatus,
         PolydockAppInstanceStatus $failedStatus): bool
@@ -40,7 +41,7 @@ trait PolydockEngineFunctionCallerTrait
 
         // Initialise the required resources
         try {
-            $polydockApp = $this->appInstance->getApp();
+            $polydockApp = $appInstance->getApp();
             
             if(!$polydockApp) {
                 $this->error($appFunctionName . ' failed - app instance not found', $outputContext);
@@ -59,41 +60,41 @@ trait PolydockEngineFunctionCallerTrait
         // Process the app instance
         try {
             $polydockApp->info($appFunctionName . ' Status-Check: before-processing', $outputContext);
-            $this->requirePolydockAppInstanceStatus($entryStatus);
+            $this->requirePolydockAppInstanceStatus($entryStatus, $appInstance);
             $polydockApp->info($appFunctionName . ' Status-Check: before-processing ok', $outputContext);
             
             $polydockApp->info($appFunctionName . ' starting', $outputContext);
-            $polydockApp->{$appFunctionName}($this->appInstance);
+            $polydockApp->{$appFunctionName}($appInstance);
             $polydockApp->info($appFunctionName . ' completed without exception', $outputContext);
 
             $polydockApp->info($appFunctionName . ' Status-Check: after-processing', $outputContext);
-            $this->requirePolydockAppInstanceStatus($completedStatus);
+            $this->requirePolydockAppInstanceStatus($completedStatus, $appInstance);
             $polydockApp->info($appFunctionName . ' Status-Check: after-processing ok', $outputContext);
             return true;
         } 
         catch(PolydockAppInstanceStatusFlowException $e) {
             $polydockApp->error($appFunctionName . ' failed - status flow exception', $outputContext + ['exception' => $e]);
-            if($this->appInstance->getStatus() !== $failedStatus) {
+            if($appInstance->getStatus() !== $failedStatus) {
                 $polydockApp->info('Forcing status to ' . $failedStatus->value, $outputContext);
-                $this->appInstance->setStatus($failedStatus);
+                $appInstance->setStatus($failedStatus);
             }
             return false;
         }
         catch(PolydockEngineProcessPolydockAppInstanceException $e) {
             $polydockApp->error($appFunctionName . ' failed - process exception', $outputContext + ['exception' => $e]);
-            if($this->appInstance->getStatus() !== $failedStatus) {
+            if($appInstance->getStatus() !== $failedStatus) {
                 $polydockApp->info('Forcing status to ' . $failedStatus->value, $outputContext);
-                $this->appInstance->setStatus($failedStatus);
+                $appInstance->setStatus($failedStatus);
             }
         } catch(Exception $e) {
             $polydockApp->error($appFunctionName . ' failed - unknown exception', $outputContext + ['exception' => $e]);
-            $this->appInstance->setStatus($failedStatus);
+            $appInstance->setStatus($failedStatus);
         }
 
         return false;
     }
 
-    protected function processPolydockAppPollUpdateUsingFunction(string $appFunctionName, 
+    protected function processPolydockAppPollUpdateUsingFunction(PolydockAppInstance $appInstance, string $appFunctionName, 
         PolydockAppInstanceStatus $entryStatus,
         array $expectedStatuses): bool
     {
@@ -106,7 +107,7 @@ trait PolydockEngineFunctionCallerTrait
 
         // Initialise the required resources
         try {
-            $polydockApp = $this->appInstance->getApp();
+            $polydockApp = $appInstance->getApp();
             
             if(!$polydockApp) {
                 $this->error($appFunctionName . ' failed - app instance not found', $outputContext);
@@ -125,18 +126,18 @@ trait PolydockEngineFunctionCallerTrait
         // Poll the app instance
         try {
             $polydockApp->info($appFunctionName . ' Status-Check: before-processing', $outputContext);
-            if($this->appInstance->getStatus() !== $entryStatus) {
+            if($appInstance->getStatus() !== $entryStatus) {
                 $polydockApp->info($appFunctionName . ' Status-Check: before-processing skipped - status not as expected', $outputContext);
                 return false;
             }
             $polydockApp->info($appFunctionName . ' Status-Check: before-processing ok', $outputContext);
             
             $polydockApp->info($appFunctionName . ' starting', $outputContext);
-            $polydockApp->{$appFunctionName}($this->appInstance);
+            $polydockApp->{$appFunctionName}($appInstance);
             $polydockApp->info($appFunctionName . ' completed without exception', $outputContext);
 
             $polydockApp->info($appFunctionName . ' Status-Check: after-processing', $outputContext);
-            $this->requirePolydockAppInstanceStatusOneOfList($expectedStatuses);
+            $this->requirePolydockAppInstanceStatusOneOfList($expectedStatuses, $appInstance, );
             $polydockApp->info($appFunctionName . ' Status-Check: after-processing ok', $outputContext);
             return true;
         } 

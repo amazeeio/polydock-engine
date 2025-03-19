@@ -191,13 +191,33 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         if ($this->status !== $status) {
             $previousStatus = $this->status;
             $this->status = $status;
+
+            Log::info('Setting status of app instance', [
+                'app_instance_id' => $this->id,
+                'previous_status' => $previousStatus,
+                'new_status' => $status
+            ]);
+
+            if(!empty($statusMessage)) {
+                $this->setStatusMessage($statusMessage);
+            }
+
             $this->save();
             
-            event(new PolydockAppInstanceStatusChanged($this, $previousStatus));
-        }
+            if($this->status !== PolydockAppInstanceStatus::NEW) {
+                event(new PolydockAppInstanceStatusChanged($this, $previousStatus));
+            }
+        } else {
+            Log::info('Setting status of app instance to same status', [
+                'app_instance_id' => $this->id,
+                'previous_status' => $this->status,
+                'status' => $status
+            ]);
 
-        if(!empty($statusMessage)) {
-            $this->setStatusMessage($statusMessage);
+            if(!empty($statusMessage)) {
+                $this->setStatusMessage($statusMessage);
+                $this->save();
+            }
         }
 
         return $this;
