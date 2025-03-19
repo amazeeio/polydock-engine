@@ -18,6 +18,59 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private array $pendingStatuses = [
+        PolydockAppInstanceStatus::PENDING_PRE_CREATE,
+        PolydockAppInstanceStatus::PENDING_CREATE,
+        PolydockAppInstanceStatus::PENDING_POST_CREATE,
+        PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
+        PolydockAppInstanceStatus::PENDING_DEPLOY,
+        PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
+        PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
+        PolydockAppInstanceStatus::PENDING_REMOVE,
+        PolydockAppInstanceStatus::PENDING_POST_REMOVE,
+        PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
+        PolydockAppInstanceStatus::PENDING_UPGRADE,
+        PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
+    ];
+
+    private array $completedStatuses = [
+        PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
+        PolydockAppInstanceStatus::CREATE_COMPLETED,
+        PolydockAppInstanceStatus::POST_CREATE_COMPLETED,
+        PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED,
+        PolydockAppInstanceStatus::DEPLOY_COMPLETED,
+        PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
+        PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED,
+        PolydockAppInstanceStatus::REMOVE_COMPLETED,
+        PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
+        PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED,
+        PolydockAppInstanceStatus::UPGRADE_COMPLETED,
+        PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
+    ];
+
+    private array $failedStatuses = [
+        PolydockAppInstanceStatus::PRE_CREATE_FAILED,
+        PolydockAppInstanceStatus::CREATE_FAILED,
+        PolydockAppInstanceStatus::POST_CREATE_FAILED,
+        PolydockAppInstanceStatus::PRE_DEPLOY_FAILED,
+        PolydockAppInstanceStatus::DEPLOY_FAILED,
+        PolydockAppInstanceStatus::POST_DEPLOY_FAILED,
+        PolydockAppInstanceStatus::PRE_REMOVE_FAILED,
+        PolydockAppInstanceStatus::REMOVE_FAILED,
+        PolydockAppInstanceStatus::POST_REMOVE_FAILED,
+        PolydockAppInstanceStatus::PRE_UPGRADE_FAILED,
+        PolydockAppInstanceStatus::UPGRADE_FAILED,
+        PolydockAppInstanceStatus::POST_UPGRADE_FAILED,
+    ];
+
+    private array $pollingStatuses = [
+        PolydockAppInstanceStatus::DEPLOY_RUNNING,
+        PolydockAppInstanceStatus::UPGRADE_RUNNING,
+        PolydockAppInstanceStatus::RUNNING_HEALTHY,
+        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+    ];
+
     /**
      * Create a new job instance.
      */
@@ -45,28 +98,13 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
             'store_app_id' => $appInstance->polydock_store_app_id,
             'store_app_name' => $appInstance->storeApp->name,
             'status' => $appInstance->status->value
-        ]);
-
-        $pendingStatuses = [
-            PolydockAppInstanceStatus::PENDING_PRE_CREATE,
-            PolydockAppInstanceStatus::PENDING_CREATE,
-            PolydockAppInstanceStatus::PENDING_POST_CREATE,
-            PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
-            PolydockAppInstanceStatus::PENDING_DEPLOY,
-            PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
-            PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
-            PolydockAppInstanceStatus::PENDING_REMOVE,
-            PolydockAppInstanceStatus::PENDING_POST_REMOVE,
-            PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
-            PolydockAppInstanceStatus::PENDING_UPGRADE,
-            PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
-        ];
+        ]);        
 
         try {
             if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
                 Log::info('PolydockAppInstance is in status ' . $appInstance->status->value . ' - processing new instance');
                 $this->processNewPolydockAppInstance($appInstance);
-            } else if(in_array($appInstance->status, $pendingStatuses)) {
+            } else if(in_array($appInstance->status, $this->pendingStatuses)) {
                 Log::info('PolydockAppInstance is in status ' . $appInstance->status->value . ' - processing pending status');
                 $polydockEngine = new Engine(new PolydockLogger());
                 $polydockEngine->processPolydockAppInstance($appInstance);
