@@ -122,9 +122,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         });
 
         static::created(function ($appInstance) {
-            // Fire status changed event with null previous status
-            event(new PolydockAppInstanceStatusChanged($appInstance, null));
-
             // Fire the NEW status event if applicable
             if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
                 event(new PolydockAppInstanceCreatedWithNewStatus($appInstance));

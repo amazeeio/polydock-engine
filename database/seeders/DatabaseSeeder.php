@@ -116,7 +116,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 2,
+            'target_unallocated_app_instances' => 1,
         ]);
 
         \App\Models\PolydockStoreApp::create([
@@ -131,7 +131,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 3,
+            'target_unallocated_app_instances' => 0,
 	]);
 
         \App\Models\PolydockStoreApp::create([
@@ -146,7 +146,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 2,
+            'target_unallocated_app_instances' => 0,
         ]);
 
         \App\Models\PolydockStoreApp::create([
@@ -161,7 +161,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 3,
+            'target_unallocated_app_instances' => 0,
         ]);
 
         \App\Models\PolydockStoreApp::create([
@@ -176,7 +176,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 2,
+            'target_unallocated_app_instances' => 0,
         ]);
 
         \App\Models\PolydockStoreApp::create([
@@ -191,7 +191,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 3,
+            'target_unallocated_app_instances' => 0,
         ]);
         
         // Add some example apps to each store
