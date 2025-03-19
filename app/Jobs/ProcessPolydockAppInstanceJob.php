@@ -18,6 +18,9 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
+    private const UPGRADE_RUNNING_POLLING_INTERVAL = 15;
+    private const DEPLOY_RUNNING_POLLING_INTERVAL = 15;
+
     private array $pendingStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_CREATE,
         PolydockAppInstanceStatus::PENDING_CREATE,
@@ -108,6 +111,12 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
                 Log::info('PolydockAppInstance is in status ' . $appInstance->status->value . ' - processing pending status');
                 $polydockEngine = new Engine(new PolydockLogger());
                 $polydockEngine->processPolydockAppInstance($appInstance);
+            } else if(in_array($appInstance->status, $this->completedStatuses)) {
+                Log::info('PolydockAppInstance is in status ' . $appInstance->status->value . ' - processing completed status');
+                $this->processCompletedPolydockAppInstance($appInstance);
+            } else if(in_array($appInstance->status, $this->pollingStatuses)) {
+                Log::info('PolydockAppInstance is in status ' . $appInstance->status->value . ' - processing polling status');
+                $this->processPollingPolydockAppInstance($appInstance);
             } else {
                 Log::info('PolydockAppInstance is in status ' . $appInstance->status->value . ' - skipping processing');
             }
@@ -137,5 +146,161 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
 
         $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_CREATE)
             ->save();
+    }
+
+    public function processCompletedPolydockAppInstance(PolydockAppInstance $appInstance)
+    {
+        if (!in_array($appInstance->status, $this->completedStatuses)) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'Completed PolydockAppInstance must be in status ' . implode(', ', $this->completedStatuses),
+                $appInstance->status
+            );
+        }
+
+        switch($appInstance->status) {
+            case PolydockAppInstanceStatus::PRE_CREATE_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_CREATE)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::CREATE_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_CREATE)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::POST_CREATE_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_DEPLOY)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_DEPLOY)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::DEPLOY_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_DEPLOY)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED:
+                // TODO: Implement logic to call poll for health status
+                break;
+            case PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_REMOVE)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::REMOVE_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_REMOVE)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::POST_REMOVE_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::REMOVED)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_UPGRADE)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::UPGRADE_COMPLETED:
+                $appInstance->setStatus(PolydockAppInstanceStatus::PENDING_POST_UPGRADE)
+                    ->save();
+                break;
+            case PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED:
+                 // TODO: Implement logic to call poll for health status
+                break;
+            default:
+                throw new PolydockAppInstanceStatusFlowException(
+                    'Completed PolydockAppInstance must be in status ' . implode(', ', $this->completedStatuses),
+                    $appInstance->status
+                );
+        }
+    }
+
+    public function processPollingPolydockAppInstance(PolydockAppInstance $appInstance)
+    {
+        if (!in_array($appInstance->status, $this->pollingStatuses)) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'Polling PolydockAppInstance must be in status ' . implode(', ', $this->pollingStatuses),
+                $appInstance->status
+            );
+        }
+        
+        switch($appInstance->status) {
+            case PolydockAppInstanceStatus::DEPLOY_RUNNING:
+                $this->pollForDeploymentRunningUpdate($appInstance);
+                break;
+            case PolydockAppInstanceStatus::UPGRADE_RUNNING:
+                $this->pollForUpgradeRunningUpdate($appInstance);
+                break;
+            case PolydockAppInstanceStatus::RUNNING_HEALTHY:
+                $this->pollForHealthUpdate($appInstance);
+                break;
+            case PolydockAppInstanceStatus::RUNNING_UNHEALTHY:
+                $this->pollForHealthUpdate($appInstance);
+                break;
+            case PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE:
+                $this->pollForHealthUpdate($appInstance);
+                break;
+            default:
+                throw new PolydockAppInstanceStatusFlowException(
+                    'Polling PolydockAppInstance must be in status ' . implode(', ', $this->pollingStatuses),
+                    $appInstance->status
+                );
+        }
+    }
+
+    public function pollForDeploymentRunningUpdate(PolydockAppInstance $appInstance)
+    {
+        if($appInstance->status != PolydockAppInstanceStatus::DEPLOY_RUNNING) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'Deployment running PolydockAppInstance must be in status DEPLOY_RUNNING',
+                $appInstance->status
+            );
+        }
+        
+        $polydockEngine = new Engine(new PolydockLogger());
+        $polydockEngine->processPolydockAppInstance($appInstance);
+
+        if($appInstance->status == PolydockAppInstanceStatus::DEPLOY_RUNNING) {
+            Log::info('PolydockAppInstance is in status ' 
+                . $appInstance->status->value 
+                . ' - dispatching job to poll for deployment running update again in ' 
+                . self::DEPLOY_RUNNING_POLLING_INTERVAL . ' seconds');
+
+            self::dispatch($appInstance->id)->delay(now()->addSeconds(self::DEPLOY_RUNNING_POLLING_INTERVAL));
+        }   
+    }
+
+    public function pollForUpgradeRunningUpdate(PolydockAppInstance $appInstance)
+    {
+        if($appInstance->status != PolydockAppInstanceStatus::UPGRADE_RUNNING) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'Upgrade running PolydockAppInstance must be in status UPGRADE_RUNNING',
+                $appInstance->status
+            );
+        }
+
+        $polydockEngine = new Engine(new PolydockLogger());
+        $polydockEngine->processPolydockAppInstance($appInstance);
+
+        if($appInstance->status == PolydockAppInstanceStatus::UPGRADE_RUNNING) {
+            Log::info('PolydockAppInstance is in status ' 
+                . $appInstance->status->value 
+                . ' - dispatching job to poll for upgrade running update again in ' 
+                . self::UPGRADE_RUNNING_POLLING_INTERVAL . ' seconds');
+
+            self::dispatch($appInstance->id)->delay(now()->addSeconds(self::UPGRADE_RUNNING_POLLING_INTERVAL));
+        }
+    }
+
+    public function pollForHealthUpdate(PolydockAppInstance $appInstance)
+    {
+        if($appInstance->status != PolydockAppInstanceStatus::RUNNING_HEALTHY &&
+            $appInstance->status != PolydockAppInstanceStatus::RUNNING_UNHEALTHY &&
+            $appInstance->status != PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'Health update PolydockAppInstance must be in status RUNNING_HEALTHY, RUNNING_UNHEALTHY, or RUNNING_UNRESPONSIVE',
+                $appInstance->status
+            );
+        }
+
+        $polydockEngine = new Engine(new PolydockLogger());
+        $polydockEngine->processPolydockAppInstance($appInstance);
     }
 } 
