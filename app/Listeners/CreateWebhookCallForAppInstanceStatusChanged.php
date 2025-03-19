@@ -31,6 +31,8 @@ class CreateWebhookCallForAppInstanceStatusChanged
                 'event' => $event->previousStatus === null ? 'app_instance.created' : 'app_instance.status_changed',
                 'payload' => [
                     'app_instance_id' => $event->appInstance->id,
+                    'store_id' => $event->appInstance->storeApp->store->id,
+                    'store_name' => $event->appInstance->storeApp->store->name,
                     'store_app_id' => $event->appInstance->polydock_store_app_id,
                     'store_app_name' => $event->appInstance->storeApp->name,
                     'previous_status' => $event->previousStatus?->value,
