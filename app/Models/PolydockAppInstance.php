@@ -162,6 +162,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'lagoon-deploy-private-key' => $storeApp->lagoon_deploy_private_key,
                     'lagoon-deploy-project-prefix' => $storeApp->lagoon_deploy_project_prefix,
                     'lagoon-project-name' => $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix),
+                    'amazee-ai-backend-region-id' => $storeApp->amazee_ai_backend_region_id,
+                    'available-for-trials' => $storeApp->available_for_trials,
                 ];
 
             } catch (PolydockEngineAppNotFoundException $e) {

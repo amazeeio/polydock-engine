@@ -20,6 +20,7 @@ class PolydockStore extends Model
         'lagoon_deploy_region_id',
         'lagoon_deploy_project_prefix',
         'lagoon_deploy_private_key',
+        'amazee_ai_backend_region_id',
     ];
 
     protected $casts = [

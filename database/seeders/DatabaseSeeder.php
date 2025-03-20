@@ -77,6 +77,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_project_prefix' => 'ft-us',
             'lagoon_deploy_organization_id' => '271',
             'lagoon_deploy_private_key' => $deployKey,
+            'amazee_ai_backend_region_id' => 34,
         ]);
 
         $switzerlandStore = \App\Models\PolydockStore::create([
@@ -87,6 +88,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_project_prefix' => 'ft-ch',
             'lagoon_deploy_organization_id' => '271',
             'lagoon_deploy_private_key' => $deployKey,
+            'amazee_ai_backend_region_id' => 34,
         ]);
 
         // Add webhook to both stores
@@ -106,9 +108,9 @@ class DatabaseSeeder extends Seeder
 
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $usaStore->id,
-            'name' => 'USA Simple amazee.io Node.js',
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
-            'description' => 'A simple amazee.io Node.js app deployed to the USA',
+            'name' => 'USA Simple amazee.io AI Node.js',
+            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
+            'description' => 'A simple amazee.io AI Node.js app deployed to the USA',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://freedomtech.hosting/',
             'support_email' => 'hello@freedomtech.hosting',
@@ -116,7 +118,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 1,
+            'target_unallocated_app_instances' => 2,
         ]);
 
         \App\Models\PolydockStoreApp::create([

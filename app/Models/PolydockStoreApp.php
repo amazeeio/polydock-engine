@@ -45,6 +45,7 @@ class PolydockStoreApp extends Model
         'lagoon_deploy_project_prefix',
         'lagoon_deploy_organization_id',
         'lagoon_deploy_private_key',
+        'amazee_ai_backend_region_id',
         'unallocated_instances_count',
         'needs_more_unallocated_instances',
     ];
@@ -116,6 +117,14 @@ class PolydockStoreApp extends Model
     public function getLagoonDeployOrganizationIdAttribute(): string
     {
         return $this->store->lagoon_deploy_organization_id;
+    }
+
+    /**
+     * Get the Amazee AI backend region ID attribute
+     */
+    public function getAmazeeAiBackendRegionIdAttribute(): string
+    {
+        return $this->store->amazee_ai_backend_region_id;
     }
 
     /**
