@@ -83,6 +83,59 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         '/^.*private[_-]?key.*$/i' // Any variation of private key
     ];
 
+    public static array $pendingStatuses = [
+        PolydockAppInstanceStatus::PENDING_PRE_CREATE,
+        PolydockAppInstanceStatus::PENDING_CREATE,
+        PolydockAppInstanceStatus::PENDING_POST_CREATE,
+        PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
+        PolydockAppInstanceStatus::PENDING_DEPLOY,
+        PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
+        PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
+        PolydockAppInstanceStatus::PENDING_REMOVE,
+        PolydockAppInstanceStatus::PENDING_POST_REMOVE,
+        PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
+        PolydockAppInstanceStatus::PENDING_UPGRADE,
+        PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
+    ];
+
+    public static array $completedStatuses = [
+        PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
+        PolydockAppInstanceStatus::CREATE_COMPLETED,
+        PolydockAppInstanceStatus::POST_CREATE_COMPLETED,
+        PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED,
+        PolydockAppInstanceStatus::DEPLOY_COMPLETED,
+        PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
+        PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED,
+        PolydockAppInstanceStatus::REMOVE_COMPLETED,
+        PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
+        PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED,
+        PolydockAppInstanceStatus::UPGRADE_COMPLETED,
+        PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
+    ];
+
+    public static array $failedStatuses = [
+        PolydockAppInstanceStatus::PRE_CREATE_FAILED,
+        PolydockAppInstanceStatus::CREATE_FAILED,
+        PolydockAppInstanceStatus::POST_CREATE_FAILED,
+        PolydockAppInstanceStatus::PRE_DEPLOY_FAILED,
+        PolydockAppInstanceStatus::DEPLOY_FAILED,
+        PolydockAppInstanceStatus::POST_DEPLOY_FAILED,
+        PolydockAppInstanceStatus::PRE_REMOVE_FAILED,
+        PolydockAppInstanceStatus::REMOVE_FAILED,
+        PolydockAppInstanceStatus::POST_REMOVE_FAILED,
+        PolydockAppInstanceStatus::PRE_UPGRADE_FAILED,
+        PolydockAppInstanceStatus::UPGRADE_FAILED,
+        PolydockAppInstanceStatus::POST_UPGRADE_FAILED,
+    ];
+
+    public static array $pollingStatuses = [
+        PolydockAppInstanceStatus::DEPLOY_RUNNING,
+        PolydockAppInstanceStatus::UPGRADE_RUNNING,
+        PolydockAppInstanceStatus::RUNNING_HEALTHY,
+        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+    ];
+
     /**
      * Boot the model.
      */
@@ -124,7 +177,22 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         static::created(function ($appInstance) {
             // Fire the NEW status event if applicable
             if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
+                Log::info('MODEL: New app instance created', [
+                    'app_instance_id' => $appInstance->id,
+                    'status' => $appInstance->status
+                ]);
                 event(new PolydockAppInstanceCreatedWithNewStatus($appInstance));
+            }
+        });
+
+        static::updated(function ($appInstance) {
+            if ($appInstance->isDirty('status')) {
+                Log::info('MODEL: Status changed for app instance', [
+                    'app_instance_id' => $appInstance->id,
+                    'previous_status' => $appInstance->getOriginal('status'),
+                    'new_status' => $appInstance->status
+                ]);
+                event(new PolydockAppInstanceStatusChanged($appInstance, $appInstance->getOriginal('status')));
             }
         });
     }
@@ -198,12 +266,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             if(!empty($statusMessage)) {
                 $this->setStatusMessage($statusMessage);
             }
-
-            $this->save();
-            
-            if($this->status !== PolydockAppInstanceStatus::NEW) {
-                event(new PolydockAppInstanceStatusChanged($this, $previousStatus));
-            }
         } else {
             Log::info('Setting status of app instance to same status', [
                 'app_instance_id' => $this->id,
@@ -213,7 +275,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
             if(!empty($statusMessage)) {
                 $this->setStatusMessage($statusMessage);
-                $this->save();
             }
         }
 

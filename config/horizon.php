@@ -182,7 +182,17 @@ return [
     'defaults' => [
         'supervisor-1' => [
             'connection' => 'redis',
-            'queue' => ['default','unallocated-instance-creation'],
+            'queue' => [
+                'default',
+                'unallocated-instance-creation',
+                'polydock-app-instance-processing-new',
+                'polydock-app-instance-processing-create',
+                'polydock-app-instance-processing-deploy',
+                'polydock-app-instance-processing-remove',
+                'polydock-app-instance-processing-health',  
+                'polydock-app-instance-processing-upgrade',
+                'polydock-app-instance-processing-progress-to-next-stage'
+            ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
@@ -208,7 +218,15 @@ return [
         ],
         'supervisor-3' => [
             'connection' => 'redis',
-            'queue' => ['polydock-app-instance-processing'],
+            'queue' => [
+                'polydock-app-instance-processing-new',
+                'polydock-app-instance-processing-create',
+                'polydock-app-instance-processing-deploy',
+                'polydock-app-instance-processing-remove',
+                'polydock-app-instance-processing-health',  
+                'polydock-app-instance-processing-upgrade',
+                'polydock-app-instance-processing-progress-to-next-stage'
+            ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,

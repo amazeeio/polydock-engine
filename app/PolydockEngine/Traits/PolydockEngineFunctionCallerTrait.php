@@ -65,6 +65,7 @@ trait PolydockEngineFunctionCallerTrait
             
             $polydockApp->info($appFunctionName . ' starting', $outputContext);
             $polydockApp->{$appFunctionName}($appInstance);
+            $appInstance->save();
             $polydockApp->info($appFunctionName . ' completed without exception', $outputContext);
 
             $polydockApp->info($appFunctionName . ' Status-Check: after-processing', $outputContext);
@@ -76,7 +77,7 @@ trait PolydockEngineFunctionCallerTrait
             $polydockApp->error($appFunctionName . ' failed - status flow exception', $outputContext + ['exception' => $e]);
             if($appInstance->getStatus() !== $failedStatus) {
                 $polydockApp->info('Forcing status to ' . $failedStatus->value, $outputContext);
-                $appInstance->setStatus($failedStatus);
+                $appInstance->setStatus($failedStatus)->save();
             }
             return false;
         }
@@ -84,11 +85,11 @@ trait PolydockEngineFunctionCallerTrait
             $polydockApp->error($appFunctionName . ' failed - process exception', $outputContext + ['exception' => $e]);
             if($appInstance->getStatus() !== $failedStatus) {
                 $polydockApp->info('Forcing status to ' . $failedStatus->value, $outputContext);
-                $appInstance->setStatus($failedStatus);
+                $appInstance->setStatus($failedStatus)->save();
             }
         } catch(Exception $e) {
             $polydockApp->error($appFunctionName . ' failed - unknown exception', $outputContext + ['exception' => $e]);
-            $appInstance->setStatus($failedStatus);
+            $appInstance->setStatus($failedStatus)->save();
         }
 
         return false;

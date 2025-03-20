@@ -4,6 +4,21 @@ namespace App\Listeners;
 
 use App\Events\PolydockAppInstanceStatusChanged;
 use App\Jobs\ProcessPolydockAppInstanceJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Create\CreateJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Create\PostCreateJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Create\PreCreateJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Deploy\DeployJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Deploy\PostDeployJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Deploy\PreDeployJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\ProgressToNextStageJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Remove\PostRemoveJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Remove\PreRemoveJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Remove\RemoveJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\PostUpgradeJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\PreUpgradeJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\UpgradeJob;
+use App\Models\PolydockAppInstance;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Support\Facades\Log;
 
 class ProcessPolydockAppInstanceStatusChange
@@ -18,9 +33,118 @@ class ProcessPolydockAppInstanceStatusChange
             'store_app_id' => $event->appInstance->polydock_store_app_id,
             'store_app_name' => $event->appInstance->storeApp->name,
             'status' => $event->appInstance->status->value,
+            'previous_status' => $event->previousStatus->value,
         ]);
 
-        ProcessPolydockAppInstanceJob::dispatch($event->appInstance->id)
-            ->onQueue('polydock-app-instance-processing');
+        if(in_array($event->appInstance->status, PolydockAppInstance::$completedStatuses)) {
+            ProgressToNextStageJob::dispatch($event->appInstance->id)
+                ->onQueue('polydock-app-instance-processing-progress-to-next-stage');;
+        } else {
+            $this->switchOnStatus($event);
+        }
+    }
+
+    public function switchOnStatus(PolydockAppInstanceStatusChanged $event) {
+        switch($event->appInstance->status) {
+            case PolydockAppInstanceStatus::PENDING_PRE_CREATE:
+                Log::info('Dispatching PreCreateJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                PreCreateJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-create');
+                break;
+            case PolydockAppInstanceStatus::PENDING_CREATE:
+                Log::info('Dispatching CreateJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                CreateJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-create');
+                break;
+            case PolydockAppInstanceStatus::PENDING_POST_CREATE:
+                Log::info('Dispatching PostCreateJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                PostCreateJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-create');
+                break;
+            case PolydockAppInstanceStatus::PENDING_PRE_DEPLOY:
+                Log::info('Dispatching PreDeployJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                PreDeployJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-deploy');
+                break;
+            case PolydockAppInstanceStatus::PENDING_DEPLOY:
+                Log::info('Dispatching DeployJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                DeployJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-deploy');
+                break;
+            case PolydockAppInstanceStatus::PENDING_POST_DEPLOY:
+                Log::info('Dispatching PostDeployJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                PostDeployJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-deploy');
+                break;
+            case PolydockAppInstanceStatus::PENDING_PRE_REMOVE:
+                Log::info('Dispatching PreRemoveJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                PreRemoveJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-remove');
+                break;
+            case PolydockAppInstanceStatus::PENDING_REMOVE:
+                Log::info('Dispatching RemoveJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                RemoveJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-remove');
+                break;
+            case PolydockAppInstanceStatus::PENDING_POST_REMOVE:
+                Log::info('Dispatching PostRemoveJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                PostRemoveJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-remove');
+                break;
+            case PolydockAppInstanceStatus::PENDING_PRE_UPGRADE:
+                Log::info('Dispatching PreUpgradeJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                PreUpgradeJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-upgrade');
+                break;
+            case PolydockAppInstanceStatus::PENDING_UPGRADE:
+                Log::info('Dispatching UpgradeJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                UpgradeJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-upgrade');
+                break;
+            case PolydockAppInstanceStatus::PENDING_POST_UPGRADE:
+                Log::info('Dispatching PostUpgradeJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                PostUpgradeJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-upgrade');
+                break;
+            default:
+                Log::warning('No job to dispatch for status ' . $event->appInstance->status->value);
+                break;
+        }
     }
 } 
