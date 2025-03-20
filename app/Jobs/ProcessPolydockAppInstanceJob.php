@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\PolydockAppInstance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -13,6 +14,7 @@ use App\PolydockEngine\Engine;
 use App\PolydockEngine\PolydockLogger;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
+use Illuminate\Queue\Middleware\WithoutOverlapping;
 
 class ProcessPolydockAppInstanceJob implements ShouldQueue
 {
@@ -73,6 +75,13 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
         PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
     ];
+
+    /**
+     * The number of seconds after which the job's unique lock will be released.
+     *
+     * @var int
+     */
+    public $uniqueFor = 3600; // Lock for 1 hour
 
     /**
      * Create a new job instance.
@@ -263,7 +272,9 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
                 . ' - dispatching job to poll for deployment running update again in ' 
                 . self::DEPLOY_RUNNING_POLLING_INTERVAL . ' seconds');
 
-            self::dispatch($appInstance->id)->delay(now()->addSeconds(self::DEPLOY_RUNNING_POLLING_INTERVAL));
+            self::dispatch($appInstance->id)
+                ->delay(now()->addSeconds(self::DEPLOY_RUNNING_POLLING_INTERVAL))
+                ->onQueue('polydock-app-instance-processing');
         }   
     }
 
@@ -285,7 +296,9 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
                 . ' - dispatching job to poll for upgrade running update again in ' 
                 . self::UPGRADE_RUNNING_POLLING_INTERVAL . ' seconds');
 
-            self::dispatch($appInstance->id)->delay(now()->addSeconds(self::UPGRADE_RUNNING_POLLING_INTERVAL));
+            self::dispatch($appInstance->id)
+                ->delay(now()->addSeconds(self::UPGRADE_RUNNING_POLLING_INTERVAL))
+                ->onQueue('polydock-app-instance-processing');
         }
     }
 
@@ -302,5 +315,25 @@ class ProcessPolydockAppInstanceJob implements ShouldQueue
 
         $polydockEngine = new Engine(new PolydockLogger());
         $polydockEngine->processPolydockAppInstance($appInstance);
+    }
+
+    /**
+     * Get the middleware the job should pass through.
+     *
+     * @return array
+     */
+    public function middleware()
+    {
+        $appInstance = PolydockAppInstance::find($this->appInstanceId)->refresh();
+        $uniqueId = "app-instance-{$appInstance->id}-status-{$appInstance->status->value}";
+
+        Log::info('Unique ID for job: ' . $uniqueId);
+
+        return [
+            (new WithoutOverlapping($uniqueId))
+                ->expireAfter(5)  // 5 seconds
+                ->shared() // Use shared lock across different queues
+                ->dontRelease()
+        ];
     }
 } 

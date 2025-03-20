@@ -13,7 +13,7 @@ class ProcessPolydockAppInstanceStatusChange
      */
     public function handle(PolydockAppInstanceStatusChanged $event): void
     {
-        Log::info('Dispatching ProcessPolydockAppInstanceJob', [
+        Log::info('Dispatching ProcessPolydockAppInstanceJob via StatusChanged ('.$event->appInstance->status->value.')', [
             'app_instance_id' => $event->appInstance->id,
             'store_app_id' => $event->appInstance->polydock_store_app_id,
             'store_app_name' => $event->appInstance->storeApp->name,
