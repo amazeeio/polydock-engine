@@ -135,6 +135,7 @@ trait PolydockEngineFunctionCallerTrait
             
             $polydockApp->info($appFunctionName . ' starting', $outputContext);
             $polydockApp->{$appFunctionName}($appInstance);
+            $appInstance->save();
             $polydockApp->info($appFunctionName . ' completed without exception', $outputContext);
 
             $polydockApp->info($appFunctionName . ' Status-Check: after-processing', $outputContext);

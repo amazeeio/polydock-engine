@@ -23,8 +23,16 @@ class PreRemoveJob extends BaseJob implements ShouldQueue
         if(!$appInstance) {
             throw new \Exception('Failed to process PolydockAppInstance in ' . class_basename(self::class) . ' - not found');
         }
+        
+        if ($appInstance->status != PolydockAppInstanceStatus::PENDING_PRE_REMOVE) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'PreRemoveJob must be in status PENDING_PRE_REMOVE',
+                $appInstance->status
+            );
+        }
 
-        Log::info("TODO: Implement " . class_basename(self::class));
+        $polydockEngine = new Engine(new PolydockLogger());
+        $polydockEngine->processPolydockAppInstance($appInstance);
 
         $this->polydockJobDone();
     }

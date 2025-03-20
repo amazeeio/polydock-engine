@@ -19,12 +19,21 @@ class PostDeployJob extends BaseJob implements ShouldQueue
     public function handle(): void
     {
         $this->polydockJobStart();
+
         $appInstance = $this->appInstance;
         if(!$appInstance) {
             throw new \Exception('Failed to process PolydockAppInstance in ' . class_basename(self::class) . ' - not found');
         }
 
-        Log::info("TODO: Implement " . class_basename(self::class));
+        if ($appInstance->status != PolydockAppInstanceStatus::PENDING_POST_DEPLOY) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'PostDeployJob must be in status PENDING_POST_DEPLOY',
+                $appInstance->status
+            );
+        }
+
+        $polydockEngine = new Engine(new PolydockLogger());
+        $polydockEngine->processPolydockAppInstance($appInstance);
 
         $this->polydockJobDone();
     }
