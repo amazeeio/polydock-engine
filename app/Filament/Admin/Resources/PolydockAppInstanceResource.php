@@ -10,15 +10,20 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Infolist;
+use App\Enums\PolydockAppInstanceStatusForEngine;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Filament\Admin\Resources\UserGroupResource;
 
 class PolydockAppInstanceResource extends Resource
 {
     protected static ?string $model = PolydockAppInstance::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+
+    protected static ?string $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'App Instances';
 
@@ -48,35 +53,70 @@ class PolydockAppInstanceResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('storeApp.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('userGroup.name')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('app_type')
+                TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('status_message')
+                TextColumn::make('storeApp.name')
+                    ->label('Store App')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
+                TextColumn::make('userGroup.name')
+                    ->label('User Group')
+                    ->searchable(),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
+                    ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
+                    ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel()),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
             ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                \Filament\Infolists\Components\Section::make('Instance Details')
+                    ->schema([
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('name')
+                                    ->label('Instance Name'),
+                                \Filament\Infolists\Components\TextEntry::make('created_at')
+                                    ->dateTime()
+                                    ->icon('heroicon-m-calendar')
+                                    ->iconColor('gray'),
+                            ]),
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('status')
+                                    ->badge()
+                                    ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
+                                    ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
+                                    ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel()),
+                                \Filament\Infolists\Components\TextEntry::make('status_message')
+                                    ->label('Status Message'),
+                            ]),
+                    ])
+                    ->columnSpan(2),
+
+                \Filament\Infolists\Components\Section::make('App & Group')
+                    ->schema([
+                        \Filament\Infolists\Components\TextEntry::make('storeApp.name')
+                            ->label('Store App')
+                            ->icon('heroicon-m-squares-2x2')
+                            ->iconColor('primary'),
+                        \Filament\Infolists\Components\TextEntry::make('userGroup.name')
+                            ->label('User Group')
+                            ->url(fn ($record) => UserGroupResource::getUrl('view', ['record' => $record->userGroup]))
+                            ->openUrlInNewTab()
+                            ->icon('heroicon-m-user-group')
+                            ->iconColor('success'),
+                    ])
+                    ->columnSpan(1),
+            ])
+            ->columns(3);
     }
 
     public static function getRelations(): array
@@ -86,11 +126,16 @@ class PolydockAppInstanceResource extends Resource
         ];
     }
 
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListPolydockAppInstances::route('/'),
-            'create' => Pages\CreatePolydockAppInstance::route('/create'),
+            'view' => Pages\ViewPolydockAppInstance::route('/{record}'),
             'edit' => Pages\EditPolydockAppInstance::route('/{record}/edit'),
         ];
     }

@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Infolist;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 
 class UserGroupResource extends Resource
 {
@@ -62,6 +63,7 @@ class UserGroupResource extends Resource
     {
         return [
             RelationManagers\UsersRelationManager::class,
+            RelationManagers\AppInstancesRelationManager::class,
         ];
     }
 
@@ -152,6 +154,11 @@ class UserGroupResource extends Resource
                                     ->state(fn ($record) => $record->appInstancesStageRunning()->count())
                                     ->icon('heroicon-m-play-circle')
                                     ->iconColor('success'),
+                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_failed_count')
+                                    ->label('Stage Failed')
+                                    ->state(fn ($record) => $record->appInstancesFailed()->count())
+                                    ->icon('heroicon-m-x-circle')
+                                    ->iconColor('danger'),
                             ]),
                     ])
                     ->columnSpan(1),

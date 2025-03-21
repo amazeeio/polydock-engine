@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f5120744a2bf51f3c4afc094137b9936",
+    "content-hash": "c7a70875299c7b93ceec84955fb68f83",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1498,17 +1498,20 @@
         },
         {
             "name": "freedomtech-hosting/polydock-app",
-            "version": "v0.0.18",
+            "version": "v0.0.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-app.git",
-                "reference": "59e0ff6939557f23d1c1e912cde5f3a2304fa584"
+                "reference": "cfa7e1aa7b91f5b81716791393832a66a9a6237e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app/zipball/59e0ff6939557f23d1c1e912cde5f3a2304fa584",
-                "reference": "59e0ff6939557f23d1c1e912cde5f3a2304fa584",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app/zipball/cfa7e1aa7b91f5b81716791393832a66a9a6237e",
+                "reference": "cfa7e1aa7b91f5b81716791393832a66a9a6237e",
                 "shasum": ""
+            },
+            "require": {
+                "filament/support": "^3.3"
             },
             "type": "library",
             "autoload": {
@@ -1529,28 +1532,28 @@
             "description": "Library for Polydock Apps",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-app/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-app/tree/v0.0.18"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app/tree/v0.0.22"
             },
-            "time": "2025-03-09T21:37:09+00:00"
+            "time": "2025-03-21T21:48:15+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "v0.0.50",
+            "version": "v0.0.55",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic.git",
-                "reference": "e0775047cd1af866922c0c9c2f5115c00737bea7"
+                "reference": "5830d09910c3ce6a77a029e70a1360c06235cafa"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/e0775047cd1af866922c0c9c2f5115c00737bea7",
-                "reference": "e0775047cd1af866922c0c9c2f5115c00737bea7",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/5830d09910c3ce6a77a029e70a1360c06235cafa",
+                "reference": "5830d09910c3ce6a77a029e70a1360c06235cafa",
                 "shasum": ""
             },
             "require": {
                 "freedomtech-hosting/ft-lagoon-php": "^0.0.3",
                 "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.0.4",
-                "freedomtech-hosting/polydock-app": "^0.0.18"
+                "freedomtech-hosting/polydock-app": "^0.0.22"
             },
             "type": "library",
             "autoload": {
@@ -1571,9 +1574,9 @@
             "description": "Polydock App - amazee.io Generic",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.50"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.55"
             },
-            "time": "2025-03-21T00:40:24+00:00"
+            "time": "2025-03-21T21:49:43+00:00"
         },
         {
             "name": "fruitcake/php-cors",
@@ -5298,16 +5301,16 @@
         },
         {
             "name": "spatie/laravel-package-tools",
-            "version": "1.19.0",
+            "version": "1.91.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/spatie/laravel-package-tools.git",
-                "reference": "1c9c30ac6a6576b8d15c6c37b6cf23d748df2faa"
+                "reference": "b0b509b9b01d77caa431ce9af3a706bc678e09c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/1c9c30ac6a6576b8d15c6c37b6cf23d748df2faa",
-                "reference": "1c9c30ac6a6576b8d15c6c37b6cf23d748df2faa",
+                "url": "https://api.github.com/repos/spatie/laravel-package-tools/zipball/b0b509b9b01d77caa431ce9af3a706bc678e09c9",
+                "reference": "b0b509b9b01d77caa431ce9af3a706bc678e09c9",
                 "shasum": ""
             },
             "require": {
@@ -5346,7 +5349,7 @@
             ],
             "support": {
                 "issues": "https://github.com/spatie/laravel-package-tools/issues",
-                "source": "https://github.com/spatie/laravel-package-tools/tree/1.19.0"
+                "source": "https://github.com/spatie/laravel-package-tools/tree/1.91.1"
             },
             "funding": [
                 {
@@ -5354,7 +5357,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-02-06T14:58:20+00:00"
+            "time": "2025-03-21T09:50:49+00:00"
         },
         {
             "name": "spatie/ssh",

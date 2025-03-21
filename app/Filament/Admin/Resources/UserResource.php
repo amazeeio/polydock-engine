@@ -14,6 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Infolist;
+use App\Filament\Admin\Resources\UserGroupResource;
 
 class UserResource extends Resource
 {
@@ -104,18 +105,23 @@ class UserResource extends Resource
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('first_name')
-                                    ->label('First Name'),
-                                \Filament\Infolists\Components\TextEntry::make('last_name')
-                                    ->label('Last Name'),
+                                \Filament\Infolists\Components\TextEntry::make('name')
+                                    ->label('Name'),
+                                \Filament\Infolists\Components\TextEntry::make('email')
+                                    ->icon('heroicon-m-envelope')
+                                    ->iconColor('primary'),
                             ]),
-                        \Filament\Infolists\Components\TextEntry::make('email')
-                            ->icon('heroicon-m-envelope')
-                            ->iconColor('primary'),
-                        \Filament\Infolists\Components\TextEntry::make('created_at')
-                            ->dateTime()
-                            ->icon('heroicon-m-calendar')
-                            ->iconColor('gray'),
+                    \Filament\Infolists\Components\Grid::make(2)
+                        ->schema([
+                            \Filament\Infolists\Components\TextEntry::make('created_at')
+                                ->dateTime()
+                                ->icon('heroicon-m-calendar')
+                                ->iconColor('gray'),
+                            \Filament\Infolists\Components\TextEntry::make('updated_at')
+                                ->dateTime()
+                                ->icon('heroicon-m-calendar')
+                                ->iconColor('gray'),
+                        ])
                     ])
                     ->columnSpan(2),
 
@@ -130,7 +136,8 @@ class UserResource extends Resource
                             ->label('Member of')
                             ->listWithLineBreaks()
                             ->bulleted()
-                            ->state(fn ($record) => $record->groups->pluck('name'))
+                            ->url(fn ($record, $state) => UserGroupResource::getUrl('view', ['record' => $record->groups->first()]))
+                            ->openUrlInNewTab()
                     ])
                     ->columnSpan(1),
             ])

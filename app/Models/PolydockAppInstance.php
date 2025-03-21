@@ -137,22 +137,40 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     ];
 
     public static array $stageCreateStatuses = [
+        PolydockAppInstanceStatus::NEW,
         PolydockAppInstanceStatus::PENDING_PRE_CREATE,
         PolydockAppInstanceStatus::PENDING_CREATE,
         PolydockAppInstanceStatus::PENDING_POST_CREATE,
+        PolydockAppInstanceStatus::PRE_CREATE_RUNNING,
+        PolydockAppInstanceStatus::CREATE_RUNNING,
+        PolydockAppInstanceStatus::POST_CREATE_RUNNING,
+        PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
+        PolydockAppInstanceStatus::CREATE_COMPLETED,
+        PolydockAppInstanceStatus::POST_CREATE_COMPLETED,
     ];
 
     public static array $stageDeployStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
         PolydockAppInstanceStatus::PENDING_DEPLOY,
         PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
+        PolydockAppInstanceStatus::PRE_DEPLOY_RUNNING,
         PolydockAppInstanceStatus::DEPLOY_RUNNING,
+        PolydockAppInstanceStatus::POST_DEPLOY_RUNNING,
+        PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED,
+        PolydockAppInstanceStatus::DEPLOY_COMPLETED,
+        PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
     ];  
 
     public static array $stageRemoveStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
         PolydockAppInstanceStatus::PENDING_REMOVE,
         PolydockAppInstanceStatus::PENDING_POST_REMOVE,
+        PolydockAppInstanceStatus::PRE_REMOVE_RUNNING,
+        PolydockAppInstanceStatus::REMOVE_RUNNING,
+        PolydockAppInstanceStatus::POST_REMOVE_RUNNING,
+        PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED,
+        PolydockAppInstanceStatus::REMOVE_COMPLETED,
+        PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
     ];  
 
     public static array $stageUpgradeStatuses = [
@@ -160,15 +178,19 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PENDING_UPGRADE,
         PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
         PolydockAppInstanceStatus::UPGRADE_RUNNING,
+        PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED,
+        PolydockAppInstanceStatus::UPGRADE_COMPLETED,
+        PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
+        PolydockAppInstanceStatus::PRE_UPGRADE_RUNNING,
+        PolydockAppInstanceStatus::UPGRADE_RUNNING,
+        PolydockAppInstanceStatus::POST_UPGRADE_RUNNING,
     ];  
     
     public static array $stageRunningStatuses = [
         PolydockAppInstanceStatus::RUNNING_HEALTHY,
         PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
-    ];
-    
-    
+    ];    
 
     /**
      * Boot the model.
@@ -188,6 +210,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 // Set the app type using the store app's class
                 $model->setAppType($storeApp->polydock_app_class);
 
+                $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
+
                 $model->data = [
                     'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
                     'lagoon-deploy-branch' => $storeApp->lagoon_deploy_branch,
@@ -195,7 +219,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'lagoon-deploy-region-id' => $storeApp->lagoon_deploy_region_id,
                     'lagoon-deploy-private-key' => $storeApp->lagoon_deploy_private_key,
                     'lagoon-deploy-project-prefix' => $storeApp->lagoon_deploy_project_prefix,
-                    'lagoon-project-name' => $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix),
+                    'lagoon-project-name' => $model->name,
                     'amazee-ai-backend-region-id' => $storeApp->amazee_ai_backend_region_id,
                     'available-for-trials' => $storeApp->available_for_trials,
                     'lagoon-generate-app-admin-username' => $model->generateUniqueUsername(),
@@ -234,7 +258,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             }
         });
     }
-
+    
     /**
      * Set the app for the app instance
      * @param PolydockAppInterface $app The app to set

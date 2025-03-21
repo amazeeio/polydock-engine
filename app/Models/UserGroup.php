@@ -3,10 +3,12 @@
 namespace App\Models;
 
 use App\Enums\UserGroupRoleEnum;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 
 class UserGroup extends Model
 {
@@ -171,5 +173,61 @@ class UserGroup extends Model
                 $userGroup->slug = $slug;
             }
         });
+    }
+
+    public function getNewAppInstanceForThisApp(PolydockStoreApp $storeApp): PolydockAppInstance
+    {
+        return self::getNewAppInstanceForThisAppForThisGroup($storeApp, $this);
+    }
+
+    public static function getNewAppInstanceForThisAppForThisGroup(PolydockStoreApp $storeApp, UserGroup $userGroup): PolydockAppInstance
+    {
+        Log::info('Creating unallocated instance', [
+            'app_id' => $storeApp->id,
+            'app_name' => $storeApp->name,
+        ]);
+
+        $allocationLock = Str::uuid()->toString();
+        // Attempt to lock a single unallocated instance for this store app
+        $lockedRows = PolydockAppInstance::where('polydock_store_app_id', $storeApp->id)
+            ->whereNull('user_group_id')
+            ->whereNull('allocation_lock')
+            ->limit(1)
+            ->update(['allocation_lock' => $allocationLock, 'user_group_id' => $userGroup->id]);
+
+        // Check if we got a lock by querying for the instance with our lock
+        $lockedInstance = PolydockAppInstance::where('polydock_store_app_id', $storeApp->id)
+            ->where('allocation_lock', $allocationLock)
+            ->first();
+
+        if ($lockedInstance) {
+            Log::info('Grabbed unallocated instance via lock', [
+                'app_id' => $storeApp->id,
+                'app_name' => $storeApp->name,
+                'group_id' => $userGroup->id,
+                'group_name' => $userGroup->name,
+                'app_instance_id' => $lockedInstance->id,
+                'allocation_lock' => $allocationLock
+            ]); 
+
+            return $lockedInstance;
+        } else {
+            $appInstance = PolydockAppInstance::create([
+                'polydock_store_app_id' => $storeApp->id,
+                'user_group_id' => $userGroup->id,
+                'allocation_lock' => $allocationLock,
+                'status' => PolydockAppInstanceStatus::PENDING_PRE_CREATE,
+                'config' => [], // Empty config for now
+            ]);
+
+            Log::info('Allocated app instance created for group', [
+                'app_id' => $storeApp->id,
+                'app_name' => $storeApp->name,
+                'group_id' => $userGroup->id,
+                'group_name' => $userGroup->name,
+            ]);
+            
+            return $appInstance;
+        }
     }
 }

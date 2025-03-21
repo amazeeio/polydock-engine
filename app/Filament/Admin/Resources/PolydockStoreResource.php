@@ -60,15 +60,20 @@ class PolydockStoreResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\IconColumn::make('listed_in_marketplace')
+                    ->label('Listed')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('lagoon_deploy_region_id')
+                    ->label('Deploy Region')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('lagoon_deploy_project_prefix')
+                    ->label('Project Prefix')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amazee_ai_backend_region_id')
+                    ->label('AI Region')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('lagoon_deploy_organization_id')
+                    ->label('Deploy Org')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
