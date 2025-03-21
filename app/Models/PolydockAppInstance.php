@@ -164,6 +164,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'lagoon-project-name' => $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix),
                     'amazee-ai-backend-region-id' => $storeApp->amazee_ai_backend_region_id,
                     'available-for-trials' => $storeApp->available_for_trials,
+                    'lagoon-generate-app-admin-username' => $model->generateUniqueUsername(),
+                    'lagoon-generate-app-admin-password' => $model->generateUniquePassword()
                 ];
 
             } catch (PolydockEngineAppNotFoundException $e) {
@@ -395,11 +397,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
-     * Generate a unique project name using an animal, verb and UUID
-     * @param string $prefix The prefix for the project name
-     * @return string The generated unique name
+     * Pick a random animal name
      */
-    public function generateUniqueProjectName(string $prefix) : string 
+    private function pickAnimal(): string
     {
         $animals = [
             'Lion', 'Tiger', 'Bear', 'Wolf', 'Fox', 'Eagle', 'Hawk', 'Dolphin', 'Whale', 'Elephant',
@@ -411,19 +411,17 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             'Deer', 'Moose', 'Elk', 'Bison', 'Buffalo', 'Antelope', 'Gazelle', 'Camel', 'Llama', 'Alpaca',
             'Raccoon', 'Badger', 'Beaver', 'Otter', 'Meerkat', 'Mongoose', 'Weasel', 'Ferret', 'Skunk', 'Armadillo',
             'Sloth', 'Orangutan', 'Chimpanzee', 'Baboon', 'Lemur', 'Gibbon', 'Marmoset', 'Tamarin', 'Capuchin', 'Macaque',
-            'Platypus', 'Echidna', 'Opossum', 'Wombat', 'Tasmanian', 'Dingo', 'Quokka', 'Numbat', 'Wallaby', 'Bilby',
-            'Hamster', 'Hedgehog', 'Rabbit', 'Mouse', 'Rat', 'Squirrel', 'Chipmunk', 'Mole', 'Vole', 'Gopher',
-            'Falcon', 'Vulture', 'Raven', 'Crow', 'Magpie', 'Pigeon', 'Dove', 'Swan', 'Goose', 'Duck',
-            'Seal', 'Walrus', 'Penguin', 'Polar Bear', 'Arctic Fox', 'Narwhal', 'Beluga', 'Orca', 'Puffin', 'Albatross',
-            'Manta Ray', 'Barracuda', 'Piranha', 'Clownfish', 'Angelfish', 'Lionfish', 'Moray Eel', 'Seahorse', 'Cuttlefish', 'Nautilus',
-            'Praying Mantis', 'Grasshopper', 'Cricket', 'Cicada', 'Firefly', 'Moth', 'Wasp', 'Hornet', 'Bee', 'Caterpillar',
-            'Pangolin', 'Anteater', 'Aardvark', 'Tapir', 'Okapi', 'Capybara', 'Peccary', 'Coati', 'Binturong', 'Civet',
-            'Mandrill', 'Proboscis', 'Langur', 'Howler', 'Spider Monkey', 'Siamang', 'Tarsier', 'Galago', 'Loris', 'Aye-aye',
-            'Dugong', 'Manatee', 'Porpoise', 'Dolphin', 'Pilot Whale', 'Sperm Whale', 'Blue Whale', 'Humpback', 'Right Whale', 'Bowhead',
-            'Komodo Dragon', 'Monitor Lizard', 'Bearded Dragon', 'Skink', 'Gila Monster', 'Basilisk', 'Tuatara', 'Thorny Devil', 'Frilled Neck', 'Horned Lizard',
-            'Red Panda', 'Sun Bear', 'Spectacled Bear', 'Sloth Bear', 'Moon Bear', 'Grizzly', 'Black Bear', 'Brown Bear', 'Kodiak', 'Cave Bear'
+            'Platypus', 'Echidna', 'Opossum', 'Wombat', 'Tasmanian', 'Dingo', 'Quokka', 'Numbat', 'Wallaby', 'Bilby'
         ];
-        
+
+        return str_replace(' ', '', $animals[array_rand($animals)]);
+    }
+
+    /**
+     * Pick a random verb
+     */
+    private function pickVerb(): string
+    {
         $verbs = [
             'Sleeping', 'Running', 'Jumping', 'Flying', 'Swimming',
             'Dancing', 'Singing', 'Playing', 'Hunting', 'Dreaming',
@@ -437,14 +435,37 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             'Stretching', 'Yawning', 'Resting', 'Lounging', 'Relaxing'
         ];
 
+        return $verbs[array_rand($verbs)];
+    }
+
+    /**
+     * Pick a random color
+     */
+    private function pickColor(): string
+    {
         $colors = [
-            'Red', 'Blue', 'Green', 'Yellow', 'Purple', 'Orange', 'Silver', 'Gold'
+            'Red', 'Blue', 'Green', 'Yellow', 'Purple', 
+            'Orange', 'Silver', 'Gold', 'Crimson', 'Azure',
+            'Emerald', 'Amber', 'Violet', 'Coral', 'Indigo'
         ];
-        
-        $animal = str_replace(' ', '', $animals[array_rand($animals)]);
-        $verb = $verbs[array_rand($verbs)];
-        $color = $colors[array_rand($colors)];
-        return strtolower($prefix . '-' . $verb . '-' . $color . '-' . $animal . '-' . uniqid());
+
+        return $colors[array_rand($colors)]; 
+    }
+
+    /**
+     * Generate a unique project name using an animal, verb and UUID
+     * @param string $prefix The prefix for the project name
+     * @return string The generated unique name
+     */
+    public function generateUniqueProjectName(string $prefix) : string 
+    {
+        return strtolower(
+            $prefix . '-' . 
+            $this->pickVerb() . '-' . 
+            $this->pickColor() . '-' . 
+            $this->pickAnimal() . '-' . 
+            uniqid()
+        );
     }
     
     /**
@@ -473,5 +494,46 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function variables()
     {
         return $this->morphMany(PolydockVariable::class, 'variabled');
+    }
+
+    /**
+     * Generate a unique password using either color-animal or verb-animal pattern
+     * @return string The generated password
+     */
+    public function generateUniquePassword(): string
+    {
+        // Randomly choose between color-animal or verb-animal pattern
+        if (rand(0, 1) === 0) {
+            return strtolower($this->pickColor() . $this->pickAnimal());
+        } else {
+            return strtolower($this->pickVerb() .  $this->pickAnimal());
+        }
+    }
+
+    /**
+     * Pick a random username prefix
+     */
+    private function pickUsernamePrefix(): string
+    {
+        $prefixes = [
+            'admin',
+            'demo',
+            'trial',
+            'test',
+            'user',
+            'guest',
+            'preview'
+        ];
+
+        return $prefixes[array_rand($prefixes)];
+    }
+
+    /**
+     * Generate a unique username
+     * @return string The generated username
+     */
+    public function generateUniqueUsername(): string
+    {
+        return strtolower($this->pickUsernamePrefix() . rand(1000, 9999));
     }
 }
