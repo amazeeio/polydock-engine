@@ -41,11 +41,11 @@ class PolydockStoreApp extends Model
      * @var array
      */
     protected $appends = [
-        'lagoon_deploy_region_id',
+        'lagoon_deploy_region_id_ext',
         'lagoon_deploy_project_prefix',
-        'lagoon_deploy_organization_id',
+        'lagoon_deploy_organization_id_ext',
         'lagoon_deploy_private_key',
-        'amazee_ai_backend_region_id',
+        'amazee_ai_backend_region_id_ext',
         'unallocated_instances_count',
         'needs_more_unallocated_instances',
     ];
@@ -90,9 +90,9 @@ class PolydockStoreApp extends Model
     /**
      * Get the Lagoon deploy region ID attribute
      */
-    public function getLagoonDeployRegionIdAttribute(): string
+    public function getLagoonDeployRegionIdExtAttribute(): string
     {
-        return $this->store->lagoon_deploy_region_id;
+        return $this->store->lagoon_deploy_region_id_ext;
     }
 
     /**
@@ -114,17 +114,17 @@ class PolydockStoreApp extends Model
     /**
      * Get the Lagoon deploy organization ID attribute
      */
-    public function getLagoonDeployOrganizationIdAttribute(): string
+    public function getLagoonDeployOrganizationIdExtAttribute(): string
     {
-        return $this->store->lagoon_deploy_organization_id;
+        return $this->store->lagoon_deploy_organization_id_ext;
     }
 
     /**
      * Get the Amazee AI backend region ID attribute
      */
-    public function getAmazeeAiBackendRegionIdAttribute(): string
+    public function getAmazeeAiBackendRegionIdExtAttribute(): string
     {
-        return $this->store->amazee_ai_backend_region_id;
+        return $this->store->amazee_ai_backend_region_id_ext;
     }
 
     /**

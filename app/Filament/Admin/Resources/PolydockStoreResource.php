@@ -36,7 +36,7 @@ class PolydockStoreResource extends Resource
                     ->required(),
                 Forms\Components\Toggle::make('listed_in_marketplace')
                     ->required(),
-                Forms\Components\TextInput::make('lagoon_deploy_region_id')
+                Forms\Components\TextInput::make('lagoon_deploy_region_id_ext')
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('lagoon_deploy_project_prefix')
@@ -44,9 +44,9 @@ class PolydockStoreResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Textarea::make('lagoon_deploy_private_key')
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('amazee_ai_backend_region_id')
+                Forms\Components\TextInput::make('amazee_ai_backend_region_id_ext')
                     ->numeric(),
-                Forms\Components\TextInput::make('lagoon_deploy_organization_id')
+                Forms\Components\TextInput::make('lagoon_deploy_organization_id_ext')
                     ->required()
                     ->maxLength(255),
             ]);
@@ -62,17 +62,17 @@ class PolydockStoreResource extends Resource
                 Tables\Columns\IconColumn::make('listed_in_marketplace')
                     ->label('Listed')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('lagoon_deploy_region_id')
+                Tables\Columns\TextColumn::make('lagoon_deploy_region_id_ext')
                     ->label('Deploy Region')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('lagoon_deploy_project_prefix')
                     ->label('Project Prefix')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('amazee_ai_backend_region_id')
+                Tables\Columns\TextColumn::make('amazee_ai_backend_region_id_ext')
                     ->label('AI Region')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('lagoon_deploy_organization_id')
+                Tables\Columns\TextColumn::make('lagoon_deploy_organization_id_ext')
                     ->label('Deploy Org')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

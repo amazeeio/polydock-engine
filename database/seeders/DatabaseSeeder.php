@@ -73,22 +73,22 @@ class DatabaseSeeder extends Seeder
             'name' => 'USA Store',
             'status' => \App\Enums\PolydockStoreStatusEnum::PUBLIC,
             'listed_in_marketplace' => true,
-            'lagoon_deploy_region_id' => '1',
+            'lagoon_deploy_region_id_ext' => '1',
             'lagoon_deploy_project_prefix' => 'ft-us',
-            'lagoon_deploy_organization_id' => '271',
+            'lagoon_deploy_organization_id_ext' => '271',
             'lagoon_deploy_private_key' => $deployKey,
-            'amazee_ai_backend_region_id' => 34,
+            'amazee_ai_backend_region_id_ext' => 34,
         ]);
 
         $switzerlandStore = \App\Models\PolydockStore::create([
             'name' => 'Switzerland Store',
             'status' => \App\Enums\PolydockStoreStatusEnum::PUBLIC,
             'listed_in_marketplace' => true,
-            'lagoon_deploy_region_id' => '1',
+            'lagoon_deploy_region_id_ext' => '1',
             'lagoon_deploy_project_prefix' => 'ft-ch',
-            'lagoon_deploy_organization_id' => '271',
+            'lagoon_deploy_organization_id_ext' => '271',
             'lagoon_deploy_private_key' => $deployKey,
-            'amazee_ai_backend_region_id' => 34,
+            'amazee_ai_backend_region_id_ext' => 34,
         ]);
 
         // Add webhook to both stores
