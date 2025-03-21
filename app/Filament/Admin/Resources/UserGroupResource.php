@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Infolist;
 
 class UserGroupResource extends Resource
 {
@@ -47,6 +48,7 @@ class UserGroupResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -68,7 +70,45 @@ class UserGroupResource extends Resource
         return [
             'index' => Pages\ListUserGroups::route('/'),
             'create' => Pages\CreateUserGroup::route('/create'),
+            'view' => Pages\ViewUserGroup::route('/{record}'),
             'edit' => Pages\EditUserGroup::route('/{record}/edit'),
         ];
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                \Filament\Infolists\Components\Section::make('Group Details')
+                    ->schema([
+                        \Filament\Infolists\Components\TextEntry::make('name')
+                            ->label('Group Name')
+                            ->icon('heroicon-m-user-group')
+                            ->iconColor('primary'),
+                        \Filament\Infolists\Components\TextEntry::make('users_count')
+                            ->label('Number of Members')
+                            ->state(fn ($record) => $record->users()->count())
+                            ->icon('heroicon-m-users')
+                            ->iconColor('success'),
+                        \Filament\Infolists\Components\TextEntry::make('created_at')
+                            ->dateTime()
+                            ->icon('heroicon-m-calendar')
+                            ->iconColor('gray'),
+                    ])
+                    ->columnSpan(2),
+
+                \Filament\Infolists\Components\Section::make('Members')
+                    ->schema([
+                        \Filament\Infolists\Components\TextEntry::make('users.name')
+                            ->label('Current Members')
+                            ->listWithLineBreaks()
+                            ->bulleted()
+                            ->state(fn ($record) => $record->users->map(fn($user) => 
+                                "{$user->first_name} {$user->last_name} ({$user->pivot->role})"
+                            ))
+                    ])
+                    ->columnSpan(1),
+            ])
+            ->columns(3);
     }
 }
