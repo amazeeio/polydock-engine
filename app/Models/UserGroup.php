@@ -70,6 +70,87 @@ class UserGroup extends Model
     }
 
     /**
+     * Get pending app instances
+     */
+    public function appInstancesPending(): HasMany
+    {
+        return $this->appInstances()
+            ->whereIn('status', PolydockAppInstance::$pendingStatuses);
+    }
+
+    /**
+     * Get completed app instances
+     */
+    public function appInstancesCompleted(): HasMany
+    {
+        return $this->appInstances()
+            ->whereIn('status', PolydockAppInstance::$completedStatuses);
+    }
+
+    /**
+     * Get failed app instances
+     */
+    public function appInstancesFailed(): HasMany
+    {
+        return $this->appInstances()
+            ->whereIn('status', PolydockAppInstance::$failedStatuses);
+    }
+
+    /**
+     * Get polling app instances
+     */
+    public function appInstancesPolling(): HasMany
+    {
+        return $this->appInstances()
+            ->whereIn('status', PolydockAppInstance::$pollingStatuses);
+    }
+
+    /**
+     * Get create stage app instances
+     */
+    public function appInstancesStageCreate(): HasMany
+    {
+        return $this->appInstances()
+            ->whereIn('status', PolydockAppInstance::$stageCreateStatuses);
+    }
+
+    /**
+     * Get deploy stage app instances
+     */
+    public function appInstancesStageDeploy(): HasMany
+    {
+        return $this->appInstances()
+            ->whereIn('status', PolydockAppInstance::$stageDeployStatuses);
+    }
+
+    /**
+     * Get remove stage app instances
+     */
+    public function appInstancesStageRemove(): HasMany
+    {
+        return $this->appInstances()
+            ->whereIn('status', PolydockAppInstance::$stageRemoveStatuses);
+    }
+
+    /**
+     * Get upgrade stage app instances
+     */
+    public function appInstancesStageUpgrade(): HasMany
+    {
+        return $this->appInstances()
+            ->whereIn('status', PolydockAppInstance::$stageUpgradeStatuses);
+    }
+
+    /**
+     * Get running stage app instances
+     */
+    public function appInstancesStageRunning(): HasMany
+    {
+        return $this->appInstances()
+            ->whereIn('status', PolydockAppInstance::$stageRunningStatuses);
+    }
+
+    /**
      * Boot the model
      */
     protected static function booted()

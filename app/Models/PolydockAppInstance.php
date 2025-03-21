@@ -136,6 +136,40 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
     ];
 
+    public static array $stageCreateStatuses = [
+        PolydockAppInstanceStatus::PENDING_PRE_CREATE,
+        PolydockAppInstanceStatus::PENDING_CREATE,
+        PolydockAppInstanceStatus::PENDING_POST_CREATE,
+    ];
+
+    public static array $stageDeployStatuses = [
+        PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
+        PolydockAppInstanceStatus::PENDING_DEPLOY,
+        PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
+        PolydockAppInstanceStatus::DEPLOY_RUNNING,
+    ];  
+
+    public static array $stageRemoveStatuses = [
+        PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
+        PolydockAppInstanceStatus::PENDING_REMOVE,
+        PolydockAppInstanceStatus::PENDING_POST_REMOVE,
+    ];  
+
+    public static array $stageUpgradeStatuses = [
+        PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
+        PolydockAppInstanceStatus::PENDING_UPGRADE,
+        PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
+        PolydockAppInstanceStatus::UPGRADE_RUNNING,
+    ];  
+    
+    public static array $stageRunningStatuses = [
+        PolydockAppInstanceStatus::RUNNING_HEALTHY,
+        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+    ];
+    
+    
+
     /**
      * Boot the model.
      */

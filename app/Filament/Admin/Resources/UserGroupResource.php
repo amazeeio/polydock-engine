@@ -120,11 +120,39 @@ class UserGroupResource extends Resource
 
                 \Filament\Infolists\Components\Section::make('App Instances')
                     ->schema([
-                        \Filament\Infolists\Components\TextEntry::make('polydock_app_instances_count')
-                            ->label('Count')
-                            ->state(fn ($record) => $record->appInstances()->count())
-                            ->icon('heroicon-m-squares-2x2')
-                            ->iconColor('warning'),
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('polydock_app_instances_count')
+                                    ->label('Count')
+                                    ->state(fn ($record) => $record->appInstances()->count())
+                                    ->icon('heroicon-m-squares-2x2')
+                                    ->iconColor('warning'),
+                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_create_count')
+                                    ->label('Stage Create')
+                                    ->state(fn ($record) => $record->appInstancesStageCreate()->count())
+                                    ->icon('heroicon-m-plus-circle')
+                                    ->iconColor('info'),
+                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_deploy_count')
+                                    ->label('Stage Deploy')
+                                    ->state(fn ($record) => $record->appInstancesStageDeploy()->count())
+                                    ->icon('heroicon-m-rocket-launch')
+                                    ->iconColor('success'),
+                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_upgrade_count')
+                                    ->label('Stage Upgrade')
+                                    ->state(fn ($record) => $record->appInstancesStageUpgrade()->count())
+                                    ->icon('heroicon-m-arrow-up-circle')
+                                    ->iconColor('primary'),
+                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_remove_count')
+                                    ->label('Stage Remove')
+                                    ->state(fn ($record) => $record->appInstancesStageRemove()->count())
+                                    ->icon('heroicon-m-trash')
+                                    ->iconColor('danger'),
+                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_running_count')
+                                    ->label('Stage Running')
+                                    ->state(fn ($record) => $record->appInstancesStageRunning()->count())
+                                    ->icon('heroicon-m-play-circle')
+                                    ->iconColor('success'),
+                            ]),
                     ])
                     ->columnSpan(1),
             ])
