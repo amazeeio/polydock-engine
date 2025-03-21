@@ -1,0 +1,83 @@
+<?php
+
+namespace App\Filament\Admin\Resources;
+
+use App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages;
+use App\Filament\Admin\Resources\UserRemoteRegistrationResource\RelationManagers;
+use App\Models\UserRemoteRegistration;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+
+class UserRemoteRegistrationResource extends Resource
+{
+    protected static ?string $model = UserRemoteRegistration::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-user-plus';
+
+    protected static ?string $navigationGroup = 'Users';
+
+    protected static ?string $navigationLabel = 'Remote Registrations';
+
+    protected static ?int $navigationSort = 3;
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                //
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('request_data.register_type'),
+                TextColumn::make('email'),
+                TextColumn::make('user.name'),
+                TextColumn::make('userGroup.name'),
+                TextColumn::make('storeApp.store.name'),
+                TextColumn::make('storeApp.name'),
+                TextColumn::make('status'),
+                TextColumn::make('created_at')->dateTime(),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                //Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListUserRemoteRegistrations::route('/'),
+            // 'create' => Pages\CreateUserRemoteRegistration::route('/create'),
+            // 'edit' => Pages\EditUserRemoteRegistration::route('/{record}/edit'),
+        ];
+    }
+}
