@@ -9,6 +9,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Admin\Resources\UserResource;
 
 class UsersRelationManager extends RelationManager
 {
@@ -33,7 +34,10 @@ class UsersRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('name')
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+                Tables\Columns\TextColumn::make('name')
+                    ->formatStateUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
+                    ->url(fn ($record) => UserResource::getUrl('view', ['record' => $record]))
+                    ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('email'),
                 Tables\Columns\TextColumn::make('groups_count')
                     ->counts('groups')
