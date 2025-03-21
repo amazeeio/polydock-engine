@@ -81,31 +81,50 @@ class UserGroupResource extends Resource
             ->schema([
                 \Filament\Infolists\Components\Section::make('Group Details')
                     ->schema([
-                        \Filament\Infolists\Components\TextEntry::make('name')
-                            ->label('Group Name')
-                            ->icon('heroicon-m-user-group')
-                            ->iconColor('primary'),
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('name')
+                                    ->label('Group Name')
+                                    ->icon('heroicon-m-user-group')
+                                    ->iconColor('primary'),
+                                \Filament\Infolists\Components\TextEntry::make('created_at')
+                                    ->dateTime()
+                                    ->icon('heroicon-m-calendar')
+                                    ->iconColor('gray'),
+                            ]),
                         \Filament\Infolists\Components\TextEntry::make('users_count')
-                            ->label('Number of Members')
+                            ->label('Total Users')
                             ->state(fn ($record) => $record->users()->count())
                             ->icon('heroicon-m-users')
                             ->iconColor('success'),
-                        \Filament\Infolists\Components\TextEntry::make('created_at')
-                            ->dateTime()
-                            ->icon('heroicon-m-calendar')
-                            ->iconColor('gray'),
+                        \Filament\Infolists\Components\Grid::make(3)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('owners_count')
+                                    ->label('Number of Owners')
+                                    ->state(fn ($record) => $record->owners()->count())
+                                    ->icon('heroicon-m-user-group')
+                                    ->iconColor('success'),
+                                \Filament\Infolists\Components\TextEntry::make('members_count')
+                                    ->label('Number of Members')
+                                    ->state(fn ($record) => $record->members()->count())
+                                    ->icon('heroicon-m-user-group')
+                                    ->iconColor('success'),
+                                \Filament\Infolists\Components\TextEntry::make('viewers_count')
+                                    ->label('Number of Viewers')
+                                    ->state(fn ($record) => $record->viewers()->count())
+                                    ->icon('heroicon-m-eye')
+                                    ->iconColor('success'),
+                            ]),
                     ])
                     ->columnSpan(2),
 
-                \Filament\Infolists\Components\Section::make('Members')
+                \Filament\Infolists\Components\Section::make('App Instances')
                     ->schema([
-                        \Filament\Infolists\Components\TextEntry::make('users.name')
-                            ->label('Current Members')
-                            ->listWithLineBreaks()
-                            ->bulleted()
-                            ->state(fn ($record) => $record->users->map(fn($user) => 
-                                "{$user->first_name} {$user->last_name} ({$user->pivot->role})"
-                            ))
+                        \Filament\Infolists\Components\TextEntry::make('polydock_app_instances_count')
+                            ->label('Count')
+                            ->state(fn ($record) => $record->appInstances()->count())
+                            ->icon('heroicon-m-squares-2x2')
+                            ->iconColor('warning'),
                     ])
                     ->columnSpan(1),
             ])
