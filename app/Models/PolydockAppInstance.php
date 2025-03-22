@@ -19,6 +19,7 @@ use App\Events\PolydockAppInstanceStatusChanged;
 use App\Traits\HasWebhookSensitiveData;
 
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
@@ -251,7 +252,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         static::created(function ($appInstance) {
             // Fire the NEW status event if applicable
             if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
-                Log::info('MODEL: New app instance created', [
+                $appInstance->info('MODEL: New app instance created', [
                     'app_instance_id' => $appInstance->id,
                     'status' => $appInstance->status
                 ]);
@@ -261,7 +262,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
         static::updated(function ($appInstance) {
             if ($appInstance->isDirty('status')) {
-                Log::info('MODEL: Status changed for app instance', [
+                $appInstance->info('MODEL: Status changed for app instance', [
                     'app_instance_id' => $appInstance->id,
                     'previous_status' => $appInstance->getOriginal('status'),
                     'new_status' => $appInstance->status
@@ -341,7 +342,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $this->setStatusMessage($statusMessage);
             }
         } else {
-            Log::info('Setting status of app instance to same status', [
+           $this->info('Setting status of app instance to same status', [
                 'app_instance_id' => $this->id,
                 'previous_status' => $this->status,
                 'status' => $status
@@ -433,25 +434,41 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     public function info(string $message, array $context = []) : self
     {
-        $this->logger->info($message, $context);
+        if(isset($this->logger)) {
+            $this->logger->info($message, $context);
+        }
+
+        $this->logLine('info', $message, $context);
         return $this;
     }
 
     public function error(string $message, array $context = []) : self
     {
-        $this->logger->error($message, $context);
+        if(isset($this->logger)) {
+            $this->logger->error($message, $context);
+        }
+
+        $this->logLine('error', $message, $context);
         return $this;
     }
 
     public function warning(string $message, array $context = []) : self
     {
-        $this->logger->warning($message, $context);
+        if(isset($this->logger)) {
+            $this->logger->warning($message, $context);
+        }
+
+        $this->logLine('warning', $message, $context);
         return $this;
     }
 
     public function debug(string $message, array $context = []) : self
     {
-        $this->logger->debug($message, $context);
+        if(isset($this->logger)) {
+            $this->logger->debug($message, $context);
+        }
+        
+        $this->logLine('debug', $message, $context);
         return $this;
     }
 
@@ -605,5 +622,25 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function generateUniqueUsername(): string
     {
         return strtolower($this->pickUsernamePrefix() . rand(1000, 9999));
+    }
+
+    /**
+     * Get the logs for this instance
+     */
+    public function logs(): HasMany
+    {
+        return $this->hasMany(PolydockAppInstanceLog::class);
+    }
+
+    public function logLine(string $level, string $message, array $context = []) : self
+    {
+        $this->logs()->create([
+            'type' => 'model_log',
+            'level' => $level,
+            'message' => $message,
+            'data' => $context
+        ]);
+
+        return $this;
     }
 }

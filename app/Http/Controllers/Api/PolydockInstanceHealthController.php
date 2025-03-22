@@ -47,11 +47,19 @@ class PolydockInstanceHealthController extends Controller
             ], 400);
         }
 
-        // Validate that the current status is in a state where we can update it
-        if (!in_array($instance->status, PolydockAppInstance::$stageRunningStatuses + [
+        $logContext['initial_status'] = $instance->status;
+
+        $acceptableStatuses = [
+            PolydockAppInstanceStatus::RUNNING_HEALTHY,
+            PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+            PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
             PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
             PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
-        ])) {
+        ];
+
+
+        // Validate that the current status is in a state where we can update it
+        if (!in_array($instance->status, $acceptableStatuses)) {
             Log::error('Current status is not ready for health check update', $logContext + ['status_code' => 400]);
             
             return response()->json([
@@ -87,7 +95,7 @@ class PolydockInstanceHealthController extends Controller
 
         // Log debug data if present
         if (!empty($debugData)) {
-            Log::debug('Health check data received', $logContext);
+            $instance->debug('Health check data received', $logContext);
         }
 
         // Update instance status
