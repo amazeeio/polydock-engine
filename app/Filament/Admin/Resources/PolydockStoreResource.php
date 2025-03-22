@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\PolydockStoreStatusEnum;
 use App\Filament\Admin\Resources\PolydockStoreResource\Pages;
 use App\Filament\Admin\Resources\PolydockStoreResource\RelationManagers;
 use App\Models\PolydockStore;
@@ -32,7 +33,8 @@ class PolydockStoreResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('status')
+                Forms\Components\Select::make('status')
+                    ->options(PolydockStoreStatusEnum::class)
                     ->required(),
                 Forms\Components\Toggle::make('listed_in_marketplace')
                     ->required(),

@@ -120,8 +120,44 @@ class PolydockAppInstanceResource extends Resource
                             ->iconColor('success'),
                     ])
                     ->columnSpan(1),
+
+                \Filament\Infolists\Components\Section::make('Instance Data')
+                    ->description('Safe data that can be shared with webhooks')
+                    ->schema(function ($record) {
+                        return self::getRenderedSafeDataForRecord($record);
+                    })
+                    ->columnSpan(3)
+                    ->collapsible(),
             ])
             ->columns(3);
+    }
+
+    public static function getRenderedSafeDataForRecord(PolydockAppInstance $record) : array
+    {
+        $safeData = $record->data;
+        $renderedArray = [];
+        foreach ($safeData as $key => $value) {
+
+            if($record->shouldFilterKey($key, $record->getSensitiveDataKeys())) {
+                $value = "REDACTED";
+            }
+
+            $renderKey = "webhook_data_" . $key;
+            $renderedItem = \Filament\Infolists\Components\TextEntry::make($renderKey)
+            ->label($key)
+            ->markdown()
+            ->columnSpanFull()
+            ->bulleted();
+
+            if(is_array($value)) {
+                $renderedItem->state($value);
+            } else {
+                $renderedItem->state([$value]);
+            }
+
+            $renderedArray[] = $renderedItem;   
+        }
+        return $renderedArray;
     }
 
     public static function getRelations(): array

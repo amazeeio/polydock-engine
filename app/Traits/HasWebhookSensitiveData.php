@@ -23,6 +23,7 @@ trait HasWebhookSensitiveData
             '/^.*private.*$/',       // Anything containing private
             '/^.*secret.*$/',       // Anything containing secret
             '/^.*pass.*$/',          // Anything containing pass
+            '/^.*username.*$/',      // Anything containing username
             '/^.*token.*$/',         // Anything containing token
             '/^.*api.*$/',           // Anything containing api
             '/^.*ssh.*$/',           // Anything containing ssh
@@ -44,7 +45,7 @@ trait HasWebhookSensitiveData
     /**
      * Check if a key should be filtered
      */
-    protected function shouldFilterKey(string $key, array $sensitiveKeys): bool
+    public function shouldFilterKey(string $key, array $sensitiveKeys): bool
     {
         $lowercaseKey = strtolower($key);
 

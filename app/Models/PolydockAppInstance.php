@@ -78,6 +78,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         '/^.*_key$/',              // Anything ending with _key
         '/^.*_secret$/',           // Anything ending with _secret
         '/^.*password.*$/',        // Anything containing password
+        '/^.*username.*$/',        // Anything containing password
         '/^.*token.*$/',           // Anything containing token
         '/^.*api[_-]?key.*$/i',    // Any variation of api key
         '/^.*ssh[_-]?key.*$/i',    // Any variation of ssh key
