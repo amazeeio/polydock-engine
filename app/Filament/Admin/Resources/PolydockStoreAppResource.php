@@ -76,28 +76,14 @@ class PolydockStoreAppResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('uuid')
-                    ->label('UUID')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('polydock_store_id')
-                    ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('polydock_app_class')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('author')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('website')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('support_email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('lagoon_deploy_git')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('lagoon_deploy_branch')
+                Tables\Columns\TextColumn::make('store.name')
+                    ->label('Store')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\IconColumn::make('available_for_trials')
+                    ->label('Trials')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -108,6 +94,16 @@ class PolydockStoreAppResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('target_unallocated_app_instances')
+                    ->label('Unallocated')
+                    ->state(function($record) {
+                        return $record->unallocated_instances_count . "/"  . $record->target_unallocated_app_instances;
+                    })
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('allocatedInstances')
+                    ->state(function($record) {
+                        return $record->allocatedInstances()->count(); 
+                    })
+                    ->label('Allocated')
                     ->numeric()
                     ->sortable(),
             ])
