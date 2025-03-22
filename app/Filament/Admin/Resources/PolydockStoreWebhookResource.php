@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\PolydockStoreWebhookResource\Pages;
 use App\Filament\Admin\Resources\PolydockStoreWebhookResource\RelationManagers;
+use App\Models\PolydockStore;
 use App\Models\PolydockStoreWebhook;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -29,12 +30,10 @@ class PolydockStoreWebhookResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('polydock_store_id')
-                    ->required()
-                    ->numeric(),
                 Forms\Components\TextInput::make('url')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->columnSpanFull(),
                 Forms\Components\Toggle::make('active')
                     ->required(),
             ]);
@@ -44,21 +43,13 @@ class PolydockStoreWebhookResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('polydock_store_id')
+                Tables\Columns\TextColumn::make('store.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('url')
                     ->searchable(),
                 Tables\Columns\IconColumn::make('active')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

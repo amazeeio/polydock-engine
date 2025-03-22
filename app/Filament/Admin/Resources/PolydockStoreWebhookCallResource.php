@@ -3,109 +3,128 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\PolydockStoreWebhookCallResource\Pages;
-use App\Filament\Admin\Resources\PolydockStoreWebhookCallResource\RelationManagers;
 use App\Models\PolydockStoreWebhookCall;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Infolists\Infolist;
+use Filament\Infolists;
 
 class PolydockStoreWebhookCallResource extends Resource
 {
     protected static ?string $model = PolydockStoreWebhookCall::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
-
     protected static ?string $navigationGroup = 'Apps';
-
     protected static ?string $navigationLabel = 'Webhook Calls';
-
     protected static ?int $navigationSort = 5200;
-
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('polydock_store_webhook_id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('event')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('payload')
-                    ->required(),
-                Forms\Components\TextInput::make('status')
-                    ->required(),
-                Forms\Components\TextInput::make('attempt')
-                    ->required()
-                    ->numeric()
-                    ->default(0),
-                Forms\Components\DateTimePicker::make('processed_at'),
-                Forms\Components\TextInput::make('response_code')
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('response_body')
-                    ->columnSpanFull(),
-                Forms\Components\Textarea::make('exception')
-                    ->columnSpanFull(),
-            ]);
-    }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('polydock_store_webhook_id')
-                    ->numeric()
+                Tables\Columns\TextColumn::make('webhook.store.name')
+                    ->description(fn (PolydockStoreWebhookCall $record) => $record->webhook->url)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('event')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status'),
+                Tables\Columns\TextColumn::make('status')
+                    ->description(fn (PolydockStoreWebhookCall $record) => $record->response_code)
+                    ->badge()
+                    ->color(fn ($state) => match ($state->getLabel()) {
+                        'Success' => 'success',
+                        'Failed' => 'danger',
+                        default => 'warning',
+                    }),
                 Tables\Columns\TextColumn::make('attempt')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('processed_at')
                     ->dateTime()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('response_code')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
     }
 
-    public static function getRelations(): array
+    public static function infolist(Infolist $infolist): Infolist
     {
-        return [
-            //
-        ];
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Call Information')
+                    ->schema([
+                        Infolists\Components\Grid::make(3)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('webhook.store.name')
+                                    ->label('Store')
+                                    ->icon('heroicon-m-building-storefront')
+                                    ->columnSpan(1),
+                                Infolists\Components\TextEntry::make('event')
+                                    ->icon('heroicon-m-bell')
+                                    ->columnSpan(1),
+                                Infolists\Components\TextEntry::make('webhook.url')
+                                    ->label('URL')
+                                    ->url(fn ($state) => $state)
+                                    ->openUrlInNewTab()
+                                    ->icon('heroicon-m-globe-alt')
+                                    ->columnSpanFull(),
+                            ]),
+                        Infolists\Components\Grid::make(4)
+                            ->schema([
+                                Infolists\Components\TextEntry::make('status')
+                                    ->badge()
+                                    ->color(fn ($state) => match ($state->getLabel()) {
+                                        'Success' => 'success',
+                                        'Failed' => 'danger',
+                                        default => 'warning',
+                                    }),
+                                Infolists\Components\TextEntry::make('response_code')
+                                    ->label('Response Code')
+                                    ->icon('heroicon-m-signal')
+                                    ->color(fn ($state) => str_starts_with($state, '2') ? 'success' : 'danger'),
+                                Infolists\Components\TextEntry::make('attempt')
+                                    ->icon('heroicon-m-arrow-path'),
+                                Infolists\Components\TextEntry::make('processed_at')
+                                    ->dateTime()
+                                    ->icon('heroicon-m-calendar'),
+                            ]),
+                    ])
+                    ->columnSpan(3),
+
+                Infolists\Components\Section::make('Payload & Response')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('payload')
+                            ->label('Request Payload')
+                            ->state(function ($record) {
+                                return json_encode($record->payload, JSON_PRETTY_PRINT);
+                            })
+                            ->columnSpanFull(),
+                        Infolists\Components\TextEntry::make('response_body')
+                            ->label('Response Body')
+                            ->visible(fn ($state) => !empty($state))
+                            ->columnSpanFull(),
+                        Infolists\Components\TextEntry::make('exception')
+                            ->label('Error Details')
+                            ->visible(fn ($state) => !empty($state))
+                            ->color('danger')
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpan(3),
+            ])
+            ->columns(3);
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListPolydockStoreWebhookCalls::route('/'),
-            'create' => Pages\CreatePolydockStoreWebhookCall::route('/create'),
-            'edit' => Pages\EditPolydockStoreWebhookCall::route('/{record}/edit'),
+            'view' => Pages\ViewPolydockStoreWebhookCall::route('/{record}'),
         ];
     }
 }
