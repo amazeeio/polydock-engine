@@ -18,6 +18,8 @@ use App\Events\PolydockAppInstanceCreatedWithNewStatus;
 use App\Events\PolydockAppInstanceStatusChanged;
 use App\Traits\HasWebhookSensitiveData;
 
+use Illuminate\Support\Str;
+
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
     use HasPolydockVariables;
@@ -214,7 +216,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
                 $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
 
+		// Fill the UUID 
+        	$model->uuid = Str::uuid()->toString();
+
                 $model->data = [
+		    'uuid' => $model->uuid,
                     'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
                     'lagoon-deploy-branch' => $storeApp->lagoon_deploy_branch,
                     'lagoon-deploy-organization-id' => $storeApp->lagoon_deploy_organization_id_ext,
@@ -225,7 +231,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'amazee-ai-backend-region-id' => $storeApp->amazee_ai_backend_region_id_ext,
                     'available-for-trials' => $storeApp->available_for_trials,
                     'lagoon-generate-app-admin-username' => $model->generateUniqueUsername(),
-                    'lagoon-generate-app-admin-password' => $model->generateUniquePassword()
+		    'lagoon-generate-app-admin-password' => $model->generateUniquePassword(),
                 ];
 
             } catch (PolydockEngineAppNotFoundException $e) {

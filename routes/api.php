@@ -10,3 +10,8 @@ Route::get('/user', function (Request $request) {
 
 Route::post('/register', [RegisterController::class, 'processRegister'])->name('register.process');
 Route::get('/register/{uuid}', [RegisterController::class, 'showRegister'])->name('register.show');
+
+Route::match(['get', 'post'], '/instance/{uuid}/health/{status}', [
+    \App\Http\Controllers\Api\PolydockInstanceHealthController::class, 
+    '__invoke'
+])->name('api.instance.health');
