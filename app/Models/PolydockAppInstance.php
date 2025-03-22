@@ -28,6 +28,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * @var array
      */
     protected $fillable = [
+        'name',
         'polydock_store_app_id',
         'user_group_id',
         'app_type',

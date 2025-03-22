@@ -16,6 +16,8 @@ use Filament\Infolists\Infolist;
 use App\Enums\PolydockAppInstanceStatusForEngine;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use App\Filament\Admin\Resources\UserGroupResource;
+use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
+use App\PolydockEngine\Helpers\LagoonHelper;
 
 class PolydockAppInstanceResource extends Resource
 {
@@ -33,19 +35,11 @@ class PolydockAppInstanceResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('polydock_store_app_id')
+                Forms\Components\TextInput::make('name')
+                    ->label('Instance Name')
                     ->required()
-                    ->numeric(),
-                Forms\Components\Select::make('user_group_id')
-                    ->relationship('userGroup', 'name'),
-                Forms\Components\TextInput::make('app_type')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('status'),
-                Forms\Components\TextInput::make('status_message')
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('next_poll_after'),
-                Forms\Components\TextInput::make('data'),
+                    ->maxLength(255)
+                    ->unique(ignoreRecord: true),
             ]);
     }
 
@@ -70,7 +64,8 @@ class PolydockAppInstanceResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-            ]);
+            ])
+            ->bulkActions([]);
     }
 
     public static function infolist(Infolist $infolist): Infolist
@@ -98,6 +93,15 @@ class PolydockAppInstanceResource extends Resource
                                 \Filament\Infolists\Components\TextEntry::make('status_message')
                                     ->label('Status Message'),
                             ]),
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('storeApp.lagoon_deploy_region_id_ext')
+                                    ->label('Deploy Region')
+                                    ->formatStateUsing(fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name')),
+                                \Filament\Infolists\Components\TextEntry::make('storeApp.amazee_ai_backend_region_id_ext')
+                                    ->label('AI Backend Region')
+                                    ->formatStateUsing(fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name')),
+                            ]),
                     ])
                     ->columnSpan(2),
 
@@ -109,6 +113,7 @@ class PolydockAppInstanceResource extends Resource
                             ->iconColor('primary'),
                         \Filament\Infolists\Components\TextEntry::make('userGroup.name')
                             ->label('User Group')
+                            ->visible(fn ($record) => $record->userGroup !== null)
                             ->url(fn ($record) => UserGroupResource::getUrl('view', ['record' => $record->userGroup]))
                             ->openUrlInNewTab()
                             ->icon('heroicon-m-user-group')
