@@ -13,6 +13,9 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
+use App\PolydockEngine\Helpers\LagoonHelper;
+use Filament\Infolists\Infolist;
 
 class PolydockStoreResource extends Resource
 {
@@ -40,17 +43,42 @@ class PolydockStoreResource extends Resource
                     ->required(),
                 Forms\Components\TextInput::make('lagoon_deploy_region_id_ext')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->dehydrated(fn (PolydockStore $record) => 
+                        !$record || !$record->apps()->whereHas('instances')->exists()
+                    )
+                    ->disabled(fn (PolydockStore $record) => 
+                        $record && $record->apps()->whereHas('instances')->exists()
+                    ),
                 Forms\Components\TextInput::make('lagoon_deploy_project_prefix')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('lagoon_deploy_private_key')
-                    ->columnSpanFull(),
-                Forms\Components\TextInput::make('amazee_ai_backend_region_id_ext')
-                    ->numeric(),
+                    ->maxLength(255)
+                    ->dehydrated(fn (PolydockStore $record) => 
+                        !$record || !$record->apps()->whereHas('instances')->exists()
+                    )
+                    ->disabled(fn (PolydockStore $record) => 
+                        $record && $record->apps()->whereHas('instances')->exists()
+                    ),
                 Forms\Components\TextInput::make('lagoon_deploy_organization_id_ext')
                     ->required()
-                    ->maxLength(255),
+                    ->maxLength(255)
+                    ->dehydrated(fn (PolydockStore $record) => 
+                        !$record || !$record->apps()->whereHas('instances')->exists()
+                    )
+                    ->disabled(fn (PolydockStore $record) => 
+                        $record && $record->apps()->whereHas('instances')->exists()
+                    ),
+                Forms\Components\TextInput::make('amazee_ai_backend_region_id_ext')
+                    ->numeric()
+                    ->dehydrated(fn (PolydockStore $record) => 
+                        !$record || !$record->apps()->whereHas('instances')->exists()
+                    )
+                    ->disabled(fn (PolydockStore $record) => 
+                        $record && $record->apps()->whereHas('instances')->exists()
+                    ),
+                Forms\Components\Textarea::make('lagoon_deploy_private_key')
+                    ->columnSpanFull()
+                    ->rows(10),
             ]);
     }
 
@@ -65,6 +93,7 @@ class PolydockStoreResource extends Resource
                     ->label('Listed')
                     ->boolean(),
                 Tables\Columns\TextColumn::make('lagoon_deploy_region_id_ext')
+                    ->formatStateUsing(fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'))
                     ->label('Deploy Region')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('lagoon_deploy_project_prefix')
@@ -72,7 +101,7 @@ class PolydockStoreResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amazee_ai_backend_region_id_ext')
                     ->label('AI Region')
-                    ->numeric()
+                    ->formatStateUsing(fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name'))
                     ->sortable(),
                 Tables\Columns\TextColumn::make('lagoon_deploy_organization_id_ext')
                     ->label('Deploy Org')
@@ -90,11 +119,17 @@ class PolydockStoreResource extends Resource
                 //
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make()
+                    ->hidden(fn (PolydockStore $record): bool => 
+                        $record->apps()->whereHas('instances')->exists()
+                    ),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->hidden(fn () => true), // Disable bulk delete entirely
                 ]),
             ]);
     }
@@ -111,7 +146,67 @@ class PolydockStoreResource extends Resource
         return [
             'index' => Pages\ListPolydockStores::route('/'),
             'create' => Pages\CreatePolydockStore::route('/create'),
+            'view' => Pages\ViewPolydockStore::route('/{record}'),
             'edit' => Pages\EditPolydockStore::route('/{record}/edit'),
         ];
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                \Filament\Infolists\Components\Section::make('Store Details')
+                    ->schema([
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('name')
+                                    ->label('Store Name'),
+                                \Filament\Infolists\Components\TextEntry::make('status')
+                                    ->badge()
+                                    ->color(fn ($state) => match ($state->value) {
+                                        PolydockStoreStatusEnum::PUBLIC->value => 'success',
+                                        PolydockStoreStatusEnum::PRIVATE->value => 'warning',
+                                        default => 'gray',
+                                    }),
+                            ]),
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('created_at')
+                                    ->dateTime()
+                                    ->icon('heroicon-m-calendar')
+                                    ->iconColor('gray'),
+                                \Filament\Infolists\Components\IconEntry::make('listed_in_marketplace')
+                                    ->label('Listed in Marketplace')
+                                    ->boolean(),
+                            ]),
+                    ])
+                    ->columnSpan(2),
+
+                \Filament\Infolists\Components\Section::make('Deployment Configuration')
+                    ->schema([
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_region_id_ext')
+                                    ->label('Deploy Region')
+                                    ->formatStateUsing(fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name')),
+                                \Filament\Infolists\Components\TextEntry::make('amazee_ai_backend_region_id_ext')
+                                    ->label('AI Backend Region')
+                                    ->formatStateUsing(fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name')),
+                            ]),
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_project_prefix')
+                                    ->label('Project Prefix')
+                                    ->icon('heroicon-m-code-bracket')
+                                    ->iconColor('success'),
+                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_organization_id_ext')
+                                    ->label('Deploy Organization')
+                                    ->icon('heroicon-m-building-office')
+                                    ->iconColor('warning'),
+                            ]),
+                    ])
+                    ->columnSpan(1),
+            ])
+            ->columns(3);
     }
 }
