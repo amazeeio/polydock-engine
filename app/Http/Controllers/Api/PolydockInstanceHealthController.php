@@ -50,7 +50,8 @@ class PolydockInstanceHealthController extends Controller
         $logContext['initial_status'] = $instance->status;
 
         $acceptableStatuses = [
-            PolydockAppInstanceStatus::RUNNING_HEALTHY,
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
             PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
             PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
             PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,

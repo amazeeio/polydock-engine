@@ -136,7 +136,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public static array $pollingStatuses = [
         PolydockAppInstanceStatus::DEPLOY_RUNNING,
         PolydockAppInstanceStatus::UPGRADE_RUNNING,
-        PolydockAppInstanceStatus::RUNNING_HEALTHY,
+        PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
         PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
     ];
@@ -192,7 +193,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     ];  
     
     public static array $stageRunningStatuses = [
-        PolydockAppInstanceStatus::RUNNING_HEALTHY,
+        PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
         PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
     ];    

@@ -244,16 +244,26 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     ]
                 );
                 break;
-            case PolydockAppInstanceStatus::RUNNING_HEALTHY:
+            case PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED:
                 $stepReturn = $this->processPolydockAppPollUpdateUsingFunction($appInstance, 'pollAppInstanceHealthStatus', 
-                    PolydockAppInstanceStatus::RUNNING_HEALTHY, 
+                    PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, 
                     [
-                        PolydockAppInstanceStatus::RUNNING_HEALTHY,
+                        PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
                         PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
                         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE
                     ]
                 );
                 break;
+            case PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED:
+                $stepReturn = $this->processPolydockAppPollUpdateUsingFunction($appInstance, 'pollAppInstanceHealthStatus', 
+                    PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED, 
+                    [
+                            PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+                            PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                            PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE
+                        ]
+                    );
+                    break;
             default:
                 $stepReturn = false;
                 throw new PolydockAppInstanceStatusFlowException('Status ' 
