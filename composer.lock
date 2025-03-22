@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7a70875299c7b93ceec84955fb68f83",
+    "content-hash": "cb5803f67d229204919e900c71f66f29",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
-            "version": "1.2.29",
+            "version": "1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/AnourValar/eloquent-serialize.git",
-                "reference": "0919c91e548d01261308fd54d27fc05a83c79d03"
+                "reference": "91188f82c5ec2842a5469fca6d7d64baa37ea593"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AnourValar/eloquent-serialize/zipball/0919c91e548d01261308fd54d27fc05a83c79d03",
-                "reference": "0919c91e548d01261308fd54d27fc05a83c79d03",
+                "url": "https://api.github.com/repos/AnourValar/eloquent-serialize/zipball/91188f82c5ec2842a5469fca6d7d64baa37ea593",
+                "reference": "91188f82c5ec2842a5469fca6d7d64baa37ea593",
                 "shasum": ""
             },
             "require": {
@@ -68,9 +68,9 @@
             ],
             "support": {
                 "issues": "https://github.com/AnourValar/eloquent-serialize/issues",
-                "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.2.29"
+                "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.3.0"
             },
-            "time": "2025-02-25T05:18:46+00:00"
+            "time": "2025-03-22T08:49:12+00:00"
         },
         {
             "name": "blade-ui-kit/blade-heroicons",
@@ -1498,16 +1498,16 @@
         },
         {
             "name": "freedomtech-hosting/polydock-app",
-            "version": "v0.0.22",
+            "version": "v0.0.24",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-app.git",
-                "reference": "cfa7e1aa7b91f5b81716791393832a66a9a6237e"
+                "reference": "6d46309d89cccc17e8015699b30727e5ec72925e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app/zipball/cfa7e1aa7b91f5b81716791393832a66a9a6237e",
-                "reference": "cfa7e1aa7b91f5b81716791393832a66a9a6237e",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app/zipball/6d46309d89cccc17e8015699b30727e5ec72925e",
+                "reference": "6d46309d89cccc17e8015699b30727e5ec72925e",
                 "shasum": ""
             },
             "require": {
@@ -1532,28 +1532,28 @@
             "description": "Library for Polydock Apps",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-app/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-app/tree/v0.0.22"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app/tree/v0.0.24"
             },
-            "time": "2025-03-21T21:48:15+00:00"
+            "time": "2025-03-22T16:27:38+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "v0.0.55",
+            "version": "v0.0.56",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic.git",
-                "reference": "5830d09910c3ce6a77a029e70a1360c06235cafa"
+                "reference": "cf4d54fe6350ab75c179080836b4fcf1c47d0d62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/5830d09910c3ce6a77a029e70a1360c06235cafa",
-                "reference": "5830d09910c3ce6a77a029e70a1360c06235cafa",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/cf4d54fe6350ab75c179080836b4fcf1c47d0d62",
+                "reference": "cf4d54fe6350ab75c179080836b4fcf1c47d0d62",
                 "shasum": ""
             },
             "require": {
                 "freedomtech-hosting/ft-lagoon-php": "^0.0.3",
                 "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.0.4",
-                "freedomtech-hosting/polydock-app": "^0.0.22"
+                "freedomtech-hosting/polydock-app": "^0.0.24"
             },
             "type": "library",
             "autoload": {
@@ -1574,9 +1574,9 @@
             "description": "Polydock App - amazee.io Generic",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.55"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.56"
             },
-            "time": "2025-03-21T21:49:43+00:00"
+            "time": "2025-03-22T16:37:49+00:00"
         },
         {
             "name": "fruitcake/php-cors",
@@ -4836,16 +4836,16 @@
         },
         {
             "name": "ramsey/collection",
-            "version": "2.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/collection.git",
-                "reference": "3c5990b8a5e0b79cd1cf11c2dc1229e58e93f109"
+                "reference": "344572933ad0181accbf4ba763e85a0306a8c5e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/collection/zipball/3c5990b8a5e0b79cd1cf11c2dc1229e58e93f109",
-                "reference": "3c5990b8a5e0b79cd1cf11c2dc1229e58e93f109",
+                "url": "https://api.github.com/repos/ramsey/collection/zipball/344572933ad0181accbf4ba763e85a0306a8c5e2",
+                "reference": "344572933ad0181accbf4ba763e85a0306a8c5e2",
                 "shasum": ""
             },
             "require": {
@@ -4906,9 +4906,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/collection/issues",
-                "source": "https://github.com/ramsey/collection/tree/2.1.0"
+                "source": "https://github.com/ramsey/collection/tree/2.1.1"
             },
-            "time": "2025-03-02T04:48:29+00:00"
+            "time": "2025-03-22T05:38:12+00:00"
         },
         {
             "name": "ramsey/uuid",
