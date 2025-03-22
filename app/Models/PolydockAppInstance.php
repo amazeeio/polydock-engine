@@ -216,11 +216,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
                 $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
 
-		// Fill the UUID 
-        	$model->uuid = Str::uuid()->toString();
+		        // Fill the UUID 
+        	    $model->uuid = Str::uuid()->toString();
 
                 $model->data = [
-		    'uuid' => $model->uuid,
+		            'uuid' => $model->uuid,
                     'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
                     'lagoon-deploy-branch' => $storeApp->lagoon_deploy_branch,
                     'lagoon-deploy-organization-id' => $storeApp->lagoon_deploy_organization_id_ext,
@@ -231,7 +231,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'amazee-ai-backend-region-id' => $storeApp->amazee_ai_backend_region_id_ext,
                     'available-for-trials' => $storeApp->available_for_trials,
                     'lagoon-generate-app-admin-username' => $model->generateUniqueUsername(),
-		    'lagoon-generate-app-admin-password' => $model->generateUniquePassword(),
+		            'lagoon-generate-app-admin-password' => $model->generateUniquePassword(),
+                    'polydock-app-instance-health-webhook-url' => str_replace(':status:', '', route('api.instance.health', [
+                        'uuid' => $model->uuid,
+                        'status' => ':status:'
+                    ], true))
                 ];
 
             } catch (PolydockEngineAppNotFoundException $e) {
