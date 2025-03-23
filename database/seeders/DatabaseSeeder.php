@@ -118,7 +118,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 1,
+            'target_unallocated_app_instances' => 0,
         ]);
 
         \App\Models\PolydockStoreApp::create([
@@ -139,7 +139,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $usaStore->id,
             'name' => 'USA amazee.io AI - Categorize Pages',
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
+            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
             'description' => 'A demo of amazee.io AI - Categorize Pages Functionality',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://try.amazee.ai/',
@@ -148,13 +148,13 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 0,
+            'target_unallocated_app_instances' => 1,
         ]);
 
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $switzerlandStore->id,
             'name' => 'Switzerland amazee.io AI - Categorize Pages',
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
+            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
             'description' => 'A demo of amazee.io AI - Categorize Pages Functionality',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://try.amazee.ai/',
@@ -169,7 +169,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $usaStore->id,
             'name' => 'USA amazee.io AI - CK Editor',
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
+            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
             'description' => 'A demo of amazee.io AI - CK Editor Functionality',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://try.amazee.ai/',
@@ -184,7 +184,7 @@ class DatabaseSeeder extends Seeder
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $switzerlandStore->id,
             'name' => 'Switzerland amazee.io AI - CK Editor',
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
+            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
             'description' => 'A demo of amazee.io AI - CK Editor Functionality',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://try.amazee.ai/',

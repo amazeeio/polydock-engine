@@ -25,14 +25,23 @@ class PolydockStoreApp extends Model
         'support_email',
         'lagoon_deploy_git',
         'lagoon_deploy_branch',
+        'lagoon_post_deploy_script',
+        'lagoon_pre_upgrade_script',
+        'lagoon_upgrade_script',
+        'lagoon_post_upgrade_script',
+        'lagoon_claim_script',
+        'lagoon_pre_remove_script',
+        'lagoon_remove_script',
         'status',
         'uuid',
         'available_for_trials',
+        'target_unallocated_app_instances',
     ];
 
     protected $casts = [
         'status' => PolydockStoreAppStatusEnum::class,
         'available_for_trials' => 'boolean',
+        'target_unallocated_app_instances' => 'integer',
     ];
 
     /**
