@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "219b52af7108019408375f081877519d",
+    "content-hash": "69c179a428a6f34a23d5610916da2415",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1416,16 +1416,16 @@
         },
         {
             "name": "freedomtech-hosting/ft-lagoon-php",
-            "version": "v0.0.3",
+            "version": "v0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/ft-lagoon-php.git",
-                "reference": "fd2fdd709444c5df7cd032678d5557faa38a1edf"
+                "reference": "d539465af805f73629293a3d0ceb62a24bf0d1b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/ft-lagoon-php/zipball/fd2fdd709444c5df7cd032678d5557faa38a1edf",
-                "reference": "fd2fdd709444c5df7cd032678d5557faa38a1edf",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/ft-lagoon-php/zipball/d539465af805f73629293a3d0ceb62a24bf0d1b4",
+                "reference": "d539465af805f73629293a3d0ceb62a24bf0d1b4",
                 "shasum": ""
             },
             "require": {
@@ -1452,9 +1452,9 @@
             "description": "The Freedom Tech Lagoon PHP library",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/ft-lagoon-php/issues",
-                "source": "https://github.com/Freedomtech-Hosting/ft-lagoon-php/tree/v0.0.3"
+                "source": "https://github.com/Freedomtech-Hosting/ft-lagoon-php/tree/v0.0.4"
             },
-            "time": "2025-03-09T22:04:05+00:00"
+            "time": "2025-03-23T00:12:40+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-amazeeai-backend-client-php",
@@ -1538,20 +1538,20 @@
         },
         {
             "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "v0.0.57",
+            "version": "v0.0.58",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic.git",
-                "reference": "cec389e72a7e483a68d599080e79440c4bfecf1e"
+                "reference": "4261ffbc53273420ef3b69779844670e680db83b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/cec389e72a7e483a68d599080e79440c4bfecf1e",
-                "reference": "cec389e72a7e483a68d599080e79440c4bfecf1e",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/4261ffbc53273420ef3b69779844670e680db83b",
+                "reference": "4261ffbc53273420ef3b69779844670e680db83b",
                 "shasum": ""
             },
             "require": {
-                "freedomtech-hosting/ft-lagoon-php": "^0.0.3",
+                "freedomtech-hosting/ft-lagoon-php": "^0.0.4",
                 "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.0.4",
                 "freedomtech-hosting/polydock-app": "^0.0.25"
             },
@@ -1574,9 +1574,9 @@
             "description": "Polydock App - amazee.io Generic",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.57"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.58"
             },
-            "time": "2025-03-22T16:49:03+00:00"
+            "time": "2025-03-23T00:17:08+00:00"
         },
         {
             "name": "fruitcake/php-cors",
