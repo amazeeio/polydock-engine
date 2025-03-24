@@ -269,6 +269,26 @@ return [
                 'tries' => 3,
             ],
         ],
+        'edition-atlanta' => [
+            'supervisor-1' => [
+                'maxProcesses' => 10,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-2' => [
+                'maxProcesses' => 10,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-3' => [
+                'maxProcesses' => 1,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+        ],
 
         'local' => [
             'supervisor-1' => [

@@ -20,7 +20,7 @@ class AmazeeTrialSeeder extends Seeder
             throw new \Exception(" amazeeai-trial.pass file not found");
         }
 
-        $password = file_get_contents("amazeeai-trial.pass");
+        $password = trim(file_get_contents("amazeeai-trial.pass"));
 
         $admin = User::create([
             'first_name' => 'Admin',
