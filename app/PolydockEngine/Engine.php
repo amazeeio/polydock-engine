@@ -224,6 +224,12 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED, 
                     PolydockAppInstanceStatus::POST_UPGRADE_FAILED);
                 break;
+            case PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM:
+                $stepReturn = $this->processPolydockAppUsingFunction($appInstance, 'claimAppInstance', 
+                    PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM, 
+                    PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED, 
+                    PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED);
+                break;
             case PolydockAppInstanceStatus::DEPLOY_RUNNING:
                 $stepReturn = $this->processPolydockAppPollUpdateUsingFunction($appInstance, 'pollAppInstanceDeploymentProgress', 
                     PolydockAppInstanceStatus::DEPLOY_RUNNING, 

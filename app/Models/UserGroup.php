@@ -210,6 +210,22 @@ class UserGroup extends Model
                 'allocation_lock' => $allocationLock
             ]); 
 
+            if($lockedInstance->remoteRegistration) {
+                $lockedInstance->remoteRegistration->setResultValue('message', 'Configuring trial authentication...');
+                if($lockedInstance->getKeyValue('lagoon-generate-app-admin-username')) {
+                    $lockedInstance->remoteRegistration->setResultValue('app_admin_username', $lockedInstance->getKeyValue('lagoon-generate-app-admin-username'));
+                }
+
+                if($lockedInstance->getKeyValue('lagoon-generate-app-admin-password')) {
+                    $lockedInstance->remoteRegistration->setResultValue('app_admin_password', $lockedInstance->getKeyValue('lagoon-generate-app-admin-password'));
+                }
+                $lockedInstance->remoteRegistration->save();
+            }
+
+            $lockedInstance
+                ->setStatus(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM)
+                ->save();
+                
             return $lockedInstance;
         } else {
             $appInstance = PolydockAppInstance::create([

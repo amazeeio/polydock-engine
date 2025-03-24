@@ -80,10 +80,20 @@ trait HasWebhookSensitiveData
         $data = $this->data ?? [];
         $sensitiveKeys = $this->getSensitiveDataKeys();
 
-        return array_filter(
+        $retData = array_filter(
             $data,
             fn($key) => !$this->shouldFilterKey($key, $sensitiveKeys),
             ARRAY_FILTER_USE_KEY
         );
+
+        if($this->data['lagoon-generate-app-admin-password']) {
+            $retData['lagoon-generate-app-admin-password'] = $data['lagoon-generate-app-admin-password'];
+        }
+
+        if($this->data['lagoon-generate-app-admin-username']) {
+            $retData['lagoon-generate-app-admin-username'] = $data['lagoon-generate-app-admin-username'];
+        }
+
+        return $retData;
     }
 } 

@@ -150,6 +150,7 @@ class DatabaseSeeder extends Seeder
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 1,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
+            'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
 
         \App\Models\PolydockStoreApp::create([
@@ -164,8 +165,9 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
-            'target_unallocated_app_instances' => 1,
+            'target_unallocated_app_instances' => 0,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
+            'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
 
         \App\Models\PolydockStoreApp::create([
@@ -182,6 +184,7 @@ class DatabaseSeeder extends Seeder
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
+            'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
 
         \App\Models\PolydockStoreApp::create([
@@ -198,6 +201,7 @@ class DatabaseSeeder extends Seeder
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
+            'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
         
         // Add some example apps to each store

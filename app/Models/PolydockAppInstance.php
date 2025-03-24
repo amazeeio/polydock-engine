@@ -117,6 +117,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED,
         PolydockAppInstanceStatus::UPGRADE_COMPLETED,
         PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
+        PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
     ];
 
     public static array $failedStatuses = [

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "68831569e1eac0b352cb5e9bd2b8bee0",
+    "content-hash": "687bc731e17a7876c36edf35307cc517",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1538,16 +1538,16 @@
         },
         {
             "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "v0.0.62",
+            "version": "v0.0.67",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic.git",
-                "reference": "34baa7bf4299cd7788ce6ba571ffa6696567030f"
+                "reference": "938f5b703896d306632079677235dcf648726f75"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/34baa7bf4299cd7788ce6ba571ffa6696567030f",
-                "reference": "34baa7bf4299cd7788ce6ba571ffa6696567030f",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/938f5b703896d306632079677235dcf648726f75",
+                "reference": "938f5b703896d306632079677235dcf648726f75",
                 "shasum": ""
             },
             "require": {
@@ -1574,9 +1574,9 @@
             "description": "Polydock App - amazee.io Generic",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.62"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.67"
             },
-            "time": "2025-03-24T02:18:04+00:00"
+            "time": "2025-03-24T07:08:53+00:00"
         },
         {
             "name": "fruitcake/php-cors",

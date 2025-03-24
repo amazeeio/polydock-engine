@@ -2,8 +2,10 @@
 
 namespace App\Listeners;
 
+use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Events\PolydockAppInstanceStatusChanged;
 use App\Jobs\ProcessPolydockAppInstanceJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Claim\ClaimJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Create\CreateJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Create\PostCreateJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Create\PreCreateJob;
@@ -39,7 +41,17 @@ class ProcessPolydockAppInstanceStatusChange
         if(in_array($event->appInstance->status, PolydockAppInstance::$completedStatuses)) {
 
             if($event->appInstance->remoteRegistration) {
-                $event->appInstance->remoteRegistration->setResultValue('message', $event->appInstance->getStatusMessage());
+                $appInstance = $event->appInstance;
+                $event->appInstance->remoteRegistration->setResultValue('message', $appInstance->getStatusMessage());
+                
+                if($appInstance->getKeyValue('lagoon-generate-app-admin-username')) {
+                    $event->appInstance->remoteRegistration->setResultValue('app_admin_username', $appInstance->getKeyValue('lagoon-generate-app-admin-username'));
+                }
+
+                if($appInstance->getKeyValue('lagoon-generate-app-admin-password')) {
+                    $event->appInstance->remoteRegistration->setResultValue('app_admin_password', $appInstance->getKeyValue('lagoon-generate-app-admin-password'));
+                }
+
                 $event->appInstance->remoteRegistration->save();
             }
 
@@ -148,9 +160,26 @@ class ProcessPolydockAppInstanceStatusChange
                 PostUpgradeJob::dispatch($event->appInstance->id)
                     ->onQueue('polydock-app-instance-processing-upgrade');
                 break;
+            case PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM:
+                Log::info('Dispatching ClaimJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                ClaimJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-claim');
+                break;
+            case PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED:
+                if($event->appInstance->remoteRegistration) {
+                    $appInstance = $event->appInstance;
+                    $remoteRegistration = $appInstance->remoteRegistration;
+                    $remoteRegistration->setResultValue('message', "Your trial is ready.");
+                    $remoteRegistration->setResultValue('app_url', $appInstance->getKeyValue('claim-command-output'));
+                    $remoteRegistration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
+                    $remoteRegistration->save();
+                }
+                break;
             default:
                 Log::warning('No job to dispatch for status ' . $event->appInstance->status->value);
-                break;
         }
     }
 } 
