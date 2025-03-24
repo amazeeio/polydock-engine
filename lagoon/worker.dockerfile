@@ -14,6 +14,8 @@ RUN mkdir -p /etc/supervisor/conf.d/ && fix-permissions /etc/supervisor/conf.d
 ADD lagoon/worker-supervisord.conf /etc/supervisord.conf
 ADD lagoon/worker-supervisord-horizon.conf /etc/supervisor/conf.d/
 ADD lagoon/worker-supervisord-schedule.conf /etc/supervisor/conf.d/
+ADD lagoon/worker-supervisord-polydock-poll-deployment-status.conf /etc/supervisor/conf.d/
+ADD lagoon/worker-supervisord-polydock-poll-unallocated-instances.conf /etc/supervisor/conf.d/
 
 #######################################################
 # Run Supervisor
