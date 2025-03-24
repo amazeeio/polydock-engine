@@ -38,7 +38,7 @@ return [
                 ]
             ]
         ],
-        'https://api.main.lagoon-core.test7.amazee.io/graphql' => [
+        'https://api.lagoon.amazeeio.cloud/graphql' => [
             'lagoon_deploy_regions' => [
                 '132' => [
                     'id' => '132',
