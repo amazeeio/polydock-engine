@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "777febfec9964f9eafa6a3cbaa6ad495",
+    "content-hash": "68831569e1eac0b352cb5e9bd2b8bee0",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1458,16 +1458,16 @@
         },
         {
             "name": "freedomtech-hosting/polydock-amazeeai-backend-client-php",
-            "version": "v0.0.4",
+            "version": "v0.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-amazeeai-backend-client-php.git",
-                "reference": "4b63c88bf0cae8f34bf49adfd9695eb905040b55"
+                "reference": "5b0c8ac37cc4db7fb69d34a5d09875f4a342760b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-amazeeai-backend-client-php/zipball/4b63c88bf0cae8f34bf49adfd9695eb905040b55",
-                "reference": "4b63c88bf0cae8f34bf49adfd9695eb905040b55",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-amazeeai-backend-client-php/zipball/5b0c8ac37cc4db7fb69d34a5d09875f4a342760b",
+                "reference": "5b0c8ac37cc4db7fb69d34a5d09875f4a342760b",
                 "shasum": ""
             },
             "require": {
@@ -1492,9 +1492,9 @@
             "description": "The Freedom Tech amazee.ai Private AI PHP library",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-amazeeai-backend-client-php/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-amazeeai-backend-client-php/tree/v0.0.4"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-amazeeai-backend-client-php/tree/v0.0.5"
             },
-            "time": "2025-03-20T23:37:51+00:00"
+            "time": "2025-03-24T02:16:39+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-app",
@@ -1538,21 +1538,21 @@
         },
         {
             "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "v0.0.59",
+            "version": "v0.0.62",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic.git",
-                "reference": "07275906877b5282ab6a0f24f103062f634bfdec"
+                "reference": "34baa7bf4299cd7788ce6ba571ffa6696567030f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/07275906877b5282ab6a0f24f103062f634bfdec",
-                "reference": "07275906877b5282ab6a0f24f103062f634bfdec",
+                "url": "https://api.github.com/repos/Freedomtech-Hosting/polydock-app-amazeeio-generic/zipball/34baa7bf4299cd7788ce6ba571ffa6696567030f",
+                "reference": "34baa7bf4299cd7788ce6ba571ffa6696567030f",
                 "shasum": ""
             },
             "require": {
                 "freedomtech-hosting/ft-lagoon-php": "^0.0.4",
-                "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.0.4",
+                "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.0.5",
                 "freedomtech-hosting/polydock-app": "^0.0.25"
             },
             "type": "library",
@@ -1574,9 +1574,9 @@
             "description": "Polydock App - amazee.io Generic",
             "support": {
                 "issues": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/issues",
-                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.59"
+                "source": "https://github.com/Freedomtech-Hosting/polydock-app-amazeeio-generic/tree/v0.0.62"
             },
-            "time": "2025-03-23T21:29:41+00:00"
+            "time": "2025-03-24T02:18:04+00:00"
         },
         {
             "name": "fruitcake/php-cors",

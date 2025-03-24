@@ -227,6 +227,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             $this->registration->user_id = $user->id;
             $this->registration->user_group_id = $user->groups()->first()->id;
             $this->registration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
+            $this->registration->save();
 
             $email = $user->email;
             $domain = null;
@@ -263,11 +264,15 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 Log::info('Simulating error registration', ['registration' => $this->registration->toArray()]);
                 throw new \Exception('An error occurred while processing the registration.');
             } else {
-                Log::info('Simulating legitimate trial creation', ['registration' => $this->registration->toArray()]);
+                Log::info('Starting actual trial creation', ['registration' => $this->registration->toArray()]);
+                $this->registration->status = UserRemoteRegistrationStatusEnum::PROCESSING;
                 
-                // TODO: Implement actual trial creation
-                $this->registration->setResultValue('result_type', 'trial_registered');
-                $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
+                $this->registration->setResultValue('result_type', 'processing');
+                $this->registration->setResultValue('message', 'Your trial is being created...');
+                
+                $allocatedInstance =$this->registration->userGroup->getNewAppInstanceForThisApp($trialApp);
+                $this->registration->polydock_app_instance_id = $allocatedInstance->id;
+                $this->registration->save();
             }
         } catch (\Exception $e) {
             Log::error('Failed to process trial registration', [

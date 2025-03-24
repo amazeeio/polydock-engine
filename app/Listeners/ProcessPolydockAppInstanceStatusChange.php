@@ -37,8 +37,14 @@ class ProcessPolydockAppInstanceStatusChange
         ]);
 
         if(in_array($event->appInstance->status, PolydockAppInstance::$completedStatuses)) {
+
+            if($event->appInstance->remoteRegistration) {
+                $event->appInstance->remoteRegistration->setResultValue('message', $event->appInstance->getStatusMessage());
+                $event->appInstance->remoteRegistration->save();
+            }
+
             ProgressToNextStageJob::dispatch($event->appInstance->id)
-                ->onQueue('polydock-app-instance-processing-progress-to-next-stage');;
+                ->onQueue('polydock-app-instance-processing-progress-to-next-stage');
         } else {
             $this->switchOnStatus($event);
         }

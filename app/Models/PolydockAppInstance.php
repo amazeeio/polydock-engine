@@ -20,6 +20,7 @@ use App\Traits\HasWebhookSensitiveData;
 
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
@@ -222,7 +223,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 		        // Fill the UUID 
         	    $model->uuid = Str::uuid()->toString();
 
-                $model->data = [
+                $data = [
 		            'uuid' => $model->uuid,
                     'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
                     'lagoon-deploy-branch' => $storeApp->lagoon_deploy_branch,
@@ -241,6 +242,37 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     ], true))
                 ];
 
+                if($storeApp->lagoon_post_deploy_script) {
+                    $data['lagoon-post-deploy-script'] = $storeApp->lagoon_post_deploy_script;
+                }
+
+                if($storeApp->lagoon_pre_upgrade_script ) {
+                    $data['lagoon-pre-upgrade-script'] = $storeApp->lagoon_pre_upgrade_script;
+                }
+
+                if($storeApp->lagoon_upgrade_script) {
+                    $data['lagoon-upgrade-script'] = $storeApp->lagoon_upgrade_script;
+                }
+
+                if($storeApp->lagoon_post_upgrade_script) {
+                    $data['lagoon-post-upgrade-script'] = $storeApp->lagoon_post_upgrade_script;
+                }
+                
+                if($storeApp->lagoon_pre_remove_script) {
+                    $data['lagoon-pre-remove-script'] = $storeApp->lagoon_pre_remove_script;
+                }
+
+                if($storeApp->lagoon_remove_script) {
+                    $data['lagoon-remove-script'] = $storeApp->lagoon_remove_script;
+                }
+                
+                if($storeApp->lagoon_claim_script) {
+                    $data['lagoon-claim-script'] = $storeApp->lagoon_claim_script;
+                }
+
+                $model->data = $data;
+
+                
             } catch (PolydockEngineAppNotFoundException $e) {
                 Log::error('Failed to set app type for new instance', [
                     'store_app_id' => $model->polydock_store_app_id,
@@ -644,5 +676,13 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         ]);
 
         return $this;
+    }
+
+    /**
+     * Get the remote registration associated with this instance
+     */
+    public function remoteRegistration(): HasOne
+    {
+        return $this->hasOne(UserRemoteRegistration::class, 'polydock_app_instance_id');
     }
 }

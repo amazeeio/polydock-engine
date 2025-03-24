@@ -178,4 +178,13 @@ class UserRemoteRegistration extends Model
     {
         return config('polydock.register_simulate_error', false);
     }
+
+    /**
+     * Get the app instance associated with this registration
+     */
+    public function appInstance(): BelongsTo
+    {
+        return $this->belongsTo(PolydockAppInstance::class, 'polydock_app_instance_id');
+    }
 }
+ 
