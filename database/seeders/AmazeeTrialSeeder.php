@@ -185,7 +185,7 @@ class AmazeeTrialSeeder extends Seeder
     {
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
-            'name' => $namePrefix . ' amazee.io AI - Categorize Pages',
+            'name' => $namePrefix . ' amazee.io AI - Search',
             'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
             'description' => 'Drupal AI - Search',
             'author' => 'amazee.io',
