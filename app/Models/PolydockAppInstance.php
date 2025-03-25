@@ -133,6 +133,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PRE_UPGRADE_FAILED,
         PolydockAppInstanceStatus::UPGRADE_FAILED,
         PolydockAppInstanceStatus::POST_UPGRADE_FAILED,
+        PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
     ];
 
     public static array $pollingStatuses = [

@@ -76,6 +76,32 @@ class PolydockStoreAppResource extends Resource
                     ->required()
                     ->numeric()
                     ->default(0),
+                Forms\Components\Section::make('Email Configuration')
+                    ->schema([
+                        Forms\Components\TextInput::make('email_subject_line')
+                            ->label('Email Subject Line')
+                            ->placeholder('Your {app name} Instance is Ready')
+                            ->helperText('Leave blank to use default subject')
+                            ->columnSpanFull(),
+                            
+                        Forms\Components\MarkdownEditor::make('email_body_markdown')
+                            ->label('Email Body Content')
+                            ->placeholder('Enter custom content for the "What to Know About Your App" section')
+                            ->helperText('This content will appear between the access details and signature')
+                            ->toolbarButtons([
+                                'bold',
+                                'bulletList',
+                                'heading',
+                                'italic',
+                                'link',
+                                'orderedList',
+                                'redo',
+                                'strike',
+                                'undo',
+                            ])
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible(),
             ]);
     }
 

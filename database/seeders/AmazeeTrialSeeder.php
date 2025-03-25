@@ -214,7 +214,7 @@ class AmazeeTrialSeeder extends Seeder
             'lagoon_deploy_git' => 'git@github.com:amazeeio-demos/polydock-ai-trial-generic.git',
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
-            'available_for_trials' => true,
+            'available_for_trials' => true, 
             'target_unallocated_app_instances' => 0,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
             'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',

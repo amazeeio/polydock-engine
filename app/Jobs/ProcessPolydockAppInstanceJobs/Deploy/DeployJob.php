@@ -26,8 +26,7 @@ class DeployJob extends BaseJob implements ShouldQueue
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_DEPLOY) {
             throw new PolydockAppInstanceStatusFlowException(
-                'DeployJob must be in status PENDING_DEPLOY',
-                $appInstance->status
+                'DeployJob must be in status PENDING_DEPLOY'
             );
         }
 

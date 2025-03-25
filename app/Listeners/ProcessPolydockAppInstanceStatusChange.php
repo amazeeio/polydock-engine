@@ -22,6 +22,8 @@ use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\UpgradeJob;
 use App\Models\PolydockAppInstance;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AppInstanceReadyMail;
 
 class ProcessPolydockAppInstanceStatusChange
 {
@@ -176,6 +178,15 @@ class ProcessPolydockAppInstanceStatusChange
                     $remoteRegistration->setResultValue('app_url', $appInstance->getKeyValue('claim-command-output'));
                     $remoteRegistration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
                     $remoteRegistration->save();
+
+                    // Send email to user
+                    $mail = Mail::to("$remoteRegistration->email");
+                    
+                    if(env('MAIL_CC_ALL', false)) {
+                        $mail->cc(env('MAIL_CC_ALL'));
+                    }
+
+                    $mail->queue(new AppInstanceReadyMail($appInstance));
                 }
                 break;
             default:

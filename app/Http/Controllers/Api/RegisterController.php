@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Models\PolydockAppInstance;
 use App\Models\UserRemoteRegistration;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
@@ -55,6 +56,19 @@ class RegisterController extends Controller
         try {
             $registration = UserRemoteRegistration::where('uuid', $uuid)->firstOrFail();
             Log::info('Showing user remote registration', ['registration' => $registration->toArray()]);
+
+            if($registration->appInstance) {
+                $appInstance = $registration->appInstance;
+                if(in_array($appInstance->status, PolydockAppInstance::$failedStatuses) 
+                    && $registration->status != UserRemoteRegistrationStatusEnum::FAILED) 
+                {
+                    $registration->status = UserRemoteRegistrationStatusEnum::FAILED;
+                    $registration->setResultValue('message', 'Failed to process registration.');
+                    $registration->setResultValue('message_detail', 'An unexpected error occurred.');
+                    $registration->setResultValue('result_type', 'registration_failed');
+                    $registration->save();
+                }
+            }
 
             return response()->json([
                 'status' => $registration->status->value,
