@@ -1,7 +1,5 @@
 <x-mail::message>
-# Your Experience is Ready
-
-Your *"{{ $appInstance->storeApp->name }}"* Experience is now ready to use.
+# Your *"{{ $appInstance->storeApp->name }}"* Experience is now ready to use.
 
 <x-mail::button :url="$appInstance->getKeyValue('claim-command-output')">
 Access Your Experience
