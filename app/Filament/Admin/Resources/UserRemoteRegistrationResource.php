@@ -13,6 +13,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Eloquent\Model;
 
 class UserRemoteRegistrationResource extends Resource
 {
@@ -44,20 +45,22 @@ class UserRemoteRegistrationResource extends Resource
                 TextColumn::make('userGroup.name'),
                 TextColumn::make('storeApp.store.name'),
                 TextColumn::make('storeApp.name'),
-                TextColumn::make('status'),
+                TextColumn::make('status')
+                    ->badge()
+                    ->color(fn ($state): string => match ($state->value) {
+                        'pending' => 'warning',
+                        'processing' => 'info',
+                        'success' => 'success',
+                        'failed' => 'danger',
+                        default => 'gray',
+                    }),
                 TextColumn::make('created_at')->dateTime(),
             ])
-            ->filters([
-                //
-            ])
+            ->filters([])
             ->actions([
-                //Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->bulkActions([]);
     }
 
     public static function getRelations(): array
@@ -72,12 +75,16 @@ class UserRemoteRegistrationResource extends Resource
         return false;
     }
 
+    public static function canEdit(Model $record): bool
+    {
+        return false;
+    }
+
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListUserRemoteRegistrations::route('/'),
-            // 'create' => Pages\CreateUserRemoteRegistration::route('/create'),
-            // 'edit' => Pages\EditUserRemoteRegistration::route('/{record}/edit'),
+            'view' => Pages\ViewUserRemoteRegistration::route('/{record}'),
         ];
     }
 }
