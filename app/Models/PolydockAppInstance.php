@@ -77,6 +77,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'api_key',
         'ssh_key',
         'lagoon_deploy_private_key',
+        'recaptcha',
         
         // Regex patterns
         '/^.*_key$/',              // Anything ending with _key
