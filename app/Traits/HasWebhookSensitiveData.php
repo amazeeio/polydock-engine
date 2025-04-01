@@ -76,9 +76,9 @@ trait HasWebhookSensitiveData
     /**
      * Get webhook safe data by filtering sensitive information
      */
-    public function getWebhookSafeData(): array
+    public function getWebhookSafeData($attribute = 'data'): array
     {
-        $data = $this->data ?? [];
+        $data = $this->{$attribute} ?? [];
         $sensitiveKeys = $this->getSensitiveDataKeys();
 
         $retData = array_filter(

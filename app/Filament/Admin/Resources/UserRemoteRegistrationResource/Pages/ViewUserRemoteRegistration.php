@@ -90,22 +90,27 @@ class ViewUserRemoteRegistration extends ViewRecord
 
     public static function getRenderedSafeRequestDataForRecord(UserRemoteRegistration $record) : array
     {
-        $fullSafeData = $record->getWebhookSafeData();
-        $safeData = $fullSafeData['request_data'] ?? [];
-        return self::getRenderedSafeDataForRecord($safeData);
+        $fullSafeData = $record->request_data ?? [];
+        return self::getRenderedSafeDataForRecord($record, $fullSafeData);
     }
 
     public static function getRenderedSafeResultDataForRecord(UserRemoteRegistration $record) : array
     {
-        $fullSafeData = $record->getWebhookSafeData();
-        $safeData = $fullSafeData['result_data'] ?? [];
-        return self::getRenderedSafeDataForRecord($safeData);
+        $fullSafeData = $record->result_data ?? [];
+        return self::getRenderedSafeDataForRecord($record, $fullSafeData);
     }
 
-    public static function getRenderedSafeDataForRecord($safeData) : array
+    public static function getRenderedSafeDataForRecord(UserRemoteRegistration $record, $safeData) : array
     {
+        $sensitiveKeys = $record->getSensitiveDataKeys();
+
         $renderedArray = [];
         foreach ($safeData as $key => $value) {
+
+            if($record->shouldFilterKey($key, $sensitiveKeys)) {
+                $value = 'REDACTED';
+            }
+
             $renderKey = "request_data_" . $key;
             $renderedItem = \Filament\Infolists\Components\TextEntry::make($renderKey)
             ->label($key)
