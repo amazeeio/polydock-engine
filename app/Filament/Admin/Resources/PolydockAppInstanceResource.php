@@ -163,7 +163,7 @@ class PolydockAppInstanceResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\LogsRelationManager::class,
         ];
     }
 
