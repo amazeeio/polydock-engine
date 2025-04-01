@@ -76,15 +76,34 @@ class ViewUserRemoteRegistration extends ViewRecord
 
                 Section::make('Request Data')
                     ->schema(function ($record) {
-                        return self::getRenderedSafeDataForRecord($record);
+                        return self::getRenderedSafeRequestDataForRecord($record);
+                    })
+                    ->collapsible(),
+                
+                Section::make('Result Data')
+                    ->schema(function ($record) {
+                        return self::getRenderedSafeResultDataForRecord($record);
                     })
                     ->collapsible(),
             ]);
     }
 
-    public static function getRenderedSafeDataForRecord(UserRemoteRegistration $record) : array
+    public static function getRenderedSafeRequestDataForRecord(UserRemoteRegistration $record) : array
     {
-        $safeData = $record->request_data;
+        $fullSafeData = $record->getWebhookSafeData();
+        $safeData = $fullSafeData['request_data'] ?? [];
+        return self::getRenderedSafeDataForRecord($safeData);
+    }
+
+    public static function getRenderedSafeResultDataForRecord(UserRemoteRegistration $record) : array
+    {
+        $fullSafeData = $record->getWebhookSafeData();
+        $safeData = $fullSafeData['result_data'] ?? [];
+        return self::getRenderedSafeDataForRecord($safeData);
+    }
+
+    public static function getRenderedSafeDataForRecord($safeData) : array
+    {
         $renderedArray = [];
         foreach ($safeData as $key => $value) {
             $renderKey = "request_data_" . $key;

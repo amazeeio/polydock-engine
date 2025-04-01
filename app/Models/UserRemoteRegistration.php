@@ -10,9 +10,11 @@ use App\Jobs\ProcessUserRemoteRegistration;
 use App\Events\UserRemoteRegistrationCreated;
 use Illuminate\Support\Facades\Log;
 use App\Events\UserRemoteRegistrationStatusChanged;
-
+use App\Traits\HasWebhookSensitiveData;
 class UserRemoteRegistration extends Model
 {
+    use HasWebhookSensitiveData;
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -185,6 +187,14 @@ class UserRemoteRegistration extends Model
     public function appInstance(): BelongsTo
     {
         return $this->belongsTo(PolydockAppInstance::class, 'polydock_app_instance_id');
+    }
+
+    public function getDataAttribute(): array
+    {
+        return [
+            'request_data' => $this->request_data,
+            'result_data' => $this->result_data,
+        ];
     }
 }
  

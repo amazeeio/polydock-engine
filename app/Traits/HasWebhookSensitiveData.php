@@ -17,6 +17,7 @@ trait HasWebhookSensitiveData
             'token',
             'api_key',
             'ssh_key',
+            'recaptcha',
             
             // Regex patterns (starting with /)
             '/^.*_key.*$/',          // Anything containing _key
@@ -86,11 +87,12 @@ trait HasWebhookSensitiveData
             ARRAY_FILTER_USE_KEY
         );
 
-        if($this->data['lagoon-generate-app-admin-password']) {
+        // special cases for emails that the webhook needs to be able to see the password
+        if(isset($this->data['lagoon-generate-app-admin-password'])) {
             $retData['lagoon-generate-app-admin-password'] = $data['lagoon-generate-app-admin-password'];
         }
 
-        if($this->data['lagoon-generate-app-admin-username']) {
+        if(isset($this->data['lagoon-generate-app-admin-username'])) {
             $retData['lagoon-generate-app-admin-username'] = $data['lagoon-generate-app-admin-username'];
         }
 
