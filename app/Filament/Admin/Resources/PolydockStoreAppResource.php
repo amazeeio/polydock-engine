@@ -9,12 +9,16 @@ use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Grid;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Section as InfolistSection;
+use Filament\Infolists\Components\Grid as InfolistGrid;
 
 class PolydockStoreAppResource extends Resource
 {
@@ -76,7 +80,7 @@ class PolydockStoreAppResource extends Resource
                     ->required()
                     ->numeric()
                     ->default(0),
-                Forms\Components\Section::make('Email Configuration')
+                Forms\Components\Section::make('Instance Ready Email Configuration')
                     ->schema([
                         Forms\Components\TextInput::make('email_subject_line')
                             ->label('Email Subject Line')
@@ -102,6 +106,52 @@ class PolydockStoreAppResource extends Resource
                             ->columnSpanFull(),
                     ])
                     ->collapsible(),
+                Section::make('Trial Settings')
+                    ->schema([
+                        Forms\Components\TextInput::make('trial_duration_days')
+                            ->label('Trial Duration (Days)')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(365),
+
+                        Grid::make(2)->schema([
+                            Section::make('Mid-trial Email')
+                                ->schema([
+                                    Forms\Components\Toggle::make('send_midtrial_email')
+                                        ->label('Send Mid-trial Email'),
+                                    Forms\Components\TextInput::make('midtrial_email_subject')
+                                        ->label('Subject Line')
+                                        ->maxLength(255),
+                                    Forms\Components\MarkdownEditor::make('midtrial_email_markdown')
+                                        ->label('Email Content')
+                                        ->columnSpanFull(),
+                                ]),
+
+                            Section::make('One Day Left Email')
+                                ->schema([
+                                    Forms\Components\Toggle::make('send_one_day_left_email')
+                                        ->label('Send One Day Left Email'),
+                                    Forms\Components\TextInput::make('one_day_left_email_subject')
+                                        ->label('Subject Line')
+                                        ->maxLength(255),
+                                    Forms\Components\MarkdownEditor::make('one_day_left_email_markdown')
+                                        ->label('Email Content')
+                                        ->columnSpanFull(),
+                                ]),
+
+                            Section::make('Trial Complete Email')
+                                ->schema([
+                                    Forms\Components\Toggle::make('send_trial_complete_email')
+                                        ->label('Send Trial Complete Email'),
+                                    Forms\Components\TextInput::make('trial_complete_email_subject')
+                                        ->label('Subject Line')
+                                        ->maxLength(255),
+                                    Forms\Components\MarkdownEditor::make('trial_complete_email_markdown')
+                                        ->label('Email Content')
+                                        ->columnSpanFull(),
+                                ]),
+                        ])->columnSpanFull(),
+                    ])->columnSpanFull(),
             ]);
     }
 
@@ -127,10 +177,10 @@ class PolydockStoreAppResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('target_unallocated_app_instances')
+                    ->label('Target Unallocated')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('unallocated_instances_count')
                     ->label('Unallocated')
-                    ->state(function($record) {
-                        return $record->unallocated_instances_count . "/"  . $record->target_unallocated_app_instances;
-                    })
                     ->sortable(),
                 Tables\Columns\TextColumn::make('allocatedInstances')
                     ->state(function($record) {
@@ -182,7 +232,7 @@ class PolydockStoreAppResource extends Resource
             ->schema([
                 \Filament\Infolists\Components\Section::make('App Details')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        \Filament\Infolists\Components\Grid::make(3)
                             ->schema([
                                 \Filament\Infolists\Components\TextEntry::make('name')
                                     ->label('App Name'),
@@ -190,36 +240,39 @@ class PolydockStoreAppResource extends Resource
                                     ->label('Store')
                                     ->icon('heroicon-m-building-storefront')
                                     ->iconColor('primary'),
-                            ]),
-                        \Filament\Infolists\Components\Grid::make(2)
-                            ->schema([
                                 \Filament\Infolists\Components\TextEntry::make('status')
                                     ->badge(),
-                                \Filament\Infolists\Components\IconEntry::make('available_for_trials')
-                                    ->label('Available for Trials')
-                                    ->boolean(),
                             ]),
                         \Filament\Infolists\Components\TextEntry::make('description')
                             ->markdown()
                             ->columnSpanFull(),
-                        \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_git')
-                            ->label('Git Repository')
-                            ->icon('heroicon-m-code-bracket')
-                            ->iconColor('gray'),
-                        \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_branch')
-                            ->label('Deploy Branch')
-                            ->icon('heroicon-m-code-bracket-square')
-                            ->iconColor('warning'),
+                        
+                        \Filament\Infolists\Components\Grid::make(3)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_git')
+                                    ->copyable()
+                                    ->label('Git Repository')
+                                    ->icon('heroicon-m-code-bracket')
+                                    ->iconColor('gray')
+                                    ->columnSpan(2),
+                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_branch')
+                                    ->label('Deploy Branch')
+                                    ->icon('heroicon-m-code-bracket-square')
+                                    ->iconColor('warning'),
+                            ])
                     ])
                     ->columnSpan(2),
 
                 \Filament\Infolists\Components\Section::make('Instance Management')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        \Filament\Infolists\Components\Grid::make(1)
                             ->schema([
                                 \Filament\Infolists\Components\TextEntry::make('unallocated_instances_count')
                                     ->label('Unallocated Instances')
-                                    ->state(fn ($record) => "{$record->unallocated_instances_count}/{$record->target_unallocated_app_instances}")
+                                    ->icon('heroicon-m-queue-list')
+                                    ->iconColor('warning'),
+                                \Filament\Infolists\Components\TextEntry::make('target_unallocated_app_instances')
+                                    ->label('Target Unallocated Instances')
                                     ->icon('heroicon-m-queue-list')
                                     ->iconColor('warning'),
                                 \Filament\Infolists\Components\TextEntry::make('allocatedInstances')
@@ -230,7 +283,7 @@ class PolydockStoreAppResource extends Resource
                             ]),
                     ])
                     ->columnSpan(1),
-
+                
                 \Filament\Infolists\Components\Section::make('Support Information')
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(2)
@@ -247,6 +300,66 @@ class PolydockStoreAppResource extends Resource
                             ->openUrlInNewTab()
                             ->icon('heroicon-m-globe-alt')
                             ->iconColor('info'),
+                    ])
+                    ->columnSpan(3),
+
+                \Filament\Infolists\Components\Section::make('Trial Settings')
+                    ->schema([
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\IconEntry::make('available_for_trials')
+                                    ->label('Available for Trials')
+                                    ->boolean(),
+                                \Filament\Infolists\Components\TextEntry::make('trial_duration_days')
+                                    ->label('Trial Duration')
+                                    ->suffix(' days')
+                                    ->placeholder('Not set'),
+                            ]),
+                    ])
+                    ->columnSpan(3),
+
+                \Filament\Infolists\Components\Section::make('Mid-trial Email')
+                    ->schema([
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\IconEntry::make('send_midtrial_email')
+                                    ->label('Email Enabled')
+                                    ->boolean(),
+                                \Filament\Infolists\Components\TextEntry::make('midtrial_email_subject')
+                                    ->label('Subject Line')
+                                    ->visible(fn ($record) => $record->send_midtrial_email)
+                                    ->placeholder('Not configured'),
+                            ]),
+                    ])
+                    ->columnSpan(3),
+
+                \Filament\Infolists\Components\Section::make('One Day Left Email')
+                    ->schema([
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\IconEntry::make('send_one_day_left_email')
+                                    ->label('Email Enabled')
+                                    ->boolean(),
+                                \Filament\Infolists\Components\TextEntry::make('one_day_left_email_subject')
+                                    ->label('Subject Line')
+                                    ->visible(fn ($record) => $record->send_one_day_left_email)
+                                    ->placeholder('Not configured'),
+                            ]),
+                    ])
+                    ->columnSpan(3),
+
+                \Filament\Infolists\Components\Section::make('Trial Complete Email')
+                    ->schema([
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\IconEntry::make('send_trial_complete_email')
+                                    ->label('Email Enabled')
+                                    ->boolean(),
+                                \Filament\Infolists\Components\TextEntry::make('trial_complete_email_subject')
+                                    ->label('Subject Line')
+                                    ->visible(fn ($record) => $record->send_trial_complete_email)
+                                    ->placeholder('Not configured'),
+                            ]),
                     ])
                     ->columnSpan(3),
 

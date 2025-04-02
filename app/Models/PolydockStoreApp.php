@@ -38,12 +38,25 @@ class PolydockStoreApp extends Model
         'uuid',
         'available_for_trials',
         'target_unallocated_app_instances',
+        'trial_duration_days',
+        'send_midtrial_email',
+        'midtrial_email_subject',
+        'midtrial_email_markdown',
+        'send_one_day_left_email',
+        'one_day_left_email_subject',
+        'one_day_left_email_markdown',
+        'send_trial_complete_email',
+        'trial_complete_email_subject',
+        'trial_complete_email_markdown',
     ];
 
     protected $casts = [
         'status' => PolydockStoreAppStatusEnum::class,
         'available_for_trials' => 'boolean',
         'target_unallocated_app_instances' => 'integer',
+        'send_midtrial_email' => 'boolean',
+        'send_one_day_left_email' => 'boolean',
+        'send_trial_complete_email' => 'boolean',
     ];
 
     /**
