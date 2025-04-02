@@ -39,7 +39,11 @@ class UserRemoteRegistrationResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('request_data.register_type'),
+                TextColumn::make('type')
+                    ->badge()
+                    ->color(fn ($state): string => $state ? $state->getColor() : 'gray')
+                    ->icon(fn ($state): string => $state ? $state->getIcon() : '')
+                    ->sortable(),
                 TextColumn::make('email'),
                 TextColumn::make('user.name'),
                 TextColumn::make('userGroup.name'),

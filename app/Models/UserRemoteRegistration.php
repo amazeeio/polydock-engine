@@ -11,6 +11,8 @@ use App\Events\UserRemoteRegistrationCreated;
 use Illuminate\Support\Facades\Log;
 use App\Events\UserRemoteRegistrationStatusChanged;
 use App\Traits\HasWebhookSensitiveData;
+use App\Enums\UserRemoteRegistrationType;
+
 class UserRemoteRegistration extends Model
 {
     use HasWebhookSensitiveData;
@@ -29,6 +31,7 @@ class UserRemoteRegistration extends Model
         'result_data',
         'status',
         'uuid',
+        'type',
     ];
 
     /**
@@ -37,9 +40,10 @@ class UserRemoteRegistration extends Model
      * @var array
      */ 
     protected $casts = [
+        'status' => UserRemoteRegistrationStatusEnum::class,
+        'type' => UserRemoteRegistrationType::class,
         'request_data' => 'array',
         'result_data' => 'array',
-        'status' => UserRemoteRegistrationStatusEnum::class,
         'polydock_store_app_id' => 'integer:nullable',
     ];
 

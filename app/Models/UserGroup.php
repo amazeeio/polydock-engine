@@ -192,6 +192,7 @@ class UserGroup extends Model
         $lockedRows = PolydockAppInstance::where('polydock_store_app_id', $storeApp->id)
             ->whereNull('user_group_id')
             ->whereNull('allocation_lock')
+            ->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
             ->limit(1)
             ->update(['allocation_lock' => $allocationLock, 'user_group_id' => $userGroup->id]);
 

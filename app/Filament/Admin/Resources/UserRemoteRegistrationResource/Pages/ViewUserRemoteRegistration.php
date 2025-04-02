@@ -27,6 +27,13 @@ class ViewUserRemoteRegistration extends ViewRecord
                 Section::make('Registration Details')
                     ->schema([
                         Grid::make(3)
+                        ->schema([
+                            TextEntry::make('user.name')
+                                ->label('Full Name'),
+                            TextEntry::make('userGroup.name')
+                                ->label('Group'),
+                        ]),
+                        Grid::make(3)
                             ->schema([
                                 TextEntry::make('status')
                                     ->badge()
@@ -37,25 +44,15 @@ class ViewUserRemoteRegistration extends ViewRecord
                                         'failed' => 'danger',
                                         default => 'gray',
                                     }),
+                                TextEntry::make('type')
+                                    ->badge()
+                                    ->color(fn ($state): string => $state ? $state->getColor() : 'gray')
+                                    ->icon(fn ($state): string => $state ? $state->getIcon() : ''),
                                 TextEntry::make('created_at')
                                     ->label('Requested')
                                     ->dateTime(),
-                                TextEntry::make('updated_at')
-                                    ->label('Last Updated')
-                                    ->dateTime(),
                             ]),
-                    ]),
-
-                Section::make('User Information')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                TextEntry::make('email'),
-                                TextEntry::make('user.name')
-                                    ->label('Full Name'),
-                                TextEntry::make('userGroup.name')
-                                    ->label('Group'),
-                            ]),
+                       
                     ]),
 
                 Section::make('App Details')
