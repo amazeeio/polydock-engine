@@ -102,6 +102,9 @@ class ProgressToNextStageJob extends BaseJob implements ShouldQueue
                 break;
             case PolydockAppInstanceStatus::POST_REMOVE_COMPLETED:
                 Log::info('NOT Progressing app instance ' . $appInstance->id . ' to next stage from POST_REMOVE_COMPLETED. This is the end of the line.');
+                $appInstance
+                    ->setStatus(PolydockAppInstanceStatus::REMOVED)
+                    ->save();
                 break;
             case PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED:
                 Log::info('Progressing app instance ' . $appInstance->id . ' to next stage from PRE_UPGRADE_COMPLETED to PENDING_UPGRADE');
