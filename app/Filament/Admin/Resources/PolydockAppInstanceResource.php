@@ -18,6 +18,8 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use App\Filament\Admin\Resources\UserGroupResource;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
+use Filament\Tables\Columns\CheckboxColumn;
+use Filament\Tables\Columns\ToggleColumn;
 
 class PolydockAppInstanceResource extends Resource
 {
@@ -48,12 +50,7 @@ class PolydockAppInstanceResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->searchable(),
-                TextColumn::make('storeApp.store.name')
-                    ->label('Store')
-                    ->searchable(),
-                TextColumn::make('storeApp.name')
-                    ->label('Store App')
+                    ->description(fn ($record) => $record->storeApp->store->name . " - " . $record->storeApp->name)
                     ->searchable(),
                 TextColumn::make('userGroup.name')
                     ->label('User Group')
@@ -63,7 +60,25 @@ class PolydockAppInstanceResource extends Resource
                     ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
                     ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
                     ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel()),
-            ])
+                TextColumn::make('is_trial')
+                    ->state(fn ($record) => $record->is_trial ? 'Yes' : 'No')
+                    ->label('Trial'),
+                TextColumn::make('trial_ends_at')
+                    ->label('Trial Ends At')
+                    ->description(fn ($record) => $record->trial_completed ? 'Trial completed' : 'Trial active')
+                    ->dateTime(),
+                TextColumn::make('send_midtrial_email_at')
+                    ->label('Midtrial Email')
+                    ->description(fn ($record) => $record->midtrial_email_sent ? 'Sent' : 'Pending')
+                    ->state(fn ($record) => $record->send_midtrial_email_at ? $record->send_midtrial_email_at->format('Y-m-d H:i:s') : ''),
+                TextColumn::make('send_one_day_left_email_at')
+                    ->label('1D Left Email')
+                    ->description(fn ($record) => $record->one_day_left_email_sent ? 'Sent' : 'Pending')
+                    ->state(fn ($record) => $record->send_one_day_left_email_at ? $record->send_one_day_left_email_at->format('Y-m-d H:i:s') : ''),
+                TextColumn::make('trial_complete_email_sent')
+                    ->label('Trial Complete Email')
+                    ->state(fn ($record) => ($record->is_trial && $record->trial_complete_email_sent) ? 'Sent' : ($record->is_trial ? 'Pending' : '')),
+                ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

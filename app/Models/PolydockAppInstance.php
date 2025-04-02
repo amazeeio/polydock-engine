@@ -38,6 +38,14 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'app_type',
         'status',
         'status_message',
+        'is_trial',
+        'trial_ends_at',
+        'trial_completed',
+        'send_midtrial_email_at',
+        'midtrial_email_sent',
+        'send_one_day_left_email_at',
+        'one_day_left_email_sent',
+        'trial_complete_email_sent',
     ];
 
     /**
@@ -47,6 +55,14 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     protected $casts = [
         'status' => PolydockAppInstanceStatus::class,
         'data' => 'array',
+        'is_trial' => 'boolean',
+        'trial_ends_at' => 'datetime',
+        'trial_completed' => 'boolean',
+        'send_midtrial_email_at' => 'datetime',
+        'midtrial_email_sent' => 'boolean',
+        'send_one_day_left_email_at' => 'datetime',
+        'one_day_left_email_sent' => 'boolean',
+        'trial_complete_email_sent' => 'boolean',
     ];
 
     /**
@@ -687,5 +703,25 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function remoteRegistration(): HasOne
     {
         return $this->hasOne(UserRemoteRegistration::class, 'polydock_app_instance_id');
+    }
+
+    // Helper method to check if trial is active
+    public function isTrialActive(): bool
+    {
+        if (!$this->is_trial || $this->trial_completed) {
+            return false;
+        }
+
+        return $this->trial_ends_at->isFuture();
+    }
+
+    // Helper method to check if trial is expired
+    public function isTrialExpired(): bool
+    {
+        if (!$this->is_trial) {
+            return false;
+        }
+
+        return $this->trial_ends_at->isPast();
     }
 }
