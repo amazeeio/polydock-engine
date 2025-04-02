@@ -29,12 +29,14 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->default()
             ->id('admin')
             ->path('admin')
             ->login()
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->maxContentWidth('full')
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([
@@ -42,15 +44,17 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Admin/Widgets'), for: 'App\\Filament\\Admin\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
                 StatsOverview::class,
-                
                 UserCreatedChart::class,
                 UserRemoteRegistrationsChart::class,
-                
                 PolydockAppInstancesCreatedByTypeChart::class,
                 PolydockAppInstancesCreatedByStoreChart::class,
             ])
+            ->navigationGroups([
+                'Users',
+                'Apps',
+            ])
+            ->topNavigation()
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

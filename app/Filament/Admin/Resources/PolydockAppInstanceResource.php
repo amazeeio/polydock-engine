@@ -49,6 +49,9 @@ class PolydockAppInstanceResource extends Resource
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('storeApp.store.name')
+                    ->label('Store')
+                    ->searchable(),
                 TextColumn::make('storeApp.name')
                     ->label('Store App')
                     ->searchable(),
