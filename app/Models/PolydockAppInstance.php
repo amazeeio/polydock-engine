@@ -197,6 +197,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED,
         PolydockAppInstanceStatus::REMOVE_COMPLETED,
         PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
+        PolydockAppInstanceStatus::REMOVED,
     ];  
 
     public static array $stageUpgradeStatuses = [

@@ -20,6 +20,9 @@ use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
 use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Filament\Tables\Filters\SelectFilter;
+use App\Models\PolydockStore;
+use App\Models\PolydockStoreApp;
 
 class PolydockAppInstanceResource extends Resource
 {
@@ -79,6 +82,89 @@ class PolydockAppInstanceResource extends Resource
                     ->label('Trial Complete Email')
                     ->state(fn ($record) => ($record->is_trial && $record->trial_complete_email_sent) ? 'Sent' : ($record->is_trial ? 'Pending' : '')),
                 ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->options(collect(PolydockAppInstanceStatus::cases())
+                        ->mapWithKeys(fn ($status) => [$status->value => $status->getLabel()])
+                        ->toArray())
+                    ->multiple()
+                    ->label('Instance Status')
+                    ->indicator('Status'),
+
+                SelectFilter::make('status_group')
+                    ->options([
+                        'pending' => 'Pending',
+                        'completed' => 'Completed',
+                        'failed' => 'Failed',
+                        'polling' => 'Polling',
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (!$data['value']) {
+                            return $query;
+                        }
+
+                        return $query->where(function ($query) use ($data) {
+                            match($data['value']) {
+                                'pending' => $query->whereIn('status', PolydockAppInstance::$pendingStatuses),
+                                'completed' => $query->whereIn('status', PolydockAppInstance::$completedStatuses),
+                                'failed' => $query->whereIn('status', PolydockAppInstance::$failedStatuses),
+                                'polling' => $query->whereIn('status', PolydockAppInstance::$pollingStatuses),
+                                default => null,
+                            };
+                        });
+                    })
+                    ->label('Status Group')
+                    ->indicator('Status Group'),
+
+                SelectFilter::make('stage_group')
+                    ->options([
+                        'create' => 'Create Stage',
+                        'deploy' => 'Deploy Stage',
+                        'remove' => 'Remove Stage',
+                        'upgrade' => 'Upgrade Stage',
+                        'running' => 'Running Stage',
+                    ])
+                    ->query(function ($query, array $data) {
+                        if (!$data['value']) {
+                            return $query;
+                        }
+
+                        return $query->where(function ($query) use ($data) {
+                            match($data['value']) {
+                                'create' => $query->whereIn('status', PolydockAppInstance::$stageCreateStatuses),
+                                'deploy' => $query->whereIn('status', PolydockAppInstance::$stageDeployStatuses),
+                                'remove' => $query->whereIn('status', PolydockAppInstance::$stageRemoveStatuses),
+                                'upgrade' => $query->whereIn('status', PolydockAppInstance::$stageUpgradeStatuses),
+                                'running' => $query->whereIn('status', PolydockAppInstance::$stageRunningStatuses),
+                                default => null,
+                            };
+                        });
+                    })
+                    ->label('Stage Group')
+                    ->indicator('Stage'),
+
+                SelectFilter::make('is_trial')
+                    ->options([
+                        '1' => 'Yes',
+                        '0' => 'No',
+                    ])
+                    ->label('Is Trial')
+                    ->indicator('Is Trial'),
+
+                SelectFilter::make('store')
+                    ->relationship('storeApp.store', 'name')
+                    ->label('Store')
+                    ->searchable()
+                    ->preload()
+                    ->indicator('Store'),
+
+                SelectFilter::make('polydock_store_app_id')
+                    ->relationship('storeApp', 'name')
+                    ->label('Store App')
+                    ->searchable()
+                    ->preload()
+                    ->indicator('Store App'),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
