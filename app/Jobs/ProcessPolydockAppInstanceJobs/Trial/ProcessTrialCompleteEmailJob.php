@@ -29,6 +29,13 @@ class ProcessTrialCompleteEmailJob implements ShouldQueue
             !$this->appInstance->trial_ends_at ||
             !$this->appInstance->trial_ends_at->isPast() ||
             $this->appInstance->trial_complete_email_sent) {
+                $this->appInstance->info('Trial complete email not sent', [
+                    'app_instance_id' => $this->appInstance->id,
+                    'is_trial' => $this->appInstance->is_trial,
+                    'send_trial_complete_email' => $this->appInstance->storeApp->send_trial_complete_email,
+                    'trial_ends_at' => $this->appInstance->trial_ends_at,
+                    'trial_complete_email_sent' => $this->appInstance->trial_complete_email_sent,
+                ]);
             return;
         }
 

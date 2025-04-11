@@ -46,6 +46,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'send_one_day_left_email_at',
         'one_day_left_email_sent',
         'trial_complete_email_sent',
+        'app_url',
+        'app_one_time_login_url',
+        'app_one_time_login_valid_until',
     ];
 
     /**
@@ -63,6 +66,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'send_one_day_left_email_at' => 'datetime',
         'one_day_left_email_sent' => 'boolean',
         'trial_complete_email_sent' => 'boolean',
+        'app_one_time_login_valid_until' => 'datetime',
     ];
 
     /**
@@ -724,5 +728,67 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         }
 
         return $this->trial_ends_at->isPast();
+    }
+
+    /**
+     * Set the one-time login URL with expiration
+     * 
+     * @param string $url The one-time login URL
+     * @param int $numberOfHours Number of hours the URL is valid for
+     * @param bool $setOnlyDontSave If true, won't save the model
+     * @return self
+     */
+    public function setOneTimeLoginUrl(string $url, int $numberOfHours = 24, bool $setOnlyDontSave = false): self
+    {
+        $this->app_one_time_login_url = $url;
+        $this->app_one_time_login_valid_until = now()->addHours($numberOfHours);
+
+        if (!$setOnlyDontSave) {
+            $this->save();
+        }
+
+        return $this;
+    }
+
+    public function setAppUrl(string $url, ?string $oneTimeLoginUrl = null, ?int $numberOfHoursForOneTimeLoginUrl = 24): self
+    {
+        $this->app_url = $url;
+        if ($oneTimeLoginUrl) {
+            $this->setOneTimeLoginUrl($oneTimeLoginUrl, $numberOfHoursForOneTimeLoginUrl);
+        }
+
+        return $this;
+    }
+
+    /**
+     * Check if the one-time login URL has expired
+     * 
+     * @return bool
+     */
+    public function oneTimeLoginUrlHasExpired(): bool
+    {
+        if (!$this->app_one_time_login_valid_until) {
+            return true;
+        }
+
+        return $this->app_one_time_login_valid_until->isPast();
+    }
+
+    /**
+     * Get the lagoon generated app admin username
+     * @return string
+     */
+    public function getGeneratedAppAdminUsername(): string
+    {
+        return $this->getKeyValue('lagoon-generate-app-admin-username') ?? "";
+    }
+
+    /**
+     * Get the lagoon generated app admin password
+     * @return string
+     */ 
+    public function getGeneratedAppAdminPassword(): string 
+    {
+        return $this->getKeyValue('lagoon-generate-app-admin-password') ?? "";
     }
 }

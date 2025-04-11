@@ -29,6 +29,13 @@ class ProcessOneDayLeftEmailJob implements ShouldQueue
             !$this->appInstance->send_one_day_left_email_at ||
             !$this->appInstance->send_one_day_left_email_at->isPast() ||
             $this->appInstance->one_day_left_email_sent) {
+                $this->appInstance->info('One day left email not sent', [
+                    'app_instance_id' => $this->appInstance->id,
+                    'is_trial' => $this->appInstance->is_trial,
+                    'send_one_day_left_email' => $this->appInstance->storeApp->send_one_day_left_email,
+                    'send_one_day_left_email_at' => $this->appInstance->send_one_day_left_email_at,
+                    'one_day_left_email_sent' => $this->appInstance->one_day_left_email_sent,
+                ]);
             return;
         }
 

@@ -175,7 +175,7 @@ class ProcessPolydockAppInstanceStatusChange
                     $appInstance = $event->appInstance;
                     $remoteRegistration = $appInstance->remoteRegistration;
                     $remoteRegistration->setResultValue('message', "Your trial is ready.");
-                    $remoteRegistration->setResultValue('app_url', $appInstance->getKeyValue('claim-command-output'));
+                    $remoteRegistration->setResultValue('app_url', $appInstance->app_one_time_login_url);
                     $remoteRegistration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
                     $remoteRegistration->save();
 

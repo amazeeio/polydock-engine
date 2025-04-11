@@ -29,6 +29,13 @@ class ProcessMidtrialEmailJob implements ShouldQueue
             !$this->appInstance->send_midtrial_email_at ||
             !$this->appInstance->send_midtrial_email_at->isPast() ||
             $this->appInstance->midtrial_email_sent) {
+                $this->appInstance->info('Midtrial email not sent', [
+                    'app_instance_id' => $this->appInstance->id,
+                    'is_trial' => $this->appInstance->is_trial,
+                    'send_midtrial_email' => $this->appInstance->storeApp->send_midtrial_email,
+                    'send_midtrial_email_at' => $this->appInstance->send_midtrial_email_at,
+                    'midtrial_email_sent' => $this->appInstance->midtrial_email_sent,
+                ]);
             return;
         }
 
