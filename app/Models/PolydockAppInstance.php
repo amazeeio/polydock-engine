@@ -262,6 +262,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
                     'lagoon-deploy-branch' => $storeApp->lagoon_deploy_branch,
                     'lagoon-deploy-organization-id' => $storeApp->lagoon_deploy_organization_id_ext,
+                    'lagoon-deploy-group-name' => $storeApp->lagoon_deploy_group_name,
                     'lagoon-deploy-region-id' => $storeApp->lagoon_deploy_region_id_ext,
                     'lagoon-deploy-private-key' => $storeApp->lagoon_deploy_private_key,
                     'lagoon-deploy-project-prefix' => $storeApp->lagoon_deploy_project_prefix,

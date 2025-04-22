@@ -86,6 +86,7 @@ class PolydockStoreApp extends Model
         'amazee_ai_backend_region_id_ext',
         'unallocated_instances_count',
         'needs_more_unallocated_instances',
+        'lagoon_deploy_group_name',
     ];
 
     /**
@@ -205,5 +206,13 @@ class PolydockStoreApp extends Model
     public function variables(): MorphMany
     {
         return $this->morphMany(PolydockVariable::class, 'variabled');
+    }
+
+    /**
+     * Get the Lagoon deploy group name attribute
+     */
+    public function getLagoonDeployGroupNameAttribute(): ?string
+    {
+        return $this->store->lagoon_deploy_group_name;
     }
 } 
