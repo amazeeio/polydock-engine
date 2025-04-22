@@ -1,7 +1,7 @@
 <x-mail::message>
-# One Day Left in Your Trial
+# One Day Left In Your Trial
 
-Hi {{ $appInstance->userGroup->owner->name }},
+Hi {{ $toUser->name }},
 
 Your trial of {{ $appInstance->storeApp->name }} will end tomorrow.
 
@@ -13,11 +13,11 @@ View Your Instance
 @if($appInstance->storeApp->trial_duration_days > 0)
 - Duration: {{ $appInstance->storeApp->trial_duration }} days
 @endif
-- Access URL: {{ route('app-instances.show', $appInstance) }}
+- Access URL: <a href="{{ route('app-instances.show', $appInstance) }}">{{ route('app-instances.show', $appInstance) }}</a>
 
 Login Credentials: 
 - Username: @if($appInstance->getGeneratedAppAdminUsername()) {{ $appInstance->getGeneratedAppAdminUsername() }} @else **missing - please contact support** @endif 
-- Password: @if($appInstance->getGeneratedAppAdminUsername()) {{ $appInstance->getGeneratedAppAdminUsername() }} @else **missing - please contact support** @endif
+- Password: @if($appInstance->getGeneratedAppAdminPassword()) {{ $appInstance->getGeneratedAppAdminPassword() }} @else **missing - please contact support** @endif
 
 @if($appInstance->storeApp->one_day_left_email_markdown)
 ---

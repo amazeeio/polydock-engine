@@ -225,6 +225,16 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     ];    
 
     /**
+     * Get the route key for the model.
+     *
+     * @return string
+     */
+    public function getRouteKeyName()
+    {
+        return 'uuid';
+    }
+
+    /**
      * Boot the model.
      */
     protected static function boot()
@@ -266,37 +276,15 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     ], true))
                 ];
 
-                if($storeApp->lagoon_post_deploy_script) {
-                    $data['lagoon-post-deploy-script'] = $storeApp->lagoon_post_deploy_script;
-                }
+                $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'post_deploy', 'post-deploy'));
+                $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'pre_upgrade', 'pre-upgrade'));
+                $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'upgrade', 'upgrade'));
+                $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'post_upgrade', 'post-upgrade'));
+                $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'pre_remove', 'pre-remove'));
+                $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'remove', 'remove'));
+                $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'claim', 'claim'));
 
-                if($storeApp->lagoon_pre_upgrade_script ) {
-                    $data['lagoon-pre-upgrade-script'] = $storeApp->lagoon_pre_upgrade_script;
-                }
-
-                if($storeApp->lagoon_upgrade_script) {
-                    $data['lagoon-upgrade-script'] = $storeApp->lagoon_upgrade_script;
-                }
-
-                if($storeApp->lagoon_post_upgrade_script) {
-                    $data['lagoon-post-upgrade-script'] = $storeApp->lagoon_post_upgrade_script;
-                }
-                
-                if($storeApp->lagoon_pre_remove_script) {
-                    $data['lagoon-pre-remove-script'] = $storeApp->lagoon_pre_remove_script;
-                }
-
-                if($storeApp->lagoon_remove_script) {
-                    $data['lagoon-remove-script'] = $storeApp->lagoon_remove_script;
-                }
-                
-                if($storeApp->lagoon_claim_script) {
-                    $data['lagoon-claim-script'] = $storeApp->lagoon_claim_script;
-                }
-
-                $model->data = $data;
-
-                
+                $model->data = $data;                
             } catch (PolydockEngineAppNotFoundException $e) {
                 Log::error('Failed to set app type for new instance', [
                     'store_app_id' => $model->polydock_store_app_id,
@@ -329,6 +317,45 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             }
         });
     }
+
+    public static function getDataForLagoonScript(PolydockStoreApp $storeApp, string $fieldKeyPart, string $dataKeyPart)
+    {
+        $data = [];   
+        $fieldKeyScript = "lagoon_".$fieldKeyPart."_script";
+        $dataKeyScript = "lagoon-".$dataKeyPart."-script";
+
+        $fieldKeyService = "lagoon_".$fieldKeyPart."_service";
+        $dataKeyService = "lagoon-".$dataKeyPart."-script-service";
+
+        $fieldKeyContainer = "lagoon_".$fieldKeyPart."_container";
+        $dataKeyContainer = "lagoon-".$dataKeyPart."-script-container";
+
+        if($storeApp->{$fieldKeyScript}) {
+            $data[$dataKeyScript] = $storeApp->{$fieldKeyScript};
+            
+            if($storeApp->{$fieldKeyService}) {
+                $data[$dataKeyService] = $storeApp->{$fieldKeyService};
+            } else {
+                $data[$dataKeyService] = "cli";
+            }
+    
+            if($storeApp->{$fieldKeyContainer}) {
+                $data[$dataKeyContainer] = $storeApp->{$fieldKeyContainer};
+            } else {
+                $data[$dataKeyContainer] = "cli";
+            }
+        }
+
+        Log::info('Data for Lagoon script', [
+            'store_app_id' => $storeApp->id,
+            'field_key_part' => $fieldKeyPart,
+            'data_key_part' => $dataKeyPart,
+            'data' => $data
+        ]);
+
+        return $data;
+    }
+    
     
     /**
      * Set the app for the app instance
@@ -752,9 +779,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     public function setAppUrl(string $url, ?string $oneTimeLoginUrl = null, ?int $numberOfHoursForOneTimeLoginUrl = 24): self
     {
-        $this->app_url = $url;
+        $this->app_url = trim($url);
         if ($oneTimeLoginUrl) {
-            $this->setOneTimeLoginUrl($oneTimeLoginUrl, $numberOfHoursForOneTimeLoginUrl);
+            $this->setOneTimeLoginUrl(trim($oneTimeLoginUrl), $numberOfHoursForOneTimeLoginUrl);
         }
 
         return $this;

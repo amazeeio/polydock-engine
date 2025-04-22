@@ -48,6 +48,20 @@ class PolydockStoreApp extends Model
         'send_trial_complete_email',
         'trial_complete_email_subject',
         'trial_complete_email_markdown',
+        'lagoon_post_deploy_service',
+        'lagoon_post_deploy_container',
+        'lagoon_pre_upgrade_service',
+        'lagoon_pre_upgrade_container',
+        'lagoon_upgrade_service',
+        'lagoon_upgrade_container',
+        'lagoon_post_upgrade_service',
+        'lagoon_post_upgrade_container',
+        'lagoon_claim_service',
+        'lagoon_claim_container',
+        'lagoon_pre_remove_service',
+        'lagoon_pre_remove_container',
+        'lagoon_remove_service',
+        'lagoon_remove_container',
     ];
 
     protected $casts = [

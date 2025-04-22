@@ -1,9 +1,9 @@
 <x-mail::message>
 # Trial Complete
 
-Hi {{ $appInstance->userGroup->owner->name }},
+Hi {{ $toUser->name }},
 
-Your trial of {{ $appInstance->name }} has ended.
+Your trial of {{ $appInstance->storeApp->name }} has ended.
 
 @if($appInstance->storeApp->trial_complete_email_markdown)
 ---

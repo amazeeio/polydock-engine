@@ -2,8 +2,8 @@
 
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Trial;
 
+use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
 use App\Mail\AppInstanceTrialCompleteMail;
-use App\Models\PolydockAppInstance;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,19 +11,14 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 
-class ProcessTrialCompleteEmailJob implements ShouldQueue
+class ProcessTrialCompleteEmailJob extends BaseJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected PolydockAppInstance $appInstance;
-
-    public function __construct(PolydockAppInstance $appInstance)
-    {
-        $this->appInstance = $appInstance;
-    }
-
     public function handle()
-    {
+    {   
+        $this->polydockJobStart();
+
         if (!$this->appInstance->is_trial || 
             !$this->appInstance->storeApp->send_trial_complete_email ||
             !$this->appInstance->trial_ends_at ||
@@ -39,10 +34,25 @@ class ProcessTrialCompleteEmailJob implements ShouldQueue
             return;
         }
 
-        // Send email
-        Mail::to($this->appInstance->userGroup->owner)->send(new AppInstanceTrialCompleteMail($this->appInstance));
+        // Send email to owners      
+        foreach($this->appInstance->userGroup->owners as $owner) {
+            $mail = Mail::to($owner->email);
+                    
+            if(env('MAIL_CC_ALL', false)) {
+                $mail->cc(env('MAIL_CC_ALL'));
+            }
+
+            $this->appInstance->info('Sending trial complete email to owner', [
+                'owner_id' => $owner->id,
+                'owner_email' => $owner->email,
+            ]);
+            
+            $mail->queue(new AppInstanceTrialCompleteMail($this->appInstance, $owner));
+        }
 
         // Update the sent flag
         $this->appInstance->update(['trial_complete_email_sent' => true]);
+
+        $this->polydockJobDone();
     }
 } 

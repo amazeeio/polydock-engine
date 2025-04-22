@@ -1,6 +1,10 @@
 <?php
 
 return [
+    'max_per_run_dispatch_midtrial_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_MIDTRIAL_EMAILS', 25),
+    'max_per_run_dispatch_one_day_left_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_ONE_DAY_LEFT_EMAILS', 25),
+    'max_per_run_dispatch_trial_complete_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_EMAILS', 25),
+    'max_per_run_dispatch_trial_complete_stage_removal' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_STAGE_REMOVAL', 5),
     'redirect_landing_page_to' => env('POLYDOCK_REDIRECT_LANDING_PAGE_TO', "https://freedomtech.hosting/"),
     'register_only_captures' => env('POLYDOCK_REGISTER_ONLY_CAPTURES', false),
     'register_simulate_round_robin' => env('POLYDOCK_REGISTER_SIMULATE_ROUND_ROBIN', false),
