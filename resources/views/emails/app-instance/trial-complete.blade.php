@@ -1,17 +1,13 @@
 <x-mail::message>
-# Trial Complete
+# {{ $appInstance->storeApp->name }} Trial Complete
 
 Hi {{ $toUser->name }},
 
+@if($appInstance->storeApp->trial_complete_email_markdown)
+{!! $appInstance->storeApp->trial_complete_email_markdown !!}
+@else
 Your trial of {{ $appInstance->storeApp->name }} has ended.
 
-@if($appInstance->storeApp->trial_complete_email_markdown)
----
-
-{!! $appInstance->storeApp->trial_complete_email_markdown !!}
-
----
-@else
 Thanks,<br>
 {{ config('app.name') }}
 @endif
