@@ -819,4 +819,60 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         return $this->getKeyValue('lagoon-generate-app-admin-password') ?? "";
     }
+
+    /**
+     * Calculate and set trial dates based on duration
+     * 
+     * @param int|null $overrideDurationDays Override the store app's trial duration
+     * @param bool $saveModel Whether to save the model after setting trial dates
+     * @return self
+     */
+    public function calculateAndSetTrialDates(?int $overrideDurationDays = null, ?bool $saveModel = false): self
+    {
+        // Use override duration if provided, otherwise use store app duration
+        $durationDays = $overrideDurationDays ?? $this->storeApp->trial_duration_days;
+
+        if ($durationDays > 0) {
+            $this->trial_ends_at = now()->addDays($durationDays);
+
+            if ($this->storeApp->send_midtrial_email) {
+                $halfwayPoint = $durationDays / 2;
+                $this->send_midtrial_email_at = now()->addDays($halfwayPoint);
+                $this->midtrial_email_sent = false;
+            }
+
+            if ($this->storeApp->send_one_day_left_email) {
+                $oneDayBeforeEnd = $durationDays - 1;
+                $this->send_one_day_left_email_at = now()->addDays($oneDayBeforeEnd);
+                $this->one_day_left_email_sent = false;
+            }
+
+            if ($this->storeApp->send_trial_complete_email) {
+                $this->trial_complete_email_sent = false;
+            }
+
+            if ($saveModel) {
+                $this->save();
+            }
+        } else {
+            $this->trial_ends_at = null;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Calculate and set trial dates based on end datetime
+     * 
+     * @param \DateTime|\Carbon\Carbon $trialEndDateTime When the trial should end
+     * @param bool $saveModel Whether to save the model after setting trial dates
+     * @return self
+     */
+    public function calculateAndSetTrialDatesFromEndDate($trialEndDateTime, bool $saveModel = false): self
+    {
+        // Calculate days between now and end date
+        $durationDays = now()->diffInDays($trialEndDateTime);
+        
+        return $this->calculateAndSetTrialDates($durationDays, $saveModel);
+    }
 }

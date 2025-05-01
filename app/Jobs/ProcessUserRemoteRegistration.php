@@ -277,29 +277,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 
                 $allocatedInstance = $this->registration->userGroup->getNewAppInstanceForThisApp($trialApp);
                 $allocatedInstance->is_trial = true;
-
-                if($trialApp->trial_duration_days > 0) {
-                    $allocatedInstance->trial_ends_at = now()->addDays($trialApp->trial_duration_days);
-
-                    if($trialApp->send_midtrial_email) {
-                        $halfwayPoint = $trialApp->trial_duration_days / 2;
-                        $allocatedInstance->send_midtrial_email_at = now()->addDays($halfwayPoint);
-                        $allocatedInstance->midtrial_email_sent = false;
-                    }
-    
-                    if($trialApp->send_one_day_left_email) {
-                        $oneDayBeforeEnd = $trialApp->trial_duration_days - 1;
-                        $allocatedInstance->send_one_day_left_email_at = now()->addDays($oneDayBeforeEnd);
-                        $allocatedInstance->one_day_left_email_sent = false;
-                    }
-    
-                    if($trialApp->send_trial_complete_email) {
-                        $allocatedInstance->trial_complete_email_sent = false;
-                    }
-                } else {
-                    $allocatedInstance->trial_ends_at = null;
-                }
-
+                $allocatedInstance->calculateAndSetTrialDates();
                 $allocatedInstance->save();
 
                 $this->registration->polydock_app_instance_id = $allocatedInstance->id;
