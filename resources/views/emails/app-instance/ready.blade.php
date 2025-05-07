@@ -1,5 +1,5 @@
 <x-mail::message>
-Hello!
+Hi {{ e($toUser->name) }},
 
 # Your *"{{ $appInstance->storeApp->name }}"* Experience is now ready to use.
 

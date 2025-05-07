@@ -1,7 +1,7 @@
 <x-mail::message>
 # Halfway Through {{ $appInstance->storeApp->name }} Trial
 
-Hi {{ $toUser->name }},
+Hi {{ e($toUser->name) }},
 
 @if($appInstance->storeApp->midtrial_email_markdown)
 {!! $appInstance->storeApp->midtrial_email_markdown !!}

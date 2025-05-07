@@ -1,7 +1,7 @@
 <x-mail::message>
 # {{ $appInstance->storeApp->name }} Trial Complete
 
-Hi {{ $toUser->name }},
+Hi {{ e($toUser->name) }},
 
 @if($appInstance->storeApp->trial_complete_email_markdown)
 {!! $appInstance->storeApp->trial_complete_email_markdown !!}

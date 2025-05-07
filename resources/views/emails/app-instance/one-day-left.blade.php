@@ -1,7 +1,7 @@
 <x-mail::message>
 # One Day Left In Your {{ $appInstance->storeApp->name }} Trial
 
-Hi {{ $toUser->name }},
+Hi {{ e($toUser->name) }},
 
 @if($appInstance->storeApp->one_day_left_email_markdown)
 {!! $appInstance->storeApp->one_day_left_email_markdown !!}

@@ -179,14 +179,26 @@ class ProcessPolydockAppInstanceStatusChange
                     $remoteRegistration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
                     $remoteRegistration->save();
 
-                    // Send email to user
-                    $mail = Mail::to("$remoteRegistration->email");
-                    
-                    if(env('MAIL_CC_ALL', false)) {
-                        $mail->cc(env('MAIL_CC_ALL'));
+                    foreach($appInstance->userGroup->owners as $owner) {
+                        $mail = Mail::to($owner->email);
+                            
+                        if(env('MAIL_CC_ALL', false)) {
+                            $mail->cc(env('MAIL_CC_ALL'));
+                        }
+        
+                        $appInstance->info('Sending ready email to owner', [
+                            'owner_id' => $owner->id,
+                            'owner_email' => $owner->email,
+                        ]);
+        
+                        Log::info('Sending ready email to owner', [
+                            'owner_id' => $owner->id,
+                            'owner_email' => $owner->email,
+                            'app_instance_id' => $appInstance->id,
+                        ]);
+        
+                        $mail->queue(new AppInstanceReadyMail($appInstance, $owner));
                     }
-
-                    $mail->queue(new AppInstanceReadyMail($appInstance));
                 }
                 break;
             default:

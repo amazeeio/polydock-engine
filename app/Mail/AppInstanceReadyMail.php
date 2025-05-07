@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\PolydockAppInstance;
+use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -17,7 +18,8 @@ class AppInstanceReadyMail extends Mailable
      * Create a new message instance.
      */
     public function __construct(
-        public PolydockAppInstance $appInstance
+        public PolydockAppInstance $appInstance,
+        public User $toUser
     ) {}
 
     /**
