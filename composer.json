@@ -11,7 +11,7 @@
         "freedomtech-hosting/ft-lagoon-php": "^0.0.5",
         "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.0.5",
         "freedomtech-hosting/polydock-app": "^0.0.26",
-        "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.0.71",
+        "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.0.72",
         "laravel/framework": "^11.31",
         "laravel/horizon": "^5.30",
         "laravel/sanctum": "^4.0",
