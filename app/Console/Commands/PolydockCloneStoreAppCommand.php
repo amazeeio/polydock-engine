@@ -72,6 +72,7 @@ class PolydockCloneStoreAppCommand extends Command
             $newApp->status = PolydockStoreAppStatusEnum::UNAVAILABLE;
             $newApp->name = $this->ask('Enter name for the cloned app:', $sourceApp->name . ' (Clone)');
             $newApp->lagoon_deploy_git = $gitRepo;
+            $newApp->target_unallocated_app_instances = 0;
             $newApp->save();
 
             // Clone variables
