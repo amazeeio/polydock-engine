@@ -54,6 +54,19 @@ class ProcessPolydockAppInstanceStatusChange
                     $event->appInstance->remoteRegistration->setResultValue('app_admin_password', $appInstance->getKeyValue('lagoon-generate-app-admin-password'));
                 }
 
+                // Store user information in registration results
+                if($appInstance->getKeyValue('user-first-name')) {
+                    $event->appInstance->remoteRegistration->setResultValue('user_first_name', $appInstance->getKeyValue('user-first-name'));
+                }
+
+                if($appInstance->getKeyValue('user-last-name')) {
+                    $event->appInstance->remoteRegistration->setResultValue('user_last_name', $appInstance->getKeyValue('user-last-name'));
+                }
+
+                if($appInstance->getKeyValue('user-email')) {
+                    $event->appInstance->remoteRegistration->setResultValue('user_email', $appInstance->getKeyValue('user-email'));
+                }
+
                 $event->appInstance->remoteRegistration->save();
             }
 

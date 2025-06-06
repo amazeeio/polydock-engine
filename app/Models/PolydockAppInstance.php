@@ -821,6 +821,33 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
+     * Get the user's first name
+     * @return string
+     */
+    public function getUserFirstName(): string
+    {
+        return $this->getKeyValue('user-first-name') ?? "";
+    }
+
+    /**
+     * Get the user's last name
+     * @return string
+     */
+    public function getUserLastName(): string
+    {
+        return $this->getKeyValue('user-last-name') ?? "";
+    }
+
+    /**
+     * Get the user's email
+     * @return string
+     */
+    public function getUserEmail(): string
+    {
+        return $this->getKeyValue('user-email') ?? "";
+    }
+
+    /**
      * Calculate and set trial dates based on duration
      * 
      * @param int|null $overrideDurationDays Override the store app's trial duration

@@ -13,6 +13,10 @@ Hi {{ e($toUser->name) }},
 @endif
 - Access URL: <a href="{{ route('app-instances.show', $appInstance) }}">{{ route('app-instances.show', $appInstance) }}</a>
 
+User Information:
+- Name: @if($appInstance->getUserFirstName() && $appInstance->getUserLastName()) {{ $appInstance->getUserFirstName() }} {{ $appInstance->getUserLastName() }} @else **N/A** @endif
+- Email: @if($appInstance->getUserEmail()) {{ $appInstance->getUserEmail() }} @else **N/A** @endif
+
 Login Credentials: 
 - Username: @if($appInstance->getGeneratedAppAdminUsername()) {{ $appInstance->getGeneratedAppAdminUsername() }} @else **missing - please contact support** @endif 
 - Password: @if($appInstance->getGeneratedAppAdminPassword()) {{ $appInstance->getGeneratedAppAdminPassword() }} @else **missing - please contact support** @endif

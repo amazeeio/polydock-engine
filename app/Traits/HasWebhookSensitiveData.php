@@ -96,6 +96,19 @@ trait HasWebhookSensitiveData
             $retData['lagoon-generate-app-admin-username'] = $data['lagoon-generate-app-admin-username'];
         }
 
+        // Include user information for webhooks
+        if(isset($this->data['user-first-name'])) {
+            $retData['user-first-name'] = $data['user-first-name'];
+        }
+
+        if(isset($this->data['user-last-name'])) {
+            $retData['user-last-name'] = $data['user-last-name'];
+        }
+
+        if(isset($this->data['user-email'])) {
+            $retData['user-email'] = $data['user-email'];
+        }
+
         return $retData;
     }
 } 
