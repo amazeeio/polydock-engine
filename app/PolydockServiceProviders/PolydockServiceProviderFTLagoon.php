@@ -23,7 +23,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
     protected Client $LagoonClient;
 
     /** @var int Maximum age in minutes before a token is considered expired */
-    const MAX_TOKEN_AGE_MINUTES = 5;    
+    const MAX_TOKEN_AGE_MINUTES = 2;    
 
     public function __construct(array $config, PolydockAppLoggerInterface $logger)
     {
@@ -114,12 +114,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
     public function getLagoonClient() : Client
     {
         return $this->LagoonClient;
-    }   
-
-    public function getAppDir() : string
-    {
-        return $this->APPDIR;
-    }   
+    }      
 
     public function getMaxTokenAgeMinutes() : int
     {

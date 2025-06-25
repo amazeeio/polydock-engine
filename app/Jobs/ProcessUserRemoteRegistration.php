@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Models\UserRemoteRegistration;
 use App\Enums\UserRemoteRegistrationStatusEnum;
+use App\Enums\UserRemoteRegistrationType;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -67,12 +68,16 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             return;
         }
 
-        $registerType = $this->registration->getRequestValue('register_type');
+        // Set the type from request_data
+        $this->registration->type = UserRemoteRegistrationType::from(
+            $this->registration->getRequestValue('register_type')
+        );
+        $this->registration->save();
 
-        match($registerType) {
-            'TEST_FAIL' => $this->handleTestFail(),
-            'REQUEST_TRIAL' => $this->handleRequestTrial(),
-            'REQUEST_TRIAL_UNLISTED_REGION' => $this->handleRequestUnlistedRegion(),
+        match($this->registration->type) {
+            UserRemoteRegistrationType::TEST_FAIL => $this->handleTestFail(),
+            UserRemoteRegistrationType::REQUEST_TRIAL => $this->handleRequestTrial(),
+            UserRemoteRegistrationType::REQUEST_TRIAL_UNLISTED_REGION => $this->handleRequestUnlistedRegion(),
             default => $this->handleUnknownType(),
         };
 
@@ -227,6 +232,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             $this->registration->user_id = $user->id;
             $this->registration->user_group_id = $user->groups()->first()->id;
             $this->registration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
+            $this->registration->save();
 
             $email = $user->email;
             $domain = null;
@@ -263,11 +269,19 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 Log::info('Simulating error registration', ['registration' => $this->registration->toArray()]);
                 throw new \Exception('An error occurred while processing the registration.');
             } else {
-                Log::info('Simulating legitimate trial creation', ['registration' => $this->registration->toArray()]);
+                Log::info('Starting actual trial creation', ['registration' => $this->registration->toArray()]);
+                $this->registration->status = UserRemoteRegistrationStatusEnum::PROCESSING;
                 
-                // TODO: Implement actual trial creation
-                $this->registration->setResultValue('result_type', 'trial_registered');
-                $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
+                $this->registration->setResultValue('result_type', 'processing');
+                $this->registration->setResultValue('message', 'Your trial is being created...');
+                
+                $allocatedInstance = $this->registration->userGroup->getNewAppInstanceForThisApp($trialApp);
+                $allocatedInstance->is_trial = true;
+                $allocatedInstance->calculateAndSetTrialDates();
+                $allocatedInstance->save();
+
+                $this->registration->polydock_app_instance_id = $allocatedInstance->id;
+                $this->registration->save();
             }
         } catch (\Exception $e) {
             Log::error('Failed to process trial registration', [

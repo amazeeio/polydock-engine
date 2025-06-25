@@ -7,6 +7,11 @@ use App\Events\UserRemoteRegistrationCreated;
 use App\Listeners\ProcessNewUserRemoteRegistration;
 use App\Events\UserRemoteRegistrationStatusChanged;
 use App\Listeners\CreateWebhookCallForRegistrationStatusSuccessOrFailed;
+use App\Events\PolydockAppInstanceCreatedWithNewStatus;
+use App\Listeners\ProcessNewPolydockAppInstance;
+use App\Events\PolydockAppInstanceStatusChanged;
+use App\Listeners\CreateWebhookCallForAppInstanceStatusChanged;
+use App\Listeners\ProcessPolydockAppInstanceStatusChange;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -21,6 +26,13 @@ class EventServiceProvider extends ServiceProvider
         ],
         UserRemoteRegistrationStatusChanged::class => [
             CreateWebhookCallForRegistrationStatusSuccessOrFailed::class,
+        ],
+        PolydockAppInstanceCreatedWithNewStatus::class => [
+            ProcessNewPolydockAppInstance::class,
+        ],
+        PolydockAppInstanceStatusChanged::class => [
+            CreateWebhookCallForAppInstanceStatusChanged::class,
+            ProcessPolydockAppInstanceStatusChange::class
         ],
     ];
 

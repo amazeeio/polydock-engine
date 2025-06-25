@@ -10,7 +10,6 @@ services:
             lagoon.persistent: /app/storage
         depends_on:
             - redis
-            - meilisearch
     nginx:
         build:
             context: .

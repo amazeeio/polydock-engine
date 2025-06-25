@@ -10,9 +10,13 @@ use App\Jobs\ProcessUserRemoteRegistration;
 use App\Events\UserRemoteRegistrationCreated;
 use Illuminate\Support\Facades\Log;
 use App\Events\UserRemoteRegistrationStatusChanged;
+use App\Traits\HasWebhookSensitiveData;
+use App\Enums\UserRemoteRegistrationType;
 
 class UserRemoteRegistration extends Model
 {
+    use HasWebhookSensitiveData;
+    
     /**
      * The attributes that are mass assignable.
      *
@@ -27,6 +31,7 @@ class UserRemoteRegistration extends Model
         'result_data',
         'status',
         'uuid',
+        'type',
     ];
 
     /**
@@ -35,9 +40,10 @@ class UserRemoteRegistration extends Model
      * @var array
      */ 
     protected $casts = [
+        'status' => UserRemoteRegistrationStatusEnum::class,
+        'type' => UserRemoteRegistrationType::class,
         'request_data' => 'array',
         'result_data' => 'array',
-        'status' => UserRemoteRegistrationStatusEnum::class,
         'polydock_store_app_id' => 'integer:nullable',
     ];
 
@@ -178,4 +184,21 @@ class UserRemoteRegistration extends Model
     {
         return config('polydock.register_simulate_error', false);
     }
+
+    /**
+     * Get the app instance associated with this registration
+     */
+    public function appInstance(): BelongsTo
+    {
+        return $this->belongsTo(PolydockAppInstance::class, 'polydock_app_instance_id');
+    }
+
+    public function getDataAttribute(): array
+    {
+        return [
+            'request_data' => $this->request_data,
+            'result_data' => $this->result_data,
+        ];
+    }
 }
+ 
