@@ -10,6 +10,15 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // SQLite doesn't support MODIFY COLUMN with ENUM
+        // In SQLite, enum columns are stored as TEXT, so the constraint is at application level
+        if (DB::getDriverName() === 'sqlite') {
+            // For SQLite, the enum constraint is handled by Laravel at the application level
+            // No schema modification needed since it's already TEXT that can accept 'new'
+            return;
+        }
+        
+        // MySQL/PostgreSQL: Modify the actual ENUM type
         // Get the current enum values, excluding 'new' since we're adding it
         $currentEnumValues = implode("','", array_filter(
             PolydockAppInstanceStatus::getValues(),
@@ -22,6 +31,13 @@ return new class extends Migration
 
     public function down(): void
     {
+        // SQLite doesn't support MODIFY COLUMN with ENUM
+        if (DB::getDriverName() === 'sqlite') {
+            // For SQLite, no schema change needed for rollback
+            return;
+        }
+        
+        // MySQL/PostgreSQL: Rollback the ENUM modification
         $newStatuses = [
             'new',
             'running-healthy',
