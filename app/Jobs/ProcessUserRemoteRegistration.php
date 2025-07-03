@@ -284,9 +284,9 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 $this->registration->save();
 
                 // Add user information to the app instance data
-                $allocatedInstance->setKeyValue('user-first-name', $this->registration->getRequestValue('first_name'));
-                $allocatedInstance->setKeyValue('user-last-name', $this->registration->getRequestValue('last_name'));
-                $allocatedInstance->setKeyValue('user-email', $this->registration->getRequestValue('email'));
+                $allocatedInstance->storeKeyValue('user-first-name', $this->registration->getRequestValue('first_name'));
+                $allocatedInstance->storeKeyValue('user-last-name', $this->registration->getRequestValue('last_name'));
+                $allocatedInstance->storeKeyValue('user-email', $this->registration->getRequestValue('email'));
                 $allocatedInstance->save();
             }
         } catch (\Exception $e) {
