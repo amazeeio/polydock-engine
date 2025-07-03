@@ -1,32 +1,72 @@
 <x-mail::message>
 Hi {{ e($toUser->name) }},
 
-# Your *"{{ $appInstance->storeApp->name }}"* Experience is now ready to use.
+<h2 style="margin-bottom: 16px;">Your <em>"{{ $appInstance->storeApp->name }}"</em> Experience is now ready to use.</h2>
 
 <x-mail::button :url="route('app-instances.show', $appInstance)">
     Access Your Experience
 </x-mail::button>
 
-**Access Details:**
+<h3 style="margin-top: 32px; margin-bottom: 8px;">Access Details:</h3>
+<ul style="margin-top: 0;">
 @if($appInstance->storeApp->trial_duration_days > 0)
-- Duration: {{ $appInstance->storeApp->trial_duration_days }} days
+    <li>Duration: {{ $appInstance->storeApp->trial_duration_days }} days</li>
 @endif
-- Access URL: <a href="{{ route('app-instances.show', $appInstance) }}">{{ route('app-instances.show', $appInstance) }}</a>
+    <li>Access URL: <a href="{{ route('app-instances.show', $appInstance) }}">{{ route('app-instances.show', $appInstance) }}</a></li>
+</ul>
 
-User Information:
-- Name: @if($appInstance->getUserFirstName() && $appInstance->getUserLastName()) {{ $appInstance->getUserFirstName() }} {{ $appInstance->getUserLastName() }} @else **N/A** @endif
-- Email: @if($appInstance->getUserEmail()) {{ $appInstance->getUserEmail() }} @else **N/A** @endif
-
-Login Credentials: 
-- Username: @if($appInstance->getGeneratedAppAdminUsername()) {{ $appInstance->getGeneratedAppAdminUsername() }} @else **missing - please contact support** @endif 
-- Password: @if($appInstance->getGeneratedAppAdminPassword()) {{ $appInstance->getGeneratedAppAdminPassword() }} @else **missing - please contact support** @endif
+<h3 style="margin-top: 32px; margin-bottom: 8px;">User Information & Login Credentials:</h3>
+<table style="border-collapse: collapse; width: 100%; max-width: 600px;">
+    <tr style="background: #f5f5f5;">
+        <th style="text-align: left; padding: 8px; border: 1px solid #ddd;">Field</th>
+        <th style="text-align: left; padding: 8px; border: 1px solid #ddd;">Value</th>
+    </tr>
+    <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">Name</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">
+            @if($appInstance->getUserFirstName() && $appInstance->getUserLastName())
+                {{ $appInstance->getUserFirstName() }} {{ $appInstance->getUserLastName() }}
+            @else
+                <em>N/A</em>
+            @endif
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">Email</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">
+            @if($appInstance->getUserEmail())
+                {{ $appInstance->getUserEmail() }}
+            @else
+                <em>N/A</em>
+            @endif
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">Username</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">
+            @if($appInstance->getGeneratedAppAdminUsername())
+                {{ $appInstance->getGeneratedAppAdminUsername() }}
+            @else
+                <em>missing - please contact support</em>
+            @endif
+        </td>
+    </tr>
+    <tr>
+        <td style="padding: 8px; border: 1px solid #ddd;">Password</td>
+        <td style="padding: 8px; border: 1px solid #ddd;">
+            @if($appInstance->getGeneratedAppAdminPassword())
+                {{ $appInstance->getGeneratedAppAdminPassword() }}
+            @else
+                <em>missing - please contact support</em>
+            @endif
+        </td>
+    </tr>
+</table>
 
 @if($appInstance->storeApp->email_body_markdown)
----
-
+<hr style="margin: 32px 0;" />
 {!! $appInstance->storeApp->email_body_markdown !!}
-
----
+<hr style="margin: 32px 0;" />
 @else
 Thanks,<br>
 {{ config('app.name') }}
