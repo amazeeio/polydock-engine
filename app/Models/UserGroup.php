@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Enums\UserGroupRoleEnum;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -13,14 +13,14 @@ use Illuminate\Support\Facades\Log;
 class UserGroup extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
     ];
 
     /**
      * Get all users in this group
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
@@ -30,7 +30,7 @@ class UserGroup extends Model
 
     /**
      * Get all users with 'owner' role in this group
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function owners()
@@ -41,7 +41,7 @@ class UserGroup extends Model
 
     /**
      * Get all users with 'member' role in this group
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function members()
@@ -52,7 +52,7 @@ class UserGroup extends Model
 
     /**
      * Get all users with 'viewer' role in this group
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function viewers()
@@ -160,7 +160,7 @@ class UserGroup extends Model
         static::saving(function ($userGroup) {
             $userGroup->name = preg_replace('/\s+/', ' ', trim($userGroup->name));
         });
-        
+
         static::creating(function ($userGroup) {
             if (! $userGroup->slug) {
                 $slug = Str::slug($userGroup->name);
@@ -209,7 +209,7 @@ class UserGroup extends Model
                 'group_name' => $userGroup->name,
                 'app_instance_id' => $lockedInstance->id,
                 'allocation_lock' => $allocationLock
-            ]); 
+            ]);
 
             if($lockedInstance->remoteRegistration) {
                 $lockedInstance->remoteRegistration->setResultValue('message', 'Configuring trial authentication...');
@@ -226,7 +226,7 @@ class UserGroup extends Model
             $lockedInstance
                 ->setStatus(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM)
                 ->save();
-                
+
             return $lockedInstance;
         } else {
             $appInstance = PolydockAppInstance::create([
@@ -243,7 +243,7 @@ class UserGroup extends Model
                 'group_id' => $userGroup->id,
                 'group_name' => $userGroup->name,
             ]);
-            
+
             return $appInstance;
         }
     }

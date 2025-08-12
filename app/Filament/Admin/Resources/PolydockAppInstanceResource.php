@@ -14,7 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Infolist;
 use App\Enums\PolydockAppInstanceStatusForEngine;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 use App\Filament\Admin\Resources\UserGroupResource;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
@@ -259,7 +259,7 @@ class PolydockAppInstanceResource extends Resource
                 $renderedItem->state([$value]);
             }
 
-            $renderedArray[] = $renderedItem;   
+            $renderedArray[] = $renderedItem;
         }
         return $renderedArray;
     }

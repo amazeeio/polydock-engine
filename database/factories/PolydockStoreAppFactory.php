@@ -13,7 +13,7 @@ class PolydockStoreAppFactory extends Factory
     public function definition(): array
     {
         return [
-            'polydock_app_class' => 'FreedomtechHosting\\PolydockApp' . fake()->word() . '\\PolydockApp',
+            'polydock_app_class' => 'amazeeio\\PolydockApp' . fake()->word() . '\\PolydockApp',
             'name' => fake()->words(3, true),
             'description' => fake()->paragraph(),
             'author' => fake()->name(),
@@ -46,4 +46,4 @@ class PolydockStoreAppFactory extends Factory
             'available_for_trials' => false,
         ]);
     }
-} 
+}

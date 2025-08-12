@@ -11,15 +11,15 @@ return [
     'register_simulate_error' => env('POLYDOCK_REGISTER_SIMULATE_ERROR', false),
     'lagoon_deploy_private_key_file' => env('POLYDOCK_LAGOON_DEPLOY_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-deploy-private-key'),
     'service_providers_singletons' => [
-         "PolydockServiceProviderFTLagoon" => [
-            'class' => App\PolydockServiceProviders\PolydockServiceProviderFTLagoon::class,
+         "PolydockServiceProviderLagoon" => [
+            'class' => App\PolydockServiceProviders\PolydockServiceProviderLagoon::class,
             'debug' => true,
-            'token_cache_dir' => env('FTLAGOON_TOKEN_CACHE_DIR', storage_path('ftlagoon/.tokencache/')),
-            'ssh_private_key_file' => env('FTLAGOON_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-private-key'),
-            'ssh_user' => env('FTLAGOON_SSH_USER','lagoon'),
-            'ssh_server' => env('FTLAGOON_SSH_SERVER','ssh.lagoon.amazeeio.cloud'),
-            'ssh_port' => env('FTLAGOON_SSH_PORT','32222'),
-            'endpoint' => env('FTLAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql'),
+            'token_cache_dir' => env('LAGOON_TOKEN_CACHE_DIR', storage_path('lagoon/.tokencache/')),
+            'ssh_private_key_file' => env('LAGOON_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-private-key'),
+            'ssh_user' => env('LAGOON_SSH_USER','lagoon'),
+            'ssh_server' => env('LAGOON_SSH_SERVER','ssh.lagoon.amazeeio.cloud'),
+            'ssh_port' => env('LAGOON_SSH_PORT','32222'),
+            'endpoint' => env('LAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql'),
         ],
         "PolydockServiceProviderAmazeeAiBackend" => [
             'class' => App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend::class,

@@ -2,8 +2,8 @@
 
 namespace Tests\Doubles;
 
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
+use amazeeio\PolydockApp\PolydockAppLoggerInterface;
+use amazeeio\PolydockApp\PolydockServiceProviderInterface;
 
 abstract class BaseTestPolydockServiceProvider implements PolydockServiceProviderInterface
 {
@@ -58,4 +58,4 @@ abstract class BaseTestPolydockServiceProvider implements PolydockServiceProvide
         $this->logger->debug($message, $context);
         return $this;
     }
-} 
+}

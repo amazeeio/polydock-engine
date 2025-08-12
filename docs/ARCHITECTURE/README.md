@@ -14,7 +14,7 @@
   - Controls trial settings and durations
   - Manages email notification templates and triggers
   - Allows for custom Lagoon service and container definitions
-  - Implements the `PolydockAppInterface` from the `polydock-app` package (see docs below and [polydock-app](https://github.com/freedomtech-hosting/polydock-app))
+  - Implements the `PolydockAppInterface` from the `polydock-app` package (see docs below and [polydock-app](https://github.com/amazeeio/polydock-app))
 
 ### Instances and Groups
 - **PolydockAppInstance**: A deployed instance of a store app
@@ -23,7 +23,7 @@
   - Handles one-time login URLs
   - Contains instance-specific variables and data
   - Belongs to a user group
-  - Implements the `PolydockAppInstanceInterface` from the `polydock-app` package (see docs below and [polydock-app](https://github.com/freedomtech-hosting/polydock-app))
+  - Implements the `PolydockAppInstanceInterface` from the `polydock-app` package (see docs below and [polydock-app](https://github.com/amazeeio/polydock-app))
 
 - **UserGroup**: Collection of users who have access to app instances
   - Contains owners and members
@@ -59,11 +59,11 @@
 ## Key Dependencies
 
 ### Lagoon & amazee.io Integration
-- **freedomtech/ft-lagoon-php**: Lagoon API client library
+- **amazeeio/ft-lagoon-php**: Lagoon API client library
   - Handles Lagoon API communication
   - Manages deployments and environments
   - Tracks deployment status
-- **freedomtech/ft-amazeeai-backend-client-php**: Integration with amazee.ai services
+- **amazeeio/ft-amazeeai-backend-client-php**: Integration with amazee.ai services
 
 
 ### Important Laravel Framework Components
@@ -112,14 +112,14 @@
    - Cleanup processes
 
 ### Core Polydock Packages
-- **freedomtech-hosting/polydock-app**: Core package that defines the base interfaces and abstractions
+- **amazeeio/polydock-app**: Core package that defines the base interfaces and abstractions
   - Defines `PolydockAppInterface` - the contract all Polydock apps must implement
   - Defines `PolydockAppInstanceInterface` - the contract for app instances
   - Defines `PolydockEngineInterface` - the contract for deployment engines
   - Contains core enums like `PolydockAppInstanceStatus`
   - Provides base implementations and utilities
 
-- **freedomtech-hosting/polydock-app-amazeeio-generic**: Implementation package for generic amazee.io deployments
+- **amazeeio/polydock-app-amazeeio-generic**: Implementation package for generic amazee.io deployments
   - Provides two main implementation types:
     1. **PolydockApp**: Standard Lagoon deployment implementation
        - Uses standard Lagoon Git workflow

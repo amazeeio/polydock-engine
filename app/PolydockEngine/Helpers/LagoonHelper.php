@@ -17,19 +17,19 @@ class LagoonHelper
         if(Cache::has($cacheKey)) {
             return Cache::get($cacheKey);
         }
-        
-        $FTLAGOON_ENDPOINT = env('FTLAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql');
+
+        $LAGOON_ENDPOINT = env('LAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql');
         $allLagoonCoresData = config('polydock.lagoon_cores');
-        $lagoonCoreData = $allLagoonCoresData[$FTLAGOON_ENDPOINT] ?? null;
+        $lagoonCoreData = $allLagoonCoresData[$LAGOON_ENDPOINT] ?? null;
 
         if(!$lagoonCoreData) {
-            Log::error('No lagoon core data found for endpoint ' . $FTLAGOON_ENDPOINT);
+            Log::error('No lagoon core data found for endpoint ' . $LAGOON_ENDPOINT);
             return null;
         }
 
         $lagoonCoreDataForRegion = $lagoonCoreData['lagoon_deploy_regions'][$regionId] ?? null;
         if(!$lagoonCoreDataForRegion) {
-            Log::error('No lagoon core data found for region ' . $regionId . ' and endpoint ' . $FTLAGOON_ENDPOINT);
+            Log::error('No lagoon core data found for region ' . $regionId . ' and endpoint ' . $LAGOON_ENDPOINT);
             return null;
         }
 

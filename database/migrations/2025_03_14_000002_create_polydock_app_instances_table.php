@@ -3,7 +3,7 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 
 return new class extends Migration
 {
@@ -29,4 +29,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('polydock_app_instances');
     }
-}; 
+};

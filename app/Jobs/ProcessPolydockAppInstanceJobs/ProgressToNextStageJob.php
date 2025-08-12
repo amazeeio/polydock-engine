@@ -4,8 +4,8 @@ namespace App\Jobs\ProcessPolydockAppInstanceJobs;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
 use App\Models\PolydockAppInstance;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\PolydockAppInstanceStatusFlowException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
@@ -62,17 +62,17 @@ class ProgressToNextStageJob extends BaseJob implements ShouldQueue
                     ->setStatus(PolydockAppInstanceStatus::PENDING_POST_DEPLOY)
                     ->save();
                 break;
-            case PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED:  
+            case PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED:
                 if($appInstance->remoteRegistration) {
-                    Log::info('Progressing app instance ' 
-                        . $appInstance->id 
+                    Log::info('Progressing app instance '
+                        . $appInstance->id
                         . ' to next stage from POST_DEPLOY_COMPLETED to PENDING_POLYDOCK_CLAIM');
                     $appInstance
                         ->setStatus(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM)
                         ->save();
                 } else {
-                    Log::info('Progressing app instance ' 
-                        . $appInstance->id 
+                    Log::info('Progressing app instance '
+                        . $appInstance->id
                         . ' to next stage from POST_DEPLOY_COMPLETED to RUNNING_HEALTHY_UNCLAIMED');
                     $appInstance
                         ->setStatus(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
@@ -82,11 +82,11 @@ class ProgressToNextStageJob extends BaseJob implements ShouldQueue
             case PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED:
                 Log::info('Progressing app instance '
                     . $appInstance->id . ' to next stage from POLYDOCK_CLAIM_COMPLETED to RUNNING_HEALTHY_CLAIMED');
-                
+
                 $appInstance
                     ->setStatus(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED)
                     ->save();
-                
+
                 break;
             case PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED:
                 Log::info('Progressing app instance ' . $appInstance->id . ' to next stage from PRE_REMOVE_COMPLETED to PENDING_REMOVE');

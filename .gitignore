@@ -5,7 +5,7 @@
 /public/storage
 /storage/*.key
 /storage/pail
-/storage/ftlagoon
+/storage/lagoon
 /storage/amazee-ai-backend
 /vendor
 /tests/fixtures/lagoon*key*

@@ -179,7 +179,7 @@ For acceess to the production development environment, please contact Bryan Grun
 ## Sponsoring Organizations
 
 - [Workshop Orange](https://www.workshoporange.co) - Project Delivery Professionals
-- [amazee.io](https://www.amazee.io) - Enterprise Hosting  
+- [amazee.io](https://www.amazee.io) - Enterprise Hosting
 - [Freedomtech Hosting](https://www.freedomtech.hosting) - Privacy Focused Hosting of Freedomtech Applications
 
 ## Contributing

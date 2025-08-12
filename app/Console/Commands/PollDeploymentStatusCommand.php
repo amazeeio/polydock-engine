@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\Deploy\PollDeploymentJob;
 use App\Models\PolydockAppInstance;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -58,4 +58,4 @@ class PollDeploymentStatusCommand extends Command
         Log::info('Deployment status polling loop completed');
         return Command::SUCCESS;
     }
-} 
+}

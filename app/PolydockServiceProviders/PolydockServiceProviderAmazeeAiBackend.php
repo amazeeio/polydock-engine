@@ -2,21 +2,21 @@
 
 namespace App\PolydockServiceProviders;
 
-use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
+use amazeeio\PolydockApp\PolydockServiceProviderInterface;
+use amazeeio\PolydockApp\PolydockAppLoggerInterface;
 use App\PolydockEngine\PolydockEngineServiceProviderInitializationException;
-use FreedomtechHosting\PolydockAmazeeAIBackendClient\Client;
+use amazeeio\PolydockAmazeeAIBackendClient\Client;
 
 /**
  * Polydock service provider for the Amazee AI Backend client
- */ 
+ */
 class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderInterface
 {
     /**
      * @var PolydockAppLoggerInterface
      */
     protected PolydockAppLoggerInterface $logger;
-    
+
     /**
      * @var Client
      */
@@ -32,7 +32,7 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
         if(! $baseUrl) {
             throw new PolydockEngineServiceProviderInitializationException("amazee_ai_backend.base_url is not set");
         }
-        
+
         if(! $tokenFile) {
             throw new PolydockEngineServiceProviderInitializationException("amazee_ai_backend.token_file is not set");
         }
@@ -50,7 +50,7 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
             $config['debug'] = false;
         }
 
-        if($config['debug']) 
+        if($config['debug'])
         {
             $this->debug("Configuration: ", $config);
         }
@@ -95,7 +95,7 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
     public function getAmazeeAiBackendClient() : Client
     {
         return $this->AmazeeAiBackendClient;
-    }         
+    }
 
     public function getName() : string
     {
@@ -106,7 +106,7 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
     {
         return 'An implementation of the Polydock Amazee AI Backend Client from polydock-amazeeai-backend-client-php';
     }
-    
+
     public function getLogger() : PolydockAppLoggerInterface
     {
         return $this->logger;
@@ -135,7 +135,7 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
         $this->logger->warning($message, $context);
         return $this;
     }
-    
+
     public function debug(string $message, array $context = []) : self
     {
         $this->logger->debug($message, $context);
