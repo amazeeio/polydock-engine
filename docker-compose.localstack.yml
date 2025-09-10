@@ -1,0 +1,23 @@
+# Here we go ahead and add the k3d network to the networks generally
+
+services:
+    laravel.test:
+        networks:
+            - k3d
+    mysql:
+        networks:
+            - k3d
+    redis:
+        networks:
+            - k3d
+    mailpit:
+        networks:
+            - k3d
+    selenium:
+        networks:
+            - k3d
+
+networks:
+    k3d:
+        external: true
+        name: "k3d"
