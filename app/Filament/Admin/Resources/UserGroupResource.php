@@ -14,7 +14,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Infolists\Infolist;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 
 class UserGroupResource extends Resource
 {

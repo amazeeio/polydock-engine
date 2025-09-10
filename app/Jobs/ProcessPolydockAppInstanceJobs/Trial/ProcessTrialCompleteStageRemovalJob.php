@@ -3,7 +3,7 @@
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Trial;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -63,4 +63,4 @@ class ProcessTrialCompleteStageRemovalJob extends BaseJob implements ShouldQueue
 
         $this->polydockJobDone();
     }
-} 
+}

@@ -2,28 +2,28 @@
 
 namespace App\PolydockServiceProviders;
 
-use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\FtLagoonPhp\Client;
+use amazeeio\PolydockApp\PolydockServiceProviderInterface;
+use amazeeio\PolydockApp\PolydockAppLoggerInterface;
+use amazeeio\PolydockPhp\Client;
 use App\PolydockEngine\PolydockEngineServiceProviderInitializationException;
 
 /**
- * Polydock service provider for the FT Lagoon client
- */ 
-class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterface
+ * Polydock service provider for the Lagoon client
+ */
+class PolydockServiceProviderLagoon implements PolydockServiceProviderInterface
 {
     /**
      * @var PolydockAppLoggerInterface
      */
     protected PolydockAppLoggerInterface $logger;
-    
+
     /**
      * @var Client
      */
     protected Client $LagoonClient;
 
     /** @var int Maximum age in minutes before a token is considered expired */
-    const MAX_TOKEN_AGE_MINUTES = 2;    
+    const MAX_TOKEN_AGE_MINUTES = 2;
 
     public function __construct(array $config, PolydockAppLoggerInterface $logger)
     {
@@ -51,7 +51,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
             $config['debug'] = false;
         }
 
-        if($config['debug']) 
+        if($config['debug'])
         {
             $this->debug("Configuration: ", $config);
         }
@@ -71,7 +71,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         $debug = $config['debug'] ?? false;
 
         $sshPrivateKeyFile = $config['ssh_private_key_file'];
-        
+
         $sshServer = $config['ssh_server'] ?? 'ssh.lagoon.amazeeio.cloud';
         $sshPort = $config['ssh_port'] ?? 32222;
         $endpoint = $config['endpoint'] ?? 'https://api.lagoon.amazeeio.cloud/graphql';
@@ -114,23 +114,23 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
     public function getLagoonClient() : Client
     {
         return $this->LagoonClient;
-    }      
+    }
 
     public function getMaxTokenAgeMinutes() : int
     {
         return self::MAX_TOKEN_AGE_MINUTES;
-    }   
+    }
 
     public function getName() : string
     {
-        return 'FT-Lagoon-Client-Provider';
+        return 'Lagoon-Client-Provider';
     }
 
     public function getDescription() : string
     {
-        return 'An implementation of the FT Lagoon Client from ft-lagoon-php';
+        return 'An implementation of the Lagoon Client';
     }
-    
+
     public function getLogger() : PolydockAppLoggerInterface
     {
         return $this->logger;
@@ -159,7 +159,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         $this->logger->warning($message, $context);
         return $this;
     }
-    
+
     public function debug(string $message, array $context = []) : self
     {
         $this->logger->debug($message, $context);
@@ -167,6 +167,6 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
     }
 
 
-    
-    
+
+
 }

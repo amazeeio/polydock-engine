@@ -20,7 +20,7 @@ use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\PostUpgradeJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\PreUpgradeJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\UpgradeJob;
 use App\Models\PolydockAppInstance;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppInstanceReadyMail;
@@ -45,7 +45,7 @@ class ProcessPolydockAppInstanceStatusChange
             if($event->appInstance->remoteRegistration) {
                 $appInstance = $event->appInstance;
                 $event->appInstance->remoteRegistration->setResultValue('message', $appInstance->getStatusMessage());
-                
+
                 if($appInstance->getKeyValue('lagoon-generate-app-admin-username')) {
                     $event->appInstance->remoteRegistration->setResultValue('app_admin_username', $appInstance->getKeyValue('lagoon-generate-app-admin-username'));
                 }
@@ -194,22 +194,22 @@ class ProcessPolydockAppInstanceStatusChange
 
                     foreach($appInstance->userGroup->owners as $owner) {
                         $mail = Mail::to($owner->email);
-                            
+
                         if(env('MAIL_CC_ALL', false)) {
                             $mail->cc(env('MAIL_CC_ALL'));
                         }
-        
+
                         $appInstance->info('Sending ready email to owner', [
                             'owner_id' => $owner->id,
                             'owner_email' => $owner->email,
                         ]);
-        
+
                         Log::info('Sending ready email to owner', [
                             'owner_id' => $owner->id,
                             'owner_email' => $owner->email,
                             'app_instance_id' => $appInstance->id,
                         ]);
-        
+
                         $mail->queue(new AppInstanceReadyMail($appInstance, $owner));
                     }
                 }
@@ -218,4 +218,4 @@ class ProcessPolydockAppInstanceStatusChange
                 Log::warning('No job to dispatch for status ' . $event->appInstance->status->value);
         }
     }
-} 
+}

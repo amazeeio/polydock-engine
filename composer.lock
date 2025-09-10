@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dcd2f71a2c1dddc2ddec3545ba02833f",
+    "content-hash": "d3332e402fc36b1413789636954862b5",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1422,12 +1422,12 @@
             "version": "v0.0.5",
             "source": {
                 "type": "git",
-                "url": "https://github.com/Freedomtech-Hosting/ft-lagoon-php.git",
+                "url": "https://github.com/amazeeio/polydock-lagoon-php-lib.git",
                 "reference": "e8669ab79091eade0444a1fe7bcf96ed243b8ea4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Freedomtech-Hosting/ft-lagoon-php/zipball/e8669ab79091eade0444a1fe7bcf96ed243b8ea4",
+                "url": "https://api.github.com/repos/amazeeio/polydock-lagoon-php-lib/zipball/e8669ab79091eade0444a1fe7bcf96ed243b8ea4",
                 "reference": "e8669ab79091eade0444a1fe7bcf96ed243b8ea4",
                 "shasum": ""
             },
@@ -10544,12 +10544,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

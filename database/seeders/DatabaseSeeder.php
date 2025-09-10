@@ -95,7 +95,7 @@ class DatabaseSeeder extends Seeder
 
         // Add webhook to both stores
         $webhookUrl = 'https://webhook.site/bbe9c2ef-bb18-4c13-8d40-14fb428c7b64';
-        
+
         \App\Models\PolydockStoreWebhook::create([
             'polydock_store_id' => $usaStore->id,
             'url' => $webhookUrl,
@@ -205,7 +205,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
             'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
-        
+
         // Add some example apps to each store
         \App\Models\PolydockStoreApp::factory()
             ->count(8)

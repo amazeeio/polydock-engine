@@ -3,7 +3,7 @@
 namespace App\Events;
 
 use App\Models\PolydockAppInstance;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -18,4 +18,4 @@ class PolydockAppInstanceStatusChanged
         public PolydockAppInstance $appInstance,
         public ?PolydockAppInstanceStatus $previousStatus = null
     ) {}
-} 
+}

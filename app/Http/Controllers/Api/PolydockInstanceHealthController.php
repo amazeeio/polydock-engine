@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\PolydockAppInstance;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -26,7 +26,7 @@ class PolydockInstanceHealthController extends Controller
 
         // Find the instance
         $instance = PolydockAppInstance::where('uuid', $uuid)->first();
-        
+
         if (!$instance) {
             Log::error('Instance not found', $logContext);
             return response()->json([
@@ -40,7 +40,7 @@ class PolydockInstanceHealthController extends Controller
             $statusEnum = PolydockAppInstanceStatus::from($status);
         } catch (\ValueError $e) {
             Log::error('Invalid status value', $logContext + ['status_code' => 400]);
-            
+
             return response()->json([
                 'error' => 'Invalid status value',
                 'status_code' => 400
@@ -62,7 +62,7 @@ class PolydockInstanceHealthController extends Controller
         // Validate that the current status is in a state where we can update it
         if (!in_array($instance->status, $acceptableStatuses)) {
             Log::error('Current status is not ready for health check update', $logContext + ['status_code' => 400]);
-            
+
             return response()->json([
                 'error' => 'Current status is not ready for health check update',
                 'status_code' => 400
@@ -71,13 +71,13 @@ class PolydockInstanceHealthController extends Controller
 
         // Check if status is allowed
         if (!in_array($statusEnum, PolydockAppInstance::$stageRunningStatuses)) {
-            Log::error('Invalid running status', $logContext + ['status_code' => 400]); 
+            Log::error('Invalid running status', $logContext + ['status_code' => 400]);
 
             return response()->json([
                 'error' => 'Invalid running status',
                 'status_code' => 400,
                 'allowed_statuses' => array_map(
-                    fn($status) => $status->value, 
+                    fn($status) => $status->value,
                     PolydockAppInstance::$stageRunningStatuses
                 )
             ], 400);
@@ -109,4 +109,4 @@ class PolydockInstanceHealthController extends Controller
             'status_code' => 200
         ], 200);
     }
-} 
+}

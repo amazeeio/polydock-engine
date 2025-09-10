@@ -85,7 +85,7 @@ class AmazeeTrialSeeder extends Seeder
 
         // Add webhook to both stores
         $webhookUrl = 'https://webhook.site/bbe9c2ef-bb18-4c13-8d40-14fb428c7b64';
-        
+
 
         ////////////////////////////
         ///////////// USA //////////
@@ -146,7 +146,7 @@ class AmazeeTrialSeeder extends Seeder
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
             'name' => $namePrefix . ' amazee.io AI - CK Editor',
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
+            'polydock_app_class' => 'amazeeio\PolydockAppAmazeeioGeneric\PolydockAiApp',
             'description' => 'Drupal AI - CK Editor',
             'author' => 'amazee.io',
             'website' => 'https://try.amazee.ai/',
@@ -160,13 +160,13 @@ class AmazeeTrialSeeder extends Seeder
             'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
     }
-    
+
     public function getStoreAppCategorizePages($store, $namePrefix)
     {
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
             'name' => $namePrefix . ' amazee.io AI - Categorize Pages',
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
+            'polydock_app_class' => 'amazeeio\PolydockAppAmazeeioGeneric\PolydockAiApp',
             'description' => 'Drupal AI - Categorize Pages',
             'author' => 'amazee.io',
             'website' => 'https://try.amazee.ai/',
@@ -186,7 +186,7 @@ class AmazeeTrialSeeder extends Seeder
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
             'name' => $namePrefix . ' amazee.io AI - Search',
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
+            'polydock_app_class' => 'amazeeio\PolydockAppAmazeeioGeneric\PolydockAiApp',
             'description' => 'Drupal AI - Search',
             'author' => 'amazee.io',
             'website' => 'https://try.amazee.ai/',
@@ -206,7 +206,7 @@ class AmazeeTrialSeeder extends Seeder
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
             'name' => $namePrefix . ' amazee.io AI - Generic',
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
+            'polydock_app_class' => 'amazeeio\PolydockAppAmazeeioGeneric\PolydockAiApp',
             'description' => 'Generic amazee.io AI App',
             'author' => 'amazee.io',
             'website' => 'https://try.amazee.ai/',
@@ -214,7 +214,7 @@ class AmazeeTrialSeeder extends Seeder
             'lagoon_deploy_git' => 'git@github.com:amazeeio-demos/polydock-ai-trial-generic.git',
             'lagoon_deploy_branch' => 'main',
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
-            'available_for_trials' => true, 
+            'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
             'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',

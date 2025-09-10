@@ -2,7 +2,7 @@
 
 namespace App\PolydockEngine;
 
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
+use amazeeio\PolydockApp\PolydockAppLoggerInterface;
 use Illuminate\Support\Facades\Log;
 
 class PolydockLogger implements PolydockAppLoggerInterface
@@ -45,4 +45,4 @@ class PolydockLogger implements PolydockAppLoggerInterface
     {
         Log::channel($this->channel)->debug($message, $context);
     }
-} 
+}

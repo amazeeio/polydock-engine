@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Models\PolydockStoreApp;
 use App\Models\PolydockAppInstance;
 use App\Enums\PolydockStoreAppStatusEnum;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use amazeeio\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -35,7 +35,7 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
         foreach ($apps as $app) {
             $needed = $app->target_unallocated_app_instances - $app->unallocated_instances_count;
             $neededTotal += $needed;
-            
+
             Log::info('Creating unallocated instances', [
                 'app_id' => $app->id,
                 'app_name' => $app->name,
@@ -72,4 +72,4 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
             'needed_total' => $neededTotal
         ]);
     }
-} 
+}
