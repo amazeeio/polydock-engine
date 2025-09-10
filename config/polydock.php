@@ -19,7 +19,7 @@ return [
             'ssh_user' => env('FTLAGOON_SSH_USER','lagoon'),
             'ssh_server' => env('FTLAGOON_SSH_SERVER','ssh.lagoon.amazeeio.cloud'),
             'ssh_port' => env('FTLAGOON_SSH_PORT','32222'),
-            'endpoint' => env('FTLAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql'),
+            'endpoint' => env('FTLAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql'), 
         ],
         "PolydockServiceProviderAmazeeAiBackend" => [
             'class' => App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend::class,
@@ -29,6 +29,19 @@ return [
         ]
     ],
     'lagoon_cores' => [
+        'http://lagoon-api.172.22.0.240.nip.io/graphql' => [
+            'lagoon_deploy_regions' => [
+                '2001' => [
+                    'id' => '1',
+                    'code' => 'local',
+                    'provider' => 'local',
+                    'name' => 'Local Lagoon',
+                    'pattern' => 'local.lagoon',
+                    'country' => 'Local',
+                    'country_code' => 'LO',
+                ]
+            ]
+        ],
         'https://api.main.lagoon-core.test6.amazee.io/graphql' => [
             'lagoon_deploy_regions' => [
                 '1' => [
