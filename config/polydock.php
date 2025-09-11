@@ -20,7 +20,7 @@
         ]
       ];
     
-    $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', null));
+    $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', ''));
     
     foreach($filterServiceProviders as $filterServiceProvider) {
         $filterServiceProvider = trim($filterServiceProvider);
