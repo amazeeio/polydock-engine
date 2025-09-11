@@ -20,13 +20,12 @@
         ]
       ];
     
-    $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', ''));
-    if(count($filterServiceProviders) > 0) {
-        foreach($filterServiceProviders as $filterServiceProvider) {
-            if(isset($serviceProviderSingletons[$filterServiceProvider]))
-            {
-                unset($serviceProviderSingletons[$filterServiceProvider]);
-            }
+    $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', null));
+    
+    foreach($filterServiceProviders as $filterServiceProvider) {
+        $filterServiceProvider = trim($filterServiceProvider);
+        if(!empty($filterServiceProvider) && isset($serviceProviderSingletons[$filterServiceProvider])) {
+            unset($serviceProviderSingletons[$filterServiceProvider]);
         }
     }
 
