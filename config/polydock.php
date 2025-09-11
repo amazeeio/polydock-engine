@@ -1,17 +1,8 @@
 <?php
 
-return [
-    'max_per_run_dispatch_midtrial_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_MIDTRIAL_EMAILS', 25),
-    'max_per_run_dispatch_one_day_left_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_ONE_DAY_LEFT_EMAILS', 25),
-    'max_per_run_dispatch_trial_complete_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_EMAILS', 25),
-    'max_per_run_dispatch_trial_complete_stage_removal' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_STAGE_REMOVAL', 5),
-    'redirect_landing_page_to' => env('POLYDOCK_REDIRECT_LANDING_PAGE_TO', "https://freedomtech.hosting/"),
-    'register_only_captures' => env('POLYDOCK_REGISTER_ONLY_CAPTURES', false),
-    'register_simulate_round_robin' => env('POLYDOCK_REGISTER_SIMULATE_ROUND_ROBIN', false),
-    'register_simulate_error' => env('POLYDOCK_REGISTER_SIMULATE_ERROR', false),
-    'lagoon_deploy_private_key_file' => env('POLYDOCK_LAGOON_DEPLOY_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-deploy-private-key'),
-    'service_providers_singletons' => [
-         "PolydockServiceProviderFTLagoon" => [
+
+    $serviceProviderSingletons = [
+        "PolydockServiceProviderFTLagoon" => [
             'class' => App\PolydockServiceProviders\PolydockServiceProviderFTLagoon::class,
             'debug' => true,
             'token_cache_dir' => env('FTLAGOON_TOKEN_CACHE_DIR', storage_path('ftlagoon/.tokencache/')),
@@ -27,7 +18,29 @@ return [
             'base_url' => env('AMAZEE_AI_BACKEND_BASE_URL', 'https://backend.main.amazeeai.us2.amazee.io'),
             'token_file' => env('AMAZEE_AI_BACKEND_TOKEN_FILE', storage_path('amazee-ai-backend/token')),
         ]
-    ],
+      ];
+    
+    $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', ''));
+    if(count($filterServiceProviders) > 0) {
+        foreach($filterServiceProviders as $filterServiceProvider) {
+            if(isset($serviceProviderSingletons[$filterServiceProvider]))
+            {
+                unset($serviceProviderSingletons[$filterServiceProvider]);
+            }
+        }
+    }
+
+return [
+    'max_per_run_dispatch_midtrial_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_MIDTRIAL_EMAILS', 25),
+    'max_per_run_dispatch_one_day_left_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_ONE_DAY_LEFT_EMAILS', 25),
+    'max_per_run_dispatch_trial_complete_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_EMAILS', 25),
+    'max_per_run_dispatch_trial_complete_stage_removal' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_STAGE_REMOVAL', 5),
+    'redirect_landing_page_to' => env('POLYDOCK_REDIRECT_LANDING_PAGE_TO', "https://freedomtech.hosting/"),
+    'register_only_captures' => env('POLYDOCK_REGISTER_ONLY_CAPTURES', false),
+    'register_simulate_round_robin' => env('POLYDOCK_REGISTER_SIMULATE_ROUND_ROBIN', false),
+    'register_simulate_error' => env('POLYDOCK_REGISTER_SIMULATE_ERROR', false),
+    'lagoon_deploy_private_key_file' => env('POLYDOCK_LAGOON_DEPLOY_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-deploy-private-key'),
+    'service_providers_singletons' => $serviceProviderSingletons,
     'lagoon_cores' => [
         'http://lagoon-api.172.22.0.240.nip.io/graphql' => [
             'lagoon_deploy_regions' => [
