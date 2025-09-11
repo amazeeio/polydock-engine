@@ -22,7 +22,7 @@
     
     $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', ''));
     
-    foreach($filterServiceProviders as $filterServiceProvider) {
+    foreach ($filterServiceProviders as $filterServiceProvider) {
         $filterServiceProvider = trim($filterServiceProvider);
         if(!empty($filterServiceProvider) && isset($serviceProviderSingletons[$filterServiceProvider])) {
             unset($serviceProviderSingletons[$filterServiceProvider]);
