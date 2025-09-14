@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt.git",
-                "reference": "4510dbd5ee1110f5c9a07d447d8dae49cb91e0c8"
+                "reference": "f3bbc59e932ceb695ab8c1bf821aac82dfcf8159"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/4510dbd5ee1110f5c9a07d447d8dae49cb91e0c8",
-                "reference": "4510dbd5ee1110f5c9a07d447d8dae49cb91e0c8",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/f3bbc59e932ceb695ab8c1bf821aac82dfcf8159",
+                "reference": "f3bbc59e932ceb695ab8c1bf821aac82dfcf8159",
                 "shasum": ""
             },
             "require": {
@@ -57,7 +57,7 @@
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/issues",
                 "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/feature-devmode"
             },
-            "time": "2025-09-12T02:31:15+00:00"
+            "time": "2025-09-14T23:03:53+00:00"
         },
         {
             "name": "anourvalar/eloquent-serialize",

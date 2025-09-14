@@ -32,6 +32,7 @@ RUN DOWNLOAD_PATH=$(curl -sL "https://api.github.com/repos/uselagoon/lagoon-sync
 #######################################################
 COPY . /app
 RUN if [ -f "composer.json" ]; then \
+    COMPOSER_MEMORY_LIMIT=-1 composer update amazeeio/polydock-app-amazeeio-privategpt --ignore-platform-reqs; \
     COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction --prefer-dist --optimize-autoloader; \
     php artisan storage:link; \
   fi
