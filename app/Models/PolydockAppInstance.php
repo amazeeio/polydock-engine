@@ -22,6 +22,8 @@ use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
+use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
+
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
     use HasPolydockVariables;
@@ -284,6 +286,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'pre_remove', 'pre-remove'));
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'remove', 'remove'));
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'claim', 'claim'));
+
+                // This is a pre-launch hack for amazee.ai Private GPT 
+                // TODO: Abstract this once the amazee.ai Private GPT 
+                //   is launched and stable.
+                $data = array_merge($data, AmazeeAiBackendHelper::getDataForPrivateGPTSettings());
 
                 $model->data = $data;                
             } catch (PolydockEngineAppNotFoundException $e) {

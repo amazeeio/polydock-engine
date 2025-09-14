@@ -30,6 +30,12 @@
     }
 
 return [
+    'amazee_ai_backend_private_gpt_settings' => [
+        'amazee-ai-backend-token' => env('AMAZEE_AI_BACKEND_TOKEN', 'no-amazee-ai-backend-token-set'),
+        'amazee-ai-backend-url' => env('AMAZEE_AI_BACKEND_URL', 'no-amazee-ai-backend-url-set'),
+        'amazee-ai-admin-email' => env('AMAZEE_AI_ADMIN_EMAIL', 'no-amazee-ai-admin-email-set'),
+        'amazee-ai-in-dev-mode' => env('AMAZEE_AI_IN_DEV_MODE', false),
+    ],
     'max_per_run_dispatch_midtrial_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_MIDTRIAL_EMAILS', 25),
     'max_per_run_dispatch_one_day_left_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_ONE_DAY_LEFT_EMAILS', 25),
     'max_per_run_dispatch_trial_complete_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_EMAILS', 25),
