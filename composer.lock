@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4817380201f1f2c12986ccca1b28f334",
+    "content-hash": "adae99c2bbeb8c707599cb64a7b73eab",
     "packages": [
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
-            "version": "dev-main",
+            "version": "dev-feature-devmode",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt.git",
-                "reference": "972b80842573f10c921f26061cc007841d77f821"
+                "reference": "4510dbd5ee1110f5c9a07d447d8dae49cb91e0c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/972b80842573f10c921f26061cc007841d77f821",
-                "reference": "972b80842573f10c921f26061cc007841d77f821",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/4510dbd5ee1110f5c9a07d447d8dae49cb91e0c8",
+                "reference": "4510dbd5ee1110f5c9a07d447d8dae49cb91e0c8",
                 "shasum": ""
             },
             "require": {
@@ -36,7 +36,6 @@
                 "phpstan/phpstan-mockery": "^1.1",
                 "phpunit/phpunit": "^10.0"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -56,9 +55,9 @@
             "description": "Polydock App - amazee.io PrivateGPT with Direct API Integration",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/main"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/feature-devmode"
             },
-            "time": "2025-09-11T21:54:54+00:00"
+            "time": "2025-09-12T02:31:15+00:00"
         },
         {
             "name": "anourvalar/eloquent-serialize",
