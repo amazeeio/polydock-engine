@@ -35,7 +35,7 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
         foreach ($apps as $app) {
             $needed = $app->target_unallocated_app_instances - $app->unallocated_instances_count;
             $neededTotal += $needed;
-            
+
             Log::info('Creating unallocated instances', [
                 'app_id' => $app->id,
                 'app_name' => $app->name,
@@ -72,4 +72,4 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
             'needed_total' => $neededTotal
         ]);
     }
-} 
+}

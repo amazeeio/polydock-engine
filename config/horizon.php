@@ -189,7 +189,7 @@ return [
                 'polydock-app-instance-processing-create',
                 'polydock-app-instance-processing-deploy',
                 'polydock-app-instance-processing-remove',
-                'polydock-app-instance-processing-health',  
+                'polydock-app-instance-processing-health',
                 'polydock-app-instance-processing-upgrade',
                 'polydock-app-instance-processing-claim',
                 'polydock-app-instance-processing-progress-to-next-stage'
@@ -224,7 +224,7 @@ return [
                 'polydock-app-instance-processing-create',
                 'polydock-app-instance-processing-deploy',
                 'polydock-app-instance-processing-remove',
-                'polydock-app-instance-processing-health',  
+                'polydock-app-instance-processing-health',
                 'polydock-app-instance-processing-upgrade',
                 'polydock-app-instance-processing-claim',
                 'polydock-app-instance-processing-progress-to-next-stage'
