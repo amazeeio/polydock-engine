@@ -51,7 +51,7 @@ class PolydockCloneStoreAppCommand extends Command
             // Ask user which store to clone into
             $targetStoreId = array_search($this->choice(
                 'Select target store to clone into:',
-                array_values($storeChoices),
+                $storeChoices,
                 null,
                 null,
                 false
@@ -111,4 +111,4 @@ class PolydockCloneStoreAppCommand extends Command
 
         return 0;
     }
-} 
+}

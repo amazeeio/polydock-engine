@@ -10,7 +10,7 @@
             'ssh_user' => env('FTLAGOON_SSH_USER','lagoon'),
             'ssh_server' => env('FTLAGOON_SSH_SERVER','ssh.lagoon.amazeeio.cloud'),
             'ssh_port' => env('FTLAGOON_SSH_PORT','32222'),
-            'endpoint' => env('FTLAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql'), 
+            'endpoint' => env('FTLAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql'),
         ],
         "PolydockServiceProviderAmazeeAiBackend" => [
             'class' => App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend::class,
@@ -19,9 +19,9 @@
             'token_file' => env('AMAZEE_AI_BACKEND_TOKEN_FILE', storage_path('amazee-ai-backend/token')),
         ]
       ];
-    
+
     $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', ''));
-    
+
     foreach ($filterServiceProviders as $filterServiceProvider) {
         $filterServiceProvider = trim($filterServiceProvider);
         if(!empty($filterServiceProvider) && isset($serviceProviderSingletons[$filterServiceProvider])) {

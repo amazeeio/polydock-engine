@@ -52,7 +52,6 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     ->label('Requested')
                                     ->dateTime(),
                             ]),
-                       
                     ]),
 
                 Section::make('App Details')
@@ -65,8 +64,8 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     ->label('App'),
                                 TextEntry::make('appInstance.name')
                                     ->label('Instance')
-                                    ->url(fn ($record) 
-                                        => route('filament.admin.resources.polydock-app-instances.view', 
+                                    ->url(fn ($record)
+                                        => route('filament.admin.resources.polydock-app-instances.view',
                                             ['record' => $record->appInstance])),
                             ]),
                     ]),
@@ -76,7 +75,7 @@ class ViewUserRemoteRegistration extends ViewRecord
                         return self::getRenderedSafeRequestDataForRecord($record);
                     })
                     ->collapsible(),
-                
+
                 Section::make('Result Data')
                     ->schema(function ($record) {
                         return self::getRenderedSafeResultDataForRecord($record);
@@ -121,8 +120,8 @@ class ViewUserRemoteRegistration extends ViewRecord
                 $renderedItem->state([$value]);
             }
 
-            $renderedArray[] = $renderedItem;   
+            $renderedArray[] = $renderedItem;
         }
         return $renderedArray;
     }
-} 
+}
