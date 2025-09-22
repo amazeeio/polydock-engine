@@ -287,6 +287,12 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 $allocatedInstance->storeKeyValue('user-first-name', $this->registration->getRequestValue('first_name'));
                 $allocatedInstance->storeKeyValue('user-last-name', $this->registration->getRequestValue('last_name'));
                 $allocatedInstance->storeKeyValue('user-email', $this->registration->getRequestValue('email'));
+                // if they add a company name, we store it too
+                $companyName = $this->registration->getRequestValue('company_name');
+                if ($companyName) {
+                    $allocatedInstance->storeKeyValue('company-name', $companyName);
+                }
+
                 $allocatedInstance->save();
             }
         } catch (\Exception $e) {
