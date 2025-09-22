@@ -14,8 +14,11 @@ Hi {{ e($toUser->name) }},
 @endif
     <li>Access URL: <a href="{{ route('app-instances.show', $appInstance) }}">{{ route('app-instances.show', $appInstance) }}</a></li>
 </ul>
-
+@if($appInstance->getKeyValue('hide-login-email-info') != 'true')
 <h3 style="margin-top: 32px; margin-bottom: 8px;">User Information & Login Credentials:</h3>
+@else
+<h3 style="margin-top: 32px; margin-bottom: 8px;">User Information:</h3>
+@endif
 <table style="border-collapse: collapse; width: 100%; max-width: 600px;">
     <tr style="background: #f5f5f5;">
         <th style="text-align: left; padding: 8px; border: 1px solid #ddd;">Field</th>
@@ -41,6 +44,7 @@ Hi {{ e($toUser->name) }},
             @endif
         </td>
     </tr>
+    @if($appInstance->getKeyValue('hide-login-email-info') != 'true')
     <tr>
         <td style="padding: 8px; border: 1px solid #ddd;">Username</td>
         <td style="padding: 8px; border: 1px solid #ddd;">
@@ -61,6 +65,7 @@ Hi {{ e($toUser->name) }},
             @endif
         </td>
     </tr>
+    @endif
 </table>
 
 @if($appInstance->storeApp->email_body_markdown)
