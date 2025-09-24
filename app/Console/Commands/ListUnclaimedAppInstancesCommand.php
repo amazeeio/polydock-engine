@@ -14,39 +14,51 @@ class ListUnclaimedAppInstancesCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'polydock:list-unclaimed-instances';
+    protected $signature = 'polydock:list-unclaimed-instances {--days=14 : Number of days old instances must be} {--app= : PolydockStoreApp ID to limit search to}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'List all unclaimed PolydockAppInstances that are older than 14 days';
+    protected $description = 'List all unclaimed PolydockAppInstances that are older than specified days';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $this->info('Searching for unclaimed PolydockAppInstances older than 14 days...');
+        $days = (int) $this->option('days');
+        $this->info("Searching for unclaimed PolydockAppInstances older than {$days} days...");
         
         Log::info('Listing unclaimed PolydockAppInstances via command');
 
         try {
-            // Find all unclaimed instances older than 14 days
-            $unclaimedInstances = PolydockAppInstance::where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
-                ->whereDate('created_at', '<=', now()->subDay(14))
-                ->get();
+            $appId = $this->option('app');
+            
+            // Build the query for unclaimed instances older than specified days
+            $query = PolydockAppInstance::where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
+                ->whereDate('created_at', '<=', now()->subDay($days));
+            
+            // Add app filter if specified
+            if ($appId) {
+                $query->where('polydock_store_app_id', $appId);
+            }
+            
+            // Execute query
+            $unclaimedInstances = $query->get();
 
             $count = $unclaimedInstances->count();
             
             if ($count === 0) {
-                $this->info('No unclaimed instances found that are older than 14 days.');
-                Log::info('No unclaimed instances found older than 14 days');
+                $appFilterText = $appId ? " for app ID {$appId}" : "";
+                $this->info("No unclaimed instances found that are older than {$days} days{$appFilterText}.");
+                Log::info("No unclaimed instances found older than {$days} days" . ($appId ? " for app ID {$appId}" : ""));
                 return Command::SUCCESS;
             }
 
-            $this->info("Found {$count} unclaimed instances:");
+            $appFilterText = $appId ? " for app ID {$appId}" : "";
+            $this->info("Found {$count} unclaimed instances{$appFilterText}:");
             $this->newLine();
 
             // Display the instances in a table format
@@ -67,6 +79,8 @@ class ListUnclaimedAppInstancesCommand extends Command
 
             // Log the results
             Log::info('Unclaimed instances listed successfully', [
+                'days' => $days,
+                'app_id' => $appId,
                 'count' => $count,
                 'instances' => $unclaimedInstances->pluck('name')->toArray()
             ]);

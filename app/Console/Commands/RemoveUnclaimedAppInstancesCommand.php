@@ -14,43 +14,53 @@ class RemoveUnclaimedAppInstancesCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'polydock:remove-unclaimed-instances {--force : Run without interactive confirmation} {--limit=3 : Maximum number of instances to process}';
+    protected $signature = 'polydock:remove-unclaimed-instances {--force : Run without interactive confirmation} {--limit=3 : Maximum number of instances to process} {--days=14 : Number of days old instances must be} {--app= : PolydockStoreApp ID to limit search to}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Set unclaimed PolydockAppInstances older than 14 days to pending removal status';
+    protected $description = 'Set unclaimed PolydockAppInstances older than specified days to pending removal status';
 
     /**
      * Execute the console command.
      */
     public function handle(): int
     {
-        $this->info('Searching for unclaimed PolydockAppInstances older than 14 days...');
+        $days = (int) $this->option('days');
+        $this->info("Searching for unclaimed PolydockAppInstances older than {$days} days...");
         
         Log::info('Setting unclaimed PolydockAppInstances to pending removal via command');
 
         try {
             // Get the limit from command line option
             $limit = (int) $this->option('limit');
+            $appId = $this->option('app');
             
-            // Find unclaimed instances older than 14 days, limited by the specified number
-            $unclaimedInstances = PolydockAppInstance::where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
-                ->whereDate('created_at', '<=', now()->subDay(14))
-                ->limit($limit)
-                ->get();
+            // Build the query for unclaimed instances older than specified days
+            $query = PolydockAppInstance::where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
+                ->whereDate('created_at', '<=', now()->subDay($days));
+            
+            // Add app filter if specified
+            if ($appId) {
+                $query->where('polydock_store_app_id', $appId);
+            }
+            
+            // Apply limit and execute query
+            $unclaimedInstances = $query->limit($limit)->get();
 
             $count = $unclaimedInstances->count();
             
             if ($count === 0) {
-                $this->info('No unclaimed instances found that are older than 14 days.');
-                Log::info('No unclaimed instances found older than 14 days');
+                $appFilterText = $appId ? " for app ID {$appId}" : "";
+                $this->info("No unclaimed instances found that are older than {$days} days{$appFilterText}.");
+                Log::info("No unclaimed instances found older than {$days} days" . ($appId ? " for app ID {$appId}" : ""));
                 return Command::SUCCESS;
             }
 
-            $this->info("Found {$count} unclaimed instances (limit: {$limit}):");
+            $appFilterText = $appId ? " for app ID {$appId}" : "";
+            $this->info("Found {$count} unclaimed instances{$appFilterText} (limit: {$limit}):");
             $this->newLine();
 
             // Display the instances that will be affected
@@ -107,7 +117,9 @@ class RemoveUnclaimedAppInstancesCommand extends Command
 
             // Log the results
             Log::info('Unclaimed instances set to pending removal successfully', [
+                'days' => $days,
                 'limit' => $limit,
+                'app_id' => $appId,
                 'total_found' => $count,
                 'successfully_updated' => $updatedCount,
                 'failed_updates' => $count - $updatedCount,
