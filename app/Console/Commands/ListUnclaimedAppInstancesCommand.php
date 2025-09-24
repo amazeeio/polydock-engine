@@ -69,7 +69,7 @@ class ListUnclaimedAppInstancesCommand extends Command
                 $rows[] = [
                     $instance->id,
                     $instance->name,
-                    $instance->storeApp->store->name . " - " . $instance->storeApp->name,
+                    $instance->storeApp->store->name . " - " . $instance->storeApp->name . "(" . $instance->storeApp->id . ")",
                     $instance->status->value,
                     $instance->created_at->format('Y-m-d H:i:s'),
                     $instance->app_type
