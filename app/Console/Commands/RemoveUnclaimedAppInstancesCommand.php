@@ -99,7 +99,9 @@ class RemoveUnclaimedAppInstancesCommand extends Command
             $updatedCount = 0;
             foreach ($unclaimedInstances as $instance) {
                 try {
-                    $instance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE)->save();
+                    $instance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
+                    $instance->user_group_id = config('polydock.default_user_group_id_for_unallocated_instances',1); 
+                    $instance->save();
                     $updatedCount++;
                     
                     $this->line("✓ Updated instance: {$instance->name} (ID: {$instance->id})");
