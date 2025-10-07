@@ -13,7 +13,7 @@ class CreateStore extends Command
      *
      * @var string
      */
-    protected $signature = 'app:create-store
+    protected $signature = 'polydock:create-store
                           {--name= : Store name}
                           {--status= : Store status (public/private)}
                           {--listed= : Listed in marketplace (true/false)}
