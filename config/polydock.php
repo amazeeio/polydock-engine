@@ -21,6 +21,8 @@
             'base_url' => env('AMAZEE_AI_BACKEND_BASE_URL', 'https://backend.main.amazeeai.us2.amazee.io'),
             'token_file' => env('AMAZEE_AI_BACKEND_TOKEN_FILE', storage_path('amazee-ai-backend/token')),
         ];
+    } else {
+        $serviceProviderSingletons["PolydockServiceProviderAmazeeAiBackend"] = [];
     }
 
     $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', ''));
