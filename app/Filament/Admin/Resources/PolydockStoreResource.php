@@ -47,7 +47,7 @@ class PolydockStoreResource extends Resource
                     ->dehydrated(fn (PolydockStore $record) => 
                         !$record || !$record->apps()->whereHas('instances')->exists()
                     )
-                    ->disabled(fn (PolydockStore $record) => 
+                    ->disabled(fn (?PolydockStore $record) => 
                         $record && $record->apps()->whereHas('instances')->exists()
                     ),
                 Forms\Components\TextInput::make('lagoon_deploy_project_prefix')
@@ -56,7 +56,7 @@ class PolydockStoreResource extends Resource
                     ->dehydrated(fn (PolydockStore $record) => 
                         !$record || !$record->apps()->whereHas('instances')->exists()
                     )
-                    ->disabled(fn (PolydockStore $record) => 
+                    ->disabled(fn (?PolydockStore $record) => 
                         $record && $record->apps()->whereHas('instances')->exists()
                     ),
                 Forms\Components\TextInput::make('lagoon_deploy_organization_id_ext')
@@ -65,7 +65,7 @@ class PolydockStoreResource extends Resource
                     ->dehydrated(fn (PolydockStore $record) => 
                         !$record || !$record->apps()->whereHas('instances')->exists()
                     )
-                    ->disabled(fn (PolydockStore $record) => 
+                    ->disabled(fn (?PolydockStore $record) => 
                         $record && $record->apps()->whereHas('instances')->exists()
                     ),
                 Forms\Components\TextInput::make('amazee_ai_backend_region_id_ext')
@@ -73,7 +73,7 @@ class PolydockStoreResource extends Resource
                     ->dehydrated(fn (PolydockStore $record) => 
                         !$record || !$record->apps()->whereHas('instances')->exists()
                     )
-                    ->disabled(fn (PolydockStore $record) => 
+                    ->disabled(fn (?PolydockStore $record) => 
                         $record && $record->apps()->whereHas('instances')->exists()
                     ),
                 Forms\Components\Textarea::make('lagoon_deploy_private_key')
