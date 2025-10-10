@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::table('polydock_stores', function (Blueprint $table) {
             $table->unsignedInteger('amazee_ai_backend_region_id')->nullable()->after('lagoon_deploy_private_key');
-            
+
             // Add index for efficient lookups
             $table->index('amazee_ai_backend_region_id', 'polydock_stores_amazee_ai_region_idx');
         });
@@ -23,4 +23,4 @@ return new class extends Migration
             $table->dropColumn('amazee_ai_backend_region_id');
         });
     }
-}; 
+};

@@ -2,14 +2,12 @@
 
 namespace App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 
+use App\Filament\Admin\Resources\UserResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Admin\Resources\UserResource;
 
 class UsersRelationManager extends RelationManager
 {

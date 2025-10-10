@@ -20,7 +20,7 @@ class ProcessTrialCompleteStageRemovalJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
 
         if ($this->appInstance->status !== PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED
-            || !$this->appInstance->isTrialExpired()
+            || ! $this->appInstance->isTrialExpired()
         ) {
             $this->appInstance->info('Trial complete stage removal not initiated - instance not in correct status', [
                 'app_instance_id' => $this->appInstance->id,
@@ -42,7 +42,7 @@ class ProcessTrialCompleteStageRemovalJob extends BaseJob implements ShouldQueue
         ]);
 
         $this->appInstance->update([
-            'trial_completed' => TRUE,
+            'trial_completed' => true,
         ]);
 
         // Set status to pending pre-remove
@@ -63,4 +63,4 @@ class ProcessTrialCompleteStageRemovalJob extends BaseJob implements ShouldQueue
 
         $this->polydockJobDone();
     }
-} 
+}

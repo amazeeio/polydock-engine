@@ -28,12 +28,12 @@ class AppInstanceReadyMail extends Mailable
     public function envelope(): Envelope
     {
         $subject = $this->appInstance->storeApp->email_subject_line;
-        
+
         if (empty($subject)) {
-            $subject = "Your new instance is Ready";
+            $subject = 'Your new instance is Ready';
         }
 
-        $subject .= " [" . $this->appInstance->name . "]";
+        $subject .= ' ['.$this->appInstance->name.']';
 
         return new Envelope(
             subject: $subject,
@@ -59,4 +59,4 @@ class AppInstanceReadyMail extends Mailable
     {
         return [];
     }
-} 
+}

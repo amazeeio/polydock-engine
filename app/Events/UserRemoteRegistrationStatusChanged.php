@@ -2,8 +2,8 @@
 
 namespace App\Events;
 
-use App\Models\UserRemoteRegistration;
 use App\Enums\UserRemoteRegistrationStatusEnum;
+use App\Models\UserRemoteRegistration;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -18,4 +18,4 @@ class UserRemoteRegistrationStatusChanged
         public UserRemoteRegistration $registration,
         public UserRemoteRegistrationStatusEnum $previousStatus
     ) {}
-} 
+}

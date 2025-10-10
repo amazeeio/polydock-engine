@@ -16,9 +16,6 @@ class RegisterController extends Controller
 {
     /**
      * Store a newly created resource in storage.
-     * 
-     * @param Request $request
-     * @return JsonResponse
      */
     public function processRegister(Request $request): JsonResponse
     {
@@ -31,13 +28,15 @@ class RegisterController extends Controller
             ]);
         } catch (\Exception $e) {
             Log::error('Error creating user remote registration', ['error' => $e->getMessage()]);
+
             return response()->json([
                 'status' => UserRemoteRegistrationStatusEnum::FAILED->value,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
         Log::info('User remote registration created', ['registration' => $registration->toArray()]);
+
         return response()->json([
             'status' => UserRemoteRegistrationStatusEnum::PENDING->value,
             'message' => 'Registration pending',
@@ -47,21 +46,17 @@ class RegisterController extends Controller
 
     /**
      * Display the specified resource.
-     * 
-     * @param string $uuid
-     * @return JsonResponse
      */
     public function showRegister(string $uuid): JsonResponse
-    {   
+    {
         try {
             $registration = UserRemoteRegistration::where('uuid', $uuid)->firstOrFail();
             Log::info('Showing user remote registration', ['registration' => $registration->toArray()]);
 
-            if($registration->appInstance) {
+            if ($registration->appInstance) {
                 $appInstance = $registration->appInstance;
-                if(in_array($appInstance->status, PolydockAppInstance::$failedStatuses) 
-                    && $registration->status != UserRemoteRegistrationStatusEnum::FAILED) 
-                {
+                if (in_array($appInstance->status, PolydockAppInstance::$failedStatuses)
+                    && $registration->status != UserRemoteRegistrationStatusEnum::FAILED) {
                     $registration->status = UserRemoteRegistrationStatusEnum::FAILED;
                     $registration->setResultValue('message', 'Failed to process registration.');
                     $registration->setResultValue('message_detail', 'An unexpected error occurred.');
@@ -79,10 +74,10 @@ class RegisterController extends Controller
             ]);
         } catch (ModelNotFoundException $e) {
             Log::warning('Registration not found', ['uuid' => $uuid]);
-            
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'Registration not found'
+                'message' => 'Registration not found',
             ], Response::HTTP_NOT_FOUND);
         }
     }

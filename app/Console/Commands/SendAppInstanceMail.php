@@ -6,7 +6,6 @@ use App\Mail\AppInstanceMidtrialMail;
 use App\Mail\AppInstanceOneDayLeftMail;
 use App\Mail\AppInstanceReadyMail;
 use App\Mail\AppInstanceTrialCompleteMail;
-use App\Models\PolydockAppInstance;
 use App\Models\User;
 use App\Models\UserRemoteRegistration;
 use Illuminate\Console\Command;
@@ -52,21 +51,24 @@ class SendAppInstanceMail extends Command
         $dryRun = $this->option('dry-run');
 
         // Validate mail type
-        if (!array_key_exists($mailType, $this->availableMailTypes)) {
-            $this->error('Invalid mail type. Available types: ' . implode(', ', array_keys($this->availableMailTypes)));
+        if (! array_key_exists($mailType, $this->availableMailTypes)) {
+            $this->error('Invalid mail type. Available types: '.implode(', ', array_keys($this->availableMailTypes)));
+
             return 1;
         }
 
         // Find the user remote registration
         $registration = $this->findUserRemoteRegistration($registrationUuid);
-        if (!$registration) {
+        if (! $registration) {
             $this->error("User remote registration not found: {$registrationUuid}");
+
             return 1;
         }
 
         // Validate that the registration has an associated app instance
-        if (!$registration->appInstance) {
+        if (! $registration->appInstance) {
             $this->error("No app instance associated with registration: {$registrationUuid}");
+
             return 1;
         }
 
@@ -80,8 +82,9 @@ class SendAppInstanceMail extends Command
         $this->newLine();
 
         // Validate email address
-        if (!filter_var($specificEmail, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($specificEmail, FILTER_VALIDATE_EMAIL)) {
             $this->error("Invalid email address: {$specificEmail}");
+
             return 1;
         }
 
@@ -90,23 +93,25 @@ class SendAppInstanceMail extends Command
 
         $mailableClass = $this->availableMailTypes[$mailType];
         $this->info("Mail Type: {$mailType} ({$mailableClass})");
-        $this->info("Recipients: " . implode(', ', array_column($recipients, 'email')));
+        $this->info('Recipients: '.implode(', ', array_column($recipients, 'email')));
         $this->newLine();
 
         if ($dryRun) {
             $this->info('DRY RUN: Email would be sent to the above recipients.');
+
             return 0;
         }
 
         // Confirm sending unless force flag is used
-        if (!$force) {
+        if (! $force) {
             $confirmed = $this->confirm(
-                "Send {$mailType} email to " . count($recipients) . " recipient(s)?",
+                "Send {$mailType} email to ".count($recipients).' recipient(s)?',
                 false
             );
 
-            if (!$confirmed) {
+            if (! $confirmed) {
                 $this->info('Operation cancelled.');
+
                 return 0;
             }
         }
@@ -121,7 +126,7 @@ class SendAppInstanceMail extends Command
                 // dd($instance);
                 // Create the mailable instance
                 $mailable = new $mailableClass($instance, $recipient['user']);
-                
+
                 // Send immediately (not queued) for manual commands
                 $mail->send($mailable);
 
@@ -134,7 +139,7 @@ class SendAppInstanceMail extends Command
         }
 
         $this->newLine();
-        $this->info("Email sending completed:");
+        $this->info('Email sending completed:');
         $this->info("- Successfully sent: {$successCount}");
         if ($errorCount > 0) {
             $this->warn("- Failed to send: {$errorCount}");
@@ -165,11 +170,11 @@ class SendAppInstanceMail extends Command
             // Create a user object with registration data or defaults
             $firstName = $registration->getRequestValue('first_name') ?? 'User';
             $lastName = $registration->getRequestValue('last_name') ?? 'User';
-            
+
             $user = new User([
                 'first_name' => $firstName,
                 'last_name' => $lastName,
-                'email' => $email
+                'email' => $email,
             ]);
         }
 
@@ -177,8 +182,8 @@ class SendAppInstanceMail extends Command
             [
                 'user' => $user,
                 'email' => $email,
-                'name' => $user->name ?? trim("{$user->first_name} {$user->last_name}")
-            ]
+                'name' => $user->name ?? trim("{$user->first_name} {$user->last_name}"),
+            ],
         ];
     }
 }

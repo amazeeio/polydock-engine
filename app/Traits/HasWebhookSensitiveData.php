@@ -18,7 +18,7 @@ trait HasWebhookSensitiveData
             'api_key',
             'ssh_key',
             'recaptcha',
-            
+
             // Regex patterns (starting with /)
             '/^.*_key.*$/',          // Anything containing _key
             '/^.*private.*$/',       // Anything containing private
@@ -40,6 +40,7 @@ trait HasWebhookSensitiveData
         $this->sensitiveDataKeys = array_unique(
             array_merge($this->getSensitiveDataKeys(), $keys)
         );
+
         return $this;
     }
 
@@ -56,6 +57,7 @@ trait HasWebhookSensitiveData
                 if (preg_match($sensitiveKey, $key)) {
                     return true;
                 }
+
                 continue;
             }
 
@@ -83,32 +85,32 @@ trait HasWebhookSensitiveData
 
         $retData = array_filter(
             $data,
-            fn($key) => !$this->shouldFilterKey($key, $sensitiveKeys),
+            fn ($key) => ! $this->shouldFilterKey($key, $sensitiveKeys),
             ARRAY_FILTER_USE_KEY
         );
 
         // special cases for emails that the webhook needs to be able to see the password
-        if(isset($this->data['lagoon-generate-app-admin-password'])) {
+        if (isset($this->data['lagoon-generate-app-admin-password'])) {
             $retData['lagoon-generate-app-admin-password'] = $data['lagoon-generate-app-admin-password'];
         }
 
-        if(isset($this->data['lagoon-generate-app-admin-username'])) {
+        if (isset($this->data['lagoon-generate-app-admin-username'])) {
             $retData['lagoon-generate-app-admin-username'] = $data['lagoon-generate-app-admin-username'];
         }
 
         // Include user information for webhooks
-        if(isset($this->data['user-first-name'])) {
+        if (isset($this->data['user-first-name'])) {
             $retData['user-first-name'] = $data['user-first-name'];
         }
 
-        if(isset($this->data['user-last-name'])) {
+        if (isset($this->data['user-last-name'])) {
             $retData['user-last-name'] = $data['user-last-name'];
         }
 
-        if(isset($this->data['user-email'])) {
+        if (isset($this->data['user-email'])) {
             $retData['user-email'] = $data['user-email'];
         }
 
         return $retData;
     }
-} 
+}

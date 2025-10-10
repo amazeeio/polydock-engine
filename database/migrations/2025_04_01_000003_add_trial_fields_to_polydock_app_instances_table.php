@@ -13,15 +13,15 @@ return new class extends Migration
             $table->boolean('is_trial')->default(false)->after('status_message');
             $table->timestamp('trial_ends_at')->nullable()->after('is_trial');
             $table->boolean('trial_completed')->default(false)->after('trial_ends_at');
-            
+
             // Mid-trial email tracking
             $table->timestamp('send_midtrial_email_at')->nullable()->after('trial_completed');
             $table->boolean('midtrial_email_sent')->default(false)->after('send_midtrial_email_at');
-            
+
             // One day left email tracking
             $table->timestamp('send_one_day_left_email_at')->nullable()->after('midtrial_email_sent');
             $table->boolean('one_day_left_email_sent')->default(false)->after('send_one_day_left_email_at');
-            
+
             // Trial complete email tracking
             $table->boolean('trial_complete_email_sent')->default(false)->after('one_day_left_email_sent');
 
@@ -53,4 +53,4 @@ return new class extends Migration
             ]);
         });
     }
-}; 
+};

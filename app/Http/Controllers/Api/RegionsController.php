@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PolydockStoreAppStatusEnum;
+use App\Enums\PolydockStoreStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\PolydockStore;
-use App\Enums\PolydockStoreStatusEnum;
-use App\Enums\PolydockStoreAppStatusEnum;
 use Illuminate\Http\JsonResponse;
 
 class RegionsController extends Controller
 {
     /**
      * Get all public regions with their available apps
-     *
-     * @return JsonResponse
      */
     public function index(): JsonResponse
     {

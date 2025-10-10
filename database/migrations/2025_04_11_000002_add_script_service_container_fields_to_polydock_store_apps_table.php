@@ -77,4 +77,4 @@ return new class extends Migration
             $table->dropColumn('lagoon_remove_container');
         });
     }
-}; 
+};

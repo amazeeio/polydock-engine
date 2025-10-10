@@ -6,21 +6,21 @@ use App\Enums\UserGroupRoleEnum;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class UserGroup extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
         'name',
     ];
 
     /**
      * Get all users in this group
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function users()
@@ -30,7 +30,7 @@ class UserGroup extends Model
 
     /**
      * Get all users with 'owner' role in this group
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function owners()
@@ -41,7 +41,7 @@ class UserGroup extends Model
 
     /**
      * Get all users with 'member' role in this group
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function members()
@@ -52,7 +52,7 @@ class UserGroup extends Model
 
     /**
      * Get all users with 'viewer' role in this group
-     * 
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
     public function viewers()
@@ -63,8 +63,6 @@ class UserGroup extends Model
 
     /**
      * Get all app instances for this group
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function appInstances(): HasMany
     {
@@ -160,14 +158,14 @@ class UserGroup extends Model
         static::saving(function ($userGroup) {
             $userGroup->name = preg_replace('/\s+/', ' ', trim($userGroup->name));
         });
-        
+
         static::creating(function ($userGroup) {
             if (! $userGroup->slug) {
                 $slug = Str::slug($userGroup->name);
                 $count = 1;
 
                 while (static::where('slug', $slug)->exists()) {
-                    $slug = Str::slug($userGroup->name) . '-' . $count++;
+                    $slug = Str::slug($userGroup->name).'-'.$count++;
                 }
 
                 $userGroup->slug = $slug;
@@ -208,16 +206,16 @@ class UserGroup extends Model
                 'group_id' => $userGroup->id,
                 'group_name' => $userGroup->name,
                 'app_instance_id' => $lockedInstance->id,
-                'allocation_lock' => $allocationLock
-            ]); 
+                'allocation_lock' => $allocationLock,
+            ]);
 
-            if($lockedInstance->remoteRegistration) {
+            if ($lockedInstance->remoteRegistration) {
                 $lockedInstance->remoteRegistration->setResultValue('message', 'Configuring trial authentication...');
-                if($lockedInstance->getKeyValue('lagoon-generate-app-admin-username')) {
+                if ($lockedInstance->getKeyValue('lagoon-generate-app-admin-username')) {
                     $lockedInstance->remoteRegistration->setResultValue('app_admin_username', $lockedInstance->getKeyValue('lagoon-generate-app-admin-username'));
                 }
 
-                if($lockedInstance->getKeyValue('lagoon-generate-app-admin-password')) {
+                if ($lockedInstance->getKeyValue('lagoon-generate-app-admin-password')) {
                     $lockedInstance->remoteRegistration->setResultValue('app_admin_password', $lockedInstance->getKeyValue('lagoon-generate-app-admin-password'));
                 }
                 $lockedInstance->remoteRegistration->save();
@@ -226,7 +224,7 @@ class UserGroup extends Model
             $lockedInstance
                 ->setStatus(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM)
                 ->save();
-                
+
             return $lockedInstance;
         } else {
             $appInstance = PolydockAppInstance::create([
@@ -243,7 +241,7 @@ class UserGroup extends Model
                 'group_id' => $userGroup->id,
                 'group_name' => $userGroup->name,
             ]);
-            
+
             return $appInstance;
         }
     }

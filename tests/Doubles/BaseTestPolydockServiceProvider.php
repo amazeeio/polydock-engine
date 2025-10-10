@@ -8,6 +8,7 @@ use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
 abstract class BaseTestPolydockServiceProvider implements PolydockServiceProviderInterface
 {
     private array $config;
+
     private PolydockAppLoggerInterface $logger;
 
     public function __construct(array $config, PolydockAppLoggerInterface $logger)
@@ -17,6 +18,7 @@ abstract class BaseTestPolydockServiceProvider implements PolydockServiceProvide
     }
 
     abstract public function getName(): string;
+
     abstract public function getDescription(): string;
 
     public function getConfig(): array
@@ -32,30 +34,35 @@ abstract class BaseTestPolydockServiceProvider implements PolydockServiceProvide
     public function setLogger(PolydockAppLoggerInterface $logger): self
     {
         $this->logger = $logger;
+
         return $this;
     }
 
     public function info(string $message, array $context = []): self
     {
         $this->logger->info($message, $context);
+
         return $this;
     }
 
     public function error(string $message, array $context = []): self
     {
         $this->logger->error($message, $context);
+
         return $this;
     }
 
     public function warning(string $message, array $context = []): self
     {
         $this->logger->warning($message, $context);
+
         return $this;
     }
 
     public function debug(string $message, array $context = []): self
     {
         $this->logger->debug($message, $context);
+
         return $this;
     }
-} 
+}

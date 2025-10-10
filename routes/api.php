@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Api\RegisterController;
 use App\Http\Controllers\Api\RegionsController;
+use App\Http\Controllers\Api\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +15,6 @@ Route::get('/register/{uuid}', [RegisterController::class, 'showRegister'])->nam
 Route::get('/regions', [RegionsController::class, 'index'])->name('regions.index');
 
 Route::match(['get', 'post'], '/instance/{uuid}/health/{status}', [
-    \App\Http\Controllers\Api\PolydockInstanceHealthController::class, 
-    '__invoke'
+    \App\Http\Controllers\Api\PolydockInstanceHealthController::class,
+    '__invoke',
 ])->name('api.instance.health');
