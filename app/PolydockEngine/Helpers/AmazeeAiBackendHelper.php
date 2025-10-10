@@ -20,8 +20,14 @@ class AmazeeAiBackendHelper
         }
 
         try {
+            $config = config('polydock.service_providers_singletons.PolydockServiceProviderAmazeeAiBackend');
+
+            if (!$config) {
+                return null;
+            }
+
             $serviceProvider = new PolydockServiceProviderAmazeeAiBackend(
-                config('polydock.service_providers_singletons.PolydockServiceProviderAmazeeAiBackend'), 
+                $config, 
                 new PolydockLogger()
             );
 
