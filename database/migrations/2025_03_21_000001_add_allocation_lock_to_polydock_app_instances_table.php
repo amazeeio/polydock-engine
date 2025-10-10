@@ -9,8 +9,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('polydock_app_instances', function (Blueprint $table) {
-            $table->string('uuid')->nullable(); 
-            $table->string('allocation_lock')->nullable(); 
+            $table->string('uuid')->nullable();
+            $table->string('allocation_lock')->nullable();
         });
     }
 
@@ -21,4 +21,4 @@ return new class extends Migration
             $table->dropColumn('uuid');
         });
     }
-}; 
+};

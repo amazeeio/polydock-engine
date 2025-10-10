@@ -28,23 +28,23 @@ class DispatchEnsureUnallocatedAppInstancesJobCommand extends Command
     public function handle(): int
     {
         $this->info('Dispatching EnsureUnallocatedAppInstancesJob...');
-        
+
         Log::info('Dispatching EnsureUnallocatedAppInstancesJob via command');
 
         try {
             EnsureUnallocatedAppInstancesJob::dispatch()->onQueue('unallocated-instance-creation');
-            
+
             $this->info('Job dispatched successfully');
             Log::info('EnsureUnallocatedAppInstancesJob dispatched successfully via command');
-            
+
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $this->error('Failed to dispatch job: ' . $e->getMessage());
+            $this->error('Failed to dispatch job: '.$e->getMessage());
             Log::error('Failed to dispatch EnsureUnallocatedAppInstancesJob via command', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return Command::FAILURE;
         }
     }

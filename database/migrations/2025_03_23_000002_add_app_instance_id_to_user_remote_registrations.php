@@ -10,10 +10,10 @@ return new class extends Migration
     {
         Schema::table('user_remote_registrations', function (Blueprint $table) {
             $table->unsignedBigInteger('polydock_app_instance_id')->nullable()->after('user_group_id');
-            
+
             $table->foreign('polydock_app_instance_id')
                 ->references('id')
-                ->on('polydock_app_instances')  
+                ->on('polydock_app_instances')
                 ->cascadeOnDelete();
 
             // Add an index for faster lookups
@@ -29,4 +29,4 @@ return new class extends Migration
             $table->dropColumn('polydock_app_instance_id');
         });
     }
-}; 
+};

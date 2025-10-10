@@ -3,16 +3,12 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages;
-use App\Filament\Admin\Resources\UserRemoteRegistrationResource\RelationManagers;
 use App\Models\UserRemoteRegistration;
-use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Database\Eloquent\Model;
 
 class UserRemoteRegistrationResource extends Resource

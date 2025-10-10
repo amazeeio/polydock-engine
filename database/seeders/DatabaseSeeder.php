@@ -25,12 +25,12 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $fredsTeam = UserGroup::create([
-            'name' => "Fracme Inc."
+            'name' => 'Fracme Inc.',
         ]);
 
         // Make Fred the owner
         $fred->groups()->attach($fredsTeam, [
-            'role' => UserGroupRoleEnum::OWNER->value
+            'role' => UserGroupRoleEnum::OWNER->value,
         ]);
 
         // Create team members with predefined details
@@ -62,7 +62,7 @@ class DatabaseSeeder extends Seeder
             ]);
 
             $user->groups()->attach($fredsTeam, [
-                'role' => UserGroupRoleEnum::MEMBER->value
+                'role' => UserGroupRoleEnum::MEMBER->value,
             ]);
         }
 
@@ -78,7 +78,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_organization_id_ext' => '271',
             'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => 34,
-            'lagoon_deploy_group_name' => 'polydock-demo-apps'
+            'lagoon_deploy_group_name' => 'polydock-demo-apps',
         ]);
 
         $switzerlandStore = \App\Models\PolydockStore::create([
@@ -90,12 +90,12 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_organization_id_ext' => '271',
             'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => 34,
-            'lagoon_deploy_group_name' => 'polydock-demo-apps'
+            'lagoon_deploy_group_name' => 'polydock-demo-apps',
         ]);
 
         // Add webhook to both stores
         $webhookUrl = 'https://webhook.site/bbe9c2ef-bb18-4c13-8d40-14fb428c7b64';
-        
+
         \App\Models\PolydockStoreWebhook::create([
             'polydock_store_id' => $usaStore->id,
             'url' => $webhookUrl,
@@ -136,7 +136,7 @@ class DatabaseSeeder extends Seeder
             'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
-	]);
+        ]);
 
         \App\Models\PolydockStoreApp::create([
             'polydock_store_id' => $usaStore->id,
@@ -205,7 +205,7 @@ class DatabaseSeeder extends Seeder
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
             'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
-        
+
         // Add some example apps to each store
         \App\Models\PolydockStoreApp::factory()
             ->count(8)

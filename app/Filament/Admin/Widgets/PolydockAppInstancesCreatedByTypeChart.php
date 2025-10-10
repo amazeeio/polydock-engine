@@ -3,21 +3,23 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Models\PolydockAppInstance;
-use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
 class PolydockAppInstancesCreatedByTypeChart extends ChartWidget
 {
     protected static ?string $heading = 'App Instances by Type';
+
     protected static ?string $maxHeight = '300px';
+
     protected static ?int $sort = 400;
 
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
         $endDate = Carbon::now()->endOfWeek();
-        
+
         // Get instances grouped by week and app type
         $instances = PolydockAppInstance::query()
             ->join('polydock_store_apps', 'polydock_app_instances.polydock_store_app_id', '=', 'polydock_store_apps.id')
@@ -37,10 +39,10 @@ class PolydockAppInstancesCreatedByTypeChart extends ChartWidget
 
         // Get unique app types
         $appTypes = $instances->pluck('app_type')->unique();
-        
+
         $weeks = [];
         $typeData = [];
-        
+
         // Initialize data structure for each app type
         $colors = ['#f59e0b', '#60a5fa', '#34d399', '#f87171', '#a78bfa', '#fbbf24', '#14b8a6', '#f43f5e'];
         foreach ($appTypes as $index => $type) {
@@ -56,9 +58,9 @@ class PolydockAppInstancesCreatedByTypeChart extends ChartWidget
             $weekStart = $startDate->copy()->addWeeks($i);
             $weekLabel = $weekStart->format('M d');
             $weeks[] = $weekLabel;
-            
+
             $weekData = $instances->where('week', $weekStart->format('Y-m-d'));
-            
+
             // Fill in counts for each app type
             foreach ($appTypes as $type) {
                 $count = $weekData->where('app_type', $type)->first()?->count ?? 0;

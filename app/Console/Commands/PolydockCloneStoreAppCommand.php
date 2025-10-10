@@ -2,9 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\PolydockStoreAppStatusEnum;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
-use App\Enums\PolydockStoreAppStatusEnum;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -40,6 +40,7 @@ class PolydockCloneStoreAppCommand extends Command
             $stores = PolydockStore::all();
             if ($stores->isEmpty()) {
                 $this->error('No stores found to clone into.');
+
                 return 1;
             }
 
@@ -70,7 +71,7 @@ class PolydockCloneStoreAppCommand extends Command
             $newApp = $sourceApp->replicate();
             $newApp->polydock_store_id = $targetStore->id;
             $newApp->status = PolydockStoreAppStatusEnum::UNAVAILABLE;
-            $newApp->name = $this->ask('Enter name for the cloned app:', $sourceApp->name . ' (Clone)');
+            $newApp->name = $this->ask('Enter name for the cloned app:', $sourceApp->name.' (Clone)');
             $newApp->lagoon_deploy_git = $gitRepo;
             $newApp->target_unallocated_app_instances = 0;
             $newApp->save();
@@ -97,18 +98,19 @@ class PolydockCloneStoreAppCommand extends Command
             Log::info('Store app cloned successfully', [
                 'source_app_id' => $sourceApp->id,
                 'new_app_id' => $newApp->id,
-                'target_store_id' => $targetStore->id
+                'target_store_id' => $targetStore->id,
             ]);
 
         } catch (\Exception $e) {
             $this->error("Failed to clone app: {$e->getMessage()}");
             Log::error('Failed to clone store app', [
                 'error' => $e->getMessage(),
-                'source_app_id' => $appId
+                'source_app_id' => $appId,
             ]);
+
             return 1;
         }
 
         return 0;
     }
-} 
+}

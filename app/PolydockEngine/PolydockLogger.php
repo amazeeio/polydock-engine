@@ -45,4 +45,4 @@ class PolydockLogger implements PolydockAppLoggerInterface
     {
         Log::channel($this->channel)->debug($message, $context);
     }
-} 
+}

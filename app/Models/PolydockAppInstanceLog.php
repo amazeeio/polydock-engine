@@ -12,7 +12,7 @@ class PolydockAppInstanceLog extends Model
         'type',
         'level',
         'message',
-        'data'
+        'data',
     ];
 
     protected $casts = [
@@ -26,4 +26,4 @@ class PolydockAppInstanceLog extends Model
     {
         return $this->belongsTo(PolydockAppInstance::class, 'polydock_app_instance_id');
     }
-} 
+}

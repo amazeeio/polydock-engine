@@ -15,7 +15,7 @@ enum UserRemoteRegistrationStatusEnum: string implements HasColor, HasIcon, HasL
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'Pending',
             self::PROCESSING => 'Processing',
             self::SUCCESS => 'Success',
@@ -25,7 +25,7 @@ enum UserRemoteRegistrationStatusEnum: string implements HasColor, HasIcon, HasL
 
     public function getColor(): string|array|null
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'warning',
             self::PROCESSING => 'info',
             self::SUCCESS => 'success',
@@ -35,7 +35,7 @@ enum UserRemoteRegistrationStatusEnum: string implements HasColor, HasIcon, HasL
 
     public function getIcon(): ?string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'heroicon-o-clock',
             self::PROCESSING => 'heroicon-o-arrow-path',
             self::SUCCESS => 'heroicon-o-check-circle',
@@ -51,7 +51,7 @@ enum UserRemoteRegistrationStatusEnum: string implements HasColor, HasIcon, HasL
     public static function getOptions(): array
     {
         return collect(self::cases())->mapWithKeys(fn ($status) => [
-            $status->value => $status->getLabel()
+            $status->value => $status->getLabel(),
         ])->all();
     }
-} 
+}

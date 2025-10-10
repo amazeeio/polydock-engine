@@ -16,4 +16,4 @@ class PolydockAppInstanceCreatedWithNewStatus
     public function __construct(
         public PolydockAppInstance $appInstance
     ) {}
-} 
+}

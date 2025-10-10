@@ -8,6 +8,7 @@ use Tests\TestCase;
 class GeneralApplicationTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic test example.
      */

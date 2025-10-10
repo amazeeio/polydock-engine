@@ -15,7 +15,7 @@ enum PolydockVariableScopeEnum: string implements HasColor, HasIcon, HasLabel
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::GLOBAL => 'Global',
             self::BUILD => 'Build',
             self::RUNTIME => 'Runtime',
@@ -25,7 +25,7 @@ enum PolydockVariableScopeEnum: string implements HasColor, HasIcon, HasLabel
 
     public function getColor(): string|array|null
     {
-        return match($this) {
+        return match ($this) {
             self::GLOBAL => 'info',
             self::BUILD => 'warning',
             self::RUNTIME => 'success',
@@ -35,7 +35,7 @@ enum PolydockVariableScopeEnum: string implements HasColor, HasIcon, HasLabel
 
     public function getIcon(): ?string
     {
-        return match($this) {
+        return match ($this) {
             self::GLOBAL => 'heroicon-o-globe-alt',
             self::BUILD => 'heroicon-o-wrench-screwdriver',
             self::RUNTIME => 'heroicon-o-cpu-chip',
@@ -47,4 +47,4 @@ enum PolydockVariableScopeEnum: string implements HasColor, HasIcon, HasLabel
     {
         return array_column(self::cases(), 'value');
     }
-} 
+}

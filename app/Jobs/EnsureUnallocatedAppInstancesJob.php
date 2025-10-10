@@ -2,9 +2,9 @@
 
 namespace App\Jobs;
 
-use App\Models\PolydockStoreApp;
-use App\Models\PolydockAppInstance;
 use App\Enums\PolydockStoreAppStatusEnum;
+use App\Models\PolydockAppInstance;
+use App\Models\PolydockStoreApp;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -28,18 +28,18 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
         $apps = PolydockStoreApp::query()
             ->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
             ->get()
-            ->filter(fn($app) => $app->needs_more_unallocated_instances);
+            ->filter(fn ($app) => $app->needs_more_unallocated_instances);
 
         $createdTotal = 0;
         $neededTotal = 0;
         foreach ($apps as $app) {
             $needed = $app->target_unallocated_app_instances - $app->unallocated_instances_count;
             $neededTotal += $needed;
-            
+
             Log::info('Creating unallocated instances', [
                 'app_id' => $app->id,
                 'app_name' => $app->name,
-                'needed' => $needed
+                'needed' => $needed,
             ]);
 
             // Create the needed instances
@@ -47,7 +47,7 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
                 Log::info('Creating unallocated instance', [
                     'app_id' => $app->id,
                     'app_name' => $app->name,
-                    'needed' => $needed
+                    'needed' => $needed,
                 ]);
 
                 PolydockAppInstance::create([
@@ -60,7 +60,7 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
                 Log::info('Unallocated instance created', [
                     'app_id' => $app->id,
                     'app_name' => $app->name,
-                    'needed' => $needed
+                    'needed' => $needed,
                 ]);
 
                 $createdTotal++;
@@ -69,7 +69,7 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
 
         Log::info('Finished checking for apps needing unallocated instances', [
             'created_total' => $createdTotal,
-            'needed_total' => $neededTotal
+            'needed_total' => $neededTotal,
         ]);
     }
-} 
+}

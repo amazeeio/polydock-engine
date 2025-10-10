@@ -13,6 +13,7 @@ class AppInstanceOneDayLeftMail extends Mailable
     use Queueable, SerializesModels;
 
     public PolydockAppInstance $appInstance;
+
     public User $toUser;
 
     public function __construct(PolydockAppInstance $appInstance, User $toUser)
@@ -24,9 +25,9 @@ class AppInstanceOneDayLeftMail extends Mailable
     public function build()
     {
         $subject = $this->appInstance->storeApp->one_day_left_email_subject ?? 'One Day Left in Your Trial';
-        $subject .= " [" . $this->appInstance->name . "]";
-        
+        $subject .= ' ['.$this->appInstance->name.']';
+
         return $this->markdown('emails.app-instance.one-day-left')
-                    ->subject($subject);
+            ->subject($subject);
     }
-} 
+}

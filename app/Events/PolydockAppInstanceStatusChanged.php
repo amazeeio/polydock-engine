@@ -18,4 +18,4 @@ class PolydockAppInstanceStatusChanged
         public PolydockAppInstance $appInstance,
         public ?PolydockAppInstanceStatus $previousStatus = null
     ) {}
-} 
+}

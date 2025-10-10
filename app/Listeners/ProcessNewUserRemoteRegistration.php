@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Events\UserRemoteRegistrationCreated;
 use App\Jobs\ProcessUserRemoteRegistration;
 use Illuminate\Support\Facades\Log;
+
 class ProcessNewUserRemoteRegistration
 {
     /**
@@ -15,4 +16,4 @@ class ProcessNewUserRemoteRegistration
         Log::info('Processing new user remote registration', ['registration' => $event->registration->toArray()]);
         ProcessUserRemoteRegistration::dispatch($event->registration);
     }
-} 
+}

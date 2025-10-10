@@ -16,4 +16,4 @@ class UserRemoteRegistrationCreated
     public function __construct(
         public UserRemoteRegistration $registration
     ) {}
-} 
+}

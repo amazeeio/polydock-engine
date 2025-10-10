@@ -4,7 +4,6 @@ namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Throwable;
 
 class Handler extends ExceptionHandler
 {
@@ -17,9 +16,9 @@ class Handler extends ExceptionHandler
             if ($request->is('api/*')) {
                 return response()->json([
                     'error' => $e->getMessage(),
-                    'status_code' => $e->getStatusCode()
+                    'status_code' => $e->getStatusCode(),
                 ], $e->getStatusCode());
             }
         });
     }
-} 
+}

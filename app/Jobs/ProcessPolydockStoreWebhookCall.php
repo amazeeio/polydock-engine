@@ -2,8 +2,8 @@
 
 namespace App\Jobs;
 
-use App\Models\PolydockStoreWebhookCall;
 use App\Enums\PolydockStoreWebhookCallStatusEnum;
+use App\Models\PolydockStoreWebhookCall;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -56,14 +56,14 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
         Log::info('Processing webhook call', [
             'webhook_call_id' => $this->webhookCall->id,
             'event' => $this->webhookCall->event,
-            'attempt' => $this->attempts()
+            'attempt' => $this->attempts(),
         ]);
 
         try {
             // Mark as processing
             $this->webhookCall->update([
                 'status' => PolydockStoreWebhookCallStatusEnum::PROCESSING,
-                'attempt' => $this->attempts()
+                'attempt' => $this->attempts(),
             ]);
 
             // Make the HTTP request
@@ -79,20 +79,20 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
 
             // Update the call with the response
             $this->webhookCall->update([
-                'status' => $response->successful() 
-                    ? PolydockStoreWebhookCallStatusEnum::SUCCESS 
+                'status' => $response->successful()
+                    ? PolydockStoreWebhookCallStatusEnum::SUCCESS
                     : PolydockStoreWebhookCallStatusEnum::FAILED,
                 'processed_at' => now(),
                 'response_code' => (string) $response->status(),
                 'response_body' => $response->body(),
             ]);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 Log::warning('Webhook call failed with non-2xx response', [
                     'webhook_call_id' => $this->webhookCall->id,
                     'status_code' => $response->status(),
                     'response' => $response->body(),
-                    'attempt' => $this->attempts()
+                    'attempt' => $this->attempts(),
                 ]);
 
                 // This will trigger a retry if we haven't exceeded tries
@@ -102,7 +102,7 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
             Log::info('Webhook call processed successfully', [
                 'webhook_call_id' => $this->webhookCall->id,
                 'status_code' => $response->status(),
-                'attempt' => $this->attempts()
+                'attempt' => $this->attempts(),
             ]);
 
         } catch (\Exception $e) {
@@ -110,15 +110,15 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
                 'webhook_call_id' => $this->webhookCall->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
-                'attempt' => $this->attempts()
+                'attempt' => $this->attempts(),
             ]);
 
             $this->webhookCall->update([
-                'status' => $this->attempts() >= $this->tries 
-                    ? PolydockStoreWebhookCallStatusEnum::FAILED 
+                'status' => $this->attempts() >= $this->tries
+                    ? PolydockStoreWebhookCallStatusEnum::FAILED
                     : PolydockStoreWebhookCallStatusEnum::PENDING,
                 'processed_at' => now(),
-                'exception' => $e->getMessage()
+                'exception' => $e->getMessage(),
             ]);
 
             throw $e;
@@ -134,13 +134,13 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
             'webhook_call_id' => $this->webhookCall->id,
             'error' => $exception->getMessage(),
             'trace' => $exception->getTraceAsString(),
-            'final_attempt' => $this->attempts()
+            'final_attempt' => $this->attempts(),
         ]);
 
         $this->webhookCall->update([
             'status' => PolydockStoreWebhookCallStatusEnum::FAILED,
             'processed_at' => now(),
-            'exception' => $exception->getMessage()
+            'exception' => $exception->getMessage(),
         ]);
     }
-} 
+}

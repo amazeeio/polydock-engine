@@ -13,6 +13,7 @@ class AppInstanceMidtrialMail extends Mailable
     use Queueable, SerializesModels;
 
     public PolydockAppInstance $appInstance;
+
     public User $toUser;
 
     public function __construct(PolydockAppInstance $appInstance, User $toUser)
@@ -24,9 +25,9 @@ class AppInstanceMidtrialMail extends Mailable
     public function build()
     {
         $subject = $this->appInstance->storeApp->midtrial_email_subject ?? 'Halfway Through Your Trial';
-        $subject .= " [" . $this->appInstance->name . "]";
+        $subject .= ' ['.$this->appInstance->name.']';
 
         return $this->markdown('emails.app-instance.midtrial')
-                    ->subject($subject);
+            ->subject($subject);
     }
-} 
+}

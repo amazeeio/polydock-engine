@@ -15,7 +15,7 @@ enum PolydockStoreWebhookCallStatusEnum: string implements HasColor, HasIcon, Ha
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'Pending',
             self::PROCESSING => 'Processing',
             self::SUCCESS => 'Success',
@@ -25,7 +25,7 @@ enum PolydockStoreWebhookCallStatusEnum: string implements HasColor, HasIcon, Ha
 
     public function getColor(): string|array|null
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'warning',
             self::PROCESSING => 'info',
             self::SUCCESS => 'success',
@@ -35,7 +35,7 @@ enum PolydockStoreWebhookCallStatusEnum: string implements HasColor, HasIcon, Ha
 
     public function getIcon(): ?string
     {
-        return match($this) {
+        return match ($this) {
             self::PENDING => 'heroicon-o-clock',
             self::PROCESSING => 'heroicon-o-arrow-path',
             self::SUCCESS => 'heroicon-o-check-circle',
@@ -47,4 +47,4 @@ enum PolydockStoreWebhookCallStatusEnum: string implements HasColor, HasIcon, Ha
     {
         return array_column(self::cases(), 'value');
     }
-} 
+}

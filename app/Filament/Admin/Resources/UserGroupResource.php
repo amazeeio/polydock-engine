@@ -5,16 +5,12 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\UserGroupResource\Pages;
 use App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 use App\Models\UserGroup;
-use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Infolists\Infolist;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 
 class UserGroupResource extends Resource
 {

@@ -13,13 +13,13 @@ class PolydockStoreAppFactory extends Factory
     public function definition(): array
     {
         return [
-            'polydock_app_class' => 'FreedomtechHosting\\PolydockApp' . fake()->word() . '\\PolydockApp',
+            'polydock_app_class' => 'FreedomtechHosting\\PolydockApp'.fake()->word().'\\PolydockApp',
             'name' => fake()->words(3, true),
             'description' => fake()->paragraph(),
             'author' => fake()->name(),
             'website' => fake()->url(),
             'support_email' => fake()->email(),
-            'lagoon_deploy_git' => 'git@github.com:' . fake()->userName() . '/' . fake()->slug() . '.git',
+            'lagoon_deploy_git' => 'git@github.com:'.fake()->userName().'/'.fake()->slug().'.git',
             'lagoon_deploy_branch' => 'main',
             'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => fake()->boolean(),
@@ -46,4 +46,4 @@ class PolydockStoreAppFactory extends Factory
             'available_for_trials' => false,
         ]);
     }
-} 
+}

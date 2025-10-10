@@ -20,8 +20,9 @@ class CreateWebhookCallForAppInstanceStatusChanged
         if ($webhooks->isEmpty()) {
             Log::info('No active webhooks found for app instance status change', [
                 'app_instance_id' => $event->appInstance->id,
-                'store_id' => $event->appInstance->storeApp->store->id
+                'store_id' => $event->appInstance->storeApp->store->id,
             ]);
+
             return;
         }
 
@@ -43,16 +44,16 @@ class CreateWebhookCallForAppInstanceStatusChanged
             ]);
 
             Log::info(
-                $event->previousStatus === null 
-                    ? 'Created webhook call for new app instance' 
+                $event->previousStatus === null
+                    ? 'Created webhook call for new app instance'
                     : 'Created webhook call for app instance status change',
                 [
                     'webhook_id' => $webhook->id,
                     'app_instance_id' => $event->appInstance->id,
                     'previous_status' => $event->previousStatus?->value,
-                    'current_status' => $event->appInstance->status->value
+                    'current_status' => $event->appInstance->status->value,
                 ]
             );
         }
     }
-} 
+}

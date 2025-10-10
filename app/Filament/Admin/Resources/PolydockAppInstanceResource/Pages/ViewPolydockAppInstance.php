@@ -16,4 +16,4 @@ class ViewPolydockAppInstance extends ViewRecord
             Actions\EditAction::make(),
         ];
     }
-} 
+}

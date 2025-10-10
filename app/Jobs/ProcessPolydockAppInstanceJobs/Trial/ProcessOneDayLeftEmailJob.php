@@ -20,31 +20,32 @@ class ProcessOneDayLeftEmailJob extends BaseJob implements ShouldQueue
     {
         $this->polydockJobStart();
 
-        if (!$this->appInstance->is_trial || 
-            !$this->appInstance->storeApp->send_one_day_left_email ||
-            !$this->appInstance->send_one_day_left_email_at ||
-            !$this->appInstance->send_one_day_left_email_at->isPast() ||
+        if (! $this->appInstance->is_trial ||
+            ! $this->appInstance->storeApp->send_one_day_left_email ||
+            ! $this->appInstance->send_one_day_left_email_at ||
+            ! $this->appInstance->send_one_day_left_email_at->isPast() ||
             $this->appInstance->one_day_left_email_sent) {
-                $this->appInstance->info('One day left email not sent', [
-                    'app_instance_id' => $this->appInstance->id,
-                    'is_trial' => $this->appInstance->is_trial,
-                    'send_one_day_left_email' => $this->appInstance->storeApp->send_one_day_left_email,
-                    'send_one_day_left_email_at' => $this->appInstance->send_one_day_left_email_at,
-                    'one_day_left_email_sent' => $this->appInstance->one_day_left_email_sent,
-                ]);
+            $this->appInstance->info('One day left email not sent', [
+                'app_instance_id' => $this->appInstance->id,
+                'is_trial' => $this->appInstance->is_trial,
+                'send_one_day_left_email' => $this->appInstance->storeApp->send_one_day_left_email,
+                'send_one_day_left_email_at' => $this->appInstance->send_one_day_left_email_at,
+                'one_day_left_email_sent' => $this->appInstance->one_day_left_email_sent,
+            ]);
+
             return;
         }
 
-        if(! $this->appInstance->isTrialExpired()) {
-            // Send email to owners      
+        if (! $this->appInstance->isTrialExpired()) {
+            // Send email to owners
             Log::info('Sending one day left email to owners', [
                 'app_instance_id' => $this->appInstance->id,
             ]);
 
-            foreach($this->appInstance->userGroup->owners as $owner) {
+            foreach ($this->appInstance->userGroup->owners as $owner) {
                 $mail = Mail::to($owner->email);
-                    
-                if(env('MAIL_CC_ALL', false)) {
+
+                if (env('MAIL_CC_ALL', false)) {
                     $mail->cc(env('MAIL_CC_ALL'));
                 }
 
@@ -80,4 +81,4 @@ class ProcessOneDayLeftEmailJob extends BaseJob implements ShouldQueue
 
         $this->polydockJobDone();
     }
-} 
+}

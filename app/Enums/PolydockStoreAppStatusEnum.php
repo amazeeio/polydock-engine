@@ -13,7 +13,7 @@ enum PolydockStoreAppStatusEnum: string implements HasColor, HasIcon, HasLabel
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::AVAILABLE => 'Available',
             self::UNAVAILABLE => 'Unavailable',
         };
@@ -21,7 +21,7 @@ enum PolydockStoreAppStatusEnum: string implements HasColor, HasIcon, HasLabel
 
     public function getColor(): string|array|null
     {
-        return match($this) {
+        return match ($this) {
             self::AVAILABLE => 'success',
             self::UNAVAILABLE => 'danger',
         };
@@ -29,7 +29,7 @@ enum PolydockStoreAppStatusEnum: string implements HasColor, HasIcon, HasLabel
 
     public function getIcon(): ?string
     {
-        return match($this) {
+        return match ($this) {
             self::AVAILABLE => 'heroicon-o-check-circle',
             self::UNAVAILABLE => 'heroicon-o-x-circle',
         };
@@ -39,4 +39,4 @@ enum PolydockStoreAppStatusEnum: string implements HasColor, HasIcon, HasLabel
     {
         return array_column(self::cases(), 'value');
     }
-} 
+}

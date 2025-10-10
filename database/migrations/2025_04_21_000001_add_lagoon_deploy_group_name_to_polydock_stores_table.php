@@ -27,4 +27,4 @@ return new class extends Migration
             $table->dropColumn('lagoon_deploy_group_name');
         });
     }
-}; 
+};

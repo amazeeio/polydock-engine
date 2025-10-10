@@ -37,53 +37,55 @@ class CreateStore extends Command
     public function handle()
     {
         $this->info('Creating a new Polydock Store...');
-        
+
         // Gather store information
         $name = $this->option('name') ?? $this->ask('Store name');
-        
+
         $status = $this->option('status') ?? $this->choice(
-            'Store status', 
+            'Store status',
             ['public', 'private']
         );
-        
+
         $listedInput = $this->option('listed') ?? $this->choice(
-            'Listed in marketplace?', 
+            'Listed in marketplace?',
             ['true', 'false']
         );
         $listed = filter_var($listedInput, FILTER_VALIDATE_BOOLEAN);
-        
+
         $regionId = $this->option('region-id') ?? $this->ask('Lagoon deploy region ID');
-        
+
         $prefix = $this->option('prefix') ?? $this->ask('Lagoon deploy project prefix');
-        
+
         $orgId = $this->option('org-id') ?? $this->ask('Lagoon deploy organization ID');
-        
+
         $aiRegionId = $this->option('ai-region-id') ?? $this->ask('Amazee AI backend region ID');
-        
+
         $groupName = $this->option('group-name') ?? $this->ask('Lagoon deploy group name');
 
         // Check if all required values are set
         if (empty($name) || empty($status) || empty($regionId) || empty($prefix) || empty($orgId) || empty($aiRegionId) || empty($groupName)) {
             $this->error('All fields are required. Exiting...');
+
             return 1;
         }
 
         // Get deploy key - allow override
         $customDeployKey = $this->option('deploy-key');
-        
-        if (!$customDeployKey && $this->confirm('Do you want to use a custom deploy private key? (Press no to use default from config)')) {
+
+        if (! $customDeployKey && $this->confirm('Do you want to use a custom deploy private key? (Press no to use default from config)')) {
             $this->info('Please paste your private key (multi-line input supported):');
             $customDeployKey = $this->secret('Deploy private key');
         }
-        
+
         if ($customDeployKey) {
             $deployKey = $customDeployKey;
         } else {
             $deployKey = file_get_contents(config('polydock.lagoon_deploy_private_key_file'));
         }
 
-        if(empty($deployKey)) {
-            $this->error("No deploy key available - either provide one or ensure config file exists");
+        if (empty($deployKey)) {
+            $this->error('No deploy key available - either provide one or ensure config file exists');
+
             return 1;
         }
 
@@ -97,11 +99,11 @@ class CreateStore extends Command
             'lagoon_deploy_organization_id_ext' => $orgId,
             'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => $aiRegionId,
-            'lagoon_deploy_group_name' => $groupName
+            'lagoon_deploy_group_name' => $groupName,
         ]);
 
         $this->info("✅ Store '{$store->name}' created successfully with ID: {$store->id}");
-        
+
         return 0;
     }
 }

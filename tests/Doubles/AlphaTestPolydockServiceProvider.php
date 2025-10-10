@@ -13,4 +13,4 @@ class AlphaTestPolydockServiceProvider extends BaseTestPolydockServiceProvider
     {
         return 'Alpha Test Provider Description';
     }
-} 
+}

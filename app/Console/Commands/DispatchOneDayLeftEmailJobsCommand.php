@@ -48,12 +48,13 @@ class DispatchOneDayLeftEmailJobsCommand extends Command
         if ($eligibleInstances->isEmpty()) {
             $this->info('No eligible app instances found for one day left emails.');
             Log::info('No eligible app instances found for one day left emails.');
+
             return;
         }
 
         $this->info(sprintf('Found %d eligible app instances. Dispatching jobs...', $eligibleInstances->count()));
         Log::info(sprintf('Found %d eligible app instances. Dispatching jobs...', $eligibleInstances->count()));
-        
+
         // Dispatch jobs for each eligible instance
         foreach ($eligibleInstances as $instance) {
             $this->info(sprintf('Dispatching one day left email job for app instance %s (%s)', $instance->name, $instance->uuid));
@@ -64,4 +65,4 @@ class DispatchOneDayLeftEmailJobsCommand extends Command
         $this->info('All jobs dispatched successfully.');
         Log::info('All jobs dispatched successfully.');
     }
-} 
+}
