@@ -43,6 +43,8 @@
         'amazee-ai-registry-ghcr-password' => env('REGISTRY_GHCR_TOKEN', 'no-ghcr-token-set'),
         'amazee-ai-phoenix-api-key' => env('PHOENIX_API_KEY', 'no-phoenix-api-key-set'),
         'amazee-ai-phoenix-collector-endpoint' => env('PHOENIX_COLLECTOR_ENDPOINT', 'no-phoenix-collector-endpoint-set'),
+        'amazee-ai-unleash-api-token' => env('UNLEASH_API_TOKEN', 'no-unleash-api-token-set'),
+        'amazee-ai-unleash-url' => env('UNLEASH_URL', 'no-unleash-url-set'),
     ];
 
 return [
