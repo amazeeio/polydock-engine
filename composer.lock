@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1421c0bfae05c6541408acb2d266c5a3",
+    "content-hash": "4b4821d533c4e3f5d66d064ea1b9cfb0",
     "packages": [
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
-            "version": "v0.0.2",
+            "version": "v0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt.git",
-                "reference": "5bee032913a4e8cd69109f8d5eebea14a3141343"
+                "reference": "2eb52172c3947ddf8a5b6f3810bcf33b6c241e60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/5bee032913a4e8cd69109f8d5eebea14a3141343",
-                "reference": "5bee032913a4e8cd69109f8d5eebea14a3141343",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/2eb52172c3947ddf8a5b6f3810bcf33b6c241e60",
+                "reference": "2eb52172c3947ddf8a5b6f3810bcf33b6c241e60",
                 "shasum": ""
             },
             "require": {
@@ -55,9 +55,9 @@
             "description": "Polydock App - amazee.io PrivateGPT with Direct API Integration",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/v0.0.2"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/v0.0.3"
             },
-            "time": "2025-10-14T23:51:10+00:00"
+            "time": "2025-10-15T21:02:36+00:00"
         },
         {
             "name": "anourvalar/eloquent-serialize",

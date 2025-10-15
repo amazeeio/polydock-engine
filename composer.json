@@ -7,7 +7,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
-        "amazeeio/polydock-app-amazeeio-privategpt": "^0.0.2",
+        "amazeeio/polydock-app-amazeeio-privategpt": "v0.0.3",
         "filament/filament": "^3.2",
         "freedomtech-hosting/ft-lagoon-php": "^0.0.5",
         "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.0.5",
