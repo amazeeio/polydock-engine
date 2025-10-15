@@ -40,7 +40,7 @@ class PolydockStoreAppResource extends Resource
                     ->label('Store')
                     ->options(PolydockStore::all()->pluck('name', 'id'))
                     ->required()
-                    ->disabled(fn (PolydockStoreApp $record) => 
+                    ->disabled(fn (?PolydockStoreApp $record) => 
                         $record && $record->instances()->exists()
                     )
                     ->dehydrated(fn (PolydockStoreApp $record) => 
