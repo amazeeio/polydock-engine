@@ -65,3 +65,12 @@ services:
         image: uselagoon/redis-7-persistent
         labels:
             lagoon.type: redis-persistent
+
+    mailhog:
+        image: mailhog/mailhog:latest
+        labels:
+            lagoon.type: basic
+            lagoon.service.usecomposeports: true
+        ports:
+            - '8025'
+            - '1025'
