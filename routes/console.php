@@ -45,6 +45,6 @@ Schedule::command('polydock:dispatch-trial-complete-stage-removal')
     ->withoutOverlapping();
 
 /////// Remove Unclaimed Instances ///////
-Schedule::command('polydock:remove-unclaimed-instances --force --limit=5')
-    ->hourly()
-    ->withoutOverlapping();
+// Schedule::command('polydock:remove-unclaimed-instances --force --limit=5')
+//     ->hourly()
+//     ->withoutOverlapping();
