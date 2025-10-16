@@ -66,8 +66,8 @@ services:
         labels:
             lagoon.type: redis-persistent
 
-    mailhog:
-        image: mailhog/mailhog:latest
+    mailpit:
+        image: axllent/mailpit:latest
         labels:
             lagoon.type: basic
             lagoon.service.usecomposeports: true
