@@ -62,7 +62,7 @@ class ListUnclaimedAppInstancesCommand extends Command
             $this->newLine();
 
             // Display the instances in a table format
-            $headers = ['ID', 'Name', 'Store','Status', 'Created At', 'App Type'];
+            $headers = ['ID', 'Name', 'Store', 'Status', 'Created At', 'App Type'];
             $rows = [];
 
             foreach ($unclaimedInstances as $instance) {

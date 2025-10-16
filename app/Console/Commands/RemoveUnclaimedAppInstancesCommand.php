@@ -64,7 +64,7 @@ class RemoveUnclaimedAppInstancesCommand extends Command
             $this->newLine();
 
             // Display the instances that will be affected
-            $headers = ['ID', 'Name', 'Store','Status', 'Created At', 'App Type'];
+            $headers = ['ID', 'Name', 'Store', 'Status', 'Created At', 'App Type'];
             $rows = [];
 
             foreach ($unclaimedInstances as $instance) {
@@ -100,7 +100,7 @@ class RemoveUnclaimedAppInstancesCommand extends Command
             foreach ($unclaimedInstances as $instance) {
                 try {
                     $instance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
-                    $instance->user_group_id = config('polydock.default_user_group_id_for_unallocated_instances',1); 
+                    $instance->user_group_id = config('polydock.default_user_group_id_for_unallocated_instances', 1); 
                     $instance->save();
                     $updatedCount++;
                     
