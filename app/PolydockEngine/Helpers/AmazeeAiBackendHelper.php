@@ -20,8 +20,14 @@ class AmazeeAiBackendHelper
         }
 
         try {
+            $config = config('polydock.service_providers_singletons.PolydockServiceProviderAmazeeAiBackend');
+
+            if (!$config) {
+                return null;
+            }
+
             $serviceProvider = new PolydockServiceProviderAmazeeAiBackend(
-                config('polydock.service_providers_singletons.PolydockServiceProviderAmazeeAiBackend'), 
+                $config, 
                 new PolydockLogger()
             );
 
@@ -40,5 +46,10 @@ class AmazeeAiBackendHelper
         Log::info('Getting Amazee AI Backend code data value for region ' . $regionId . ' and key ' . $key);
         $region = self::getAmazeeAiBackendRegion($regionId);
         return $region[$key] ?? null;
+    }
+
+    public static function getDataForPrivateGPTSettings() : array 
+    {
+        return config('polydock.amazee_ai_backend_private_gpt_settings') ?? [];
     }
 }
