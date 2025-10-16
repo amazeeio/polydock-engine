@@ -65,3 +65,12 @@ services:
         image: uselagoon/redis-7-persistent
         labels:
             lagoon.type: redis-persistent
+
+    mailpit:
+        image: axllent/mailpit:latest
+        labels:
+            lagoon.type: basic
+            lagoon.service.usecomposeports: true
+        ports:
+            - '8025'
+            - '1025'
