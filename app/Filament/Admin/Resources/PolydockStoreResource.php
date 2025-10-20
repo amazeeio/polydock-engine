@@ -44,7 +44,7 @@ class PolydockStoreResource extends Resource
                 Forms\Components\TextInput::make('lagoon_deploy_region_id_ext')
                     ->required()
                     ->maxLength(255)
-                    ->dehydrated(fn (PolydockStore $record) => 
+                    ->dehydrated(fn (?PolydockStore $record) => 
                         !$record || !$record->apps()->whereHas('instances')->exists()
                     )
                     ->disabled(fn (?PolydockStore $record) => 
@@ -53,7 +53,7 @@ class PolydockStoreResource extends Resource
                 Forms\Components\TextInput::make('lagoon_deploy_project_prefix')
                     ->required()
                     ->maxLength(255)
-                    ->dehydrated(fn (PolydockStore $record) => 
+                    ->dehydrated(fn (?PolydockStore $record) => 
                         !$record || !$record->apps()->whereHas('instances')->exists()
                     )
                     ->disabled(fn (?PolydockStore $record) => 
@@ -62,7 +62,7 @@ class PolydockStoreResource extends Resource
                 Forms\Components\TextInput::make('lagoon_deploy_organization_id_ext')
                     ->required()
                     ->maxLength(255)
-                    ->dehydrated(fn (PolydockStore $record) => 
+                    ->dehydrated(fn (?PolydockStore $record) => 
                         !$record || !$record->apps()->whereHas('instances')->exists()
                     )
                     ->disabled(fn (?PolydockStore $record) => 
@@ -70,7 +70,7 @@ class PolydockStoreResource extends Resource
                     ),
                 Forms\Components\TextInput::make('amazee_ai_backend_region_id_ext')
                     ->numeric()
-                    ->dehydrated(fn (PolydockStore $record) => 
+                    ->dehydrated(fn (?PolydockStore $record) => 
                         !$record || !$record->apps()->whereHas('instances')->exists()
                     )
                     ->disabled(fn (?PolydockStore $record) => 

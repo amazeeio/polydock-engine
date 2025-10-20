@@ -43,7 +43,7 @@ class PolydockStoreAppResource extends Resource
                     ->disabled(fn (?PolydockStoreApp $record) => 
                         $record && $record->instances()->exists()
                     )
-                    ->dehydrated(fn (PolydockStoreApp $record) => 
+                    ->dehydrated(fn (?PolydockStoreApp $record) => 
                         !$record || !$record->instances()->exists()
                     ),
                 Forms\Components\TextInput::make('polydock_app_class')
