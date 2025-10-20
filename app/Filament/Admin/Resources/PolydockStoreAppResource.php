@@ -59,6 +59,7 @@ class PolydockStoreAppResource extends Resource
                     ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('website')
+                    ->required()
                     ->maxLength(255),
                 Forms\Components\TextInput::make('support_email')
                     ->email()
