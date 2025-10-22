@@ -119,7 +119,7 @@ class RemoveEmptyProjectsCommand extends Command
         $this->newLine();
 
         if ($isDryRun) {
-            $this->info('DRY RUN: These empty Lagoon projects would be removed from the system.');
+            $this->info('DRY RUN: The projects listed above would be deleted.');
             return 0;
         }
 
