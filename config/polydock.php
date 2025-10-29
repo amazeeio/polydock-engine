@@ -1,48 +1,48 @@
 <?php
 
-    $serviceProviderSingletons = [
-        "PolydockServiceProviderFTLagoon" => [
-            'class' => App\PolydockServiceProviders\PolydockServiceProviderFTLagoon::class,
-            'debug' => true,
-            'token_cache_dir' => env('FTLAGOON_TOKEN_CACHE_DIR', storage_path('ftlagoon/.tokencache/')),
-            'ssh_private_key_file' => env('FTLAGOON_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-private-key'),
-            'ssh_user' => env('FTLAGOON_SSH_USER','lagoon'),
-            'ssh_server' => env('FTLAGOON_SSH_SERVER','ssh.lagoon.amazeeio.cloud'),
-            'ssh_port' => env('FTLAGOON_SSH_PORT','32222'),
-            'endpoint' => env('FTLAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql'),
-        ],
+$serviceProviderSingletons = [
+    'PolydockServiceProviderFTLagoon' => [
+        'class' => App\PolydockServiceProviders\PolydockServiceProviderFTLagoon::class,
+        'debug' => true,
+        'token_cache_dir' => env('FTLAGOON_TOKEN_CACHE_DIR', storage_path('ftlagoon/.tokencache/')),
+        'ssh_private_key_file' => env('FTLAGOON_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-private-key'),
+        'ssh_user' => env('FTLAGOON_SSH_USER', 'lagoon'),
+        'ssh_server' => env('FTLAGOON_SSH_SERVER', 'ssh.lagoon.amazeeio.cloud'),
+        'ssh_port' => env('FTLAGOON_SSH_PORT', '32222'),
+        'endpoint' => env('FTLAGOON_ENDPOINT', 'https://api.lagoon.amazeeio.cloud/graphql'),
+    ],
+];
+
+if (env('PolydockServiceProviderAmazeeAiBackend', '') == 'true') {
+    $serviceProviderSingletons['PolydockServiceProviderAmazeeAiBackend'] = [
+        'class' => App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend::class,
+        'debug' => false,
+        'base_url' => env('AMAZEE_AI_BACKEND_BASE_URL', 'https://backend.prod.amazeeai.us2.amazee.io'),
+        'token_file' => env('AMAZEE_AI_BACKEND_TOKEN_FILE', storage_path('amazee-ai-backend/token')),
     ];
+} else {
+    $serviceProviderSingletons['PolydockServiceProviderAmazeeAiBackend'] = [];
+}
 
-    if(env('PolydockServiceProviderAmazeeAiBackend', "") == "true") {
-        $serviceProviderSingletons["PolydockServiceProviderAmazeeAiBackend"] = [
-            'class' => App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend::class,
-            'debug' => false,
-            'base_url' => env('AMAZEE_AI_BACKEND_BASE_URL', 'https://backend.prod.amazeeai.us2.amazee.io'),
-            'token_file' => env('AMAZEE_AI_BACKEND_TOKEN_FILE', storage_path('amazee-ai-backend/token')),
-        ];
+$filterServiceProviders = explode(',', env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', ''));
+
+foreach ($filterServiceProviders as $filterServiceProvider) {
+    $filterServiceProvider = trim($filterServiceProvider);
+    if (! empty($filterServiceProvider) && isset($serviceProviderSingletons[$filterServiceProvider])) {
+        unset($serviceProviderSingletons[$filterServiceProvider]);
     }
+}
 
-    $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', ''));
-
-    foreach ($filterServiceProviders as $filterServiceProvider) {
-        $filterServiceProvider = trim($filterServiceProvider);
-        if(!empty($filterServiceProvider) && isset($serviceProviderSingletons[$filterServiceProvider])) {
-            unset($serviceProviderSingletons[$filterServiceProvider]);
-        }
-    }
-
-    $aisettings = [
-        'amazee-ai-backend-token' => env('AMAZEE_AI_BACKEND_TOKEN', 'no-amazee-ai-backend-token-set'),
-        'amazee-ai-backend-url' => env('AMAZEE_AI_BACKEND_URL', 'no-amazee-ai-backend-url-set'),
-        'amazee-ai-admin-email' => env('AMAZEE_AI_ADMIN_EMAIL', 'no-amazee-ai-admin-email-set'),
-        'amazee-ai-in-dev-mode' => strtolower(env('AMAZEE_AI_IN_DEV_MODE', 'false')) == 'true' || env('AMAZEE_AI_IN_DEV_MODE') === true ? 'true' : 'false',
-        'amazee-ai-registry-ghcr-username' => env('REGISTRY_GHCR_USERNAME', 'no-ghcr-username-set'),
-        'amazee-ai-registry-ghcr-password' => env('REGISTRY_GHCR_TOKEN', 'no-ghcr-token-set'),
-        'amazee-ai-phoenix-api-key' => env('PHOENIX_API_KEY', 'no-phoenix-api-key-set'),
-        'amazee-ai-phoenix-collector-endpoint' => env('PHOENIX_COLLECTOR_ENDPOINT', 'no-phoenix-collector-endpoint-set'),
-        'amazee-ai-unleash-api-token' => env('UNLEASH_API_TOKEN', 'no-unleash-api-token-set'),
-        'amazee-ai-unleash-url' => env('UNLEASH_URL', 'no-unleash-url-set'),
-    ];
+$aisettings = [
+    'amazee-ai-backend-token' => env('AMAZEE_AI_BACKEND_TOKEN', 'no-amazee-ai-backend-token-set'),
+    'amazee-ai-backend-url' => env('AMAZEE_AI_BACKEND_URL', 'no-amazee-ai-backend-url-set'),
+    'amazee-ai-admin-email' => env('AMAZEE_AI_ADMIN_EMAIL', 'no-amazee-ai-admin-email-set'),
+    'amazee-ai-in-dev-mode' => strtolower(env('AMAZEE_AI_IN_DEV_MODE', 'false')) == 'true' || env('AMAZEE_AI_IN_DEV_MODE') === true ? 'true' : 'false',
+    'amazee-ai-registry-ghcr-username' => env('REGISTRY_GHCR_USERNAME', 'no-ghcr-username-set'),
+    'amazee-ai-registry-ghcr-password' => env('REGISTRY_GHCR_TOKEN', 'no-ghcr-token-set'),
+    'amazee-ai-phoenix-api-key' => env('PHOENIX_API_KEY', 'no-phoenix-api-key-set'),
+    'amazee-ai-phoenix-collector-endpoint' => env('PHOENIX_COLLECTOR_ENDPOINT', 'no-phoenix-collector-endpoint-set'),
+];
 
 return [
     'default_user_group_id_for_unallocated_instances' => env('POLYDOCK_DEFAULT_USER_GROUP_ID_FOR_UNALLOCATED_INSTANCES', 1),
@@ -68,8 +68,8 @@ return [
                     'pattern' => 'local.lagoon',
                     'country' => 'Local',
                     'country_code' => 'LO',
-                ]
-            ]
+                ],
+            ],
         ],
         'https://api.main.lagoon-core.test6.amazee.io/graphql' => [
             'lagoon_deploy_regions' => [
@@ -81,8 +81,8 @@ return [
                     'pattern' => 'lagoon-core.test6.amazee.io',
                     'country' => 'Switzerland',
                     'country_code' => 'CH',
-                ]
-            ]
+                ],
+            ],
         ],
         'https://api.lagoon.amazeeio.cloud/graphql' => [
             'lagoon_deploy_regions' => [
@@ -157,8 +157,8 @@ return [
                     'pattern' => 'ie1.amazee.io',
                     'country' => 'Ireland',
                     'country_code' => 'IE',
-                ]
-            ]
-        ]
-    ]
+                ],
+            ],
+        ],
+    ],
 ];
