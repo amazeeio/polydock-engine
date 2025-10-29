@@ -1,6 +1,5 @@
 <?php
 
-
     $serviceProviderSingletons = [
         "PolydockServiceProviderFTLagoon" => [
             'class' => App\PolydockServiceProviders\PolydockServiceProviderFTLagoon::class,
@@ -10,15 +9,15 @@
             'ssh_user' => env('FTLAGOON_SSH_USER','lagoon'),
             'ssh_server' => env('FTLAGOON_SSH_SERVER','ssh.lagoon.amazeeio.cloud'),
             'ssh_port' => env('FTLAGOON_SSH_PORT','32222'),
-            'endpoint' => env('FTLAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql'), 
-        ]
-      ];
-    
+            'endpoint' => env('FTLAGOON_ENDPOINT','https://api.lagoon.amazeeio.cloud/graphql'),
+        ],
+    ];
+
     if(env('PolydockServiceProviderAmazeeAiBackend', "") == "true") {
         $serviceProviderSingletons["PolydockServiceProviderAmazeeAiBackend"] = [
             'class' => App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend::class,
             'debug' => false,
-            'base_url' => env('AMAZEE_AI_BACKEND_BASE_URL', 'https://backend.main.amazeeai.us2.amazee.io'),
+            'base_url' => env('AMAZEE_AI_BACKEND_BASE_URL', 'https://backend.prod.amazeeai.us2.amazee.io'),
             'token_file' => env('AMAZEE_AI_BACKEND_TOKEN_FILE', storage_path('amazee-ai-backend/token')),
         ];
     } else {
@@ -26,7 +25,7 @@
     }
 
     $filterServiceProviders = explode(",", env('POLYDOCK_DISABLED_SERVICE_PROVIDERS', ''));
-    
+
     foreach ($filterServiceProviders as $filterServiceProvider) {
         $filterServiceProvider = trim($filterServiceProvider);
         if(!empty($filterServiceProvider) && isset($serviceProviderSingletons[$filterServiceProvider])) {
