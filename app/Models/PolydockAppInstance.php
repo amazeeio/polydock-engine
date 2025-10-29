@@ -641,13 +641,13 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         return strtolower(
             $prefix . '-' . 
-            $this->pickVerb() . '-' . 
+            // $this->pickVerb() . '-' . // we're removing the verb for now, it's not necessary
             $this->pickColor() . '-' . 
             $this->pickAnimal() . '-' . 
             uniqid()
         );
     }
-    
+
     /**
      * Get the store app that this instance belongs to
      *
