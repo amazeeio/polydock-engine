@@ -19,7 +19,8 @@ class AppInstanceReadyMail extends Mailable
      */
     public function __construct(
         public PolydockAppInstance $appInstance,
-        public User $toUser
+        public User $toUser,
+        public string $markdownTemplate = 'emails.app-instance.ready'
     ) {}
 
     /**
@@ -46,7 +47,7 @@ class AppInstanceReadyMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.app-instance.ready',
+            markdown: $this->markdownTemplate,
         );
     }
 

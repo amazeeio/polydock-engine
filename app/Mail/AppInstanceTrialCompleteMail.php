@@ -12,21 +12,18 @@ class AppInstanceTrialCompleteMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public PolydockAppInstance $appInstance;
-    public User $toUser;
-
-    public function __construct(PolydockAppInstance $appInstance, User $toUser)
-    {
-        $this->appInstance = $appInstance;
-        $this->toUser = $toUser;
-    }
+    public function __construct(
+        public PolydockAppInstance $appInstance,
+        public User $toUser,
+        public string $markdownTemplate = 'emails.app-instance.trial-complete'
+    ) {}
 
     public function build()
     {
         $subject = $this->appInstance->storeApp->trial_complete_email_subject ?? 'Your Trial Has Ended';
         $subject .= " [" . $this->appInstance->name . "]";
 
-        return $this->markdown('emails.app-instance.trial-complete')
+        return $this->markdown($this->markdownTemplate)
                     ->subject($subject);
     }
 } 
