@@ -34,6 +34,7 @@ class PolydockStoreApp extends Model
         'lagoon_remove_script',
         'email_subject_line',
         'email_body_markdown',
+        'mail_theme',
         'status',
         'uuid',
         'available_for_trials',

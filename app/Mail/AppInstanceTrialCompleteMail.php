@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Mail\Traits\ResolvesThemeTemplate;
 use App\Models\PolydockAppInstance;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -10,7 +11,7 @@ use Illuminate\Queue\SerializesModels;
 
 class AppInstanceTrialCompleteMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, ResolvesThemeTemplate;
 
     public function __construct(
         public PolydockAppInstance $appInstance,
@@ -20,6 +21,8 @@ class AppInstanceTrialCompleteMail extends Mailable
 
     public function build()
     {
+        $this->resolveThemeTemplate($this->appInstance->storeApp->mail_theme, $this->markdownTemplate);
+        
         $subject = $this->appInstance->storeApp->trial_complete_email_subject ?? 'Your Trial Has Ended';
         $subject .= " [" . $this->appInstance->name . "]";
 
