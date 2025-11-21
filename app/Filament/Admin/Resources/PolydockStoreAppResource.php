@@ -52,6 +52,11 @@ class PolydockStoreAppResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('mail_theme')
+                    ->label('Email Theme')
+                    ->options(fn() => array_merge(['null' => 'Default'], array_combine(app('mail.themes'), app('mail.themes'))))
+                    ->nullable()
+                    ->dehydrateStateUsing(fn(?string $state) => $state === 'null' ? null : $state),
                 Forms\Components\Textarea::make('description')
                     ->required()
                     ->columnSpanFull(),

@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Mail\Traits\ResolvesThemeTemplate;
 use App\Models\PolydockAppInstance;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -12,21 +13,25 @@ use Illuminate\Queue\SerializesModels;
 
 class AppInstanceReadyMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, ResolvesThemeTemplate;
 
     /**
      * Create a new message instance.
      */
     public function __construct(
         public PolydockAppInstance $appInstance,
-        public User $toUser
-    ) {}
+        public User $toUser,
+        public string $markdownTemplate = 'emails.app-instance.ready'
+    ) {
+    }
 
     /**
      * Get the message envelope.
      */
     public function envelope(): Envelope
     {
+        $this->resolveThemeTemplate($this->appInstance->storeApp->mail_theme, $this->markdownTemplate);
+        
         $subject = $this->appInstance->storeApp->email_subject_line;
         
         if (empty($subject)) {
@@ -46,7 +51,7 @@ class AppInstanceReadyMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            markdown: 'emails.app-instance.ready',
+            markdown: $this->markdownTemplate,
         );
     }
 
