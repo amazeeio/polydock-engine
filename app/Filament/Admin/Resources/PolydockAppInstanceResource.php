@@ -23,6 +23,8 @@ use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Filters\SelectFilter;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
+use Filament\Tables\Actions\ExportAction;
+use App\Filament\Exports\UserRemoteRegistrationExporter;
 
 class PolydockAppInstanceResource extends Resource
 {
@@ -168,6 +170,10 @@ class PolydockAppInstanceResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+            ])->headerActions([
+                ExportAction::make()
+                ->label('Export registrations')
+                ->exporter(UserRemoteRegistrationExporter::class),
             ])
             ->bulkActions([]);
     }
