@@ -3,12 +3,9 @@
 namespace App\Filament\Exports;
 
 use App\Models\PolydockAppInstance;
-use App\Models\PolydockStoreApp;
-use App\Models\UserRemoteRegistration;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
 use Filament\Actions\Exports\Models\Export;
-use App\ReportExporters;
 
 class UserRemoteRegistrationExporter extends Exporter
 {
@@ -21,25 +18,6 @@ class UserRemoteRegistrationExporter extends Exporter
     public static function shouldQueue(): bool
     {
         return false;
-    }
-
-    // This function will, using reflection, run through all the store apps
-    // And see if they have any columns they want to export.
-    // If so, we mark them as such.
-
-    public static function gatherColumns(): array
-    {
-        // We'll make this a little more generic in the future, but for now
-        // we keep the reporters in the main application
-        $reporterClasses = [
-            \App\ReportExporters\ReportExporterGeneric::class,
-        ];
-
-        $extraColumns = [];
-        foreach ($reporterClasses as $reporterClass) {
-            $extraColumns .= $reporterClass::getColumns();
-        }
-        return $extraColumns;
     }
 
     public static function getValueFromData($data, $key)
