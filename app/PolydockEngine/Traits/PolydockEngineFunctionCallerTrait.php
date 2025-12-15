@@ -75,7 +75,7 @@ trait PolydockEngineFunctionCallerTrait
         } 
         catch(PolydockAppInstanceStatusFlowException $e) {
             $message = $appFunctionName . ' failed - status flow exception';
-            $context = $outputContext + ['exception' => $e];
+            $context = $outputContext + ['exception' => $e->getMessage()];
             $polydockApp->error($message, $context);
             if($appInstance->getStatus() !== $failedStatus) {
                 $polydockApp->info('Forcing status to ' . $failedStatus->value, $outputContext);
