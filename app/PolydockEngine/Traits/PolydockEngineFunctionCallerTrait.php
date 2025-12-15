@@ -74,22 +74,34 @@ trait PolydockEngineFunctionCallerTrait
             return true;
         } 
         catch(PolydockAppInstanceStatusFlowException $e) {
-            $polydockApp->error($appFunctionName . ' failed - status flow exception', $outputContext + ['exception' => $e]);
+            $message = $appFunctionName . ' failed - status flow exception';
+            $context = $outputContext + ['exception' => $e];
+            $polydockApp->error($message, $context);
             if($appInstance->getStatus() !== $failedStatus) {
                 $polydockApp->info('Forcing status to ' . $failedStatus->value, $outputContext);
-                $appInstance->setStatus($failedStatus)->save();
+                $appInstance->
+                logLine("error", $message, $context)->
+                setStatus($failedStatus)->save();
             }
             return false;
         }
         catch(PolydockEngineProcessPolydockAppInstanceException $e) {
-            $polydockApp->error($appFunctionName . ' failed - process exception', $outputContext + ['exception' => $e]);
+            $message = $appFunctionName . ' failed - process exception';
+            $context = $outputContext + ['exception' => $e];
+            $polydockApp->error( $message, $context);
             if($appInstance->getStatus() !== $failedStatus) {
                 $polydockApp->info('Forcing status to ' . $failedStatus->value, $outputContext);
-                $appInstance->setStatus($failedStatus)->save();
+                $appInstance->
+                logLine("error", $message, $context)->
+                setStatus($failedStatus)->save();
             }
         } catch(Exception $e) {
-            $polydockApp->error($appFunctionName . ' failed - unknown exception', $outputContext + ['exception' => $e]);
-            $appInstance->setStatus($failedStatus)->save();
+            $message = $appFunctionName . ' failed - unknown exception';
+            $context = $outputContext + ['exception' => $e];
+            $polydockApp->error($message, $context);
+            $appInstance->
+            logLine("error", $message, $context)->
+            setStatus($failedStatus)->save();
         }
 
         return false;
