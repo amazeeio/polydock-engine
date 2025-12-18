@@ -43,13 +43,10 @@ class AppInstanceMidtrialMail extends Mailable
      */
     public function content(): Content
     {
-        // dd(Config::get('mail.mjml-config')['footer']);
         $mjmlConfig = Config::get('mail.mjml-config');
-        $mjmlConfig['theme'] = $mjmlConfig['themes']['light'];
         $mjmlConfig['appInstance'] = $this->appInstance;
         
         return new Content(
-            // markdown: 'emails.app-instance.ready',
             view: 'emails.app-instance.midtrial',
             with: ['config'=>$mjmlConfig],
         );

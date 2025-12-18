@@ -1,4 +1,4 @@
-<x-mjmlwrapper :theme="$config['theme']" :config="$config">
+<x-mjmlwrapper :theme="$config['themes'][$config['default_theme']]" :config="$config">
     <mj-section>
       <mj-column>
         <mj-text>

@@ -43,7 +43,6 @@ class AppInstanceOneDayLeftMail extends Mailable
     public function content(): Content
     {
         $mjmlConfig = Config::get('mail.mjml-config');
-        $mjmlConfig['theme'] = $mjmlConfig['themes']['light'];
         $mjmlConfig['appInstance'] = $this->appInstance;
         
         return new Content(

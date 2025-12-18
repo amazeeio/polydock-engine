@@ -48,7 +48,7 @@ class AppInstanceReadyMail extends Mailable
     {
         // dd(Config::get('mail.mjml-config'));
         $mjmlConfig = Config::get('mail.mjml-config');
-        $mjmlConfig['theme'] = $mjmlConfig['themes']['light'];
+        // $mjmlConfig['theme'] = $mjmlConfig['themes']['dark'];
 
         return new Content(
             // markdown: 'emails.app-instance.ready',

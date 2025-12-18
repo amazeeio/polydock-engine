@@ -1,6 +1,6 @@
 <x-mjmlwrapper :theme="$config['themes'][$config['default_theme']]" :config="$config">
-<x-mjml-title>
-    Halfway Through {{ $appInstance->storeApp->name }} Trial
+  <x-mjml-title>
+    {{ $appInstance->storeApp->name }} Trial Complete
   </x-mjml-title>
 
   <mj-section>
@@ -11,11 +11,11 @@
     </mj-column>
   </mj-section>
 
-  @if($appInstance->storeApp->midtrial_email_markdown)
+  @if($appInstance->storeApp->trial_complete_email_markdown)
   <mj-section>
     <mj-column>
       <mj-text>
-        {!! Illuminate\Mail\Markdown::parse($appInstance->storeApp->midtrial_email_markdown) !!}
+        {!! Illuminate\Mail\Markdown::parse($appInstance->storeApp->trial_complete_email_markdown) !!}
       </mj-text>
     </mj-column>
   </mj-section>
@@ -23,7 +23,7 @@
   <mj-section>
     <mj-column>
       <mj-text>
-        You're halfway through your trial of {{ $appInstance->storeApp->name }}, which will end on {{ $appInstance->trial_ends_at->format('F j, Y') }}.
+        Your trial of {{ $appInstance->storeApp->name }} has ended.
       </mj-text>
     </mj-column>
   </mj-section>
@@ -37,12 +37,4 @@
     </mj-column>
   </mj-section>
   @endif
-
-  <mj-section>
-    <mj-column>
-      <mj-divider border-color="#ddd" padding="20px 0"></mj-divider>
-    </mj-column>
-  </mj-section>
-
-  <x-app-instance-credentials :appInstance="$appInstance" />
 </x-mjmlwrapper>
