@@ -113,4 +113,141 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    'mjml-config' => [
+        /*
+    |--------------------------------------------------------------------------
+    | Default Email Theme
+    |--------------------------------------------------------------------------
+    |
+    | This option controls the default theme used for emails when no specific
+    | theme is specified by the mailable class. Available options: 'light', 'dark'
+    |
+    */
+
+        'default_theme' => env('EMAIL_DEFAULT_THEME', 'dark'),
+
+        /*
+    |--------------------------------------------------------------------------
+    | Email Themes
+    |--------------------------------------------------------------------------
+    |
+    | Define the visual themes available for email templates. Each theme
+    | specifies colors for various email components.
+    |
+    */
+
+        'themes' => [
+            'light' => [
+                'name' => 'Light Lagoon',
+                'colors' => [
+                    'body_background' => '#f0f4f8',
+                    'content_background' => '#ffffff',
+                    'header_background' => '#ffffff',
+                    'footer_background' => '#263238',
+                    'text' => '#1a202c',
+                    'text_muted' => '#718096',
+                    'links' => '#0891b2',
+                    'primary_button_background' => '#000000',
+                    'primary_button_text' => '#ffffff',
+                ],
+                'typography' => [
+                    'font_family' => 'sans-serif',
+                    'heading_color' => '#1a202c',
+                    'body_font_size' => '16px',
+                    'heading_font_size' => '24px',
+                ],
+                'logo' => [
+                    'url' => '/assets/emails/amazee-logo-light.svg',
+                    'alt' => 'Amazee Logo',
+                    'width' => '150',
+                ],
+            ],
+
+            'dark' => [
+                'name' => 'Dark Header',
+                'colors' => [
+                    'body_background' => '#e5e7eb',
+                    'content_background' => '#ffffff',
+                    'header_background' => '#1f2937',
+                    'footer_background' => '#111827',
+                    'text' => '#1f2937',
+                    'text_muted' => '#6b7280',
+                    'links' => '#2563eb',
+                    'primary_button_background' => '#000000',
+                    'primary_button_text' => '#ffffff',
+                ],
+                'typography' => [
+                    'font_family' => 'sans-serif',
+                    'heading_color' => '#111827',
+                    'body_font_size' => '16px',
+                    'heading_font_size' => '24px',
+                ],
+                'logo' => [
+                    'url' => '/assets/emails/amazee-logo-dark.svg',
+                    'alt' => 'Amazee Logo',
+                    'width' => '150',
+                ],
+            ],
+        ],
+
+        /*
+    |--------------------------------------------------------------------------
+    | Logo Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure the logo displayed in email headers. The URL can be overridden
+    | via environment variables to allow easy customization per environment.
+    |
+    */
+
+        'logo' => [
+            'url' => env('EMAIL_LOGO_URL', '/assets/emails/logo.svg'),
+            'alt' => env('EMAIL_LOGO_ALT', 'Company Logo'),
+            'width' => env('EMAIL_LOGO_WIDTH', '150'),
+            'height' => env('EMAIL_LOGO_HEIGHT', 'auto'),
+        ],
+
+        /*
+    |--------------------------------------------------------------------------
+    | Footer Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure the footer content displayed in all emails. This includes
+    | company information, links, and legal text.
+    |
+    */
+
+        'footer' => [
+            'company_name' => env('EMAIL_FOOTER_COMPANY_NAME', 'Your Company Name'),
+
+            'address' => env('EMAIL_FOOTER_ADDRESS', '123 Business Street, Suite 100, City, State 12345'),
+
+            'links' => [
+                'unsubscribe' => [
+                    'url' => env('EMAIL_UNSUBSCRIBE_URL', '/unsubscribe'),
+                    'text' => 'Unsubscribe',
+                ],
+                'support' => [
+                    'url' => env('EMAIL_SUPPORT_URL', '/support'),
+                    'text' => 'Contact Support',
+                    'enabled' => env('EMAIL_SUPPORT_LINK_ENABLED', true),
+                ],
+                'privacy' => [
+                    'url' => env('EMAIL_PRIVACY_URL', '/privacy'),
+                    'text' => 'Privacy Policy',
+                    'enabled' => env('EMAIL_PRIVACY_LINK_ENABLED', true),
+                ],
+                'terms' => [
+                    'url' => env('EMAIL_TERMS_URL', '/terms'),
+                    'text' => 'Terms of Service',
+                    'enabled' => env('EMAIL_TERMS_LINK_ENABLED', true),
+                ],
+            ],
+
+            'copyright_text' => env('EMAIL_FOOTER_COPYRIGHT', '© 2024 Your Company Name. All rights reserved.'),
+
+            'disclaimer' => env('EMAIL_FOOTER_DISCLAIMER', 'This email was sent to you because you have an account with us. Please do not reply to this email.'),
+        ],
+    ],
+
 ];
