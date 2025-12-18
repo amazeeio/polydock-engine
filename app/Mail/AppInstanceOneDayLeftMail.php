@@ -7,6 +7,9 @@ use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Mail\Mailables\Content;
 
 class AppInstanceOneDayLeftMail extends Mailable
 {
@@ -21,12 +24,31 @@ class AppInstanceOneDayLeftMail extends Mailable
         $this->toUser = $toUser;
     }
 
-    public function build()
+    /**
+     * Get the message envelope.
+     */
+    public function envelope(): Envelope
     {
         $subject = $this->appInstance->storeApp->one_day_left_email_subject ?? 'One Day Left in Your Trial';
         $subject .= " [" . $this->appInstance->name . "]";
+
+        return new Envelope(
+            subject: $subject,
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    public function content(): Content
+    {
+        $mjmlConfig = Config::get('mail.mjml-config');
+        $mjmlConfig['theme'] = $mjmlConfig['themes']['light'];
+        $mjmlConfig['appInstance'] = $this->appInstance;
         
-        return $this->markdown('emails.app-instance.one-day-left')
-                    ->subject($subject);
+        return new Content(
+            view: 'emails.app-instance.one-day-left',
+            with: ['config'=>$mjmlConfig],
+        );
     }
 } 
