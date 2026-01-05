@@ -6,6 +6,7 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Process;
+
 use function Laravel\Prompts\multiselect;
 
 class TriggerLagoonDeployOnAppInstances extends Command
@@ -91,7 +92,7 @@ class TriggerLagoonDeployOnAppInstances extends Command
             $options = [];
             foreach ($instanceData as $id => $data) {
                 $label = sprintf(
-                    "%s  %s  %s  %s",
+                    '%s  %s  %s  %s',
                     str_pad($data['id'], $maxWidths['id']),
                     str_pad($data['name'], $maxWidths['name']),
                     str_pad($data['project'], $maxWidths['project']),
@@ -102,7 +103,7 @@ class TriggerLagoonDeployOnAppInstances extends Command
 
             // Create a header for the prompt label
             $header = sprintf(
-                "%s  %s  %s  %s",
+                '%s  %s  %s  %s',
                 str_pad('ID', $maxWidths['id']),
                 str_pad('Name', $maxWidths['name']),
                 str_pad('Lagoon Project', $maxWidths['project']),
