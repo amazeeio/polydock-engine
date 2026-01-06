@@ -82,7 +82,7 @@
         <mj-text align="center" padding-bottom="20px">
           <mj-raw>
             @if(isset($config['footer']['links']['support']))
-              <a href="#" class="footer-link">support</a>
+              <a href="{{ $config['footer']['links']['support']['url'] }}" class="footer-link">{{ $config['footer']['links']['support']['text'] }}</a>
             @endif
           </mj-raw>
         </mj-text>
