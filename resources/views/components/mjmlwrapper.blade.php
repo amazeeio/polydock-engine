@@ -81,8 +81,14 @@
         @if (!empty($config['footer']['links']))
         <mj-text align="center" padding-bottom="20px">
           <mj-raw>
-            @if(isset($config['footer']['links']['support']))
+            @if(isset($config['footer']['links']['support']) && ($config['footer']['links']['support']['enabled'] ?? true))
               <a href="{{ $config['footer']['links']['support']['url'] }}" class="footer-link">{{ $config['footer']['links']['support']['text'] }}</a>
+            @endif
+            @if(isset($config['footer']['links']['privacy']) && ($config['footer']['links']['privacy']['enabled'] ?? true))
+              <a href="{{ $config['footer']['links']['privacy']['url'] }}" class="footer-link">{{ $config['footer']['links']['privacy']['text'] }}</a>
+            @endif
+            @if(isset($config['footer']['links']['terms']) && ($config['footer']['links']['terms']['enabled'] ?? true))
+              <a href="{{ $config['footer']['links']['terms']['url'] }}" class="footer-link">{{ $config['footer']['links']['terms']['text'] }}</a>
             @endif
           </mj-raw>
         </mj-text>
