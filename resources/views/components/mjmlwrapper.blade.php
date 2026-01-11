@@ -64,7 +64,11 @@
           font-size="14px"
           font-weight="600"
           padding-bottom="10px">
-          {{ $config['footer']['company_name'] }}
+          @if(!empty($config['footer']['company_url']))
+            <a href="{{ $config['footer']['company_url'] }}" style="color: {{ $theme['colors']['text_muted'] }}; text-decoration: none;">{{ $config['footer']['company_name'] }}</a>
+          @else
+            {{ $config['footer']['company_name'] }}
+          @endif
         </mj-text>
 
         <!-- Address -->
