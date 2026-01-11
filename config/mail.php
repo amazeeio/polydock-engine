@@ -218,9 +218,9 @@ return [
     */
 
         'footer' => [
-            'company_name' => env('EMAIL_FOOTER_COMPANY_NAME', 'Your Company Name'),
+            'company_name' => env('EMAIL_FOOTER_COMPANY_NAME', 'amazee.io'),
 
-            'address' => env('EMAIL_FOOTER_ADDRESS', '123 Business Street, Suite 100, City, State 12345'),
+            'address' => env('EMAIL_FOOTER_ADDRESS', 'amazee.io, Hardturmstrasse 161, 8005 Zurich, Switzerland.'),
 
             'links' => [
                 'unsubscribe' => [
@@ -228,23 +228,23 @@ return [
                     'text' => 'Unsubscribe',
                 ],
                 'support' => [
-                    'url' => env('EMAIL_SUPPORT_URL', '/support'),
+                    'url' => env('EMAIL_SUPPORT_URL', 'https://www.amazee.io/product/support'),
                     'text' => 'Contact Support',
                     'enabled' => env('EMAIL_SUPPORT_LINK_ENABLED', true),
                 ],
                 'privacy' => [
-                    'url' => env('EMAIL_PRIVACY_URL', '/privacy'),
+                    'url' => env('EMAIL_PRIVACY_URL', 'https://www.amazee.io/privacy-policy'),
                     'text' => 'Privacy Policy',
                     'enabled' => env('EMAIL_PRIVACY_LINK_ENABLED', true),
                 ],
                 'terms' => [
-                    'url' => env('EMAIL_TERMS_URL', '/terms'),
+                    'url' => env('EMAIL_TERMS_URL', ''),
                     'text' => 'Terms of Service',
-                    'enabled' => env('EMAIL_TERMS_LINK_ENABLED', true),
+                    'enabled' => env('EMAIL_TERMS_LINK_ENABLED', false),
                 ],
             ],
 
-            'copyright_text' => env('EMAIL_FOOTER_COPYRIGHT', '© 2024 Your Company Name. All rights reserved.'),
+            'copyright_text' => env('EMAIL_FOOTER_COPYRIGHT', sprintf('© %s amazee.io. All rights reserved.', date('Y'))),
 
             'disclaimer' => env('EMAIL_FOOTER_DISCLAIMER', 'This email was sent to you because you have an account with us. Please do not reply to this email.'),
         ],
