@@ -157,7 +157,7 @@ return [
                     'heading_font_size' => '24px',
                 ],
                 'logo' => [
-                    'url' => rtrim(env('APP_URL', ''), '/') . '/' . ltrim('/public/emails/amazee-logo-light.svg', '/'),
+                    'url' => rtrim(env('APP_URL', ''), '/') . '/' . ltrim('/emails/amazee-logo-light.svg', '/'),
                     'alt' => 'Amazee Logo',
                     'width' => '150',
                 ],
@@ -183,7 +183,7 @@ return [
                     'heading_font_size' => '24px',
                 ],
                 'logo' => [
-                    'url' => rtrim(env('APP_URL', ''), '/') . '/' . ltrim('/public/emails/amazee-logo-dark.svg', '/'),
+                    'url' => rtrim(env('APP_URL', ''), '/') . '/' . ltrim('/emails/amazee-logo-dark.svg', '/'),
                     'alt' => 'Amazee Logo',
                     'width' => '150',
                 ],
@@ -201,7 +201,7 @@ return [
     */
 
         'logo' => [
-            'url' => (parse_url(env('EMAIL_LOGO_URL', '/public/emails/logo.svg'), PHP_URL_SCHEME) ? env('EMAIL_LOGO_URL', '/public/emails/logo.svg') : rtrim(env('APP_URL', ''), '/') . '/' . ltrim(env('EMAIL_LOGO_URL', '/public/emails/logo.svg'), '/')),
+            'url' => (parse_url(env('EMAIL_LOGO_URL', '/emails/logo.svg'), PHP_URL_SCHEME) ? env('EMAIL_LOGO_URL', '/emails/logo.svg') : rtrim(env('APP_URL', ''), '/') . '/' . ltrim(env('EMAIL_LOGO_URL', '/emails/logo.svg'), '/')),
             'alt' => env('EMAIL_LOGO_ALT', 'Company Logo'),
             'width' => env('EMAIL_LOGO_WIDTH', '150'),
             'height' => env('EMAIL_LOGO_HEIGHT', 'auto'),
