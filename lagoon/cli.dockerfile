@@ -1,4 +1,4 @@
-FROM uselagoon/lagoon-cli:25.11.0 as LAGOONCLI
+FROM uselagoon/lagoon-cli as LAGOONCLI
 FROM uselagoon/php-8.3-cli:25.11.0
 
 #######################################################
