@@ -1,6 +1,6 @@
 ARG CLI_IMAGE
 FROM ${CLI_IMAGE} as cli
-FROM uselagoon/nginx:25.11.0
+FROM uselagoon/nginx
 
 #######################################################
 # Customize Nginx to Laravel Land

@@ -1,6 +1,6 @@
 ARG CLI_IMAGE
 FROM ${CLI_IMAGE} as cli
-FROM uselagoon/php-8.3-fpm:25.11.0
+FROM uselagoon/php-8.3-fpm
 
 #######################################################
 # Setup Laravel Directories needed
