@@ -75,7 +75,7 @@
         <mj-text
           align="center"
           color="{{ $theme['colors']['text_muted'] }}"
-          font-size="12px"
+          font-size="16px"
           line-height="1.5"
           padding-bottom="20px">
           {{ $config['footer']['address'] }}
