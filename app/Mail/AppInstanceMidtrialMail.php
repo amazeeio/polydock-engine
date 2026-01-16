@@ -7,9 +7,6 @@ use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Mail\Mailables\Content;
 
 class AppInstanceMidtrialMail extends Mailable
 {
@@ -24,32 +21,12 @@ class AppInstanceMidtrialMail extends Mailable
         $this->toUser = $toUser;
     }
 
-    /**
-     * Get the message envelope.
-     */
-    public function envelope(): Envelope
+    public function build()
     {
         $subject = $this->appInstance->storeApp->midtrial_email_subject ?? 'Halfway Through Your Trial';
         $subject .= " [" . $this->appInstance->name . "]";
 
-        return new Envelope(
-            subject: $subject,
-        );
+        return $this->markdown('emails.app-instance.midtrial')
+                    ->subject($subject);
     }
-
-
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        $mjmlConfig = Config::get('mail.mjml-config');
-        $mjmlConfig['appInstance'] = $this->appInstance;
-        
-        return new Content(
-            view: 'emails.app-instance.midtrial',
-            with: ['config'=>$mjmlConfig],
-        );
-    }
-
-}
+} 

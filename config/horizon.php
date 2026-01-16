@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Str;
 
-$config =  [
+return [
 
     /*
     |--------------------------------------------------------------------------
@@ -297,10 +297,3 @@ $config =  [
         ],
     ],
 ];
-
-//$envKeys = array_keys($config['environments']);
-if(!key_exists(env('APP_ENV', 'local'), $config['environments'])) {
-    $config['environments'][env('APP_ENV')] = $config['environments']['local'];
-}
-
-return $config;

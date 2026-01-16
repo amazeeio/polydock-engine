@@ -9,7 +9,6 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Config;
 
 class AppInstanceReadyMail extends Mailable
 {
@@ -46,14 +45,8 @@ class AppInstanceReadyMail extends Mailable
      */
     public function content(): Content
     {
-        // dd(Config::get('mail.mjml-config'));
-        $mjmlConfig = Config::get('mail.mjml-config');
-        // $mjmlConfig['theme'] = $mjmlConfig['themes']['dark'];
-
         return new Content(
-            // markdown: 'emails.app-instance.ready',
-            view: 'emails.app-instance.ready',
-            with: ["config"=> $mjmlConfig],
+            markdown: 'emails.app-instance.ready',
         );
     }
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c304b415d15c26d4fdd1a2c623a3335d",
+    "content-hash": "6dfc95a2367f9fa225097e81b918e75f",
     "packages": [
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
@@ -1115,73 +1115,6 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
-        },
-        {
-            "name": "evanschleret/lara-mjml",
-            "version": "v0.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/EvanSchleret/lara-mjml.git",
-                "reference": "5f4f09db02b5de8715bc2c0f674a6cc69d99a15e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/EvanSchleret/lara-mjml/zipball/5f4f09db02b5de8715bc2c0f674a6cc69d99a15e",
-                "reference": "5f4f09db02b5de8715bc2c0f674a6cc69d99a15e",
-                "shasum": ""
-            },
-            "require": {
-                "illuminate/mail": "^10.0|^11.0|^12.0",
-                "illuminate/support": "^10.0|^11.0|^12.0",
-                "illuminate/view": "^10.0|^11.0|^12.0",
-                "php": "^8.1 || ^8.2 || ^8.3 || ^8.4 || ^8.5",
-                "spatie/mjml-php": "^1.2.5"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.0",
-                "pestphp/pest": "^2.20 || ^3.0",
-                "spatie/ray": "^1.28"
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "EvanSchleret\\LaraMjml\\Providers\\LaraMjmlServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "EvanSchleret\\LaraMjml\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Evan Schleret",
-                    "email": "evan@schleret.ch"
-                }
-            ],
-            "description": "Just a service provider for Spatie's MJML wrapper",
-            "homepage": "https://github.com/evanschleret/lara-mjml",
-            "keywords": [
-                "EvanSchleret",
-                "lara-mjml"
-            ],
-            "support": {
-                "issues": "https://github.com/EvanSchleret/lara-mjml/issues",
-                "source": "https://github.com/EvanSchleret/lara-mjml/tree/v0.3"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/EvanSchleret",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-11-11T14:22:24+00:00"
         },
         {
             "name": "filament/actions",
@@ -5546,67 +5479,6 @@
                 }
             ],
             "time": "2025-04-11T15:27:14+00:00"
-        },
-        {
-            "name": "spatie/mjml-php",
-            "version": "1.2.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/spatie/mjml-php.git",
-                "reference": "0af0b3944617889df7bed69faca3819a0399feff"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/spatie/mjml-php/zipball/0af0b3944617889df7bed69faca3819a0399feff",
-                "reference": "0af0b3944617889df7bed69faca3819a0399feff",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^8.1",
-                "symfony/process": "^6.3.2|^7.0"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.11",
-                "pestphp/pest": "^2.16",
-                "spatie/ray": "^1.37.2"
-            },
-            "suggest": {
-                "spatie/mjml-sidecar": "When you want to run MJML compilation through Sidecar in a Laravel project"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Spatie\\Mjml\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Freek Van der Herten",
-                    "email": "freek@spatie.be",
-                    "role": "Developer"
-                }
-            ],
-            "description": "Convert MJML to HTML using PHP",
-            "homepage": "https://github.com/spatie/mjml-php",
-            "keywords": [
-                "mjml-php",
-                "spatie"
-            ],
-            "support": {
-                "issues": "https://github.com/spatie/mjml-php/issues",
-                "source": "https://github.com/spatie/mjml-php/tree/1.2.5"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/spatie",
-                    "type": "github"
-                }
-            ],
-            "time": "2025-03-17T19:50:19+00:00"
         },
         {
             "name": "spatie/ssh",
@@ -10803,12 +10675,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": [],
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": {},
+    "platform-dev": [],
     "plugin-api-version": "2.6.0"
 }
