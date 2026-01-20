@@ -124,7 +124,7 @@ return [
     |
     */
 
-        'default_theme' => env('EMAIL_DEFAULT_THEME', 'dark'),
+        'default_theme' => 'dark', // we're provisionally removing theme selection - env('EMAIL_DEFAULT_THEME', 'dark'),
 
         /*
     |--------------------------------------------------------------------------
@@ -137,53 +137,27 @@ return [
     */
 
         'themes' => [
-            'light' => [
-                'name' => 'Light Lagoon',
-                'colors' => [
-                    'body_background' => '#f0f4f8',
-                    'content_background' => '#ffffff',
-                    'header_background' => '#ffffff',
-                    'footer_background' => '#F4F4F4',
-                    'text' => '#1a202c',
-                    'text_muted' => '#666666',
-                    'links' => '#0891b2',
-                    'primary_button_background' => '#000000',
-                    'primary_button_text' => '#ffffff',
-                ],
-                'typography' => [
-                    'font_family' => 'sans-serif',
-                    'heading_color' => '#1a202c',
-                    'body_font_size' => '16px',
-                    'heading_font_size' => '24px',
-                ],
-                'logo' => [
-                    'url' => rtrim(env('APP_URL', ''), '/') . '/' . ltrim('/emails/amazee-logo-light.svg', '/'),
-                    'alt' => 'Amazee Logo',
-                    'width' => '150',
-                ],
-            ],
-
             'dark' => [
                 'name' => 'Dark Header',
                 'colors' => [
                     'body_background' => '#e5e7eb',
                     'content_background' => '#ffffff',
-                    'header_background' => '#1f2937',
-                    'footer_background' => '#111827',
-                    'text' => '#1f2937',
-                    'text_muted' => '#f4f4f4',
+                    'header_background' => '#f4f4f4',
+                    'footer_background' => '#f4f4f4',
+                    'text' => '#333',
+                    'text_muted' => '#333',
                     'links' => '#2563eb',
                     'primary_button_background' => '#000000',
                     'primary_button_text' => '#ffffff',
                 ],
                 'typography' => [
                     'font_family' => 'sans-serif',
-                    'heading_color' => '#111827',
+                    'heading_color' => '#333',
                     'body_font_size' => '16px',
                     'heading_font_size' => '24px',
                 ],
                 'logo' => [
-                    'url' => rtrim(env('APP_URL', ''), '/') . '/' . ltrim('/emails/amazee-logo-dark.svg', '/'),
+                    'url' => rtrim(env('APP_URL', ''), '/') . '/' . ltrim('/emails/amazee-io-Logo-Black-White-IO.png', '/'),
                     'alt' => 'Amazee Logo',
                     'width' => '150',
                 ],

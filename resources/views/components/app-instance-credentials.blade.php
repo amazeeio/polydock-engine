@@ -1,6 +1,6 @@
 <mj-section padding="0">
   <mj-column>
-    <mj-button href="{{ route('app-instances.show', $appInstance) }}" background-color="#000000" color="#ffffff" padding="16px 36px" border-radius="6px" font-size="16px" font-weight="600" margin="20px 0">
+    <mj-button href="{{ route('app-instances.show', $appInstance) }}" color="#000" background-color="#00b6ed">
       Access Your {{ $appInstance->storeApp->name }} Instance
     </mj-button>
   </mj-column>

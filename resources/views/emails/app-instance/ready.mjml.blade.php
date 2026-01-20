@@ -18,11 +18,11 @@
     <mj-section>
       <mj-column>
         @if($appInstance->getKeyValue('hide-login-email-info') != 'true')
-          <mj-button href="{{ route('app-instances.show', $appInstance) }}" background-color="#0066cc">
+          <mj-button href="{{ route('app-instances.show', $appInstance) }}" color="#000" background-color="#00b6ed">
             Access Your Experience
           </mj-button>
         @else
-          <mj-button href="{{ $appInstance->app_url }}" background-color="#0066cc">
+          <mj-button href="{{ $appInstance->app_url }}" color="#000" background-color="#00b6ed">
             Access Your Experience
           </mj-button>
         @endif
@@ -130,7 +130,7 @@
     <mj-section>
       <mj-column>
         <mj-text>
-          {!! $appInstance->storeApp->email_body_markdown !!}
+          {!! Illuminate\Mail\Markdown::parse($appInstance->storeApp->email_body_markdown) !!} 
         </mj-text>
       </mj-column>
     </mj-section>
