@@ -24,4 +24,4 @@ Access Your {{ $appInstance->storeApp->name }} Instance
 Login Credentials: 
 - Username: @if($appInstance->getGeneratedAppAdminUsername()) {{ $appInstance->getGeneratedAppAdminUsername() }} @else **missing - please contact support** @endif 
 - Password: @if($appInstance->getGeneratedAppAdminPassword()) {{ $appInstance->getGeneratedAppAdminPassword() }} @else **missing - please contact support** @endif
-</x-mail::message> 
+</x-mail::message>
