@@ -6,17 +6,13 @@ The application uses MJML for responsive email templates. The configuration for 
 
 ### General Configuration
 
-| Variable | Default | Description |
-| :--- | :--- | :--- |
-| `EMAIL_DEFAULT_THEME` | `dark` | Controls the default visual theme for emails. Available options are `light` and `dark`. |
-
 ### Logo Configuration
 
 The logo is displayed in the header of the email.
 
 | Variable | Default | Description |
 | :--- | :--- | :--- |
-| `EMAIL_LOGO_URL` | `/emails/logo.svg` | The URL to the logo image. Can be a relative path (which will be resolved against `APP_URL`) or an absolute URL. |
+| `EMAIL_LOGO_URL` | `/emails/logo.svg` | The URL to the logo image. Can be a relative path (which will be resolved against `APP_URL`) or an absolute URL. Note: The dark theme uses `/emails/amazee-io-Logo-Black-White-IO.png` by default. |
 | `EMAIL_LOGO_ALT` | `Company Logo` | The alternative text for the logo image. |
 | `EMAIL_LOGO_WIDTH` | `150` | The width of the logo in pixels. |
 | `EMAIL_LOGO_HEIGHT` | `auto` | The height of the logo in pixels. |
@@ -49,21 +45,25 @@ You can control the visibility and destination of links in the footer.
 
 ## Themes
 
-Two themes are defined in `config/mail.php` by default:
-
-### Light Theme (`light`)
-- **Background**: Light gray (`#f0f4f8`)
-- **Content**: White (`#ffffff`)
-- **Footer**: Dark gray (`#263238`)
-- **Links**: Cyan (`#0891b2`)
-- **Logo**: Defaults to `/emails/amazee-logo-light.svg`
+One theme is currently defined in `config/mail.php`:
 
 ### Dark Theme (`dark`)
 - **Background**: Light gray (`#e5e7eb`)
 - **Content**: White (`#ffffff`)
-- **Header**: Dark gray (`#1f2937`)
-- **Footer**: Very dark gray (`#111827`)
+- **Header**: Light gray (`#f4f4f4`)
+- **Footer**: Light gray (`#f4f4f4`)
+- **Text**: Dark gray (`#333`)
 - **Links**: Blue (`#2563eb`)
-- **Logo**: Defaults to `/emails/amazee-logo-dark.svg`
+- **Primary Button Background**: Black (`#000000`)
+- **Primary Button Text**: White (`#ffffff`)
+- **Logo**: `/emails/amazee-io-Logo-Black-White-IO.png`
 
-The theme controls the color palette for the email body, header, footer, text, and buttons. You can select the active theme using `EMAIL_DEFAULT_THEME`.
+### Typography Settings
+
+The dark theme includes typography configuration:
+- **Font Family**: `sans-serif`
+- **Heading Color**: `#333`
+- **Body Font Size**: `16px`
+- **Heading Font Size**: `24px`
+
+
