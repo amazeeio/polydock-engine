@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Str;
 
-return [
+$config =  [
 
     /*
     |--------------------------------------------------------------------------
@@ -182,16 +182,61 @@ return [
     'defaults' => [
         'supervisor-1' => [
             'connection' => 'redis',
-            'queue' => ['default'],
+            'queue' => [
+                'default',
+                'unallocated-instance-creation',
+                'polydock-app-instance-processing-new',
+                'polydock-app-instance-processing-create',
+                'polydock-app-instance-processing-deploy',
+                'polydock-app-instance-processing-remove',
+                'polydock-app-instance-processing-health',  
+                'polydock-app-instance-processing-upgrade',
+                'polydock-app-instance-processing-claim',
+                'polydock-app-instance-processing-progress-to-next-stage'
+            ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
-            'memory' => 128,
+            'memory' => 256,
             'tries' => 1,
-            'timeout' => 60,
+            'timeout' => 180,
             'nice' => 0,
+        ],
+        'supervisor-2' => [
+            'connection' => 'redis',
+            'queue' => ['webhooks'],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 256,
+            'tries' => 1,
+            'timeout' => 180,
+            'nice' => 0,
+        ],
+        'supervisor-3' => [
+            'connection' => 'redis',
+            'queue' => [
+                'polydock-app-instance-processing-new',
+                'polydock-app-instance-processing-create',
+                'polydock-app-instance-processing-deploy',
+                'polydock-app-instance-processing-remove',
+                'polydock-app-instance-processing-health',  
+                'polydock-app-instance-processing-upgrade',
+                'polydock-app-instance-processing-claim',
+                'polydock-app-instance-processing-progress-to-next-stage'
+            ],
+            'balance' => 'auto',
+            'autoScalingStrategy' => 'time',
+            'maxProcesses' => 1,
+            'maxTime' => 0,
+            'maxJobs' => 0,
+            'memory' => 256,
+            'tries' => 1,
+            'timeout' => 180,
         ],
     ],
 
@@ -204,6 +249,47 @@ return [
             ],
         ],
 
+        'main' => [
+            'supervisor-1' => [
+                'maxProcesses' => 10,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-2' => [
+                'maxProcesses' => 10,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-3' => [
+                'maxProcesses' => 1,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+        ],
+        'edition-atlanta' => [
+            'supervisor-1' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-2' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-3' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+        ],
+
         'local' => [
             'supervisor-1' => [
                 'maxProcesses' => 3,
@@ -211,3 +297,10 @@ return [
         ],
     ],
 ];
+
+//$envKeys = array_keys($config['environments']);
+if(!key_exists(env('APP_ENV', 'local'), $config['environments'])) {
+    $config['environments'][env('APP_ENV')] = $config['environments']['local'];
+}
+
+return $config;

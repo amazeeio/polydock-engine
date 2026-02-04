@@ -5,7 +5,10 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/ftlagoon
+/storage/amazee-ai-backend
 /vendor
+/tests/fixtures/lagoon*key*
 .env
 .env.backup
 .env.production
@@ -21,3 +24,4 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+amazeeai-trial.pass
