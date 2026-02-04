@@ -17,7 +17,7 @@ class PolydockStoreFactory extends Factory
             'status' => fake()->randomElement(PolydockStoreStatusEnum::cases()),
             'listed_in_marketplace' => fake()->boolean(),
             'lagoon_deploy_region_id_ext' => (string) fake()->numberBetween(1, 5),
-            'lagoon_deploy_project_prefix' => fake()->randomLetter() . fake()->randomLetter(),
+            'lagoon_deploy_project_prefix' => fake()->randomLetter().fake()->randomLetter(),
             'lagoon_deploy_organization_id_ext' => (string) fake()->numberBetween(1, 10),
         ];
     }
@@ -35,4 +35,4 @@ class PolydockStoreFactory extends Factory
             'status' => PolydockStoreStatusEnum::PRIVATE,
         ]);
     }
-} 
+}

@@ -2,18 +2,19 @@
 
 namespace App\Models;
 
+use App\Enums\PolydockStoreAppStatusEnum;
+use App\Traits\HasPolydockVariables;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use App\Enums\PolydockStoreAppStatusEnum;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Traits\HasPolydockVariables;
+use Illuminate\Support\Str;
 
 class PolydockStoreApp extends Model
 {
-    use HasFactory, HasPolydockVariables;
+    use HasFactory;
+    use HasPolydockVariables;
 
     protected $fillable = [
         'polydock_store_id',
@@ -118,8 +119,6 @@ class PolydockStoreApp extends Model
 
     /**
      * Get all instances of this store app
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function instances(): HasMany
     {
@@ -215,4 +214,4 @@ class PolydockStoreApp extends Model
     {
         return $this->store->lagoon_deploy_group_name;
     }
-} 
+}

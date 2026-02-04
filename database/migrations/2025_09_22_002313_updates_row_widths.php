@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('polydock_app_instances', function(Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table) {
             $table->string('name', 1024)->nullable()->change();
             $table->string('app_one_time_login_url', 1024)->nullable()->change();
             $table->string('app_url', 1024)->nullable()->change();

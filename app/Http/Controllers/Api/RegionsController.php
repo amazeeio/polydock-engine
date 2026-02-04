@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PolydockStoreAppStatusEnum;
+use App\Enums\PolydockStoreStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\PolydockStore;
-use App\Enums\PolydockStoreStatusEnum;
-use App\Enums\PolydockStoreAppStatusEnum;
 use Illuminate\Http\JsonResponse;
 
 class RegionsController extends Controller
 {
     /**
      * Get all public regions with their available apps
-     *
-     * @return JsonResponse
      */
     public function index(): JsonResponse
     {
@@ -25,19 +23,15 @@ class RegionsController extends Controller
                     $query->where('status', PolydockStoreAppStatusEnum::AVAILABLE);
                 }])
                 ->get()
-                ->map(function ($store) {
-                    return [
-                        'uuid' => null, // Stores don't have UUIDs, using ID as identifier
-                        'id' => $store->id,
-                        'label' => $store->name,
-                        'apps' => $store->apps->map(function ($app) {
-                            return [
-                                'uuid' => $app->uuid,
-                                'label' => $app->name,
-                            ];
-                        }),
-                    ];
-                });
+                ->map(fn ($store) => [
+                    'uuid' => null, // Stores don't have UUIDs, using ID as identifier
+                    'id' => $store->id,
+                    'label' => $store->name,
+                    'apps' => $store->apps->map(fn ($app) => [
+                        'uuid' => $app->uuid,
+                        'label' => $app->name,
+                    ]),
+                ]);
 
             return response()->json([
                 'status' => 'success',
@@ -47,8 +41,7 @@ class RegionsController extends Controller
                 ],
                 'status_code' => 200,
             ], 200);
-
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to retrieve regions and apps',

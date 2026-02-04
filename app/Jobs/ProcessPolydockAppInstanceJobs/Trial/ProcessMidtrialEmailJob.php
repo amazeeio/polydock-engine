@@ -14,24 +14,29 @@ use Illuminate\Support\Facades\Mail;
 
 class ProcessMidtrialEmailJob extends BaseJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public function handle()
     {
         $this->polydockJobStart();
 
-        if (!$this->appInstance->is_trial || 
-            !$this->appInstance->storeApp->send_midtrial_email ||
-            !$this->appInstance->send_midtrial_email_at ||
-            !$this->appInstance->send_midtrial_email_at->isPast() ||
-            $this->appInstance->midtrial_email_sent) {
-                $this->appInstance->info('Midtrial email not sent', [
-                    'app_instance_id' => $this->appInstance->id,
-                    'is_trial' => $this->appInstance->is_trial,
-                    'send_midtrial_email' => $this->appInstance->storeApp->send_midtrial_email,
-                    'send_midtrial_email_at' => $this->appInstance->send_midtrial_email_at,
-                    'midtrial_email_sent' => $this->appInstance->midtrial_email_sent,
-                ]);
+        if (
+            ! $this->appInstance->is_trial ||
+            ! $this->appInstance->storeApp->send_midtrial_email ||
+            ! $this->appInstance->send_midtrial_email_at ||
+            ! $this->appInstance->send_midtrial_email_at->isPast() ||
+            $this->appInstance->midtrial_email_sent
+        ) {
+            $this->appInstance->info('Midtrial email not sent', [
+                'app_instance_id' => $this->appInstance->id,
+                'is_trial' => $this->appInstance->is_trial,
+                'send_midtrial_email' => $this->appInstance->storeApp->send_midtrial_email,
+                'send_midtrial_email_at' => $this->appInstance->send_midtrial_email_at,
+                'midtrial_email_sent' => $this->appInstance->midtrial_email_sent,
+            ]);
 
             Log::info('Midtrial email not sent', [
                 'app_instance_id' => $this->appInstance->id,
@@ -44,8 +49,8 @@ class ProcessMidtrialEmailJob extends BaseJob implements ShouldQueue
             return;
         }
 
-        if(! $this->appInstance->isTrialExpired()) {
-            // Send email to owners      
+        if (! $this->appInstance->isTrialExpired()) {
+            // Send email to owners
             $this->appInstance->info('Sending midtrial email to owners', [
                 'app_instance_id' => $this->appInstance->id,
             ]);
@@ -54,10 +59,10 @@ class ProcessMidtrialEmailJob extends BaseJob implements ShouldQueue
                 'app_instance_id' => $this->appInstance->id,
             ]);
 
-            foreach($this->appInstance->userGroup->owners as $owner) {
+            foreach ($this->appInstance->userGroup->owners as $owner) {
                 $mail = Mail::to($owner->email);
-                    
-                if(env('MAIL_CC_ALL', false)) {
+
+                if (env('MAIL_CC_ALL', false)) {
                     $mail->cc(env('MAIL_CC_ALL'));
                 }
 
@@ -93,4 +98,4 @@ class ProcessMidtrialEmailJob extends BaseJob implements ShouldQueue
 
         $this->polydockJobDone();
     }
-} 
+}

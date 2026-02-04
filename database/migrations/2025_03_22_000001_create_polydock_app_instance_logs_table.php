@@ -30,4 +30,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('polydock_app_instance_logs');
     }
-}; 
+};

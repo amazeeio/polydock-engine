@@ -2,14 +2,15 @@
 
 namespace App\Events;
 
-use App\Models\UserRemoteRegistration;
 use App\Enums\UserRemoteRegistrationStatusEnum;
+use App\Models\UserRemoteRegistration;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 class UserRemoteRegistrationStatusChanged
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
@@ -18,4 +19,4 @@ class UserRemoteRegistrationStatusChanged
         public UserRemoteRegistration $registration,
         public UserRemoteRegistrationStatusEnum $previousStatus
     ) {}
-} 
+}

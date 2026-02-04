@@ -8,7 +8,8 @@ use Illuminate\Queue\SerializesModels;
 
 class PolydockAppInstanceCreatedWithNewStatus
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
@@ -16,4 +17,4 @@ class PolydockAppInstanceCreatedWithNewStatus
     public function __construct(
         public PolydockAppInstance $appInstance
     ) {}
-} 
+}

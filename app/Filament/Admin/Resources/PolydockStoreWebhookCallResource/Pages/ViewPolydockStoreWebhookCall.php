@@ -8,4 +8,4 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewPolydockStoreWebhookCall extends ViewRecord
 {
     protected static string $resource = PolydockStoreWebhookCallResource::class;
-} 
+}
