@@ -6,7 +6,7 @@
     "keywords": ["laravel", "framework"],
     "license": "MIT",
     "require": {
-        "php": "^8.2",
+        "php": "^8.3",
         "amazeeio/polydock-app-amazeeio-privategpt": "v0.0.4",
         "evanschleret/lara-mjml": "^0.3.0",
         "filament/filament": "^3.2",

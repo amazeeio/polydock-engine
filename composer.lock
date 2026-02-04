@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "280b1c90434cf4c300f73e982bba2672",
+    "content-hash": "b1ccaec07db21e5fe894bb4394229cb4",
     "packages": [
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
@@ -11212,7 +11212,7 @@
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
-        "php": "^8.2"
+        "php": "^8.3"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
