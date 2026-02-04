@@ -11,7 +11,6 @@ class UserRemoteRegistrationExporter extends Exporter
 {
     protected static ?string $model = PolydockAppInstance::class;
 
-
     /**
      * Disable queueing for this exporter so exports run synchronously.
      */
@@ -22,10 +21,11 @@ class UserRemoteRegistrationExporter extends Exporter
 
     public static function getValueFromData($data, $key)
     {
-        if (!empty($data[$key])) {
+        if (! empty($data[$key])) {
             return $data[$key];
         }
-        return "";
+
+        return '';
     }
 
     public static function getColumns(): array
@@ -36,25 +36,15 @@ class UserRemoteRegistrationExporter extends Exporter
             ExportColumn::make('storeApp.name')
                 ->label('Store App Name'),
             ExportColumn::make('status')
-                ->state(function (PolydockAppInstance $record) {
-                    return $record->getStatus()->toString();
-                })->label("Registration Status"),
+                ->state(fn (PolydockAppInstance $record) => $record->getStatus()->toString())->label('Registration Status'),
             ExportColumn::make('email')
-                ->state(function (PolydockAppInstance $record) {
-                    return UserRemoteRegistrationExporter::getValueFromData($record->data, 'user-email');
-                })->label('Email Address'),
+                ->state(fn (PolydockAppInstance $record) => UserRemoteRegistrationExporter::getValueFromData($record->data, 'user-email'))->label('Email Address'),
             ExportColumn::make('first-name')
-                ->state(function (PolydockAppInstance $record) {
-                    return UserRemoteRegistrationExporter::getValueFromData($record->data, 'user-first-name');
-                })->label('First Name'),
+                ->state(fn (PolydockAppInstance $record) => UserRemoteRegistrationExporter::getValueFromData($record->data, 'user-first-name'))->label('First Name'),
             ExportColumn::make('last-name')
-                ->state(function (PolydockAppInstance $record) {
-                    return UserRemoteRegistrationExporter::getValueFromData($record->data, 'user-last-name');
-                })->label('Last Name'),
+                ->state(fn (PolydockAppInstance $record) => UserRemoteRegistrationExporter::getValueFromData($record->data, 'user-last-name'))->label('Last Name'),
             ExportColumn::make('company-name')
-                ->state(function (PolydockAppInstance $record) {
-                    return UserRemoteRegistrationExporter::getValueFromData($record->data, 'company-name');
-                })->label('Company name'),
+                ->state(fn (PolydockAppInstance $record) => UserRemoteRegistrationExporter::getValueFromData($record->data, 'company-name'))->label('Company name'),
             ExportColumn::make('created_at'),
             ExportColumn::make('updated_at'),
         ];
@@ -62,10 +52,10 @@ class UserRemoteRegistrationExporter extends Exporter
 
     public static function getCompletedNotificationBody(Export $export): string
     {
-        $body = 'Your user remote registration export has completed and ' . number_format($export->successful_rows) . ' ' . str('row')->plural($export->successful_rows) . ' exported.';
+        $body = 'Your user remote registration export has completed and '.number_format($export->successful_rows).' '.str('row')->plural($export->successful_rows).' exported.';
 
         if ($failedRowsCount = $export->getFailedRowsCount()) {
-            $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to export.';
+            $body .= ' '.number_format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to export.';
         }
 
         return $body;

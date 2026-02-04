@@ -14,7 +14,7 @@ enum UserRemoteRegistrationType: string implements HasColor, HasIcon, HasLabel
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::TEST_FAIL => 'Test Fail',
             self::REQUEST_TRIAL => 'Request Trial',
             self::REQUEST_TRIAL_UNLISTED_REGION => 'Request Trial (Unlisted Region)',
@@ -23,7 +23,7 @@ enum UserRemoteRegistrationType: string implements HasColor, HasIcon, HasLabel
 
     public function getColor(): string|array|null
     {
-        return match($this) {
+        return match ($this) {
             self::TEST_FAIL => 'danger',
             self::REQUEST_TRIAL => 'success',
             self::REQUEST_TRIAL_UNLISTED_REGION => 'warning',
@@ -32,7 +32,7 @@ enum UserRemoteRegistrationType: string implements HasColor, HasIcon, HasLabel
 
     public function getIcon(): ?string
     {
-        return match($this) {
+        return match ($this) {
             self::TEST_FAIL => 'heroicon-o-x-circle',
             self::REQUEST_TRIAL => 'heroicon-o-beaker',
             self::REQUEST_TRIAL_UNLISTED_REGION => 'heroicon-o-globe-alt',
@@ -43,4 +43,4 @@ enum UserRemoteRegistrationType: string implements HasColor, HasIcon, HasLabel
     {
         return array_column(self::cases(), 'value');
     }
-} 
+}

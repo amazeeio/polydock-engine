@@ -4,11 +4,11 @@ namespace App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages;
 
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource;
 use App\Models\UserRemoteRegistration;
-use Filament\Resources\Pages\ViewRecord;
-use Filament\Infolists\Infolist;
+use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Pages\ViewRecord;
 
 class ViewUserRemoteRegistration extends ViewRecord
 {
@@ -27,12 +27,12 @@ class ViewUserRemoteRegistration extends ViewRecord
                 Section::make('Registration Details')
                     ->schema([
                         Grid::make(3)
-                        ->schema([
-                            TextEntry::make('user.name')
-                                ->label('Full Name'),
-                            TextEntry::make('userGroup.name')
-                                ->label('Group'),
-                        ]),
+                            ->schema([
+                                TextEntry::make('user.name')
+                                    ->label('Full Name'),
+                                TextEntry::make('userGroup.name')
+                                    ->label('Group'),
+                            ]),
                         Grid::make(3)
                             ->schema([
                                 TextEntry::make('status')
@@ -52,7 +52,7 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     ->label('Requested')
                                     ->dateTime(),
                             ]),
-                       
+
                     ]),
 
                 Section::make('App Details')
@@ -65,64 +65,63 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     ->label('App'),
                                 TextEntry::make('appInstance.name')
                                     ->label('Instance')
-                                    ->url(fn ($record) 
-                                        => route('filament.admin.resources.polydock-app-instances.view', 
-                                            ['record' => $record->appInstance])),
+                                    ->url(fn ($record) => route(
+                                        'filament.admin.resources.polydock-app-instances.view',
+                                        ['record' => $record->appInstance]
+                                    )),
                             ]),
                     ]),
 
                 Section::make('Request Data')
-                    ->schema(function ($record) {
-                        return self::getRenderedSafeRequestDataForRecord($record);
-                    })
+                    ->schema(fn ($record) => self::getRenderedSafeRequestDataForRecord($record))
                     ->collapsible(),
-                
+
                 Section::make('Result Data')
-                    ->schema(function ($record) {
-                        return self::getRenderedSafeResultDataForRecord($record);
-                    })
+                    ->schema(fn ($record) => self::getRenderedSafeResultDataForRecord($record))
                     ->collapsible(),
             ]);
     }
 
-    public static function getRenderedSafeRequestDataForRecord(UserRemoteRegistration $record) : array
+    public static function getRenderedSafeRequestDataForRecord(UserRemoteRegistration $record): array
     {
         $fullSafeData = $record->request_data ?? [];
+
         return self::getRenderedSafeDataForRecord($record, $fullSafeData);
     }
 
-    public static function getRenderedSafeResultDataForRecord(UserRemoteRegistration $record) : array
+    public static function getRenderedSafeResultDataForRecord(UserRemoteRegistration $record): array
     {
         $fullSafeData = $record->result_data ?? [];
+
         return self::getRenderedSafeDataForRecord($record, $fullSafeData);
     }
 
-    public static function getRenderedSafeDataForRecord(UserRemoteRegistration $record, $safeData) : array
+    public static function getRenderedSafeDataForRecord(UserRemoteRegistration $record, $safeData): array
     {
         $sensitiveKeys = $record->getSensitiveDataKeys();
 
         $renderedArray = [];
         foreach ($safeData as $key => $value) {
-
-            if($record->shouldFilterKey($key, $sensitiveKeys)) {
+            if ($record->shouldFilterKey($key, $sensitiveKeys)) {
                 $value = 'REDACTED';
             }
 
-            $renderKey = "request_data_" . $key;
+            $renderKey = 'request_data_'.$key;
             $renderedItem = \Filament\Infolists\Components\TextEntry::make($renderKey)
-            ->label($key)
-            ->markdown()
-            ->columnSpanFull()
-            ->bulleted();
+                ->label($key)
+                ->markdown()
+                ->columnSpanFull()
+                ->bulleted();
 
-            if(is_array($value)) {
+            if (is_array($value)) {
                 $renderedItem->state($value);
             } else {
                 $renderedItem->state([$value]);
             }
 
-            $renderedArray[] = $renderedItem;   
+            $renderedArray[] = $renderedItem;
         }
+
         return $renderedArray;
     }
-} 
+}

@@ -4,21 +4,16 @@ namespace App\Filament\Admin\Resources;
 
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
-use App\Filament\Admin\Resources\PolydockStoreAppResource\RelationManagers;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Section;
+use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Infolists\Infolist;
-use Filament\Infolists\Components\Section as InfolistSection;
-use Filament\Infolists\Components\Grid as InfolistGrid;
 
 class PolydockStoreAppResource extends Resource
 {
@@ -40,12 +35,8 @@ class PolydockStoreAppResource extends Resource
                     ->label('Store')
                     ->options(PolydockStore::all()->pluck('name', 'id'))
                     ->required()
-                    ->disabled(fn (?PolydockStoreApp $record) => 
-                        $record && $record->instances()->exists()
-                    )
-                    ->dehydrated(fn (?PolydockStoreApp $record) => 
-                        !$record || !$record->instances()->exists()
-                    ),
+                    ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
+                    ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
                 Forms\Components\TextInput::make('polydock_app_class')
                     ->required()
                     ->maxLength(255),
@@ -88,7 +79,7 @@ class PolydockStoreAppResource extends Resource
                             ->placeholder('Your {app name} Instance is Ready')
                             ->helperText('Leave blank to use default subject')
                             ->columnSpanFull(),
-                            
+
                         Forms\Components\MarkdownEditor::make('email_body_markdown')
                             ->label('Email Body Content')
                             ->placeholder('Enter custom content for the "What to Know About Your App" section')
@@ -184,9 +175,7 @@ class PolydockStoreAppResource extends Resource
                     ->label('Unallocated')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('allocatedInstances')
-                    ->state(function($record) {
-                        return $record->allocatedInstances()->count(); 
-                    })
+                    ->state(fn ($record) => $record->allocatedInstances()->count())
                     ->label('Allocated')
                     ->numeric()
                     ->sortable(),
@@ -198,9 +187,7 @@ class PolydockStoreAppResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make()
-                    ->hidden(fn (PolydockStoreApp $record): bool => 
-                        $record->instances()->exists()
-                    ),
+                    ->hidden(fn (PolydockStoreApp $record): bool => $record->instances()->exists()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -247,7 +234,7 @@ class PolydockStoreAppResource extends Resource
                         \Filament\Infolists\Components\TextEntry::make('description')
                             ->markdown()
                             ->columnSpanFull(),
-                        
+
                         \Filament\Infolists\Components\Grid::make(3)
                             ->schema([
                                 \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_git')
@@ -260,7 +247,7 @@ class PolydockStoreAppResource extends Resource
                                     ->label('Deploy Branch')
                                     ->icon('heroicon-m-code-bracket-square')
                                     ->iconColor('warning'),
-                            ])
+                            ]),
                     ])
                     ->columnSpan(2),
 
@@ -284,7 +271,7 @@ class PolydockStoreAppResource extends Resource
                             ]),
                     ])
                     ->columnSpan(1),
-                
+
                 \Filament\Infolists\Components\Section::make('Support Information')
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(2)

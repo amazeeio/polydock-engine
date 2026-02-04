@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\PolydockAppInstance;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class RemoveAppInstancesByEmail extends Command
 {
@@ -35,8 +34,9 @@ class RemoveAppInstancesByEmail extends Command
         $isDryRun = $this->option('dry-run');
         $force = $this->option('force');
 
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->error('Invalid email address provided.');
+
             return 1;
         }
 
@@ -45,25 +45,24 @@ class RemoveAppInstancesByEmail extends Command
         // Find all app instances with the given email in their data
         $instances = PolydockAppInstance::whereJsonContains('data->user-email', $email)->get();
 
-        
         if ($instances->isEmpty()) {
-            $this->info('No app instances found with the email address: ' . $email);
+            $this->info('No app instances found with the email address: '.$email);
+
             return 0;
         }
 
         // Filter out instances already in removal states
-        $removableInstances = $instances->filter(function ($instance) {
-            return !in_array($instance->status, PolydockAppInstance::$stageRemoveStatuses);
-        });
+        $removableInstances = $instances->filter(fn ($instance) => ! in_array($instance->status, PolydockAppInstance::$stageRemoveStatuses));
 
         $alreadyRemovingCount = $instances->count() - $removableInstances->count();
-        
+
         if ($alreadyRemovingCount > 0) {
             $this->warn("Found {$alreadyRemovingCount} instance(s) already in removal state - skipping these.");
         }
 
         if ($removableInstances->isEmpty()) {
             $this->info('All found instances are already in removal state. Nothing to do.');
+
             return 0;
         }
 
@@ -81,7 +80,7 @@ class RemoveAppInstancesByEmail extends Command
                 $instance->name ?: 'N/A',
                 $instance->status->getLabel(),
                 $instance->storeApp->name ?? 'N/A',
-                $instance->created_at->format('Y-m-d H:i:s')
+                $instance->created_at->format('Y-m-d H:i:s'),
             ];
         }
 
@@ -90,18 +89,20 @@ class RemoveAppInstancesByEmail extends Command
 
         if ($isDryRun) {
             $this->info('DRY RUN: These instances would be set to PENDING_PRE_REMOVE status.');
+
             return 0;
         }
 
         // Confirm removal unless force flag is used
-        if (!$force) {
+        if (! $force) {
             $confirmed = $this->confirm(
                 "Are you sure you want to set these {$removableInstances->count()} app instance(s) to PENDING_PRE_REMOVE status?",
                 false
             );
 
-            if (!$confirmed) {
+            if (! $confirmed) {
                 $this->info('Operation cancelled.');
+
                 return 0;
             }
         }
@@ -113,7 +114,7 @@ class RemoveAppInstancesByEmail extends Command
         foreach ($removableInstances as $instance) {
             try {
                 $previousStatus = $instance->status;
-                
+
                 $instance->setStatus(
                     PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
                     "Marked for removal by email: {$email}"
@@ -129,7 +130,7 @@ class RemoveAppInstancesByEmail extends Command
         }
 
         $this->newLine();
-        $this->info("Operation completed:");
+        $this->info('Operation completed:');
         $this->info("- Successfully updated: {$successCount}");
         if ($errorCount > 0) {
             $this->warn("- Failed to update: {$errorCount}");

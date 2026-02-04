@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('polydock_app_instances', function (Blueprint $table) {
-            $table->string('name')->nullable(); 
+            $table->string('name')->nullable();
         });
     }
 
@@ -19,4 +19,4 @@ return new class extends Migration
             $table->dropColumn('name');
         });
     }
-}; 
+};

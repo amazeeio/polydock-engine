@@ -6,23 +6,17 @@ use App\Models\PolydockAppInstance;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Support\Facades\Config;
 use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Config;
 
 class AppInstanceTrialCompleteMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
-    public PolydockAppInstance $appInstance;
-    public User $toUser;
-
-    public function __construct(PolydockAppInstance $appInstance, User $toUser)
-    {
-        $this->appInstance = $appInstance;
-        $this->toUser = $toUser;
-    }
+    public function __construct(public PolydockAppInstance $appInstance, public User $toUser) {}
 
     /**
      * Get the message envelope.
@@ -30,7 +24,7 @@ class AppInstanceTrialCompleteMail extends Mailable
     public function envelope(): Envelope
     {
         $subject = $this->appInstance->storeApp->trial_complete_email_subject ?? 'Your Trial Has Ended';
-        $subject .= " [" . $this->appInstance->name . "]";
+        $subject .= ' ['.$this->appInstance->name.']';
 
         return new Envelope(
             subject: $subject,
@@ -45,10 +39,10 @@ class AppInstanceTrialCompleteMail extends Mailable
         $mjmlConfig = Config::get('mail.mjml-config');
         // $mjmlConfig['theme'] = $mjmlConfig['themes']['dark'];
         $mjmlConfig['appInstance'] = $this->appInstance;
-        
+
         return new Content(
             view: 'emails.app-instance.trial-complete',
-            with: ['config'=>$mjmlConfig],
+            with: ['config' => $mjmlConfig],
         );
     }
-} 
+}

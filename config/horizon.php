@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Str;
 
-$config =  [
+$config = [
 
     /*
     |--------------------------------------------------------------------------
@@ -189,10 +189,10 @@ $config =  [
                 'polydock-app-instance-processing-create',
                 'polydock-app-instance-processing-deploy',
                 'polydock-app-instance-processing-remove',
-                'polydock-app-instance-processing-health',  
+                'polydock-app-instance-processing-health',
                 'polydock-app-instance-processing-upgrade',
                 'polydock-app-instance-processing-claim',
-                'polydock-app-instance-processing-progress-to-next-stage'
+                'polydock-app-instance-processing-progress-to-next-stage',
             ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
@@ -224,10 +224,10 @@ $config =  [
                 'polydock-app-instance-processing-create',
                 'polydock-app-instance-processing-deploy',
                 'polydock-app-instance-processing-remove',
-                'polydock-app-instance-processing-health',  
+                'polydock-app-instance-processing-health',
                 'polydock-app-instance-processing-upgrade',
                 'polydock-app-instance-processing-claim',
-                'polydock-app-instance-processing-progress-to-next-stage'
+                'polydock-app-instance-processing-progress-to-next-stage',
             ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
@@ -298,8 +298,8 @@ $config =  [
     ],
 ];
 
-//$envKeys = array_keys($config['environments']);
-if(!key_exists(env('APP_ENV', 'local'), $config['environments'])) {
+// $envKeys = array_keys($config['environments']);
+if (! array_key_exists(env('APP_ENV', 'local'), $config['environments'])) {
     $config['environments'][env('APP_ENV')] = $config['environments']['local'];
 }
 

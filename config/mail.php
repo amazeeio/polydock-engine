@@ -46,7 +46,7 @@ return [
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
         'ses' => [
@@ -157,7 +157,7 @@ return [
                     'heading_font_size' => '24px',
                 ],
                 'logo' => [
-                    'url' => rtrim(env('APP_URL', ''), '/') . '/' . ltrim('/emails/amazee-io-Logo-Black-White-IO.png', '/'),
+                    'url' => rtrim((string) env('APP_URL', ''), '/').'/'.ltrim('/emails/amazee-io-Logo-Black-White-IO.png', '/'),
                     'alt' => 'Amazee Logo',
                     'width' => '150',
                 ],
@@ -175,7 +175,7 @@ return [
     */
 
         'logo' => [
-            'url' => (parse_url(env('EMAIL_LOGO_URL', '/emails/logo.svg'), PHP_URL_SCHEME) ? env('EMAIL_LOGO_URL', '/emails/logo.svg') : rtrim(env('APP_URL', ''), '/') . '/' . ltrim(env('EMAIL_LOGO_URL', '/emails/logo.svg'), '/')),
+            'url' => (parse_url((string) env('EMAIL_LOGO_URL', '/emails/logo.svg'), PHP_URL_SCHEME) ? env('EMAIL_LOGO_URL', '/emails/logo.svg') : rtrim((string) env('APP_URL', ''), '/').'/'.ltrim((string) env('EMAIL_LOGO_URL', '/emails/logo.svg'), '/')),
             'alt' => env('EMAIL_LOGO_ALT', 'Company Logo'),
             'width' => env('EMAIL_LOGO_WIDTH', '150'),
             'height' => env('EMAIL_LOGO_HEIGHT', 'auto'),
@@ -194,7 +194,7 @@ return [
         'footer' => [
             'company_name' => env('EMAIL_FOOTER_COMPANY_NAME', 'amazee.io'),
 
-            'company_url' => env('EMAIL_FOOTER_COMPANY_URL', "https://amazee.io"),
+            'company_url' => env('EMAIL_FOOTER_COMPANY_URL', 'https://amazee.io'),
 
             'address' => env('EMAIL_FOOTER_ADDRESS', 'amazee.io, Hardturmstrasse 161, 8005 Zurich, Switzerland.'),
 

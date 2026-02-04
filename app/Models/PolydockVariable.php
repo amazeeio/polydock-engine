@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\PolydockVariableScopeEnum;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use App\Enums\PolydockVariableScopeEnum;
 use Illuminate\Support\Facades\Crypt;
 
 class PolydockVariable extends Model
@@ -25,7 +25,7 @@ class PolydockVariable extends Model
      */
     public function getDecryptedValue(): ?string
     {
-        if (!$this->value) {
+        if (! $this->value) {
             return null;
         }
 
@@ -39,6 +39,7 @@ class PolydockVariable extends Model
     {
         $this->value = $value ? ($encrypt ? Crypt::encryptString($value) : $value) : null;
         $this->is_encrypted = $encrypt;
+
         return $this;
     }
 
@@ -49,4 +50,4 @@ class PolydockVariable extends Model
     {
         return $this->morphTo();
     }
-} 
+}

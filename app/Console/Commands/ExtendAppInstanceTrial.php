@@ -3,9 +3,10 @@
 namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
-use Illuminate\Console\Command;
 use Carbon\Carbon;
+use Illuminate\Console\Command;
 use Illuminate\Support\Str;
+
 use function Laravel\Prompts\multiselect;
 
 class ExtendAppInstanceTrial extends Command
@@ -40,6 +41,7 @@ class ExtendAppInstanceTrial extends Command
             $newEndDate = Carbon::parse($date);
         } catch (\Exception $e) {
             $this->error("Invalid date format: {$date}");
+
             return 1;
         }
 
@@ -65,14 +67,15 @@ class ExtendAppInstanceTrial extends Command
 
         if ($count === 0) {
             $this->error("No app instances found for identifier: {$identifier}");
+
             return 1;
         }
 
         $this->info("Found {$count} instance(s).");
 
-        if (!$force) {
-             // Pre-calculate column widths
-             $maxWidths = [
+        if (! $force) {
+            // Pre-calculate column widths
+            $maxWidths = [
                 'id' => strlen('ID'),
                 'name' => strlen('Name'),
                 'email' => strlen('Email'),
@@ -95,7 +98,7 @@ class ExtendAppInstanceTrial extends Command
                 $instanceData[$instance->id] = $data;
 
                 foreach ($maxWidths as $key => $width) {
-                    $maxWidths[$key] = max($width, strlen($data[$key]));
+                    $maxWidths[$key] = max($width, strlen((string) $data[$key]));
                 }
             }
 
@@ -103,18 +106,18 @@ class ExtendAppInstanceTrial extends Command
             $options = [];
             foreach ($instanceData as $id => $data) {
                 $label = sprintf(
-                    "%s  %s  %s  %s",
+                    '%s  %s  %s  %s',
                     str_pad($data['id'], $maxWidths['id']),
-                    str_pad($data['name'], $maxWidths['name']),
-                    str_pad($data['email'], $maxWidths['email']),
-                    str_pad($data['end'], $maxWidths['end'])
+                    str_pad((string) $data['name'], $maxWidths['name']),
+                    str_pad((string) $data['email'], $maxWidths['email']),
+                    str_pad((string) $data['end'], $maxWidths['end'])
                 );
                 $options[$id] = $label;
             }
 
             // Create a header for the prompt label
             $header = sprintf(
-                "%s  %s  %s  %s",
+                '%s  %s  %s  %s',
                 str_pad('ID', $maxWidths['id']),
                 str_pad('Name', $maxWidths['name']),
                 str_pad('Email', $maxWidths['email']),
@@ -130,19 +133,21 @@ class ExtendAppInstanceTrial extends Command
             );
 
             if (empty($selectedIds)) {
-                $this->info("No instances selected.");
+                $this->info('No instances selected.');
+
                 return 0;
             }
 
             // Filter instances
             $instances = $instances->whereIn('id', $selectedIds);
 
-            if (!$this->confirm("Are you sure you want to update the trial date to {$newEndDate->toDateTimeString()} for " . $instances->count() . " instances?")) {
+            if (! $this->confirm("Are you sure you want to update the trial date to {$newEndDate->toDateTimeString()} for ".$instances->count().' instances?')) {
                 $this->info('Operation cancelled.');
+
                 return 0;
             }
         } else {
-             $this->info("Force mode enabled. Updating all found instances.");
+            $this->info('Force mode enabled. Updating all found instances.');
         }
 
         foreach ($instances as $instance) {
@@ -150,7 +155,7 @@ class ExtendAppInstanceTrial extends Command
                 $this->info("Updating instance {$instance->name} (ID: {$instance->id})...");
                 $instance->calculateAndSetTrialDatesFromEndDate($newEndDate, true);
                 $instance->refresh();
-                $this->info("  -> New Trial Ends At: " . $instance->trial_ends_at->toDateTimeString());
+                $this->info('  -> New Trial Ends At: '.$instance->trial_ends_at->toDateTimeString());
             } catch (\Exception $e) {
                 $this->error("  -> Failed to update: {$e->getMessage()}");
             }

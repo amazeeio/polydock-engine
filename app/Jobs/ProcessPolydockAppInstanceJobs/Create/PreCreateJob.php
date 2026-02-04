@@ -11,7 +11,6 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 
 class PreCreateJob extends BaseJob implements ShouldQueue
 {
-
     /**
      * Execute the job.
      */
@@ -20,8 +19,8 @@ class PreCreateJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
 
         $appInstance = $this->appInstance;
-        if(!$appInstance) {
-            throw new \Exception('Failed to process PolydockAppInstance in ' . class_basename(self::class) . ' - not found');
+        if (! $appInstance) {
+            throw new \Exception('Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found');
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_PRE_CREATE) {
@@ -30,7 +29,7 @@ class PreCreateJob extends BaseJob implements ShouldQueue
             );
         }
 
-        $polydockEngine = new Engine(new PolydockLogger());
+        $polydockEngine = new Engine(new PolydockLogger);
         $polydockEngine->processPolydockAppInstance($appInstance);
 
         $this->polydockJobDone();

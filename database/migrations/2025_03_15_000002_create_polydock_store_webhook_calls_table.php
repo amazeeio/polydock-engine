@@ -1,9 +1,9 @@
 <?php
 
+use App\Enums\PolydockStoreWebhookCallStatusEnum;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Enums\PolydockStoreWebhookCallStatusEnum;
 
 return new class extends Migration
 {
@@ -24,10 +24,10 @@ return new class extends Migration
             $table->timestamps();
 
             // Indexes for faster lookups
-            $table->index('event', "polydock_store_webhook_event_idx");
-            $table->index('status', "polydock_store_webhook_status_idx");
-            $table->index('processed_at', "polydock_store_webhook_processed_at_idx");
-            $table->index(['polydock_store_webhook_id', 'event'], "polydock_store_webhook_id_event_idx");
+            $table->index('event', 'polydock_store_webhook_event_idx');
+            $table->index('status', 'polydock_store_webhook_status_idx');
+            $table->index('processed_at', 'polydock_store_webhook_processed_at_idx');
+            $table->index(['polydock_store_webhook_id', 'event'], 'polydock_store_webhook_id_event_idx');
         });
     }
 
@@ -35,4 +35,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('polydock_store_webhook_calls');
     }
-}; 
+};

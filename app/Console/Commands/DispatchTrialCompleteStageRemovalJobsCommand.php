@@ -45,12 +45,13 @@ class DispatchTrialCompleteStageRemovalJobsCommand extends Command
         if ($eligibleInstances->isEmpty()) {
             $this->info('No eligible app instances found for trial complete stage removal.');
             Log::info('No eligible app instances found for trial complete stage removal.');
+
             return;
         }
 
         $this->info(sprintf('Found %d eligible app instances. Dispatching jobs...', $eligibleInstances->count()));
         Log::info(sprintf('Found %d eligible app instances. Dispatching jobs...', $eligibleInstances->count()));
-        
+
         // Dispatch jobs for each eligible instance
         foreach ($eligibleInstances as $instance) {
             $this->info(sprintf('Dispatching trial complete stage removal job for app instance %s (%s)', $instance->name, $instance->uuid));
@@ -61,4 +62,4 @@ class DispatchTrialCompleteStageRemovalJobsCommand extends Command
         $this->info('All jobs dispatched successfully.');
         Log::info('All jobs dispatched successfully.');
     }
-} 
+}

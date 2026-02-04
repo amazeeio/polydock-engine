@@ -23,4 +23,4 @@ return new class extends Migration
             $table->renameColumn('lagoon_deploy_region_id_ext', 'lagoon_deploy_region_id');
         });
     }
-}; 
+};
