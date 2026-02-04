@@ -76,7 +76,13 @@ class PolydockStoreResource extends Resource
                     ),
                 Forms\Components\Textarea::make('lagoon_deploy_private_key')
                     ->columnSpanFull()
-                    ->rows(10),
+                    ->rows(10)
+                    ->formatStateUsing(fn ($state) => null)
+                    ->dehydrated(fn ($state) => filled($state))
+                    ->placeholder(fn ($record) => filled($record?->lagoon_deploy_private_key) 
+                        ? 'Current key is set. Leave empty to keep it, or enter a new one to replace it.' 
+                        : 'No key is currently set. Enter a new key here.'
+                    ),
             ]);
     }
 
