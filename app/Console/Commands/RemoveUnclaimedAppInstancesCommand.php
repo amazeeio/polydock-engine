@@ -30,36 +30,37 @@ class RemoveUnclaimedAppInstancesCommand extends Command
     {
         $days = (int) $this->option('days');
         $this->info("Searching for unclaimed PolydockAppInstances older than {$days} days...");
-        
+
         Log::info('Setting unclaimed PolydockAppInstances to pending removal via command');
 
         try {
             // Get the limit from command line option
             $limit = (int) $this->option('limit');
             $appId = $this->option('app');
-            
+
             // Build the query for unclaimed instances older than specified days
             $query = PolydockAppInstance::where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
-                ->whereDate('created_at', '<=', now()->subDay($days));
-            
+                ->whereDate('created_at', '<=', now()->subDay());
+
             // Add app filter if specified
             if ($appId) {
                 $query->where('polydock_store_app_id', $appId);
             }
-            
+
             // Apply limit and execute query
             $unclaimedInstances = $query->limit($limit)->get();
 
             $count = $unclaimedInstances->count();
-            
+
             if ($count === 0) {
-                $appFilterText = $appId ? " for app ID {$appId}" : "";
+                $appFilterText = $appId ? " for app ID {$appId}" : '';
                 $this->info("No unclaimed instances found that are older than {$days} days{$appFilterText}.");
-                Log::info("No unclaimed instances found older than {$days} days" . ($appId ? " for app ID {$appId}" : ""));
+                Log::info("No unclaimed instances found older than {$days} days".($appId ? " for app ID {$appId}" : ''));
+
                 return Command::SUCCESS;
             }
 
-            $appFilterText = $appId ? " for app ID {$appId}" : "";
+            $appFilterText = $appId ? " for app ID {$appId}" : '';
             $this->info("Found {$count} unclaimed instances{$appFilterText} (limit: {$limit}):");
             $this->newLine();
 
@@ -71,10 +72,10 @@ class RemoveUnclaimedAppInstancesCommand extends Command
                 $rows[] = [
                     $instance->id,
                     $instance->name,
-                    $instance->storeApp->store->name . " - " . $instance->storeApp->name . "(" . $instance->storeApp->id . ")",
+                    $instance->storeApp->store->name.' - '.$instance->storeApp->name.'('.$instance->storeApp->id.')',
                     $instance->status->value,
                     $instance->created_at->format('Y-m-d H:i:s'),
-                    $instance->app_type
+                    $instance->app_type,
                 ];
             }
 
@@ -89,9 +90,10 @@ class RemoveUnclaimedAppInstancesCommand extends Command
                 $confirmed = $this->confirm("Do you want to set these {$count} instances to pending removal status?");
             }
 
-            if (!$confirmed) {
+            if (! $confirmed) {
                 $this->info('Operation cancelled by user.');
                 Log::info('Remove unclaimed instances operation cancelled by user');
+
                 return Command::SUCCESS;
             }
 
@@ -100,17 +102,17 @@ class RemoveUnclaimedAppInstancesCommand extends Command
             foreach ($unclaimedInstances as $instance) {
                 try {
                     $instance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
-                    $instance->user_group_id = config('polydock.default_user_group_id_for_unallocated_instances', 1); 
+                    $instance->user_group_id = config('polydock.default_user_group_id_for_unallocated_instances', 1);
                     $instance->save();
                     $updatedCount++;
-                    
+
                     $this->line("✓ Updated instance: {$instance->name} (ID: {$instance->id})");
                 } catch (\Exception $e) {
-                    $this->error("✗ Failed to update instance {$instance->name} (ID: {$instance->id}): " . $e->getMessage());
+                    $this->error("✗ Failed to update instance {$instance->name} (ID: {$instance->id}): ".$e->getMessage());
                     Log::error('Failed to update instance status', [
                         'instance_id' => $instance->id,
                         'instance_name' => $instance->name,
-                        'error' => $e->getMessage()
+                        'error' => $e->getMessage(),
                     ]);
                 }
             }
@@ -126,17 +128,17 @@ class RemoveUnclaimedAppInstancesCommand extends Command
                 'total_found' => $count,
                 'successfully_updated' => $updatedCount,
                 'failed_updates' => $count - $updatedCount,
-                'instances' => $unclaimedInstances->pluck('name')->toArray()
+                'instances' => $unclaimedInstances->pluck('name')->toArray(),
             ]);
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $this->error('Failed to process unclaimed instances: ' . $e->getMessage());
+            $this->error('Failed to process unclaimed instances: '.$e->getMessage());
             Log::error('Failed to process unclaimed instances via command', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return Command::FAILURE;
         }
     }

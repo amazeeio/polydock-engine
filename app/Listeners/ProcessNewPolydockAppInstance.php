@@ -3,7 +3,6 @@
 namespace App\Listeners;
 
 use App\Events\PolydockAppInstanceCreatedWithNewStatus;
-use App\Jobs\ProcessPolydockAppInstanceJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\New\ProcessNewJob;
 use Illuminate\Support\Facades\Log;
 
@@ -24,4 +23,4 @@ class ProcessNewPolydockAppInstance
         ProcessNewJob::dispatch($event->appInstance->id)
             ->onQueue('polydock-app-instance-processing-new');
     }
-} 
+}

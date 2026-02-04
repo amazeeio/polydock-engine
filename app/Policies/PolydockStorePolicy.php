@@ -2,8 +2,8 @@
 
 namespace App\Policies;
 
-use App\Models\User;
 use App\Models\PolydockStore;
+use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
 class PolydockStorePolicy
@@ -13,8 +13,8 @@ class PolydockStorePolicy
     public function delete(User $user, PolydockStore $polydockStore): bool
     {
         // Check if any store apps have instances
-        return !$polydockStore->apps()
+        return ! $polydockStore->apps()
             ->whereHas('instances')
             ->exists();
     }
-} 
+}

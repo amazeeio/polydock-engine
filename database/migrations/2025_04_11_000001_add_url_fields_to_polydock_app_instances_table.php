@@ -29,4 +29,4 @@ return new class extends Migration
             $table->dropColumn('app_one_time_login_valid_until');
         });
     }
-}; 
+};

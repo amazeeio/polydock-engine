@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\PolydockAppInstance;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class RemoveAppInstanceByName extends Command
 {
@@ -37,6 +36,7 @@ class RemoveAppInstanceByName extends Command
 
         if (empty($name)) {
             $this->error('App instance name cannot be empty.');
+
             return 1;
         }
 
@@ -45,15 +45,16 @@ class RemoveAppInstanceByName extends Command
         // Find the app instance with the given name
         $instance = PolydockAppInstance::where('name', $name)->first();
 
-        
-        if (!$instance) {
-            $this->info('No app instance found with the name: ' . $name);
+        if (! $instance) {
+            $this->info('No app instance found with the name: '.$name);
+
             return 0;
         }
 
         // Check if instance is already in removal state
         if (in_array($instance->status, PolydockAppInstance::$stageRemoveStatuses)) {
             $this->warn("Instance '{$name}' is already in removal state ({$instance->status->getLabel()}). Nothing to do.");
+
             return 0;
         }
 
@@ -67,7 +68,7 @@ class RemoveAppInstanceByName extends Command
             $instance->name ?: 'N/A',
             $instance->status->getLabel(),
             $instance->storeApp->name ?? 'N/A',
-            $instance->created_at->format('Y-m-d H:i:s')
+            $instance->created_at->format('Y-m-d H:i:s'),
         ]];
 
         $this->table($headers, $rows);
@@ -75,18 +76,20 @@ class RemoveAppInstanceByName extends Command
 
         if ($isDryRun) {
             $this->info('DRY RUN: This instance would be set to PENDING_PRE_REMOVE status.');
+
             return 0;
         }
 
         // Confirm removal unless force flag is used
-        if (!$force) {
+        if (! $force) {
             $confirmed = $this->confirm(
                 "Are you sure you want to set instance '{$name}' to PENDING_PRE_REMOVE status?",
                 false
             );
 
-            if (!$confirmed) {
+            if (! $confirmed) {
                 $this->info('Operation cancelled.');
+
                 return 0;
             }
         }
@@ -94,7 +97,7 @@ class RemoveAppInstanceByName extends Command
         // Set instance to pending removal
         try {
             $previousStatus = $instance->status;
-            
+
             $instance->setStatus(
                 PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
                 "Marked for removal by name: {$name}"
@@ -103,10 +106,12 @@ class RemoveAppInstanceByName extends Command
 
             $this->info("✓ Instance {$instance->id} ({$instance->name}) set to PENDING_PRE_REMOVE (was: {$previousStatus->getLabel()})");
             $this->newLine();
-            $this->info("Operation completed successfully.");
+            $this->info('Operation completed successfully.');
+
             return 0;
         } catch (\Exception $e) {
             $this->error("✗ Failed to update instance {$instance->id}: {$e->getMessage()}");
+
             return 1;
         }
     }

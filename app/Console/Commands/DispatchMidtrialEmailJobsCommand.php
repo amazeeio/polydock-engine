@@ -48,6 +48,7 @@ class DispatchMidtrialEmailJobsCommand extends Command
         if ($eligibleInstances->isEmpty()) {
             $this->info('No eligible app instances found for midtrial emails.');
             Log::info('No eligible app instances found for midtrial emails.');
+
             return;
         }
 
@@ -63,4 +64,4 @@ class DispatchMidtrialEmailJobsCommand extends Command
         $this->info('All jobs dispatched successfully.');
         Log::info('All jobs dispatched successfully.');
     }
-} 
+}

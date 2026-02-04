@@ -30,34 +30,35 @@ class ListUnclaimedAppInstancesCommand extends Command
     {
         $days = (int) $this->option('days');
         $this->info("Searching for unclaimed PolydockAppInstances older than {$days} days...");
-        
+
         Log::info('Listing unclaimed PolydockAppInstances via command');
 
         try {
             $appId = $this->option('app');
-            
+
             // Build the query for unclaimed instances older than specified days
             $query = PolydockAppInstance::where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
-                ->whereDate('created_at', '<=', now()->subDay($days));
-            
+                ->whereDate('created_at', '<=', now()->subDay());
+
             // Add app filter if specified
             if ($appId) {
                 $query->where('polydock_store_app_id', $appId);
             }
-            
+
             // Execute query
             $unclaimedInstances = $query->get();
 
             $count = $unclaimedInstances->count();
-            
+
             if ($count === 0) {
-                $appFilterText = $appId ? " for app ID {$appId}" : "";
+                $appFilterText = $appId ? " for app ID {$appId}" : '';
                 $this->info("No unclaimed instances found that are older than {$days} days{$appFilterText}.");
-                Log::info("No unclaimed instances found older than {$days} days" . ($appId ? " for app ID {$appId}" : ""));
+                Log::info("No unclaimed instances found older than {$days} days".($appId ? " for app ID {$appId}" : ''));
+
                 return Command::SUCCESS;
             }
 
-            $appFilterText = $appId ? " for app ID {$appId}" : "";
+            $appFilterText = $appId ? " for app ID {$appId}" : '';
             $this->info("Found {$count} unclaimed instances{$appFilterText}:");
             $this->newLine();
 
@@ -69,10 +70,10 @@ class ListUnclaimedAppInstancesCommand extends Command
                 $rows[] = [
                     $instance->id,
                     $instance->name,
-                    $instance->storeApp->store->name . " - " . $instance->storeApp->name . "(" . $instance->storeApp->id . ")",
+                    $instance->storeApp->store->name.' - '.$instance->storeApp->name.'('.$instance->storeApp->id.')',
                     $instance->status->value,
                     $instance->created_at->format('Y-m-d H:i:s'),
-                    $instance->app_type
+                    $instance->app_type,
                 ];
             }
 
@@ -83,17 +84,17 @@ class ListUnclaimedAppInstancesCommand extends Command
                 'days' => $days,
                 'app_id' => $appId,
                 'count' => $count,
-                'instances' => $unclaimedInstances->pluck('name')->toArray()
+                'instances' => $unclaimedInstances->pluck('name')->toArray(),
             ]);
 
             return Command::SUCCESS;
         } catch (\Exception $e) {
-            $this->error('Failed to list unclaimed instances: ' . $e->getMessage());
+            $this->error('Failed to list unclaimed instances: '.$e->getMessage());
             Log::error('Failed to list unclaimed instances via command', [
                 'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'trace' => $e->getTraceAsString(),
             ]);
-            
+
             return Command::FAILURE;
         }
     }

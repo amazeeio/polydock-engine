@@ -16,4 +16,4 @@ class ViewUserGroup extends ViewRecord
             Actions\EditAction::make(),
         ];
     }
-} 
+}

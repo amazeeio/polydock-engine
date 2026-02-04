@@ -52,4 +52,4 @@ trait HasPolydockVariables
 
         return $this;
     }
-} 
+}

@@ -4,18 +4,22 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\PolydockStoreWebhookCallResource\Pages;
 use App\Models\PolydockStoreWebhookCall;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Filament\Infolists\Infolist;
-use Filament\Infolists;
 
 class PolydockStoreWebhookCallResource extends Resource
 {
     protected static ?string $model = PolydockStoreWebhookCall::class;
+
     protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
+
     protected static ?string $navigationGroup = 'Apps';
+
     protected static ?string $navigationLabel = 'Webhook Calls';
+
     protected static ?int $navigationSort = 5200;
 
     public static function table(Table $table): Table
@@ -82,7 +86,7 @@ class PolydockStoreWebhookCallResource extends Resource
                                 Infolists\Components\TextEntry::make('response_code')
                                     ->label('Response Code')
                                     ->icon('heroicon-m-signal')
-                                    ->color(fn ($state) => str_starts_with($state, '2') ? 'success' : 'danger'),
+                                    ->color(fn ($state) => str_starts_with((string) $state, '2') ? 'success' : 'danger'),
                                 Infolists\Components\TextEntry::make('attempt')
                                     ->icon('heroicon-m-arrow-path'),
                                 Infolists\Components\TextEntry::make('processed_at')
@@ -96,17 +100,15 @@ class PolydockStoreWebhookCallResource extends Resource
                     ->schema([
                         Infolists\Components\TextEntry::make('payload')
                             ->label('Request Payload')
-                            ->state(function ($record) {
-                                return json_encode($record->payload, JSON_PRETTY_PRINT);
-                            })
+                            ->state(fn ($record) => json_encode($record->payload, JSON_PRETTY_PRINT))
                             ->columnSpanFull(),
                         Infolists\Components\TextEntry::make('response_body')
                             ->label('Response Body')
-                            ->visible(fn ($state) => !empty($state))
+                            ->visible(fn ($state) => ! empty($state))
                             ->columnSpanFull(),
                         Infolists\Components\TextEntry::make('exception')
                             ->label('Error Details')
-                            ->visible(fn ($state) => !empty($state))
+                            ->visible(fn ($state) => ! empty($state))
                             ->color('danger')
                             ->columnSpanFull(),
                     ])
