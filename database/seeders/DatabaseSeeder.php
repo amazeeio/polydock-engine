@@ -76,10 +76,10 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_region_id_ext' => '1',
             'lagoon_deploy_project_prefix' => 'ft-us',
             'lagoon_deploy_organization_id_ext' => '271',
-            'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => 34,
             'lagoon_deploy_group_name' => 'polydock-demo-apps',
         ]);
+        $usaStore->setPolydockVariableValue('lagoon_deploy_private_key', $deployKey, true);
 
         $switzerlandStore = \App\Models\PolydockStore::create([
             'name' => 'Switzerland Store',
@@ -88,10 +88,10 @@ class DatabaseSeeder extends Seeder
             'lagoon_deploy_region_id_ext' => '1',
             'lagoon_deploy_project_prefix' => 'ft-ch',
             'lagoon_deploy_organization_id_ext' => '271',
-            'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => 34,
             'lagoon_deploy_group_name' => 'polydock-demo-apps',
         ]);
+        $switzerlandStore->setPolydockVariableValue('lagoon_deploy_private_key', $deployKey, true);
 
         // Add webhook to both stores
         $webhookUrl = 'https://webhook.site/bbe9c2ef-bb18-4c13-8d40-14fb428c7b64';

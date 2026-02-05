@@ -20,7 +20,6 @@ class PolydockStore extends Model
         'listed_in_marketplace',
         'lagoon_deploy_region_id_ext',
         'lagoon_deploy_project_prefix',
-        'lagoon_deploy_private_key',
         'lagoon_deploy_organization_id_ext',
         'amazee_ai_backend_region_id_ext',
         'lagoon_deploy_group_name',
@@ -30,6 +29,11 @@ class PolydockStore extends Model
         'status' => PolydockStoreStatusEnum::class,
         'listed_in_marketplace' => 'boolean',
     ];
+
+    public function getLagoonDeployPrivateKeyAttribute(): ?string
+    {
+        return $this->getPolydockVariableValue('lagoon_deploy_private_key');
+    }
 
     public function apps(): HasMany
     {
