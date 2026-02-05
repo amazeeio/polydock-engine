@@ -46,4 +46,29 @@ class LagoonHelper
 
         return $lagoonCoreDataForRegion[$key] ?? null;
     }
+
+    public static function getPublicKeyFromPrivateKey(string $privateKey): ?string
+    {
+        if (empty($privateKey)) {
+            return null;
+        }
+
+        $tempFile = tempnam(sys_get_temp_dir(), 'pk_');
+        file_put_contents($tempFile, $privateKey);
+        chmod($tempFile, 0600);
+
+        try {
+            $result = \Illuminate\Support\Facades\Process::run(['ssh-keygen', '-y', '-f', $tempFile]);
+
+            if ($result->successful()) {
+                return trim($result->output());
+            }
+        } finally {
+            if (file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+        }
+
+        return null;
+    }
 }
