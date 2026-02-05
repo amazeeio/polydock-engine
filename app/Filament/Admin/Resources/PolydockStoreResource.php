@@ -76,12 +76,29 @@ class PolydockStoreResource extends Resource
                     ),
                 Forms\Components\Textarea::make('lagoon_deploy_private_key')
                     ->columnSpanFull()
-                    ->rows(10)
+                    ->rows(5)
                     ->formatStateUsing(fn ($state) => null)
                     ->dehydrated(fn ($state) => filled($state))
-                    ->placeholder(fn ($record) => filled($record?->lagoon_deploy_private_key) 
-                        ? 'Current key is set. Leave empty to keep it, or enter a new one to replace it.' 
+                    ->placeholder(fn ($record) => filled($record?->lagoon_deploy_private_key)
+                        ? 'Current key is set. Leave empty to keep it, or enter a new one to replace it.'
                         : 'No key is currently set. Enter a new key here.'
+                    )
+                    ->live(onBlur: true)
+                    ->afterStateUpdated(function (Forms\Set $set, ?string $state, ?PolydockStore $record) {
+                        $keyToUse = filled($state) ? $state : $record?->lagoon_deploy_private_key;
+                        $set('derived_public_key', $keyToUse ? LagoonHelper::getPublicKeyFromPrivateKey($keyToUse) : null);
+                    }),
+                Forms\Components\Textarea::make('derived_public_key')
+                    ->label('Derived Public Key')
+                    ->helperText('This is the public key derived from the stored private key (or the one you just entered).')
+                    ->disabled()
+                    ->dehydrated(false)
+                    ->columnSpanFull()
+                    ->rows(5)
+                    ->formatStateUsing(fn (?PolydockStore $record) =>
+                        $record?->lagoon_deploy_private_key
+                            ? LagoonHelper::getPublicKeyFromPrivateKey($record->lagoon_deploy_private_key)
+                            : null
                     ),
             ]);
     }
