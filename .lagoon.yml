@@ -45,9 +45,6 @@ tasks:
         service: cli
         shell: bash
 
-backup-schedule:
-  production: "M * * * *"
-
 environments:
   main:
     cronjobs:
