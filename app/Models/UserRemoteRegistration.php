@@ -3,20 +3,19 @@
 namespace App\Models;
 
 use App\Enums\UserRemoteRegistrationStatusEnum;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Str;
-use App\Jobs\ProcessUserRemoteRegistration;
+use App\Enums\UserRemoteRegistrationType;
 use App\Events\UserRemoteRegistrationCreated;
-use Illuminate\Support\Facades\Log;
 use App\Events\UserRemoteRegistrationStatusChanged;
 use App\Traits\HasWebhookSensitiveData;
-use App\Enums\UserRemoteRegistrationType;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class UserRemoteRegistration extends Model
 {
     use HasWebhookSensitiveData;
-    
+
     /**
      * The attributes that are mass assignable.
      *
@@ -38,7 +37,7 @@ class UserRemoteRegistration extends Model
      * The attributes that should be cast.
      *
      * @var array
-     */ 
+     */
     protected $casts = [
         'status' => UserRemoteRegistrationStatusEnum::class,
         'type' => UserRemoteRegistrationType::class,
@@ -61,6 +60,7 @@ class UserRemoteRegistration extends Model
     /**
      * Boot the model.
      */
+    #[\Override]
     protected static function boot()
     {
         parent::boot();
@@ -79,7 +79,7 @@ class UserRemoteRegistration extends Model
             if ($model->isDirty('status')) {
                 UserRemoteRegistrationStatusChanged::dispatch(
                     $model,
-                    $model->getOriginal('status')
+                    $model->getOriginal('status'),
                 );
             }
         });
@@ -87,9 +87,7 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the user that the remote registration belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */ 
+     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -97,9 +95,7 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the user group that the remote registration belongs to.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */     
+     */
     public function userGroup(): BelongsTo
     {
         return $this->belongsTo(UserGroup::class);
@@ -117,7 +113,7 @@ class UserRemoteRegistration extends Model
     /**
      * Get a value from the request data by key
      *
-     * @param string $key The key to look for in the request data
+     * @param  string  $key  The key to look for in the request data
      * @return mixed|null The value if found, null otherwise
      */
     public function getRequestValue(string $key): mixed
@@ -128,7 +124,7 @@ class UserRemoteRegistration extends Model
     /**
      * Get a value from the result data by key
      *
-     * @param string $key The key to look for in the result data
+     * @param  string  $key  The key to look for in the result data
      * @return mixed|null The value if found, null otherwise
      */
     public function getResultValue(string $key): mixed
@@ -139,15 +135,15 @@ class UserRemoteRegistration extends Model
     /**
      * Set a value in the result data by key
      *
-     * @param string $key The key to set in the result data
-     * @param mixed $value The value to set
-     * @return self
+     * @param  string  $key  The key to set in the result data
+     * @param  mixed  $value  The value to set
      */
     public function setResultValue(string $key, mixed $value): self
     {
         $resultData = $this->result_data ?? [];
         data_set($resultData, $key, $value);
         $this->result_data = $resultData;
+
         return $this;
     }
 
@@ -156,6 +152,7 @@ class UserRemoteRegistration extends Model
      *
      * @return string
      */
+    #[\Override]
     public function getRouteKeyName()
     {
         return 'uuid';
@@ -201,4 +198,3 @@ class UserRemoteRegistration extends Model
         ];
     }
 }
- 

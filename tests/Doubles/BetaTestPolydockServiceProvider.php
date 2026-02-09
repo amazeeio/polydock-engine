@@ -13,4 +13,4 @@ class BetaTestPolydockServiceProvider extends BaseTestPolydockServiceProvider
     {
         return 'Beta Test Provider Description';
     }
-} 
+}

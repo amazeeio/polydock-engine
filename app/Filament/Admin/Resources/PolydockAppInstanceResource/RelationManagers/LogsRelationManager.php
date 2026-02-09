@@ -2,13 +2,9 @@
 
 namespace App\Filament\Admin\Resources\PolydockAppInstanceResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class LogsRelationManager extends RelationManager
 {
@@ -34,13 +30,9 @@ class LogsRelationManager extends RelationManager
                         'debug' => 'gray',
                     }),
             ])
-            ->filters([
-            ])
-            ->headerActions([
-            ])
-            ->actions([
-            ])
-            ->bulkActions([
-            ]);
+            ->filters([])
+            ->headerActions([])
+            ->actions([])
+            ->bulkActions([]);
     }
 }

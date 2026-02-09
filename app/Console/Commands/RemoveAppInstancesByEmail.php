@@ -5,7 +5,6 @@ namespace App\Console\Commands;
 use App\Models\PolydockAppInstance;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
-use Illuminate\Support\Facades\DB;
 
 class RemoveAppInstancesByEmail extends Command
 {
@@ -38,7 +37,7 @@ class RemoveAppInstancesByEmail extends Command
         // Check if this is a pattern (contains %) or exact email
         $isPattern = str_contains($email, '%');
         
-        if (!$isPattern && !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if (! $isPattern && ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->error('Invalid email address provided. Use % for wildcard patterns (e.g., %@example.com).');
             return 1;
         }
@@ -58,25 +57,26 @@ class RemoveAppInstancesByEmail extends Command
             $instances = PolydockAppInstance::whereJsonContains('data->user-email', $email)->get();
         }
 
-        
         if ($instances->isEmpty()) {
             $this->info("No app instances found matching {$searchType}: {$email}");
             return 0;
         }
 
         // Filter out instances already in removal states
-        $removableInstances = $instances->filter(function ($instance) {
-            return !in_array($instance->status, PolydockAppInstance::$stageRemoveStatuses);
-        });
+        $removableInstances = $instances->filter(fn ($instance) => ! in_array(
+            $instance->status,
+            PolydockAppInstance::$stageRemoveStatuses,
+        ));
 
         $alreadyRemovingCount = $instances->count() - $removableInstances->count();
-        
+
         if ($alreadyRemovingCount > 0) {
             $this->warn("Found {$alreadyRemovingCount} instance(s) already in removal state - skipping these.");
         }
 
         if ($removableInstances->isEmpty()) {
             $this->info('All found instances are already in removal state. Nothing to do.');
+
             return 0;
         }
 
@@ -95,7 +95,7 @@ class RemoveAppInstancesByEmail extends Command
                 $instance->getUserEmail() ?: 'N/A',
                 $instance->status->getLabel(),
                 $instance->storeApp->name ?? 'N/A',
-                $instance->created_at->format('Y-m-d H:i:s')
+                $instance->created_at->format('Y-m-d H:i:s'),
             ];
         }
 
@@ -104,18 +104,20 @@ class RemoveAppInstancesByEmail extends Command
 
         if ($isDryRun) {
             $this->info('DRY RUN: These instances would be set to PENDING_PRE_REMOVE status.');
+
             return 0;
         }
 
         // Confirm removal unless force flag is used
-        if (!$force) {
+        if (! $force) {
             $confirmed = $this->confirm(
                 "Are you sure you want to set these {$removableInstances->count()} app instance(s) to PENDING_PRE_REMOVE status?",
-                false
+                false,
             );
 
-            if (!$confirmed) {
+            if (! $confirmed) {
                 $this->info('Operation cancelled.');
+
                 return 0;
             }
         }
@@ -127,14 +129,16 @@ class RemoveAppInstancesByEmail extends Command
         foreach ($removableInstances as $instance) {
             try {
                 $previousStatus = $instance->status;
-                
+
                 $instance->setStatus(
                     PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
                     "Marked for removal by {$searchType}: {$email}"
                 );
                 $instance->save();
 
-                $this->info("✓ Instance {$instance->id} ({$instance->name}) set to PENDING_PRE_REMOVE (was: {$previousStatus->getLabel()})");
+                $this->info(
+                    "✓ Instance {$instance->id} ({$instance->name}) set to PENDING_PRE_REMOVE (was: {$previousStatus->getLabel()})",
+                );
                 $successCount++;
             } catch (\Exception $e) {
                 $this->error("✗ Failed to update instance {$instance->id}: {$e->getMessage()}");
@@ -143,7 +147,7 @@ class RemoveAppInstancesByEmail extends Command
         }
 
         $this->newLine();
-        $this->info("Operation completed:");
+        $this->info('Operation completed:');
         $this->info("- Successfully updated: {$successCount}");
         if ($errorCount > 0) {
             $this->warn("- Failed to update: {$errorCount}");

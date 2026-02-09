@@ -2,20 +2,19 @@
 
 namespace App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 
+use App\Filament\Admin\Resources\PolydockAppInstanceResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use App\Filament\Admin\Resources\PolydockAppInstanceResource;
 
 class AppInstancesRelationManager extends RelationManager
 {
     protected static string $relationship = 'appInstances';
 
+    #[\Override]
     public function form(Form $form): Form
     {
         return $form
@@ -44,7 +43,7 @@ class AppInstancesRelationManager extends RelationManager
                     ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
                     ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel()),
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->dateTime(),
             ])
             ->filters([
                 //

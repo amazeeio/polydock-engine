@@ -2,16 +2,16 @@
 
 namespace App\Providers;
 
-use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
-use App\Events\UserRemoteRegistrationCreated;
-use App\Listeners\ProcessNewUserRemoteRegistration;
-use App\Events\UserRemoteRegistrationStatusChanged;
-use App\Listeners\CreateWebhookCallForRegistrationStatusSuccessOrFailed;
 use App\Events\PolydockAppInstanceCreatedWithNewStatus;
-use App\Listeners\ProcessNewPolydockAppInstance;
 use App\Events\PolydockAppInstanceStatusChanged;
+use App\Events\UserRemoteRegistrationCreated;
+use App\Events\UserRemoteRegistrationStatusChanged;
 use App\Listeners\CreateWebhookCallForAppInstanceStatusChanged;
+use App\Listeners\CreateWebhookCallForRegistrationStatusSuccessOrFailed;
+use App\Listeners\ProcessNewPolydockAppInstance;
+use App\Listeners\ProcessNewUserRemoteRegistration;
 use App\Listeners\ProcessPolydockAppInstanceStatusChange;
+use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -32,15 +32,16 @@ class EventServiceProvider extends ServiceProvider
         ],
         PolydockAppInstanceStatusChanged::class => [
             CreateWebhookCallForAppInstanceStatusChanged::class,
-            ProcessPolydockAppInstanceStatusChange::class
+            ProcessPolydockAppInstanceStatusChange::class,
         ],
     ];
 
     /**
      * Register any events for your application.
      */
+    #[\Override]
     public function boot()
     {
         //
     }
-} 
+}

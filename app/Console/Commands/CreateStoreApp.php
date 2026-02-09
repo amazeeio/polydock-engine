@@ -44,18 +44,19 @@ class CreateStoreApp extends Command
 
         // Get all stores for selection
         $stores = PolydockStore::all();
-        
+
         if ($stores->isEmpty()) {
             $this->error('No stores found. Please create a store first.');
+
             return 1;
         }
 
         // Select store
         $storeId = $this->option('store-id');
-        if (!$storeId) {
-            $storeOptions = $stores->mapWithKeys(function ($store) {
-                return [$store->id => "{$store->name} (ID: {$store->id})"];
-            })->toArray();
+        if (! $storeId) {
+            $storeOptions = $stores
+                ->mapWithKeys(fn ($store) => [$store->id => "{$store->name} (ID: {$store->id})"])
+                ->toArray();
 
             $selectedValue = $this->choice('Select a store to create app in:', $storeOptions);
             $storeId = collect($storeOptions)->search($selectedValue);
@@ -63,8 +64,9 @@ class CreateStoreApp extends Command
 
         // Validate store exists
         $store = PolydockStore::find($storeId);
-        if (!$store) {
+        if (! $store) {
             $this->error("Store with ID {$storeId} not found.");
+
             return 1;
         }
 
@@ -77,32 +79,41 @@ class CreateStoreApp extends Command
         $supportEmail = $this->option('support-email') ?? $this->ask('Support email');
         $git = $this->option('git') ?? $this->ask('Lagoon deploy git repository');
         $branch = $this->option('branch') ?? $this->ask('Lagoon deploy branch');
-        
+
         $statusInput = $this->option('status') ?? $this->choice('App status', [
             'available' => 'Available',
             'unavailable' => 'Unavailable',
-            'deprecated' => 'Deprecated'
+            'deprecated' => 'Deprecated',
         ]);
-        $status = match($statusInput) {
+        $status = match ($statusInput) {
             'available', 'Available' => PolydockStoreAppStatusEnum::AVAILABLE,
             'unavailable', 'Unavailable' => PolydockStoreAppStatusEnum::UNAVAILABLE,
             'deprecated', 'Deprecated' => PolydockStoreAppStatusEnum::DEPRECATED,
-            default => PolydockStoreAppStatusEnum::AVAILABLE
+            default => PolydockStoreAppStatusEnum::AVAILABLE,
         };
-        
+
         $trialsInput = $this->option('trials') ?? $this->choice('Available for trials?', ['true', 'false']);
         $trials = filter_var($trialsInput, FILTER_VALIDATE_BOOLEAN);
-        
+
         $targetInstances = $this->option('target-instances') ?? $this->ask('Target unallocated app instances');
-        if($targetInstances == "") {
+        if ($targetInstances == '') {
             $targetInstances = 0;
         }
 
         // Check if all required values are set
-        if (empty($name) || empty($appClass) || empty($description) || empty($author) || 
-            empty($website) || empty($supportEmail) || empty($git) || empty($branch) || 
-            ($targetInstances != 0 && empty($targetInstances))) {
+        if (
+            empty($name)
+            || empty($appClass)
+            || empty($description)
+            || empty($author)
+            || empty($website)
+            || empty($supportEmail)
+            || empty($git)
+            || empty($branch)
+            || $targetInstances != 0 && empty($targetInstances)
+        ) {
             $this->error('All fields are required. Exiting...');
+
             return 1;
         }
 
@@ -122,11 +133,13 @@ class CreateStoreApp extends Command
             'target_unallocated_app_instances' => intval($targetInstances),
         ]);
 
-        $this->info("✅ App '{$storeApp->name}' created successfully in store '{$store->name}' with ID: {$storeApp->id}");
+        $this->info(
+            "✅ App '{$storeApp->name}' created successfully in store '{$store->name}' with ID: {$storeApp->id}",
+        );
         $this->line("   App Class: {$storeApp->polydock_app_class}");
         $this->line("   Git Repository: {$storeApp->lagoon_deploy_git}");
-        $this->line("   Available for Trials: " . ($storeApp->available_for_trials ? 'Yes' : 'No'));
-        
+        $this->line('   Available for Trials: '.($storeApp->available_for_trials ? 'Yes' : 'No'));
+
         return 0;
     }
 }

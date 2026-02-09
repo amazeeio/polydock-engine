@@ -4,9 +4,9 @@ namespace App\Providers\Filament;
 
 use App\Filament\Admin\Widgets\PolydockAppInstancesCreatedByStoreChart;
 use App\Filament\Admin\Widgets\PolydockAppInstancesCreatedByTypeChart;
+use App\Filament\Admin\Widgets\StatsOverview;
 use App\Filament\Admin\Widgets\UserCreatedChart;
 use App\Filament\Admin\Widgets\UserRemoteRegistrationsChart;
-use App\Filament\Admin\Widgets\StatsOverview;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -15,8 +15,6 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
-use Filament\Widgets\StatsOverviewWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -32,6 +30,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
             ->login()
             ->colors([
                 'primary' => Color::Amber,

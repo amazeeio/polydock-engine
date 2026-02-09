@@ -3,16 +3,12 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\PolydockStoreWebhookResource\Pages;
-use App\Filament\Admin\Resources\PolydockStoreWebhookResource\RelationManagers;
-use App\Models\PolydockStore;
 use App\Models\PolydockStoreWebhook;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PolydockStoreWebhookResource extends Resource
 {
@@ -26,6 +22,7 @@ class PolydockStoreWebhookResource extends Resource
 
     protected static ?int $navigationSort = 5100;
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -39,6 +36,7 @@ class PolydockStoreWebhookResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -64,6 +62,7 @@ class PolydockStoreWebhookResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -71,6 +70,7 @@ class PolydockStoreWebhookResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

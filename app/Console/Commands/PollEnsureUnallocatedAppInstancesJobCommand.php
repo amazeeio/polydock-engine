@@ -2,19 +2,21 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\PolydockStoreAppStatusEnum;
 use App\Jobs\EnsureUnallocatedAppInstancesJob;
 use App\Models\PolydockStoreApp;
-use App\Enums\PolydockStoreAppStatusEnum;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
 class PollEnsureUnallocatedAppInstancesJobCommand extends Command
 {
     protected $signature = 'polydock:poll-unallocated-instances';
+
     protected $description = 'Poll and dispatch jobs to ensure unallocated instances';
 
-    private const LOOP_DURATION = 300; // 5 minutes
-    private const SLEEP_DURATION = 5; // 5 seconds
+    private const int LOOP_DURATION = 300; // 5 minutes
+
+    private const int SLEEP_DURATION = 5; // 5 seconds
 
     public function handle(): int
     {
@@ -22,7 +24,7 @@ class PollEnsureUnallocatedAppInstancesJobCommand extends Command
 
         Log::info('Starting unallocated instances polling loop', [
             'duration' => self::LOOP_DURATION,
-            'sleep' => self::SLEEP_DURATION
+            'sleep' => self::SLEEP_DURATION,
         ]);
 
         while (now()->lt($endTime)) {
@@ -30,7 +32,7 @@ class PollEnsureUnallocatedAppInstancesJobCommand extends Command
             $apps = PolydockStoreApp::query()
                 ->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
                 ->get()
-                ->filter(fn($app) => $app->needs_more_unallocated_instances);
+                ->filter(fn ($app) => $app->needs_more_unallocated_instances);
 
             $neededTotal = 0;
             foreach ($apps as $app) {
@@ -40,7 +42,7 @@ class PollEnsureUnallocatedAppInstancesJobCommand extends Command
 
             if ($neededTotal > 0) {
                 Log::info('Found apps needing unallocated instances', [
-                    'needed_total' => $neededTotal
+                    'needed_total' => $neededTotal,
                 ]);
 
                 EnsureUnallocatedAppInstancesJob::dispatch()
@@ -49,11 +51,12 @@ class PollEnsureUnallocatedAppInstancesJobCommand extends Command
                 $this->info("Dispatched job for {$neededTotal} needed instances");
             }
 
-            $this->info("Sleeping for " . self::SLEEP_DURATION . " seconds...");
+            $this->info('Sleeping for '.self::SLEEP_DURATION.' seconds...');
             sleep(self::SLEEP_DURATION);
         }
 
         Log::info('Unallocated instances polling loop completed');
+
         return Command::SUCCESS;
     }
-} 
+}

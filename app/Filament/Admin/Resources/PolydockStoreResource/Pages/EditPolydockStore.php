@@ -14,7 +14,12 @@ class EditPolydockStore extends EditRecord
     {
         return [
             Actions\DeleteAction::make()
-                ->hidden(fn () => $this->record->apps()->whereHas('instances')->exists()),
+                ->hidden(
+                    fn () => $this->record
+                        ->apps()
+                        ->whereHas('instances')
+                        ->exists(),
+                ),
         ];
     }
 

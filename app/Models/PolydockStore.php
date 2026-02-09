@@ -3,15 +3,16 @@
 namespace App\Models;
 
 use App\Enums\PolydockStoreStatusEnum;
+use App\Traits\HasPolydockVariables;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use App\Traits\HasPolydockVariables;
 
 class PolydockStore extends Model
 {
-    use HasFactory, HasPolydockVariables;
+    use HasFactory;
+    use HasPolydockVariables;
 
     protected $fillable = [
         'name',
@@ -50,4 +51,4 @@ class PolydockStore extends Model
     {
         return $this->morphMany(PolydockVariable::class, 'variabled');
     }
-} 
+}

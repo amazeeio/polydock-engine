@@ -2,23 +2,26 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Models\UserRemoteRegistration;
 use App\Enums\UserRemoteRegistrationStatusEnum;
-use Filament\Widgets\ChartWidget;
+use App\Models\UserRemoteRegistration;
 use Carbon\Carbon;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
 class UserRemoteRegistrationsChart extends ChartWidget
 {
     protected static ?string $heading = 'Remote Registrations by Status';
+
     protected static ?string $maxHeight = '300px';
+
     protected static ?int $sort = 200;
 
+    #[\Override]
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
         $endDate = Carbon::now()->endOfWeek();
-        
+
         // Get registrations grouped by week and status
         $registrations = UserRemoteRegistration::query()
             ->where('created_at', '>=', $startDate)
@@ -26,24 +29,24 @@ class UserRemoteRegistrationsChart extends ChartWidget
             ->select(
                 DB::raw('DATE(created_at - INTERVAL WEEKDAY(created_at) DAY) as week'),
                 'status',
-                DB::raw('count(*) as count')
+                DB::raw('count(*) as count'),
             )
             ->groupBy(
                 DB::raw('DATE(created_at - INTERVAL WEEKDAY(created_at) DAY)'),
-                'status'
+                'status',
             )
             ->orderBy('week')
             ->get();
 
         $weeks = [];
         $statusData = [];
-        
+
         // Initialize data structure for each status
         foreach (UserRemoteRegistrationStatusEnum::cases() as $status) {
             $statusData[$status->value] = [
                 'label' => $status->getLabel(),
                 'data' => [],
-                'backgroundColor' => match($status->value) {
+                'backgroundColor' => match ($status->value) {
                     'pending' => '#fbbf24', // Amber
                     'processing' => '#60a5fa', // Blue
                     'success' => '#34d399', // Green
@@ -58,9 +61,9 @@ class UserRemoteRegistrationsChart extends ChartWidget
             $weekStart = $startDate->copy()->addWeeks($i);
             $weekLabel = $weekStart->format('M d');
             $weeks[] = $weekLabel;
-            
+
             $weekData = $registrations->where('week', $weekStart->format('Y-m-d'));
-            
+
             // Fill in counts for each status
             foreach (UserRemoteRegistrationStatusEnum::cases() as $status) {
                 $count = $weekData->where('status', $status->value)->first()?->count ?? 0;
@@ -79,6 +82,7 @@ class UserRemoteRegistrationsChart extends ChartWidget
         return 'bar';
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

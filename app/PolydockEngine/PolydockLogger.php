@@ -11,7 +11,7 @@ class PolydockLogger implements PolydockAppLoggerInterface
      * Create a new logger instance.
      */
     public function __construct(
-        private readonly string $channel = 'polydock'
+        private readonly string $channel = 'polydock',
     ) {}
 
     /**
@@ -45,4 +45,4 @@ class PolydockLogger implements PolydockAppLoggerInterface
     {
         Log::channel($this->channel)->debug($message, $context);
     }
-} 
+}

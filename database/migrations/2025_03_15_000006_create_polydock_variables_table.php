@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use App\Enums\PolydockVariableScopeEnum;
 
 return new class extends Migration
 {
@@ -11,15 +10,15 @@ return new class extends Migration
     {
         Schema::create('polydock_variables', function (Blueprint $table) {
             $table->id();
-            
+
             // Polymorphic relationship
             $table->morphs('variabled');
-            
+
             // Variable details
             $table->string('name');
             $table->text('value')->nullable();
             $table->boolean('is_encrypted')->default(false);
-            
+
             // Timestamps
             $table->timestamps();
 
@@ -32,4 +31,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('polydock_variables');
     }
-}; 
+};

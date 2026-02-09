@@ -46,7 +46,7 @@ return [
             'username' => env('MAIL_USERNAME'),
             'password' => env('MAIL_PASSWORD'),
             'timeout' => null,
-            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url(env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
+            'local_domain' => env('MAIL_EHLO_DOMAIN', parse_url((string) env('APP_URL', 'http://localhost'), PHP_URL_HOST)),
         ],
 
         'ses' => [
@@ -111,6 +111,119 @@ return [
     'from' => [
         'address' => env('MAIL_FROM_ADDRESS', 'hello@example.com'),
         'name' => env('MAIL_FROM_NAME', 'Example'),
+    ],
+
+    'mjml-config' => [
+        /*
+    |--------------------------------------------------------------------------
+    | Default Email Theme
+    |--------------------------------------------------------------------------
+    |
+    | This option controls the default theme used for emails when no specific
+    | theme is specified by the mailable class. Available options: 'light', 'dark'
+    |
+    */
+
+        'default_theme' => 'dark', // we're provisionally removing theme selection - env('EMAIL_DEFAULT_THEME', 'dark'),
+
+        /*
+    |--------------------------------------------------------------------------
+    | Email Themes
+    |--------------------------------------------------------------------------
+    |
+    | Define the visual themes available for email templates. Each theme
+    | specifies colors for various email components.
+    |
+    */
+
+        'themes' => [
+            'dark' => [
+                'name' => 'Dark Header',
+                'colors' => [
+                    'body_background' => '#e5e7eb',
+                    'content_background' => '#ffffff',
+                    'header_background' => '#f4f4f4',
+                    'footer_background' => '#f4f4f4',
+                    'text' => '#333',
+                    'text_muted' => '#333',
+                    'links' => '#2563eb',
+                    'primary_button_background' => '#000000',
+                    'primary_button_text' => '#ffffff',
+                ],
+                'typography' => [
+                    'font_family' => 'sans-serif',
+                    'heading_color' => '#333',
+                    'body_font_size' => '16px',
+                    'heading_font_size' => '24px',
+                ],
+                'logo' => [
+                    'url' => rtrim((string) env('APP_URL', ''), '/').'/'.ltrim('/emails/amazee-io-Logo-Black-White-IO.png', '/'),
+                    'alt' => 'Amazee Logo',
+                    'width' => '150',
+                ],
+            ],
+        ],
+
+        /*
+    |--------------------------------------------------------------------------
+    | Logo Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure the logo displayed in email headers. The URL can be overridden
+    | via environment variables to allow easy customization per environment.
+    |
+    */
+
+        'logo' => [
+            'url' => (parse_url((string) env('EMAIL_LOGO_URL', '/emails/logo.svg'), PHP_URL_SCHEME) ? env('EMAIL_LOGO_URL', '/emails/logo.svg') : rtrim((string) env('APP_URL', ''), '/').'/'.ltrim((string) env('EMAIL_LOGO_URL', '/emails/logo.svg'), '/')),
+            'alt' => env('EMAIL_LOGO_ALT', 'Company Logo'),
+            'width' => env('EMAIL_LOGO_WIDTH', '150'),
+            'height' => env('EMAIL_LOGO_HEIGHT', 'auto'),
+        ],
+
+        /*
+    |--------------------------------------------------------------------------
+    | Footer Configuration
+    |--------------------------------------------------------------------------
+    |
+    | Configure the footer content displayed in all emails. This includes
+    | company information, links, and legal text.
+    |
+    */
+
+        'footer' => [
+            'company_name' => env('EMAIL_FOOTER_COMPANY_NAME', 'amazee.io'),
+
+            'company_url' => env('EMAIL_FOOTER_COMPANY_URL', 'https://amazee.io'),
+
+            'address' => env('EMAIL_FOOTER_ADDRESS', 'amazee.io, Hardturmstrasse 161, 8005 Zurich, Switzerland.'),
+
+            'links' => [
+                'unsubscribe' => [
+                    'url' => env('EMAIL_UNSUBSCRIBE_URL', '/unsubscribe'),
+                    'text' => 'Unsubscribe',
+                ],
+                'support' => [
+                    'url' => env('EMAIL_SUPPORT_URL', 'https://www.amazee.io/product/support'),
+                    'text' => 'Contact Support',
+                    'enabled' => env('EMAIL_SUPPORT_LINK_ENABLED', true),
+                ],
+                'privacy' => [
+                    'url' => env('EMAIL_PRIVACY_URL', 'https://www.amazee.io/privacy-policy'),
+                    'text' => 'Privacy Policy',
+                    'enabled' => env('EMAIL_PRIVACY_LINK_ENABLED', true),
+                ],
+                'terms' => [
+                    'url' => env('EMAIL_TERMS_URL', ''),
+                    'text' => 'Terms of Service',
+                    'enabled' => env('EMAIL_TERMS_LINK_ENABLED', false),
+                ],
+            ],
+
+            'copyright_text' => env('EMAIL_FOOTER_COPYRIGHT', sprintf('© %s amazee.io. All rights reserved.', date('Y'))),
+
+            'disclaimer' => env('EMAIL_FOOTER_DISCLAIMER', 'This email was sent to you because you have an account with us. Please do not reply to this email.'),
+        ],
     ],
 
 ];

@@ -2,12 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\PolydockStoreWebhookCallStatusEnum;
 use App\Jobs\ProcessPolydockStoreWebhookCall;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Support\Facades\Log;
-use App\Enums\PolydockStoreWebhookCallStatusEnum;
 
 class PolydockStoreWebhookCall extends Model
 {
@@ -35,6 +35,7 @@ class PolydockStoreWebhookCall extends Model
     /**
      * Boot the model.
      */
+    #[\Override]
     protected static function boot()
     {
         parent::boot();
@@ -42,7 +43,7 @@ class PolydockStoreWebhookCall extends Model
         static::created(function ($webhookCall) {
             Log::info('Queuing webhook call for processing', [
                 'webhook_call_id' => $webhookCall->id,
-                'event' => $webhookCall->event
+                'event' => $webhookCall->event,
             ]);
 
             ProcessPolydockStoreWebhookCall::dispatch($webhookCall)
@@ -57,4 +58,4 @@ class PolydockStoreWebhookCall extends Model
     {
         return $this->belongsTo(PolydockStoreWebhook::class, 'polydock_store_webhook_id');
     }
-} 
+}

@@ -7,14 +7,11 @@ use App\Filament\Admin\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Infolists\Infolist;
-use App\Filament\Admin\Resources\UserGroupResource;
 
 class UserResource extends Resource
 {
@@ -26,6 +23,7 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -33,27 +31,29 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('first_name')
                     ->required()
                     ->maxLength(255),
-                    
+
                 Forms\Components\TextInput::make('last_name')
                     ->required()
                     ->maxLength(255),
-                    
+
                 Forms\Components\TextInput::make('email')
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                    
+
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255)
-                    ->label(fn (string $operation): string => 
-                        $operation === 'create' ? 'Password' : 'New Password (leave blank to keep current)')
+                    ->label(fn (string $operation): string => $operation === 'create'
+                        ? 'Password'
+                        : 'New Password (leave blank to keep current)'),
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -80,6 +80,7 @@ class UserResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -87,6 +88,7 @@ class UserResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -97,6 +99,7 @@ class UserResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -111,17 +114,17 @@ class UserResource extends Resource
                                     ->icon('heroicon-m-envelope')
                                     ->iconColor('primary'),
                             ]),
-                    \Filament\Infolists\Components\Grid::make(2)
-                        ->schema([
-                            \Filament\Infolists\Components\TextEntry::make('created_at')
-                                ->dateTime()
-                                ->icon('heroicon-m-calendar')
-                                ->iconColor('gray'),
-                            \Filament\Infolists\Components\TextEntry::make('updated_at')
-                                ->dateTime()
-                                ->icon('heroicon-m-calendar')
-                                ->iconColor('gray'),
-                        ])
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('created_at')
+                                    ->dateTime()
+                                    ->icon('heroicon-m-calendar')
+                                    ->iconColor('gray'),
+                                \Filament\Infolists\Components\TextEntry::make('updated_at')
+                                    ->dateTime()
+                                    ->icon('heroicon-m-calendar')
+                                    ->iconColor('gray'),
+                            ]),
                     ])
                     ->columnSpan(2),
 
@@ -137,7 +140,7 @@ class UserResource extends Resource
                             ->listWithLineBreaks()
                             ->bulleted()
                             ->url(fn ($record, $state) => UserGroupResource::getUrl('view', ['record' => $record->groups->first()]))
-                            ->openUrlInNewTab()
+                            ->openUrlInNewTab(),
                     ])
                     ->columnSpan(1),
             ])

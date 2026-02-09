@@ -38,7 +38,8 @@ class RegionsApiTest extends TestCase
 
         $response = $this->getJson('/api/regions');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'status',
                 'message',
@@ -52,10 +53,10 @@ class RegionsApiTest extends TestCase
                                 '*' => [
                                     'uuid',
                                     'label',
-                                ]
-                            ]
-                        ]
-                    ]
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'status_code',
             ])
@@ -70,11 +71,11 @@ class RegionsApiTest extends TestCase
                                 [
                                     'uuid' => $availableApp->uuid,
                                     'label' => 'Test Available App',
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
             ]);
 
         // Verify only one app is returned (the available one)
@@ -99,7 +100,7 @@ class RegionsApiTest extends TestCase
         $response = $this->getJson('/api/regions');
 
         $response->assertStatus(200);
-        
+
         $responseData = $response->json();
         $this->assertCount(0, $responseData['data']['regions']);
     }
@@ -121,7 +122,7 @@ class RegionsApiTest extends TestCase
         $response = $this->getJson('/api/regions');
 
         $response->assertStatus(200);
-        
+
         $responseData = $response->json();
         $this->assertCount(0, $responseData['data']['regions']);
     }
@@ -143,7 +144,7 @@ class RegionsApiTest extends TestCase
         $response = $this->getJson('/api/regions');
 
         $response->assertStatus(200);
-        
+
         $responseData = $response->json();
         $this->assertCount(0, $responseData['data']['regions']);
     }
@@ -159,7 +160,8 @@ class RegionsApiTest extends TestCase
 
         $response = $this->getJson('/api/regions');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
                 'data' => [
@@ -167,10 +169,10 @@ class RegionsApiTest extends TestCase
                         [
                             'id' => $store->id,
                             'label' => 'Empty Region',
-                            'apps' => []
-                        ]
-                    ]
-                ]
+                            'apps' => [],
+                        ],
+                    ],
+                ],
             ]);
     }
 }

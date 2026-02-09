@@ -9,7 +9,8 @@ use Illuminate\Queue\SerializesModels;
 
 class PolydockAppInstanceStatusChanged
 {
-    use Dispatchable, SerializesModels;
+    use Dispatchable;
+    use SerializesModels;
 
     /**
      * Create a new event instance.
@@ -18,4 +19,4 @@ class PolydockAppInstanceStatusChanged
         public PolydockAppInstance $appInstance,
         public ?PolydockAppInstanceStatus $previousStatus = null
     ) {}
-} 
+}

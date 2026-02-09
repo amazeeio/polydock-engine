@@ -13,32 +13,38 @@ use Illuminate\Support\Facades\Mail;
 
 class ProcessTrialCompleteEmailJob extends BaseJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable;
+    use InteractsWithQueue;
+    use Queueable;
+    use SerializesModels;
 
     public function handle()
-    {   
+    {
         $this->polydockJobStart();
 
-        if (!$this->appInstance->is_trial || 
-            !$this->appInstance->storeApp->send_trial_complete_email ||
-            !$this->appInstance->trial_ends_at ||
-            !$this->appInstance->trial_ends_at->isPast() ||
-            $this->appInstance->trial_complete_email_sent) {
-                $this->appInstance->info('Trial complete email not sent', [
-                    'app_instance_id' => $this->appInstance->id,
-                    'is_trial' => $this->appInstance->is_trial,
-                    'send_trial_complete_email' => $this->appInstance->storeApp->send_trial_complete_email,
-                    'trial_ends_at' => $this->appInstance->trial_ends_at,
-                    'trial_complete_email_sent' => $this->appInstance->trial_complete_email_sent,
-                ]);
+        if (
+            ! $this->appInstance->is_trial
+            || ! $this->appInstance->storeApp->send_trial_complete_email
+            || ! $this->appInstance->trial_ends_at
+            || ! $this->appInstance->trial_ends_at->isPast()
+            || $this->appInstance->trial_complete_email_sent
+        ) {
+            $this->appInstance->info('Trial complete email not sent', [
+                'app_instance_id' => $this->appInstance->id,
+                'is_trial' => $this->appInstance->is_trial,
+                'send_trial_complete_email' => $this->appInstance->storeApp->send_trial_complete_email,
+                'trial_ends_at' => $this->appInstance->trial_ends_at,
+                'trial_complete_email_sent' => $this->appInstance->trial_complete_email_sent,
+            ]);
+
             return;
         }
 
-        // Send email to owners      
-        foreach($this->appInstance->userGroup->owners as $owner) {
+        // Send email to owners
+        foreach ($this->appInstance->userGroup->owners as $owner) {
             $mail = Mail::to($owner->email);
-                    
-            if(env('MAIL_CC_ALL', false)) {
+
+            if (env('MAIL_CC_ALL', false)) {
                 $mail->cc(env('MAIL_CC_ALL'));
             }
 
@@ -46,7 +52,7 @@ class ProcessTrialCompleteEmailJob extends BaseJob implements ShouldQueue
                 'owner_id' => $owner->id,
                 'owner_email' => $owner->email,
             ]);
-            
+
             $mail->queue(new AppInstanceTrialCompleteMail($this->appInstance, $owner));
         }
 
@@ -55,4 +61,4 @@ class ProcessTrialCompleteEmailJob extends BaseJob implements ShouldQueue
 
         $this->polydockJobDone();
     }
-} 
+}

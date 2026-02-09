@@ -8,11 +8,9 @@ use App\PolydockEngine\PolydockLogger;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Support\Facades\Log;
 
 class PreRemoveJob extends BaseJob implements ShouldQueue
 {
-
     /**
      * Execute the job.
      */
@@ -20,17 +18,19 @@ class PreRemoveJob extends BaseJob implements ShouldQueue
     {
         $this->polydockJobStart();
         $appInstance = $this->appInstance;
-        if(!$appInstance) {
-            throw new \Exception('Failed to process PolydockAppInstance in ' . class_basename(self::class) . ' - not found');
-        }
-        
-        if ($appInstance->status != PolydockAppInstanceStatus::PENDING_PRE_REMOVE) {
-            throw new PolydockAppInstanceStatusFlowException(
-                'PreRemoveJob must be in status PENDING_PRE_REMOVE'
+        if (! $appInstance) {
+            throw new \Exception(
+                'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
             );
         }
 
-        $polydockEngine = new Engine(new PolydockLogger());
+        if ($appInstance->status != PolydockAppInstanceStatus::PENDING_PRE_REMOVE) {
+            throw new PolydockAppInstanceStatusFlowException(
+                'PreRemoveJob must be in status PENDING_PRE_REMOVE',
+            );
+        }
+
+        $polydockEngine = new Engine(new PolydockLogger);
         $polydockEngine->processPolydockAppInstance($appInstance);
 
         $this->polydockJobDone();

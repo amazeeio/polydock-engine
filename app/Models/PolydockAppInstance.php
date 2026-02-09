@@ -2,27 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Log;
-
+use App\Events\PolydockAppInstanceCreatedWithNewStatus;
+use App\Events\PolydockAppInstanceStatusChanged;
+use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
+use App\PolydockEngine\PolydockEngineAppNotFoundException;
+use App\Traits\HasPolydockVariables;
+use App\Traits\HasWebhookSensitiveData;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
 use FreedomtechHosting\PolydockApp\PolydockAppInterface;
 use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
-
-use App\PolydockEngine\PolydockEngineAppNotFoundException;
-use App\Traits\HasPolydockVariables;
-use App\Events\PolydockAppInstanceCreatedWithNewStatus;
-use App\Events\PolydockAppInstanceStatusChanged;
-use App\Traits\HasWebhookSensitiveData;
-
-use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-
-use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
@@ -31,6 +27,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * The fillable attributes for the model
+     *
      * @var array
      */
     protected $fillable = [
@@ -55,6 +52,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * The casts for the model
+     *
      * @var array
      */
     protected $casts = [
@@ -73,19 +71,16 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * The engine for the app instance
-     * @var PolydockEngineInterface
      */
     private PolydockEngineInterface $engine;
 
     /**
      * The app for the app instance
-     * @var PolydockAppInterface
      */
     private PolydockAppInterface $app;
 
     /**
      * The logger for the app instance
-     * @var PolydockAppLoggerInterface
      */
     private PolydockAppLoggerInterface $logger;
 
@@ -100,7 +95,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'ssh_key',
         'lagoon_deploy_private_key',
         'recaptcha',
-        
+
         // Regex patterns
         '/^.*_key$/',              // Anything ending with _key
         '/^.*_secret$/',           // Anything ending with _secret
@@ -109,7 +104,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         '/^.*token.*$/',           // Anything containing token
         '/^.*api[_-]?key.*$/i',    // Any variation of api key
         '/^.*ssh[_-]?key.*$/i',    // Any variation of ssh key
-        '/^.*private[_-]?key.*$/i' // Any variation of private key
+        '/^.*private[_-]?key.*$/i', // Any variation of private key
     ];
 
     public static array $pendingStatuses = [
@@ -191,7 +186,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED,
         PolydockAppInstanceStatus::DEPLOY_COMPLETED,
         PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
-    ];  
+    ];
 
     public static array $stageRemoveStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
@@ -204,7 +199,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::REMOVE_COMPLETED,
         PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
         PolydockAppInstanceStatus::REMOVED,
-    ];  
+    ];
 
     public static array $stageUpgradeStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
@@ -217,14 +212,14 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PRE_UPGRADE_RUNNING,
         PolydockAppInstanceStatus::UPGRADE_RUNNING,
         PolydockAppInstanceStatus::POST_UPGRADE_RUNNING,
-    ];  
-    
+    ];
+
     public static array $stageRunningStatuses = [
         PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
         PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
         PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
-    ];    
+    ];
 
     /**
      * Get the route key for the model.
@@ -246,7 +241,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         static::creating(function ($model) {
             // Get the store app and its class
             $storeApp = PolydockStoreApp::findOrFail($model->polydock_store_app_id);
-            
+
             try {
                 $model->status = PolydockAppInstanceStatus::NEW->value;
                 $model->status_message = PolydockAppInstanceStatus::NEW->getStatusMessage();
@@ -256,11 +251,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
                 $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
 
-		        // Fill the UUID 
-        	    $model->uuid = Str::uuid()->toString();
+                // Fill the UUID
+                $model->uuid = Str::uuid()->toString();
 
                 $data = [
-		            'uuid' => $model->uuid,
+                    'uuid' => $model->uuid,
                     'lagoon-deploy-git' => $storeApp->lagoon_deploy_git,
                     'lagoon-deploy-branch' => $storeApp->lagoon_deploy_branch,
                     'lagoon-deploy-organization-id' => $storeApp->lagoon_deploy_organization_id_ext,
@@ -272,11 +267,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'amazee-ai-backend-region-id' => $storeApp->amazee_ai_backend_region_id_ext,
                     'available-for-trials' => $storeApp->available_for_trials,
                     'lagoon-generate-app-admin-username' => $model->generateUniqueUsername(),
-		            'lagoon-generate-app-admin-password' => $model->generateUniquePassword(),
+                    'lagoon-generate-app-admin-password' => $model->generateUniquePassword(),
                     'polydock-app-instance-health-webhook-url' => str_replace(':status:', '', route('api.instance.health', [
                         'uuid' => $model->uuid,
-                        'status' => ':status:'
-                    ], true))
+                        'status' => ':status:',
+                    ], true)),
                 ];
 
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'post_deploy', 'post-deploy'));
@@ -287,17 +282,17 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'remove', 'remove'));
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'claim', 'claim'));
 
-                // This is a pre-launch hack for amazee.ai Private GPT 
-                // TODO: Abstract this once the amazee.ai Private GPT 
+                // This is a pre-launch hack for amazee.ai Private GPT
+                // TODO: Abstract this once the amazee.ai Private GPT
                 //   is launched and stable.
                 $data = array_merge($data, AmazeeAiBackendHelper::getDataForPrivateGPTSettings());
 
-                $model->data = $data;                
+                $model->data = $data;
             } catch (PolydockEngineAppNotFoundException $e) {
                 Log::error('Failed to set app type for new instance', [
                     'store_app_id' => $model->polydock_store_app_id,
                     'class' => $storeApp->polydock_app_class,
-                    'error' => $e->getMessage()
+                    'error' => $e->getMessage(),
                 ]);
                 throw $e;
             }
@@ -308,7 +303,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
                 $appInstance->info('MODEL: New app instance created', [
                     'app_instance_id' => $appInstance->id,
-                    'status' => $appInstance->status
+                    'status' => $appInstance->status,
                 ]);
                 event(new PolydockAppInstanceCreatedWithNewStatus($appInstance));
             }
@@ -319,7 +314,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $appInstance->info('MODEL: Status changed for app instance', [
                     'app_instance_id' => $appInstance->id,
                     'previous_status' => $appInstance->getOriginal('status'),
-                    'new_status' => $appInstance->status
+                    'new_status' => $appInstance->status,
                 ]);
                 event(new PolydockAppInstanceStatusChanged($appInstance, $appInstance->getOriginal('status')));
             }
@@ -328,29 +323,29 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     public static function getDataForLagoonScript(PolydockStoreApp $storeApp, string $fieldKeyPart, string $dataKeyPart)
     {
-        $data = [];   
-        $fieldKeyScript = "lagoon_".$fieldKeyPart."_script";
-        $dataKeyScript = "lagoon-".$dataKeyPart."-script";
+        $data = [];
+        $fieldKeyScript = 'lagoon_'.$fieldKeyPart.'_script';
+        $dataKeyScript = 'lagoon-'.$dataKeyPart.'-script';
 
-        $fieldKeyService = "lagoon_".$fieldKeyPart."_service";
-        $dataKeyService = "lagoon-".$dataKeyPart."-script-service";
+        $fieldKeyService = 'lagoon_'.$fieldKeyPart.'_service';
+        $dataKeyService = 'lagoon-'.$dataKeyPart.'-script-service';
 
-        $fieldKeyContainer = "lagoon_".$fieldKeyPart."_container";
-        $dataKeyContainer = "lagoon-".$dataKeyPart."-script-container";
+        $fieldKeyContainer = 'lagoon_'.$fieldKeyPart.'_container';
+        $dataKeyContainer = 'lagoon-'.$dataKeyPart.'-script-container';
 
-        if($storeApp->{$fieldKeyScript}) {
+        if ($storeApp->{$fieldKeyScript}) {
             $data[$dataKeyScript] = $storeApp->{$fieldKeyScript};
-            
-            if($storeApp->{$fieldKeyService}) {
+
+            if ($storeApp->{$fieldKeyService}) {
                 $data[$dataKeyService] = $storeApp->{$fieldKeyService};
             } else {
-                $data[$dataKeyService] = "cli";
+                $data[$dataKeyService] = 'cli';
             }
-    
-            if($storeApp->{$fieldKeyContainer}) {
+
+            if ($storeApp->{$fieldKeyContainer}) {
                 $data[$dataKeyContainer] = $storeApp->{$fieldKeyContainer};
             } else {
-                $data[$dataKeyContainer] = "cli";
+                $data[$dataKeyContainer] = 'cli';
             }
         }
 
@@ -358,46 +353,49 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             'store_app_id' => $storeApp->id,
             'field_key_part' => $fieldKeyPart,
             'data_key_part' => $dataKeyPart,
-            'data' => $data
+            'data' => $data,
         ]);
 
         return $data;
     }
-    
-    
+
     /**
      * Set the app for the app instance
-     * @param PolydockAppInterface $app The app to set
+     *
+     * @param  PolydockAppInterface  $app  The app to set
      * @return self Returns the instance for method chaining
      */
-    public function setApp(PolydockAppInterface $app) : self
+    public function setApp(PolydockAppInterface $app): self
     {
         $this->app = $app;
+
         return $this;
     }
 
     /**
      * Get the app for the app instance
+     *
      * @return PolydockAppInterface The app
      */
-    public function getApp() : PolydockAppInterface
+    public function getApp(): PolydockAppInterface
     {
         return $this->app;
     }
 
     /**
      * Set the type of the app instance
-     * @param string $appType The type of the app instance
+     *
+     * @param  string  $appType  The type of the app instance
      * @return self Returns the instance for method chaining
      */
-    public function setAppType(string $appType) : self
+    public function setAppType(string $appType): self
     {
 
-        if(! class_exists($appType)) {
+        if (! class_exists($appType)) {
             throw new PolydockEngineAppNotFoundException($appType);
         }
-        
-        $appType = str_replace("\\", "_", $appType);
+
+        $appType = str_replace('\\', '_', $appType);
 
         $this->app_type = $appType;
 
@@ -406,20 +404,22 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the type of the app instance
+     *
      * @return string The type of the app instance
      */
-    public function getAppType() : string
+    public function getAppType(): string
     {
         return $this->app_type;
     }
 
     /**
      * Set the status of the app instance
-     * @param PolydockAppInstanceStatus $status The new status to set
-     * @param string $statusMessage The status message to set
+     *
+     * @param  PolydockAppInstanceStatus  $status  The new status to set
+     * @param  string  $statusMessage  The status message to set
      * @return self Returns the instance for method chaining
      */
-    public function setStatus(PolydockAppInstanceStatus $status, string $statusMessage = "") : self
+    public function setStatus(PolydockAppInstanceStatus $status, string $statusMessage = ''): self
     {
         if ($this->status !== $status) {
             $previousStatus = $this->status;
@@ -428,20 +428,20 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             Log::info('Setting status of app instance', [
                 'app_instance_id' => $this->id,
                 'previous_status' => $previousStatus,
-                'new_status' => $status
+                'new_status' => $status,
             ]);
 
-            if(!empty($statusMessage)) {
+            if (! empty($statusMessage)) {
                 $this->setStatusMessage($statusMessage);
             }
         } else {
-           $this->info('Setting status of app instance to same status', [
+            $this->info('Setting status of app instance to same status', [
                 'app_instance_id' => $this->id,
                 'previous_status' => $this->status,
-                'status' => $status
+                'status' => $status,
             ]);
 
-            if(!empty($statusMessage)) {
+            if (! empty($statusMessage)) {
                 $this->setStatusMessage($statusMessage);
             }
         }
@@ -451,127 +451,142 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the status of the app instance
+     *
      * @return PolydockAppInstanceStatus The current status enum value
      */
-    public function getStatus() : PolydockAppInstanceStatus
+    public function getStatus(): PolydockAppInstanceStatus
     {
         return $this->status;
     }
 
     /**
      * Set the status message of the app instance
-     * @param string $statusMessage The status message to set
+     *
+     * @param  string  $statusMessage  The status message to set
      * @return self Returns the instance for method chaining
      */
-    public function setStatusMessage(string $statusMessage) : self
+    public function setStatusMessage(string $statusMessage): self
     {
         $this->status_message = $statusMessage;
+
         return $this;
     }
 
     /**
      * Get the status message of the app instance
+     *
      * @return string The status message
-     */ 
-    public function getStatusMessage() : string 
+     */
+    public function getStatusMessage(): string
     {
         return $this->status_message;
     }
-    
+
     /**
      * Store a key-value pair for the app instance
-     * @param string $key The key to store
-     * @param string $value The value to store
+     *
+     * @param  string  $key  The key to store
+     * @param  string  $value  The value to store
      * @return self Returns the instance for method chaining
      */
-    public function storeKeyValue(string $key, string $value) : self
+    public function storeKeyValue(string $key, string $value): self
     {
         $resultData = $this->data ?? [];
         data_set($resultData, $key, $value);
         $this->data = $resultData;
         $this->save();
+
         return $this;
-    }   
+    }
 
     /**
      * Get a stored value by key
-     * @param string $key The key to retrieve
+     *
+     * @param  string  $key  The key to retrieve
      * @return string The stored value, or empty string if not found
      */
-    public function getKeyValue(string $key) : string
+    public function getKeyValue(string $key): string
     {
-        return data_get($this->data, $key) ?? "";
+        return data_get($this->data, $key) ?? '';
     }
 
-    /** 
+    /**
      * Delete a stored key-value pair
-     * @param string $key The key to delete
+     *
+     * @param  string  $key  The key to delete
      * @return self Returns the instance for method chaining
      */
-    public function deleteKeyValue(string $key) : self
+    public function deleteKeyValue(string $key): self
     {
         unset($this->data[$key]);
+
         return $this;
     }
 
-    public function setLogger(PolydockAppLoggerInterface $logger) : self
+    public function setLogger(PolydockAppLoggerInterface $logger): self
     {
         $this->logger = $logger;
+
         return $this;
     }
 
-    public function getLogger() : PolydockAppLoggerInterface
+    public function getLogger(): PolydockAppLoggerInterface
     {
         return $this->logger;
     }
 
-    public function info(string $message, array $context = []) : self
+    public function info(string $message, array $context = []): self
     {
-        if(isset($this->logger)) {
+        if (isset($this->logger)) {
             $this->logger->info($message, $context);
         }
 
         $this->logLine('info', $message, $context);
+
         return $this;
     }
 
-    public function error(string $message, array $context = []) : self
+    public function error(string $message, array $context = []): self
     {
-        if(isset($this->logger)) {
+        if (isset($this->logger)) {
             $this->logger->error($message, $context);
         }
 
         $this->logLine('error', $message, $context);
+
         return $this;
     }
 
-    public function warning(string $message, array $context = []) : self
+    public function warning(string $message, array $context = []): self
     {
-        if(isset($this->logger)) {
+        if (isset($this->logger)) {
             $this->logger->warning($message, $context);
         }
 
         $this->logLine('warning', $message, $context);
+
         return $this;
     }
 
-    public function debug(string $message, array $context = []) : self
+    public function debug(string $message, array $context = []): self
     {
-        if(isset($this->logger)) {
+        if (isset($this->logger)) {
             $this->logger->debug($message, $context);
         }
-        
+
         $this->logLine('debug', $message, $context);
+
         return $this;
     }
 
-    public function setEngine(PolydockEngineInterface $engine) : self
+    public function setEngine(PolydockEngineInterface $engine): self
     {
         $this->engine = $engine;
+
         return $this;
     }
-    
-    public function getEngine() : PolydockEngineInterface
+
+    public function getEngine(): PolydockEngineInterface
     {
         return $this->engine;
     }
@@ -591,7 +606,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             'Deer', 'Moose', 'Elk', 'Bison', 'Buffalo', 'Antelope', 'Gazelle', 'Camel', 'Llama', 'Alpaca',
             'Raccoon', 'Badger', 'Beaver', 'Otter', 'Meerkat', 'Mongoose', 'Weasel', 'Ferret', 'Skunk', 'Armadillo',
             'Sloth', 'Orangutan', 'Chimpanzee', 'Baboon', 'Lemur', 'Gibbon', 'Marmoset', 'Tamarin', 'Capuchin', 'Macaque',
-            'Platypus', 'Echidna', 'Opossum', 'Wombat', 'Tasmanian', 'Dingo', 'Quokka', 'Numbat', 'Wallaby', 'Bilby'
+            'Platypus', 'Echidna', 'Opossum', 'Wombat', 'Tasmanian', 'Dingo', 'Quokka', 'Numbat', 'Wallaby', 'Bilby',
         ];
 
         return str_replace(' ', '', $animals[array_rand($animals)]);
@@ -612,7 +627,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             'Wandering', 'Exploring', 'Roaming', 'Meandering', 'Trotting',
             'Charging', 'Lunging', 'Darting', 'Zigzagging', 'Circling',
             'Twirling', 'Spinning', 'Rolling', 'Tumbling', 'Flipping',
-            'Stretching', 'Yawning', 'Resting', 'Lounging', 'Relaxing'
+            'Stretching', 'Yawning', 'Resting', 'Lounging', 'Relaxing',
         ];
 
         return $verbs[array_rand($verbs)];
@@ -624,34 +639,33 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     private function pickColor(): string
     {
         $colors = [
-            'Red', 'Blue', 'Green', 'Yellow', 'Purple', 
+            'Red', 'Blue', 'Green', 'Yellow', 'Purple',
             'Orange', 'Silver', 'Gold', 'Crimson', 'Azure',
-            'Emerald', 'Amber', 'Violet', 'Coral', 'Indigo'
+            'Emerald', 'Amber', 'Violet', 'Coral', 'Indigo',
         ];
 
-        return $colors[array_rand($colors)]; 
+        return $colors[array_rand($colors)];
     }
 
     /**
      * Generate a unique project name using an animal, verb and UUID
-     * @param string $prefix The prefix for the project name
+     *
+     * @param  string  $prefix  The prefix for the project name
      * @return string The generated unique name
      */
-    public function generateUniqueProjectName(string $prefix) : string 
+    public function generateUniqueProjectName(string $prefix): string
     {
         return strtolower(
-            $prefix . '-' . 
-            $this->pickVerb() . '-' . 
-            $this->pickColor() . '-' . 
-            $this->pickAnimal() . '-' . 
+            $prefix.'-'.
+            // $this->pickVerb() . '-' . // we're removing the verb for now, it's not necessary
+            $this->pickColor().'-'.
+            $this->pickAnimal().'-'.
             uniqid()
         );
     }
-    
+
     /**
      * Get the store app that this instance belongs to
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function storeApp(): BelongsTo
     {
@@ -660,8 +674,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the user group that owns this instance
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function userGroup(): BelongsTo
     {
@@ -678,15 +690,16 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Generate a unique password using either color-animal or verb-animal pattern
+     *
      * @return string The generated password
      */
     public function generateUniquePassword(): string
     {
         // Randomly choose between color-animal or verb-animal pattern
-        if (rand(0, 1) === 0) {
-            return strtolower($this->pickColor() . $this->pickAnimal());
+        if (random_int(0, 1) === 0) {
+            return strtolower($this->pickColor().$this->pickAnimal());
         } else {
-            return strtolower($this->pickVerb() .  $this->pickAnimal());
+            return strtolower($this->pickVerb().$this->pickAnimal());
         }
     }
 
@@ -702,7 +715,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             'test',
             'user',
             'guest',
-            'preview'
+            'preview',
         ];
 
         return $prefixes[array_rand($prefixes)];
@@ -710,11 +723,12 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Generate a unique username
+     *
      * @return string The generated username
      */
     public function generateUniqueUsername(): string
     {
-        return strtolower($this->pickUsernamePrefix() . rand(1000, 9999));
+        return strtolower($this->pickUsernamePrefix().random_int(1000, 9999));
     }
 
     /**
@@ -725,13 +739,13 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this->hasMany(PolydockAppInstanceLog::class);
     }
 
-    public function logLine(string $level, string $message, array $context = []) : self
+    public function logLine(string $level, string $message, array $context = []): self
     {
         $this->logs()->create([
             'type' => 'model_log',
             'level' => $level,
             'message' => $message,
-            'data' => $context
+            'data' => $context,
         ]);
 
         return $this;
@@ -748,7 +762,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     // Helper method to check if trial is active
     public function isTrialActive(): bool
     {
-        if (!$this->is_trial || $this->trial_completed) {
+        if (! $this->is_trial || $this->trial_completed) {
             return false;
         }
 
@@ -758,7 +772,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     // Helper method to check if trial is expired
     public function isTrialExpired(): bool
     {
-        if (!$this->is_trial) {
+        if (! $this->is_trial) {
             return false;
         }
 
@@ -767,18 +781,17 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Set the one-time login URL with expiration
-     * 
-     * @param string $url The one-time login URL
-     * @param int $numberOfHours Number of hours the URL is valid for
-     * @param bool $setOnlyDontSave If true, won't save the model
-     * @return self
+     *
+     * @param  string  $url  The one-time login URL
+     * @param  int  $numberOfHours  Number of hours the URL is valid for
+     * @param  bool  $setOnlyDontSave  If true, won't save the model
      */
     public function setOneTimeLoginUrl(string $url, int $numberOfHours = 24, bool $setOnlyDontSave = false): self
     {
         $this->app_one_time_login_url = $url;
         $this->app_one_time_login_valid_until = now()->addHours($numberOfHours);
 
-        if (!$setOnlyDontSave) {
+        if (! $setOnlyDontSave) {
             $this->save();
         }
 
@@ -797,12 +810,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Check if the one-time login URL has expired
-     * 
-     * @return bool
      */
     public function oneTimeLoginUrlHasExpired(): bool
     {
-        if (!$this->app_one_time_login_valid_until) {
+        if (! $this->app_one_time_login_valid_until) {
             return true;
         }
 
@@ -811,55 +822,49 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the lagoon generated app admin username
-     * @return string
      */
     public function getGeneratedAppAdminUsername(): string
     {
-        return $this->getKeyValue('lagoon-generate-app-admin-username') ?? "";
+        return $this->getKeyValue('lagoon-generate-app-admin-username') ?? '';
     }
 
     /**
      * Get the lagoon generated app admin password
-     * @return string
-     */ 
-    public function getGeneratedAppAdminPassword(): string 
+     */
+    public function getGeneratedAppAdminPassword(): string
     {
-        return $this->getKeyValue('lagoon-generate-app-admin-password') ?? "";
+        return $this->getKeyValue('lagoon-generate-app-admin-password') ?? '';
     }
 
     /**
      * Get the user's first name
-     * @return string
      */
     public function getUserFirstName(): string
     {
-        return $this->getKeyValue('user-first-name') ?? "";
+        return $this->getKeyValue('user-first-name') ?? '';
     }
 
     /**
      * Get the user's last name
-     * @return string
      */
     public function getUserLastName(): string
     {
-        return $this->getKeyValue('user-last-name') ?? "";
+        return $this->getKeyValue('user-last-name') ?? '';
     }
 
     /**
      * Get the user's email
-     * @return string
      */
     public function getUserEmail(): string
     {
-        return $this->getKeyValue('user-email') ?? "";
+        return $this->getKeyValue('user-email') ?? '';
     }
 
     /**
      * Calculate and set trial dates based on duration
-     * 
-     * @param int|null $overrideDurationDays Override the store app's trial duration
-     * @param bool $saveModel Whether to save the model after setting trial dates
-     * @return self
+     *
+     * @param  int|null  $overrideDurationDays  Override the store app's trial duration
+     * @param  bool  $saveModel  Whether to save the model after setting trial dates
      */
     public function calculateAndSetTrialDates(?int $overrideDurationDays = null, ?bool $saveModel = false): self
     {
@@ -897,16 +902,15 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Calculate and set trial dates based on end datetime
-     * 
-     * @param \DateTime|\Carbon\Carbon $trialEndDateTime When the trial should end
-     * @param bool $saveModel Whether to save the model after setting trial dates
-     * @return self
+     *
+     * @param  \DateTime|\Carbon\Carbon  $trialEndDateTime  When the trial should end
+     * @param  bool  $saveModel  Whether to save the model after setting trial dates
      */
     public function calculateAndSetTrialDatesFromEndDate($trialEndDateTime, bool $saveModel = false): self
     {
         // Calculate days between now and end date
         $durationDays = now()->diffInDays($trialEndDateTime);
-        
+
         return $this->calculateAndSetTrialDates($durationDays, $saveModel);
     }
 }

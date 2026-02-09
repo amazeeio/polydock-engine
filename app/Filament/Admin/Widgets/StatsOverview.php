@@ -2,9 +2,9 @@
 
 namespace App\Filament\Admin\Widgets;
 
+use App\Models\PolydockAppInstance;
 use App\Models\User;
 use App\Models\UserRemoteRegistration;
-use App\Models\PolydockAppInstance;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -12,6 +12,7 @@ class StatsOverview extends BaseWidget
 {
     protected static ?int $sort = 1;
 
+    #[\Override]
     protected function getStats(): array
     {
         return [

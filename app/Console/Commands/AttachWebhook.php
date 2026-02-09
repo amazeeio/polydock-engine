@@ -34,31 +34,33 @@ class AttachWebhook extends Command
 
         // Get all stores for selection
         $stores = PolydockStore::all();
-        
+
         if ($stores->isEmpty()) {
             $this->error('No stores found. Please create a store first.');
+
             return 1;
         }
 
         // Select store
         $storeId = $this->option('store-id');
-        if (!$storeId) {
-            $storeOptions = $stores->mapWithKeys(function ($store) {
-                return [$store->id => "{$store->name} (ID: {$store->id})"];
-            })->toArray();
-            
+        if (! $storeId) {
+            $storeOptions = $stores
+                ->mapWithKeys(fn ($store) => [$store->id => "{$store->name} (ID: {$store->id})"])
+                ->toArray();
+
             $selectedStoreValue = $this->choice('Select a store to attach webhook to:', $storeOptions);
             $storeId = collect($storeOptions)->search($selectedStoreValue);
-            if(empty($storeId)) {
-                $this->error("Unable to find store ID");
+            if (empty($storeId)) {
+                $this->error('Unable to find store ID');
                 exit(1);
             }
         }
 
         // Validate store exists
         $store = PolydockStore::find($storeId);
-        if (!$store) {
+        if (! $store) {
             $this->error("Store with ID {$storeId} not found.");
+
             return 1;
         }
 
@@ -66,6 +68,7 @@ class AttachWebhook extends Command
         $webhookUrl = $this->option('url') ?? $this->ask('Webhook URL');
         if (empty($webhookUrl)) {
             $this->error('Webhook URL is required. Exiting...');
+
             return 1;
         }
 
@@ -82,8 +85,8 @@ class AttachWebhook extends Command
 
         $this->info("✅ Webhook attached successfully to store '{$store->name}' with ID: {$webhook->id}");
         $this->line("   URL: {$webhook->url}");
-        $this->line("   Active: " . ($webhook->active ? 'Yes' : 'No'));
-        
+        $this->line('   Active: '.($webhook->active ? 'Yes' : 'No'));
+
         return 0;
     }
 }

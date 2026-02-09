@@ -4,7 +4,6 @@ namespace App\Listeners;
 
 use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Events\PolydockAppInstanceStatusChanged;
-use App\Jobs\ProcessPolydockAppInstanceJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Claim\ClaimJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Create\CreateJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Create\PostCreateJob;
@@ -19,11 +18,11 @@ use App\Jobs\ProcessPolydockAppInstanceJobs\Remove\RemoveJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\PostUpgradeJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\PreUpgradeJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\UpgradeJob;
+use App\Mail\AppInstanceReadyMail;
 use App\Models\PolydockAppInstance;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\AppInstanceReadyMail;
 
 class ProcessPolydockAppInstanceStatusChange
 {
@@ -32,39 +31,56 @@ class ProcessPolydockAppInstanceStatusChange
      */
     public function handle(PolydockAppInstanceStatusChanged $event): void
     {
-        Log::info('Dispatching ProcessPolydockAppInstanceJob via StatusChanged ('.$event->appInstance->status->value.')', [
-            'app_instance_id' => $event->appInstance->id,
-            'store_app_id' => $event->appInstance->polydock_store_app_id,
-            'store_app_name' => $event->appInstance->storeApp->name,
-            'status' => $event->appInstance->status->value,
-            'previous_status' => $event->previousStatus->value,
-        ]);
+        Log::info(
+            'Dispatching ProcessPolydockAppInstanceJob via StatusChanged ('.$event->appInstance->status->value.')',
+            [
+                'app_instance_id' => $event->appInstance->id,
+                'store_app_id' => $event->appInstance->polydock_store_app_id,
+                'store_app_name' => $event->appInstance->storeApp->name,
+                'status' => $event->appInstance->status->value,
+                'previous_status' => $event->previousStatus->value,
+            ],
+        );
 
-        if(in_array($event->appInstance->status, PolydockAppInstance::$completedStatuses)) {
-
-            if($event->appInstance->remoteRegistration) {
+        if (in_array($event->appInstance->status, PolydockAppInstance::$completedStatuses)) {
+            if ($event->appInstance->remoteRegistration) {
                 $appInstance = $event->appInstance;
                 $event->appInstance->remoteRegistration->setResultValue('message', $appInstance->getStatusMessage());
-                
-                if($appInstance->getKeyValue('lagoon-generate-app-admin-username')) {
-                    $event->appInstance->remoteRegistration->setResultValue('app_admin_username', $appInstance->getKeyValue('lagoon-generate-app-admin-username'));
+
+                if ($appInstance->getKeyValue('lagoon-generate-app-admin-username')) {
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'app_admin_username',
+                        $appInstance->getKeyValue('lagoon-generate-app-admin-username'),
+                    );
                 }
 
-                if($appInstance->getKeyValue('lagoon-generate-app-admin-password')) {
-                    $event->appInstance->remoteRegistration->setResultValue('app_admin_password', $appInstance->getKeyValue('lagoon-generate-app-admin-password'));
+                if ($appInstance->getKeyValue('lagoon-generate-app-admin-password')) {
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'app_admin_password',
+                        $appInstance->getKeyValue('lagoon-generate-app-admin-password'),
+                    );
                 }
 
                 // Store user information in registration results
-                if($appInstance->getKeyValue('user-first-name')) {
-                    $event->appInstance->remoteRegistration->setResultValue('user_first_name', $appInstance->getKeyValue('user-first-name'));
+                if ($appInstance->getKeyValue('user-first-name')) {
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'user_first_name',
+                        $appInstance->getKeyValue('user-first-name'),
+                    );
                 }
 
-                if($appInstance->getKeyValue('user-last-name')) {
-                    $event->appInstance->remoteRegistration->setResultValue('user_last_name', $appInstance->getKeyValue('user-last-name'));
+                if ($appInstance->getKeyValue('user-last-name')) {
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'user_last_name',
+                        $appInstance->getKeyValue('user-last-name'),
+                    );
                 }
 
-                if($appInstance->getKeyValue('user-email')) {
-                    $event->appInstance->remoteRegistration->setResultValue('user_email', $appInstance->getKeyValue('user-email'));
+                if ($appInstance->getKeyValue('user-email')) {
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'user_email',
+                        $appInstance->getKeyValue('user-email'),
+                    );
                 }
 
                 $event->appInstance->remoteRegistration->save();
@@ -77,8 +93,9 @@ class ProcessPolydockAppInstanceStatusChange
         }
     }
 
-    public function switchOnStatus(PolydockAppInstanceStatusChanged $event) {
-        switch($event->appInstance->status) {
+    public function switchOnStatus(PolydockAppInstanceStatusChanged $event)
+    {
+        switch ($event->appInstance->status) {
             case PolydockAppInstanceStatus::PENDING_PRE_CREATE:
                 Log::info('Dispatching PreCreateJob', [
                     'app_instance_id' => $event->appInstance->id,
@@ -184,38 +201,38 @@ class ProcessPolydockAppInstanceStatusChange
                     ->onQueue('polydock-app-instance-processing-claim');
                 break;
             case PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED:
-                if($event->appInstance->remoteRegistration) {
+                if ($event->appInstance->remoteRegistration) {
                     $appInstance = $event->appInstance;
                     $remoteRegistration = $appInstance->remoteRegistration;
-                    $remoteRegistration->setResultValue('message', "Your trial is ready.");
+                    $remoteRegistration->setResultValue('message', 'Your trial is ready.');
                     $remoteRegistration->setResultValue('app_url', $appInstance->app_one_time_login_url);
                     $remoteRegistration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
                     $remoteRegistration->save();
 
-                    foreach($appInstance->userGroup->owners as $owner) {
+                    foreach ($appInstance->userGroup->owners as $owner) {
                         $mail = Mail::to($owner->email);
-                            
-                        if(env('MAIL_CC_ALL', false)) {
+
+                        if (env('MAIL_CC_ALL', false)) {
                             $mail->cc(env('MAIL_CC_ALL'));
                         }
-        
+
                         $appInstance->info('Sending ready email to owner', [
                             'owner_id' => $owner->id,
                             'owner_email' => $owner->email,
                         ]);
-        
+
                         Log::info('Sending ready email to owner', [
                             'owner_id' => $owner->id,
                             'owner_email' => $owner->email,
                             'app_instance_id' => $appInstance->id,
                         ]);
-        
+
                         $mail->queue(new AppInstanceReadyMail($appInstance, $owner));
                     }
                 }
                 break;
             default:
-                Log::warning('No job to dispatch for status ' . $event->appInstance->status->value);
+                Log::warning('No job to dispatch for status '.$event->appInstance->status->value);
         }
     }
-} 
+}

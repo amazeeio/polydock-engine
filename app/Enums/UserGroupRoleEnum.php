@@ -14,16 +14,16 @@ enum UserGroupRoleEnum: string implements HasColor, HasIcon, HasLabel
 
     public function getLabel(): string
     {
-        return match($this) {
+        return match ($this) {
             self::OWNER => 'Owner',
-            self::MEMBER => 'Member', 
+            self::MEMBER => 'Member',
             self::VIEWER => 'Viewer',
         };
     }
 
     public function getColor(): string|array|null
     {
-        return match($this) {
+        return match ($this) {
             self::OWNER => 'danger',
             self::MEMBER => 'warning',
             self::VIEWER => 'success',
@@ -32,7 +32,7 @@ enum UserGroupRoleEnum: string implements HasColor, HasIcon, HasLabel
 
     public function getIcon(): ?string
     {
-        return match($this) {
+        return match ($this) {
             self::OWNER => 'heroicon-o-crown',
             self::MEMBER => 'heroicon-o-user-group',
             self::VIEWER => 'heroicon-o-eye',
@@ -46,8 +46,9 @@ enum UserGroupRoleEnum: string implements HasColor, HasIcon, HasLabel
 
     public static function getOptions(): array
     {
-        return collect(self::cases())->mapWithKeys(fn ($role) => [
-            $role->value => $role->getLabel()
-        ])->all();
+        return collect(self::cases())
+            ->mapWithKeys(fn ($role) => [
+                $role->value => $role->getLabel(),
+            ])->all();
     }
 }

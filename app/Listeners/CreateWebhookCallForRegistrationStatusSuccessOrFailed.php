@@ -2,9 +2,9 @@
 
 namespace App\Listeners;
 
+use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Events\UserRemoteRegistrationStatusChanged;
 use App\Models\PolydockStoreWebhookCall;
-use App\Enums\UserRemoteRegistrationStatusEnum;
 use Illuminate\Support\Facades\Log;
 
 class CreateWebhookCallForRegistrationStatusSuccessOrFailed
@@ -15,18 +15,22 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
     public function handle(UserRemoteRegistrationStatusChanged $event): void
     {
         // Only create webhook calls for success or failed status
-        if (!in_array($event->registration->status, [
-            UserRemoteRegistrationStatusEnum::SUCCESS,
-            UserRemoteRegistrationStatusEnum::FAILED,
-        ])) {
+        if (! in_array(
+            $event->registration->status,
+            [
+                UserRemoteRegistrationStatusEnum::SUCCESS,
+                UserRemoteRegistrationStatusEnum::FAILED,
+            ],
+        )) {
             return;
         }
 
         // Check if store app exists before proceeding
-        if (!$event->registration->storeApp || !$event->registration->storeApp->store) {
+        if (! $event->registration->storeApp || ! $event->registration->storeApp->store) {
             Log::info('No store app associated with registration, skipping webhook calls', [
-                'registration_id' => $event->registration->id
+                'registration_id' => $event->registration->id,
             ]);
+
             return;
         }
 
@@ -37,7 +41,11 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
         ]);
 
         // Create webhook calls for all active webhooks
-        $event->registration->storeApp->store->webhooks()
+        $event
+            ->registration
+            ->storeApp
+            ->store
+            ->webhooks()
             ->where('active', true)
             ->get()
             ->each(function ($webhook) use ($event) {
@@ -80,4 +88,4 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
                 }
             });
     }
-} 
+}

@@ -3,31 +3,34 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Models\User;
-use Filament\Widgets\ChartWidget;
 use Carbon\Carbon;
+use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
 class UserCreatedChart extends ChartWidget
 {
     protected static ?int $sort = 100;
+
     protected static ?string $heading = 'New Users';
+
     protected static ?string $maxHeight = '300px';
 
+    #[\Override]
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
         $endDate = Carbon::now()->endOfWeek();
-        
+
         // Get user creation counts grouped by week
         $users = User::query()
             ->where('created_at', '>=', $startDate)
             ->where('created_at', '<=', $endDate)
             ->select(
                 DB::raw('DATE(created_at - INTERVAL WEEKDAY(created_at) DAY) as week'),
-                DB::raw('count(*) as count')
+                DB::raw('count(*) as count'),
             )
             ->groupBy(
-                DB::raw('DATE(created_at - INTERVAL WEEKDAY(created_at) DAY)')
+                DB::raw('DATE(created_at - INTERVAL WEEKDAY(created_at) DAY)'),
             )
             ->orderBy('week')
             ->get();
@@ -40,10 +43,11 @@ class UserCreatedChart extends ChartWidget
             $weekStart = $startDate->copy()->addWeeks($i);
             $weekLabel = $weekStart->format('M d');
             $weeks[] = $weekLabel;
-            
+
             $counts[] = $users
                 ->where('week', $weekStart->format('Y-m-d'))
-                ->first()?->count ?? 0;
+                ->first()
+                ?->count ?? 0;
         }
 
         return [
@@ -64,6 +68,7 @@ class UserCreatedChart extends ChartWidget
         return 'bar';
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

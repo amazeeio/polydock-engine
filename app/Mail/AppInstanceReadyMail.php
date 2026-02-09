@@ -9,17 +9,19 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Config;
 
 class AppInstanceReadyMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable;
+    use SerializesModels;
 
     /**
      * Create a new message instance.
      */
     public function __construct(
         public PolydockAppInstance $appInstance,
-        public User $toUser
+        public User $toUser,
     ) {}
 
     /**
@@ -28,12 +30,12 @@ class AppInstanceReadyMail extends Mailable
     public function envelope(): Envelope
     {
         $subject = $this->appInstance->storeApp->email_subject_line;
-        
+
         if (empty($subject)) {
-            $subject = "Your new instance is Ready";
+            $subject = 'Your new instance is Ready';
         }
 
-        $subject .= " [" . $this->appInstance->name . "]";
+        $subject .= ' ['.$this->appInstance->name.']';
 
         return new Envelope(
             subject: $subject,
@@ -45,8 +47,15 @@ class AppInstanceReadyMail extends Mailable
      */
     public function content(): Content
     {
+        // dd(Config::get('mail.mjml-config'));
+        $mjmlConfig = Config::get('mail.mjml-config');
+
+        // $mjmlConfig['theme'] = $mjmlConfig['themes']['dark'];
+
         return new Content(
-            markdown: 'emails.app-instance.ready',
+            // markdown: 'emails.app-instance.ready',
+            view: 'emails.app-instance.ready',
+            with: ['config' => $mjmlConfig],
         );
     }
 
@@ -59,4 +68,4 @@ class AppInstanceReadyMail extends Mailable
     {
         return [];
     }
-} 
+}

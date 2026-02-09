@@ -4,25 +4,20 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 use App\Filament\Admin\Resources\PolydockAppInstanceResource\RelationManagers;
+use App\Filament\Exports\UserRemoteRegistrationExporter;
 use App\Models\PolydockAppInstance;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Infolists\Infolist;
-use App\Enums\PolydockAppInstanceStatusForEngine;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use App\Filament\Admin\Resources\UserGroupResource;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
-use Filament\Tables\Columns\CheckboxColumn;
-use Filament\Tables\Columns\ToggleColumn;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Actions\ExportAction;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
-use App\Models\PolydockStore;
-use App\Models\PolydockStoreApp;
+use Filament\Tables\Table;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 
 class PolydockAppInstanceResource extends Resource
 {
@@ -53,7 +48,7 @@ class PolydockAppInstanceResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->description(fn ($record) => $record->storeApp->store->name . " - " . $record->storeApp->name)
+                    ->description(fn ($record) => $record->storeApp->store->name.' - '.$record->storeApp->name)
                     ->searchable(),
                 TextColumn::make('userGroup.name')
                     ->label('User Group')
@@ -81,7 +76,7 @@ class PolydockAppInstanceResource extends Resource
                 TextColumn::make('trial_complete_email_sent')
                     ->label('Trial Complete Email')
                     ->state(fn ($record) => ($record->is_trial && $record->trial_complete_email_sent) ? 'Sent' : ($record->is_trial ? 'Pending' : '')),
-                ])
+            ])
             ->filters([
                 SelectFilter::make('status')
                     ->options(collect(PolydockAppInstanceStatus::cases())
@@ -99,12 +94,12 @@ class PolydockAppInstanceResource extends Resource
                         'polling' => 'Polling',
                     ])
                     ->query(function ($query, array $data) {
-                        if (!$data['value']) {
+                        if (! $data['value']) {
                             return $query;
                         }
 
                         return $query->where(function ($query) use ($data) {
-                            match($data['value']) {
+                            match ($data['value']) {
                                 'pending' => $query->whereIn('status', PolydockAppInstance::$pendingStatuses),
                                 'completed' => $query->whereIn('status', PolydockAppInstance::$completedStatuses),
                                 'failed' => $query->whereIn('status', PolydockAppInstance::$failedStatuses),
@@ -125,12 +120,12 @@ class PolydockAppInstanceResource extends Resource
                         'running' => 'Running Stage',
                     ])
                     ->query(function ($query, array $data) {
-                        if (!$data['value']) {
+                        if (! $data['value']) {
                             return $query;
                         }
 
                         return $query->where(function ($query) use ($data) {
-                            match($data['value']) {
+                            match ($data['value']) {
                                 'create' => $query->whereIn('status', PolydockAppInstance::$stageCreateStatuses),
                                 'deploy' => $query->whereIn('status', PolydockAppInstance::$stageDeployStatuses),
                                 'remove' => $query->whereIn('status', PolydockAppInstance::$stageRemoveStatuses),
@@ -168,6 +163,10 @@ class PolydockAppInstanceResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+            ])->headerActions([
+                ExportAction::make()
+                    ->label('Export registrations')
+                    ->exporter(UserRemoteRegistrationExporter::class),
             ])
             ->bulkActions([]);
     }
@@ -227,40 +226,38 @@ class PolydockAppInstanceResource extends Resource
 
                 \Filament\Infolists\Components\Section::make('Instance Data')
                     ->description('Safe data that can be shared with webhooks')
-                    ->schema(function ($record) {
-                        return self::getRenderedSafeDataForRecord($record);
-                    })
+                    ->schema(fn ($record) => self::getRenderedSafeDataForRecord($record))
                     ->columnSpan(3)
                     ->collapsible(),
             ])
             ->columns(3);
     }
 
-    public static function getRenderedSafeDataForRecord(PolydockAppInstance $record) : array
+    public static function getRenderedSafeDataForRecord(PolydockAppInstance $record): array
     {
         $safeData = $record->data;
         $renderedArray = [];
         foreach ($safeData as $key => $value) {
-
-            if($record->shouldFilterKey($key, $record->getSensitiveDataKeys())) {
-                $value = "REDACTED";
+            if ($record->shouldFilterKey($key, $record->getSensitiveDataKeys())) {
+                $value = 'REDACTED';
             }
 
-            $renderKey = "webhook_data_" . $key;
+            $renderKey = 'webhook_data_'.$key;
             $renderedItem = \Filament\Infolists\Components\TextEntry::make($renderKey)
-            ->label($key)
-            ->markdown()
-            ->columnSpanFull()
-            ->bulleted();
+                ->label($key)
+                ->markdown()
+                ->columnSpanFull()
+                ->bulleted();
 
-            if(is_array($value)) {
+            if (is_array($value)) {
                 $renderedItem->state($value);
             } else {
                 $renderedItem->state([$value]);
             }
 
-            $renderedArray[] = $renderedItem;   
+            $renderedArray[] = $renderedItem;
         }
+
         return $renderedArray;
     }
 

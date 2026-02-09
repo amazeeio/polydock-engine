@@ -25,4 +25,4 @@ return new class extends Migration
             $table->dropColumn('lagoon_deploy_private_key');
         });
     }
-}; 
+};

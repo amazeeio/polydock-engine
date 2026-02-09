@@ -2,18 +2,20 @@
 
 namespace Tests\Unit\PolydockEngine;
 
-use Tests\TestCase;
 use App\PolydockEngine\Engine;
-use Tests\Doubles\AlphaTestPolydockServiceProvider;
-use Tests\Doubles\BetaTestPolydockServiceProvider;  
 use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
+use Tests\Doubles\AlphaTestPolydockServiceProvider;
+use Tests\Doubles\BetaTestPolydockServiceProvider;
+use Tests\TestCase;
 
 class PolydockEngineTest extends TestCase
 {
     private Engine $engine;
+
     private PolydockAppLoggerInterface $logger;
+
     private array $testConfig;
 
     protected function setUp(): void
@@ -33,14 +35,14 @@ class PolydockEngineTest extends TestCase
                 'class' => AlphaTestPolydockServiceProvider::class,
                 'key' => 'test_key_alpha',
                 'secret' => 'test_secret_alpha',
-                'region' => 'test_region_alpha'
+                'region' => 'test_region_alpha',
             ],
             BetaTestPolydockServiceProvider::class => [
                 'class' => BetaTestPolydockServiceProvider::class,
                 'key' => 'test_key_beta',
                 'secret' => 'test_secret_beta',
-                'region' => 'test_region_beta'
-            ]
+                'region' => 'test_region_beta',
+            ],
         ];
 
         $this->engine = new Engine($this->logger, $this->testConfig);
@@ -81,8 +83,11 @@ class PolydockEngineTest extends TestCase
     #[Test]
     public function it_creates_service_provider_with_config()
     {
-        $provider = new AlphaTestPolydockServiceProvider($this->testConfig[AlphaTestPolydockServiceProvider::class], $this->logger);
-        
+        $provider = new AlphaTestPolydockServiceProvider(
+            $this->testConfig[AlphaTestPolydockServiceProvider::class],
+            $this->logger,
+        );
+
         $this->assertEquals($this->testConfig[AlphaTestPolydockServiceProvider::class], $provider->getConfig());
         $this->assertSame($this->logger, $provider->getLogger());
     }
@@ -90,8 +95,8 @@ class PolydockEngineTest extends TestCase
     #[Test]
     public function it_returns_service_provider_instance()
     {
-        $provider = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class, $this->testConfig[AlphaTestPolydockServiceProvider::class]);
-        
+        $provider = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class);
+
         $this->assertInstanceOf(AlphaTestPolydockServiceProvider::class, $provider);
         $this->assertSame($this->logger, $provider->getLogger());
     }
@@ -99,26 +104,27 @@ class PolydockEngineTest extends TestCase
     #[Test]
     public function it_returns_same_service_provider_instance_for_same_key()
     {
-        $firstInstance = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class, $this->testConfig[AlphaTestPolydockServiceProvider::class]);
-        $secondInstance = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class, $this->testConfig[AlphaTestPolydockServiceProvider::class]);
-        
+        $firstInstance = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class);
+        $secondInstance = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class);
+
         $this->assertSame($firstInstance, $secondInstance);
     }
 
     #[Test]
     public function it_returns_different_service_provider_instances_for_different_keys()
     {
-        $firstInstance = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class, $this->testConfig[AlphaTestPolydockServiceProvider::class]);
-        $secondInstance = $this->engine->getPolydockServiceProviderSingletonInstance(BetaTestPolydockServiceProvider::class, $this->testConfig[BetaTestPolydockServiceProvider::class]);
-        
+        $firstInstance = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class);
+        $secondInstance = $this->engine->getPolydockServiceProviderSingletonInstance(BetaTestPolydockServiceProvider::class);
+
         $this->assertNotSame($firstInstance, $secondInstance);
         $this->assertInstanceOf(AlphaTestPolydockServiceProvider::class, $firstInstance);
         $this->assertInstanceOf(BetaTestPolydockServiceProvider::class, $secondInstance);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         Mockery::close();
         parent::tearDown();
     }
-} 
+}
