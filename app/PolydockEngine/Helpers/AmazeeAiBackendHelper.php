@@ -29,7 +29,7 @@ class AmazeeAiBackendHelper
 
             $serviceProvider = new PolydockServiceProviderAmazeeAiBackend(
                 $config,
-                new PolydockLogger
+                new PolydockLogger,
             );
 
             $AmazeeAiBackendClient = $serviceProvider->getAmazeeAiBackendClient();

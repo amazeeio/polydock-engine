@@ -20,12 +20,14 @@ class PreCreateJob extends BaseJob implements ShouldQueue
 
         $appInstance = $this->appInstance;
         if (! $appInstance) {
-            throw new \Exception('Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found');
+            throw new \Exception(
+                'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
+            );
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_PRE_CREATE) {
             throw new PolydockAppInstanceStatusFlowException(
-                'PreCreateJob must be in status PENDING_PRE_CREATE'
+                'PreCreateJob must be in status PENDING_PRE_CREATE',
             );
         }
 

@@ -23,6 +23,7 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -46,10 +47,13 @@ class UserResource extends Resource
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255)
-                    ->label(fn (string $operation): string => $operation === 'create' ? 'Password' : 'New Password (leave blank to keep current)'),
+                    ->label(fn (string $operation): string => $operation === 'create'
+                        ? 'Password'
+                        : 'New Password (leave blank to keep current)'),
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -76,6 +80,7 @@ class UserResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -83,6 +88,7 @@ class UserResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -93,6 +99,7 @@ class UserResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist

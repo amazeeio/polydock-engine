@@ -15,12 +15,13 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
     public function handle(UserRemoteRegistrationStatusChanged $event): void
     {
         // Only create webhook calls for success or failed status
-        if (
-            ! in_array($event->registration->status, [
+        if (! in_array(
+            $event->registration->status,
+            [
                 UserRemoteRegistrationStatusEnum::SUCCESS,
                 UserRemoteRegistrationStatusEnum::FAILED,
-            ])
-        ) {
+            ],
+        )) {
             return;
         }
 
@@ -40,7 +41,11 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
         ]);
 
         // Create webhook calls for all active webhooks
-        $event->registration->storeApp->store->webhooks()
+        $event
+            ->registration
+            ->storeApp
+            ->store
+            ->webhooks()
             ->where('active', true)
             ->get()
             ->each(function ($webhook) use ($event) {

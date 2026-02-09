@@ -54,7 +54,9 @@ class CreateStoreApp extends Command
         // Select store
         $storeId = $this->option('store-id');
         if (! $storeId) {
-            $storeOptions = $stores->mapWithKeys(fn ($store) => [$store->id => "{$store->name} (ID: {$store->id})"])->toArray();
+            $storeOptions = $stores
+                ->mapWithKeys(fn ($store) => [$store->id => "{$store->name} (ID: {$store->id})"])
+                ->toArray();
 
             $selectedValue = $this->choice('Select a store to create app in:', $storeOptions);
             $storeId = collect($storeOptions)->search($selectedValue);
@@ -87,7 +89,7 @@ class CreateStoreApp extends Command
             'available', 'Available' => PolydockStoreAppStatusEnum::AVAILABLE,
             'unavailable', 'Unavailable' => PolydockStoreAppStatusEnum::UNAVAILABLE,
             'deprecated', 'Deprecated' => PolydockStoreAppStatusEnum::DEPRECATED,
-            default => PolydockStoreAppStatusEnum::AVAILABLE
+            default => PolydockStoreAppStatusEnum::AVAILABLE,
         };
 
         $trialsInput = $this->option('trials') ?? $this->choice('Available for trials?', ['true', 'false']);
@@ -100,9 +102,15 @@ class CreateStoreApp extends Command
 
         // Check if all required values are set
         if (
-            empty($name) || empty($appClass) || empty($description) || empty($author) ||
-            empty($website) || empty($supportEmail) || empty($git) || empty($branch) ||
-            ($targetInstances != 0 && empty($targetInstances))
+            empty($name)
+            || empty($appClass)
+            || empty($description)
+            || empty($author)
+            || empty($website)
+            || empty($supportEmail)
+            || empty($git)
+            || empty($branch)
+            || $targetInstances != 0 && empty($targetInstances)
         ) {
             $this->error('All fields are required. Exiting...');
 
@@ -125,7 +133,9 @@ class CreateStoreApp extends Command
             'target_unallocated_app_instances' => intval($targetInstances),
         ]);
 
-        $this->info("✅ App '{$storeApp->name}' created successfully in store '{$store->name}' with ID: {$storeApp->id}");
+        $this->info(
+            "✅ App '{$storeApp->name}' created successfully in store '{$store->name}' with ID: {$storeApp->id}",
+        );
         $this->line("   App Class: {$storeApp->polydock_app_class}");
         $this->line("   Git Repository: {$storeApp->lagoon_deploy_git}");
         $this->line('   Available for Trials: '.($storeApp->available_for_trials ? 'Yes' : 'No'));

@@ -12,6 +12,7 @@ class StatsOverview extends BaseWidget
 {
     protected static ?int $sort = 1;
 
+    #[\Override]
     protected function getStats(): array
     {
         return [

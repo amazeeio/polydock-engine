@@ -30,7 +30,9 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         }
 
         if (! is_dir($config['token_cache_dir'])) {
-            throw new PolydockEngineServiceProviderInitializationException('token_cache_dir is not created: '.$config['token_cache_dir']);
+            throw new PolydockEngineServiceProviderInitializationException(
+                'token_cache_dir is not created: '.$config['token_cache_dir'],
+            );
         }
 
         if (! isset($config['ssh_private_key_file'])) {
@@ -68,7 +70,11 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
 
         $this->LagoonClient = new Client($config);
 
-        $tokenFile = $config['token_cache_dir'].DIRECTORY_SEPARATOR.md5($sshServer.'-'.$sshPrivateKeyFile.'-'.$sshUser.'-'.$sshPort.'-'.$endpoint).'.token';
+        $tokenFile =
+            $config['token_cache_dir']
+            .DIRECTORY_SEPARATOR
+            .md5($sshServer.'-'.$sshPrivateKeyFile.'-'.$sshUser.'-'.$sshPort.'-'.$endpoint)
+            .'.token';
 
         if (file_exists($tokenFile) && ! (((time() - filemtime($tokenFile)) / 60) > self::MAX_TOKEN_AGE_MINUTES)) {
             if ($debug) {

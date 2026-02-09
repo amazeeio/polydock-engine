@@ -35,6 +35,7 @@ class PolydockStoreWebhookCall extends Model
     /**
      * Boot the model.
      */
+    #[\Override]
     protected static function boot()
     {
         parent::boot();

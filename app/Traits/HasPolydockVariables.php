@@ -11,7 +11,7 @@ trait HasPolydockVariables
     {
         $variable = $this->variables()->updateOrCreate(
             ['name' => $name],
-            []
+            [],
         );
 
         $variable->setEncryptedValue($value, $storedEncrypted)->save();

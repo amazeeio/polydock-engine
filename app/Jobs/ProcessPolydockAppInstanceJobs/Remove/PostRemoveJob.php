@@ -19,12 +19,14 @@ class PostRemoveJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
         $appInstance = $this->appInstance;
         if (! $appInstance) {
-            throw new \Exception('Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found');
+            throw new \Exception(
+                'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
+            );
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_POST_REMOVE) {
             throw new PolydockAppInstanceStatusFlowException(
-                'PostRemoveJob must be in status PENDING_POST_REMOVE'
+                'PostRemoveJob must be in status PENDING_POST_REMOVE',
             );
         }
 

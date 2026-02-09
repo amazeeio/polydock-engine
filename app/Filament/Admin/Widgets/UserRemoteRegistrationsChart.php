@@ -16,6 +16,7 @@ class UserRemoteRegistrationsChart extends ChartWidget
 
     protected static ?int $sort = 200;
 
+    #[\Override]
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
@@ -28,11 +29,11 @@ class UserRemoteRegistrationsChart extends ChartWidget
             ->select(
                 DB::raw('DATE(created_at - INTERVAL WEEKDAY(created_at) DAY) as week'),
                 'status',
-                DB::raw('count(*) as count')
+                DB::raw('count(*) as count'),
             )
             ->groupBy(
                 DB::raw('DATE(created_at - INTERVAL WEEKDAY(created_at) DAY)'),
-                'status'
+                'status',
             )
             ->orderBy('week')
             ->get();
@@ -81,6 +82,7 @@ class UserRemoteRegistrationsChart extends ChartWidget
         return 'bar';
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

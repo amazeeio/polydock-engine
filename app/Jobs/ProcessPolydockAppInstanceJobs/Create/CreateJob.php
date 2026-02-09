@@ -20,12 +20,14 @@ class CreateJob extends BaseJob implements ShouldQueue
 
         $appInstance = $this->appInstance;
         if (! $appInstance) {
-            throw new \Exception('Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found');
+            throw new \Exception(
+                'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
+            );
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_CREATE) {
             throw new PolydockAppInstanceStatusFlowException(
-                'CreateJob must be in status PENDING_CREATE'
+                'CreateJob must be in status PENDING_CREATE',
             );
         }
 

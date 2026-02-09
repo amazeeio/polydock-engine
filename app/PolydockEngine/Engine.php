@@ -32,9 +32,10 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  PolydockAppLoggerInterface  $logger  The logger to set
      * @param  array<string, array<string, mixed>>  $serviceProviderSingletonConfig  The config for the polydock service providers
      */
-    public function __construct(protected PolydockAppLoggerInterface $logger, $serviceProviderSingletonConfig = [])
-    {
-
+    public function __construct(
+        protected PolydockAppLoggerInterface $logger,
+        $serviceProviderSingletonConfig = [],
+    ) {
         if (count($serviceProviderSingletonConfig) > 0) {
             $this->polydockServiceProviderSingletonConfig = $serviceProviderSingletonConfig;
         } else {
@@ -79,7 +80,9 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         foreach ($config as $polydockServiceProviderKey => $polydockServiceProviderConfig) {
             $polydockServiceProviderClass = $polydockServiceProviderConfig['class'];
 
-            $this->info('Initializing polydock service provider ', ['polydockServiceProviderClass' => $polydockServiceProviderClass]);
+            $this->info('Initializing polydock service provider ', [
+                'polydockServiceProviderClass' => $polydockServiceProviderClass,
+            ]);
 
             if (! class_exists($polydockServiceProviderClass)) {
                 throw new PolydockEngineServiceProviderNotFoundException($polydockServiceProviderClass);
@@ -159,7 +162,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'preCreateAppInstance',
                     PolydockAppInstanceStatus::PENDING_PRE_CREATE,
                     PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
-                    PolydockAppInstanceStatus::PRE_CREATE_FAILED
+                    PolydockAppInstanceStatus::PRE_CREATE_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_CREATE:
@@ -168,7 +171,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'createAppInstance',
                     PolydockAppInstanceStatus::PENDING_CREATE,
                     PolydockAppInstanceStatus::CREATE_COMPLETED,
-                    PolydockAppInstanceStatus::CREATE_FAILED
+                    PolydockAppInstanceStatus::CREATE_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_POST_CREATE:
@@ -177,7 +180,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'postCreateAppInstance',
                     PolydockAppInstanceStatus::PENDING_POST_CREATE,
                     PolydockAppInstanceStatus::POST_CREATE_COMPLETED,
-                    PolydockAppInstanceStatus::POST_CREATE_FAILED
+                    PolydockAppInstanceStatus::POST_CREATE_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_PRE_DEPLOY:
@@ -186,7 +189,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'preDeployAppInstance',
                     PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
                     PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED,
-                    PolydockAppInstanceStatus::PRE_DEPLOY_FAILED
+                    PolydockAppInstanceStatus::PRE_DEPLOY_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_DEPLOY:
@@ -195,7 +198,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'deployAppInstance',
                     PolydockAppInstanceStatus::PENDING_DEPLOY,
                     PolydockAppInstanceStatus::DEPLOY_RUNNING, // Note: This is not a completed status
-                    PolydockAppInstanceStatus::DEPLOY_FAILED
+                    PolydockAppInstanceStatus::DEPLOY_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_POST_DEPLOY:
@@ -204,7 +207,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'postDeployAppInstance',
                     PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
                     PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
-                    PolydockAppInstanceStatus::POST_DEPLOY_FAILED
+                    PolydockAppInstanceStatus::POST_DEPLOY_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_PRE_REMOVE:
@@ -213,7 +216,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'preRemoveAppInstance',
                     PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
                     PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED,
-                    PolydockAppInstanceStatus::PRE_REMOVE_FAILED
+                    PolydockAppInstanceStatus::PRE_REMOVE_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_REMOVE:
@@ -222,7 +225,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'removeAppInstance',
                     PolydockAppInstanceStatus::PENDING_REMOVE,
                     PolydockAppInstanceStatus::REMOVE_COMPLETED,
-                    PolydockAppInstanceStatus::REMOVE_FAILED
+                    PolydockAppInstanceStatus::REMOVE_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_POST_REMOVE:
@@ -231,7 +234,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'postRemoveAppInstance',
                     PolydockAppInstanceStatus::PENDING_POST_REMOVE,
                     PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
-                    PolydockAppInstanceStatus::POST_REMOVE_FAILED
+                    PolydockAppInstanceStatus::POST_REMOVE_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_PRE_UPGRADE:
@@ -240,7 +243,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'preUpgradeAppInstance',
                     PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
                     PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED,
-                    PolydockAppInstanceStatus::PRE_UPGRADE_FAILED
+                    PolydockAppInstanceStatus::PRE_UPGRADE_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_UPGRADE:
@@ -249,7 +252,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'upgradeAppInstance',
                     PolydockAppInstanceStatus::PENDING_UPGRADE,
                     PolydockAppInstanceStatus::UPGRADE_RUNNING, // Note: This is not a completed status
-                    PolydockAppInstanceStatus::UPGRADE_FAILED
+                    PolydockAppInstanceStatus::UPGRADE_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_POST_UPGRADE:
@@ -258,7 +261,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'postUpgradeAppInstance',
                     PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
                     PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
-                    PolydockAppInstanceStatus::POST_UPGRADE_FAILED
+                    PolydockAppInstanceStatus::POST_UPGRADE_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM:
@@ -267,7 +270,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     'claimAppInstance',
                     PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
                     PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
-                    PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED
+                    PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
                 );
                 break;
             case PolydockAppInstanceStatus::DEPLOY_RUNNING:
@@ -279,7 +282,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                         PolydockAppInstanceStatus::DEPLOY_RUNNING,
                         PolydockAppInstanceStatus::DEPLOY_COMPLETED,
                         PolydockAppInstanceStatus::DEPLOY_FAILED,
-                    ]
+                    ],
                 );
                 break;
             case PolydockAppInstanceStatus::UPGRADE_RUNNING:
@@ -291,7 +294,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                         PolydockAppInstanceStatus::UPGRADE_RUNNING,
                         PolydockAppInstanceStatus::UPGRADE_COMPLETED,
                         PolydockAppInstanceStatus::UPGRADE_FAILED,
-                    ]
+                    ],
                 );
                 break;
             case PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED:
@@ -303,7 +306,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                         PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
                         PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
                         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
-                    ]
+                    ],
                 );
                 break;
             case PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED:
@@ -315,22 +318,25 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                         PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
                         PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
                         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
-                    ]
+                    ],
                 );
                 break;
             default:
                 $stepReturn = false;
                 throw new PolydockAppInstanceStatusFlowException('Status '
-                    .$appInstance->getStatus()->value
-                    .' is not a status the engine can process');
+                .$appInstance->getStatus()->value
+                .' is not a status the engine can process');
         }
 
         if (! $stepReturn) {
-            $this->info('Unsuccessful processPolydockAppInstance run - app instance status is now: '.$appInstance->getStatus()->value);
-            throw new PolydockAppInstanceStatusFlowException('Run failed. Status is now '.$appInstance->getStatus()->value);
+            $this->info('Unsuccessful processPolydockAppInstance run - app instance status is now: '
+            .$appInstance->getStatus()->value);
+            throw new PolydockAppInstanceStatusFlowException('Run failed. Status is now '
+            .$appInstance->getStatus()->value);
         }
 
-        $this->info('Successful processPolydockAppInstance run - app instance status is now: '.$appInstance->getStatus()->value);
+        $this->info('Successful processPolydockAppInstance run - app instance status is now: '
+        .$appInstance->getStatus()->value);
 
         return $appInstance;
     }
@@ -342,12 +348,13 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      *
      * @throws PolydockEngineProcessPolydockAppInstanceStatusException
      */
-    protected function requirePolydockAppInstanceStatus(PolydockAppInstanceStatus $status, PolydockAppInstanceInterface $appInstance): void
-    {
+    protected function requirePolydockAppInstanceStatus(
+        PolydockAppInstanceStatus $status,
+        PolydockAppInstanceInterface $appInstance,
+    ): void {
         if ($appInstance->getStatus() !== $status) {
             throw new PolydockAppInstanceStatusFlowException(
-                'PolydockAppInstance status expected to be '
-                    .$status->value.' but is '.$appInstance->getStatus()->value
+                'PolydockAppInstance status expected to be '.$status->value.' but is '.$appInstance->getStatus()->value,
             );
         }
     }
@@ -359,13 +366,16 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      *
      * @throws PolydockAppInstanceStatusFlowException
      */
-    protected function requirePolydockAppInstanceStatusOneOfList(array $statuses, PolydockAppInstanceInterface $appInstance): void
-    {
+    protected function requirePolydockAppInstanceStatusOneOfList(
+        array $statuses,
+        PolydockAppInstanceInterface $appInstance,
+    ): void {
         if (! in_array($appInstance->getStatus(), $statuses)) {
             throw new PolydockAppInstanceStatusFlowException(
                 'PolydockAppInstance status expected to be one of '
-                    .implode(', ', array_map(fn ($status) => $status->value, $statuses))
-                    .' but is '.$appInstance->getStatus()->value
+                .implode(', ', array_map(fn ($status) => $status->value, $statuses))
+                .' but is '
+                .$appInstance->getStatus()->value,
             );
         }
     }

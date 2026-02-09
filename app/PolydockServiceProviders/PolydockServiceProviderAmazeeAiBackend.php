@@ -32,7 +32,8 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
         }
 
         if (! file_exists($tokenFile)) {
-            throw new PolydockEngineServiceProviderInitializationException('amazee_ai_backend.token_file does not exist: '.$tokenFile);
+            throw new PolydockEngineServiceProviderInitializationException('amazee_ai_backend.token_file does not exist: '
+            .$tokenFile);
         }
 
         $token = trim(file_get_contents($tokenFile));
@@ -72,7 +73,8 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
         }
 
         if (! file_exists($tokenFile)) {
-            throw new PolydockEngineServiceProviderInitializationException('amazee_ai_backend.token_file does not exist: '.$tokenFile);
+            throw new PolydockEngineServiceProviderInitializationException('amazee_ai_backend.token_file does not exist: '
+            .$tokenFile);
         }
 
         $token = trim(file_get_contents($tokenFile));

@@ -40,7 +40,7 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private PolydockStoreWebhookCall $webhookCall
+        private PolydockStoreWebhookCall $webhookCall,
     ) {}
 
     /**

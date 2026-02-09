@@ -57,8 +57,16 @@ class DispatchOneDayLeftEmailJobsCommand extends Command
 
         // Dispatch jobs for each eligible instance
         foreach ($eligibleInstances as $instance) {
-            $this->info(sprintf('Dispatching one day left email job for app instance %s (%s)', $instance->name, $instance->uuid));
-            Log::info(sprintf('Dispatching one day left email job for app instance %s (%s)', $instance->name, $instance->uuid));
+            $this->info(sprintf(
+                'Dispatching one day left email job for app instance %s (%s)',
+                $instance->name,
+                $instance->uuid,
+            ));
+            Log::info(sprintf(
+                'Dispatching one day left email job for app instance %s (%s)',
+                $instance->name,
+                $instance->uuid,
+            ));
             ProcessOneDayLeftEmailJob::dispatch($instance->id);
         }
 

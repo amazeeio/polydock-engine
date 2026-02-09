@@ -50,8 +50,9 @@ enum UserRemoteRegistrationStatusEnum: string implements HasColor, HasIcon, HasL
 
     public static function getOptions(): array
     {
-        return collect(self::cases())->mapWithKeys(fn ($status) => [
-            $status->value => $status->getLabel(),
-        ])->all();
+        return collect(self::cases())
+            ->mapWithKeys(fn ($status) => [
+                $status->value => $status->getLabel(),
+            ])->all();
     }
 }

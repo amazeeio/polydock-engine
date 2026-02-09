@@ -23,11 +23,11 @@ class ProcessTrialCompleteEmailJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
 
         if (
-            ! $this->appInstance->is_trial ||
-            ! $this->appInstance->storeApp->send_trial_complete_email ||
-            ! $this->appInstance->trial_ends_at ||
-            ! $this->appInstance->trial_ends_at->isPast() ||
-            $this->appInstance->trial_complete_email_sent
+            ! $this->appInstance->is_trial
+            || ! $this->appInstance->storeApp->send_trial_complete_email
+            || ! $this->appInstance->trial_ends_at
+            || ! $this->appInstance->trial_ends_at->isPast()
+            || $this->appInstance->trial_complete_email_sent
         ) {
             $this->appInstance->info('Trial complete email not sent', [
                 'app_instance_id' => $this->appInstance->id,

@@ -26,6 +26,7 @@ class PolydockStoreResource extends Resource
 
     protected static ?int $navigationSort = 5000;
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -41,28 +42,45 @@ class PolydockStoreResource extends Resource
                 Forms\Components\TextInput::make('lagoon_deploy_region_id_ext')
                     ->required()
                     ->maxLength(255)
-                    ->dehydrated(fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists())
-                    ->disabled(fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists()),
+                    ->dehydrated(
+                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                    )
+                    ->disabled(
+                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                    ),
                 Forms\Components\TextInput::make('lagoon_deploy_project_prefix')
                     ->required()
                     ->maxLength(255)
-                    ->dehydrated(fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists())
-                    ->disabled(fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists()),
+                    ->dehydrated(
+                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                    )
+                    ->disabled(
+                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                    ),
                 Forms\Components\TextInput::make('lagoon_deploy_organization_id_ext')
                     ->required()
                     ->maxLength(255)
-                    ->dehydrated(fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists())
-                    ->disabled(fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists()),
+                    ->dehydrated(
+                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                    )
+                    ->disabled(
+                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                    ),
                 Forms\Components\TextInput::make('amazee_ai_backend_region_id_ext')
                     ->numeric()
-                    ->dehydrated(fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists())
-                    ->disabled(fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists()),
+                    ->dehydrated(
+                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                    )
+                    ->disabled(
+                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                    ),
                 Forms\Components\Textarea::make('lagoon_deploy_private_key')
                     ->columnSpanFull()
                     ->rows(10),
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -82,7 +100,9 @@ class PolydockStoreResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('amazee_ai_backend_region_id_ext')
                     ->label('AI Region')
-                    ->formatStateUsing(fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name'))
+                    ->formatStateUsing(
+                        fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name'),
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('lagoon_deploy_organization_id_ext')
                     ->label('Deploy Org')
@@ -113,6 +133,7 @@ class PolydockStoreResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -120,6 +141,7 @@ class PolydockStoreResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -130,6 +152,7 @@ class PolydockStoreResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -167,10 +190,17 @@ class PolydockStoreResource extends Resource
                             ->schema([
                                 \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_region_id_ext')
                                     ->label('Deploy Region')
-                                    ->formatStateUsing(fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name')),
+                                    ->formatStateUsing(
+                                        fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'),
+                                    ),
                                 \Filament\Infolists\Components\TextEntry::make('amazee_ai_backend_region_id_ext')
                                     ->label('AI Backend Region')
-                                    ->formatStateUsing(fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name')),
+                                    ->formatStateUsing(
+                                        fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion(
+                                            $state,
+                                            'name',
+                                        ),
+                                    ),
                             ]),
                         \Filament\Infolists\Components\Grid::make(2)
                             ->schema([

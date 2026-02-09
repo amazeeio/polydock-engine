@@ -31,13 +31,16 @@ class ProcessPolydockAppInstanceStatusChange
      */
     public function handle(PolydockAppInstanceStatusChanged $event): void
     {
-        Log::info('Dispatching ProcessPolydockAppInstanceJob via StatusChanged ('.$event->appInstance->status->value.')', [
-            'app_instance_id' => $event->appInstance->id,
-            'store_app_id' => $event->appInstance->polydock_store_app_id,
-            'store_app_name' => $event->appInstance->storeApp->name,
-            'status' => $event->appInstance->status->value,
-            'previous_status' => $event->previousStatus->value,
-        ]);
+        Log::info(
+            'Dispatching ProcessPolydockAppInstanceJob via StatusChanged ('.$event->appInstance->status->value.')',
+            [
+                'app_instance_id' => $event->appInstance->id,
+                'store_app_id' => $event->appInstance->polydock_store_app_id,
+                'store_app_name' => $event->appInstance->storeApp->name,
+                'status' => $event->appInstance->status->value,
+                'previous_status' => $event->previousStatus->value,
+            ],
+        );
 
         if (in_array($event->appInstance->status, PolydockAppInstance::$completedStatuses)) {
             if ($event->appInstance->remoteRegistration) {
@@ -45,24 +48,39 @@ class ProcessPolydockAppInstanceStatusChange
                 $event->appInstance->remoteRegistration->setResultValue('message', $appInstance->getStatusMessage());
 
                 if ($appInstance->getKeyValue('lagoon-generate-app-admin-username')) {
-                    $event->appInstance->remoteRegistration->setResultValue('app_admin_username', $appInstance->getKeyValue('lagoon-generate-app-admin-username'));
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'app_admin_username',
+                        $appInstance->getKeyValue('lagoon-generate-app-admin-username'),
+                    );
                 }
 
                 if ($appInstance->getKeyValue('lagoon-generate-app-admin-password')) {
-                    $event->appInstance->remoteRegistration->setResultValue('app_admin_password', $appInstance->getKeyValue('lagoon-generate-app-admin-password'));
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'app_admin_password',
+                        $appInstance->getKeyValue('lagoon-generate-app-admin-password'),
+                    );
                 }
 
                 // Store user information in registration results
                 if ($appInstance->getKeyValue('user-first-name')) {
-                    $event->appInstance->remoteRegistration->setResultValue('user_first_name', $appInstance->getKeyValue('user-first-name'));
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'user_first_name',
+                        $appInstance->getKeyValue('user-first-name'),
+                    );
                 }
 
                 if ($appInstance->getKeyValue('user-last-name')) {
-                    $event->appInstance->remoteRegistration->setResultValue('user_last_name', $appInstance->getKeyValue('user-last-name'));
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'user_last_name',
+                        $appInstance->getKeyValue('user-last-name'),
+                    );
                 }
 
                 if ($appInstance->getKeyValue('user-email')) {
-                    $event->appInstance->remoteRegistration->setResultValue('user_email', $appInstance->getKeyValue('user-email'));
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'user_email',
+                        $appInstance->getKeyValue('user-email'),
+                    );
                 }
 
                 $event->appInstance->remoteRegistration->save();

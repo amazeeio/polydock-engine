@@ -19,12 +19,14 @@ class PreDeployJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
         $appInstance = $this->appInstance;
         if (! $appInstance) {
-            throw new \Exception('Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found');
+            throw new \Exception(
+                'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
+            );
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_PRE_DEPLOY) {
             throw new PolydockAppInstanceStatusFlowException(
-                'PreDeployJob must be in status PENDING_PRE_DEPLOY'
+                'PreDeployJob must be in status PENDING_PRE_DEPLOY',
             );
         }
 

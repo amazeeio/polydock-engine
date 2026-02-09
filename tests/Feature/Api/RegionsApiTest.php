@@ -38,7 +38,8 @@ class RegionsApiTest extends TestCase
 
         $response = $this->getJson('/api/regions');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJsonStructure([
                 'status',
                 'message',
@@ -159,7 +160,8 @@ class RegionsApiTest extends TestCase
 
         $response = $this->getJson('/api/regions');
 
-        $response->assertStatus(200)
+        $response
+            ->assertStatus(200)
             ->assertJson([
                 'status' => 'success',
                 'data' => [

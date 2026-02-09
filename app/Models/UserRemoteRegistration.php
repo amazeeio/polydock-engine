@@ -60,6 +60,7 @@ class UserRemoteRegistration extends Model
     /**
      * Boot the model.
      */
+    #[\Override]
     protected static function boot()
     {
         parent::boot();
@@ -78,7 +79,7 @@ class UserRemoteRegistration extends Model
             if ($model->isDirty('status')) {
                 UserRemoteRegistrationStatusChanged::dispatch(
                     $model,
-                    $model->getOriginal('status')
+                    $model->getOriginal('status'),
                 );
             }
         });
@@ -151,6 +152,7 @@ class UserRemoteRegistration extends Model
      *
      * @return string
      */
+    #[\Override]
     public function getRouteKeyName()
     {
         return 'uuid';

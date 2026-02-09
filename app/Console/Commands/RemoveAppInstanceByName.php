@@ -53,7 +53,9 @@ class RemoveAppInstanceByName extends Command
 
         // Check if instance is already in removal state
         if (in_array($instance->status, PolydockAppInstance::$stageRemoveStatuses)) {
-            $this->warn("Instance '{$name}' is already in removal state ({$instance->status->getLabel()}). Nothing to do.");
+            $this->warn(
+                "Instance '{$name}' is already in removal state ({$instance->status->getLabel()}). Nothing to do.",
+            );
 
             return 0;
         }
@@ -84,7 +86,7 @@ class RemoveAppInstanceByName extends Command
         if (! $force) {
             $confirmed = $this->confirm(
                 "Are you sure you want to set instance '{$name}' to PENDING_PRE_REMOVE status?",
-                false
+                false,
             );
 
             if (! $confirmed) {
@@ -100,11 +102,13 @@ class RemoveAppInstanceByName extends Command
 
             $instance->setStatus(
                 PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
-                "Marked for removal by name: {$name}"
+                "Marked for removal by name: {$name}",
             );
             $instance->save();
 
-            $this->info("✓ Instance {$instance->id} ({$instance->name}) set to PENDING_PRE_REMOVE (was: {$previousStatus->getLabel()})");
+            $this->info(
+                "✓ Instance {$instance->id} ({$instance->name}) set to PENDING_PRE_REMOVE (was: {$previousStatus->getLabel()})",
+            );
             $this->newLine();
             $this->info('Operation completed successfully.');
 

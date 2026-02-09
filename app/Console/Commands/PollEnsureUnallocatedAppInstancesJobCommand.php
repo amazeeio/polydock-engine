@@ -14,9 +14,9 @@ class PollEnsureUnallocatedAppInstancesJobCommand extends Command
 
     protected $description = 'Poll and dispatch jobs to ensure unallocated instances';
 
-    private const LOOP_DURATION = 300; // 5 minutes
+    private const int LOOP_DURATION = 300; // 5 minutes
 
-    private const SLEEP_DURATION = 5; // 5 seconds
+    private const int SLEEP_DURATION = 5; // 5 seconds
 
     public function handle(): int
     {

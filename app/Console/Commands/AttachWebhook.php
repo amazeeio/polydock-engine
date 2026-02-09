@@ -44,7 +44,9 @@ class AttachWebhook extends Command
         // Select store
         $storeId = $this->option('store-id');
         if (! $storeId) {
-            $storeOptions = $stores->mapWithKeys(fn ($store) => [$store->id => "{$store->name} (ID: {$store->id})"])->toArray();
+            $storeOptions = $stores
+                ->mapWithKeys(fn ($store) => [$store->id => "{$store->name} (ID: {$store->id})"])
+                ->toArray();
 
             $selectedStoreValue = $this->choice('Select a store to attach webhook to:', $storeOptions);
             $storeId = collect($storeOptions)->search($selectedStoreValue);

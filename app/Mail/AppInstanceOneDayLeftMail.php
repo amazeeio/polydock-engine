@@ -16,7 +16,10 @@ class AppInstanceOneDayLeftMail extends Mailable
     use Queueable;
     use SerializesModels;
 
-    public function __construct(public PolydockAppInstance $appInstance, public User $toUser) {}
+    public function __construct(
+        public PolydockAppInstance $appInstance,
+        public User $toUser,
+    ) {}
 
     /**
      * Get the message envelope.

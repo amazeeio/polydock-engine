@@ -27,10 +27,8 @@ class ProcessUserRemoteRegistration implements ShouldQueue
 
     /**
      * Required fields in the request data
-     *
-     * @var array
      */
-    private const REQUIRED_FIELDS = [
+    private const array REQUIRED_FIELDS = [
         'register_type',
         'email',
         'first_name',
@@ -44,7 +42,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        private UserRemoteRegistration $registration
+        private UserRemoteRegistration $registration,
     ) {}
 
     /**
@@ -73,7 +71,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
 
         // Set the type from request_data
         $this->registration->type = UserRemoteRegistrationType::from(
-            $this->registration->getRequestValue('register_type')
+            $this->registration->getRequestValue('register_type'),
         );
         $this->registration->save();
 
@@ -99,8 +97,8 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             if (is_null($this->registration->getRequestValue($field))) {
                 // Allow missing trial_app field for unlisted region requests
                 if (
-                    $field === 'trial_app' &&
-                    $this->registration->getRequestValue('register_type') === 'REQUEST_TRIAL_UNLISTED_REGION'
+                    $field === 'trial_app'
+                    && $this->registration->getRequestValue('register_type') === 'REQUEST_TRIAL_UNLISTED_REGION'
                 ) {
                     continue;
                 }
@@ -123,7 +121,10 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             ]);
 
             $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
-            $this->registration->setResultValue('message_detail', 'You must accept the AUP and Privacy Policy to proceed');
+            $this->registration->setResultValue(
+                'message_detail',
+                'You must accept the AUP and Privacy Policy to proceed',
+            );
             $this->registration->save();
 
             return false;
@@ -247,18 +248,21 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             }
             $this->registration->setResultValue('user_email_domain', $domain);
 
-            $trialApp = PolydockStoreApp::where('uuid', $this->registration->getRequestValue('trial_app'))->firstOrFail();
+            $trialApp = PolydockStoreApp::where(
+                'uuid',
+                $this->registration->getRequestValue('trial_app'),
+            )->firstOrFail();
             $this->registration->polydock_store_app_id = $trialApp->id;
 
             if ($this->registration->registerSimulateRoundRobin) {
                 Log::info('Simulating round robin registration', ['registration' => $this->registration->toArray()]);
                 // Set success message and URL if even ID
-                if ($this->registration->id % 2 === 0) {
+                if (($this->registration->id % 2) === 0) {
                     $uniqueId = Str::random(10);
                     $this->registration->setResultValue('result_type', 'trial_created');
                     $this->registration->setResultValue('message', 'Trial created.');
                     $this->registration->setResultValue('trial_app_url', "https://www.example.com/{$uniqueId}");
-                } elseif ($this->registration->id % 3 === 0) {
+                } elseif (($this->registration->id % 3) === 0) {
                     throw new \Exception('An error occurred while processing the registration.');
                 } else {
                     $this->registration->setResultValue('result_type', 'trial_registered');
@@ -287,7 +291,10 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 $this->registration->save();
 
                 // Add user information to the app instance data
-                $allocatedInstance->storeKeyValue('user-first-name', $this->registration->getRequestValue('first_name'));
+                $allocatedInstance->storeKeyValue(
+                    'user-first-name',
+                    $this->registration->getRequestValue('first_name'),
+                );
                 $allocatedInstance->storeKeyValue('user-last-name', $this->registration->getRequestValue('last_name'));
                 $allocatedInstance->storeKeyValue('user-email', $this->registration->getRequestValue('email'));
                 // if they add a company name, we store it too

@@ -38,7 +38,7 @@ trait HasWebhookSensitiveData
     {
         $keys = is_array($keys) ? $keys : [$keys];
         $this->sensitiveDataKeys = array_unique(
-            array_merge($this->getSensitiveDataKeys(), $keys)
+            array_merge($this->getSensitiveDataKeys(), $keys),
         );
 
         return $this;
@@ -86,7 +86,7 @@ trait HasWebhookSensitiveData
         $retData = array_filter(
             $data,
             fn ($key) => ! $this->shouldFilterKey($key, $sensitiveKeys),
-            ARRAY_FILTER_USE_KEY
+            ARRAY_FILTER_USE_KEY,
         );
 
         // special cases for emails that the webhook needs to be able to see the password

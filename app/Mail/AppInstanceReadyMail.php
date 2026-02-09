@@ -21,7 +21,7 @@ class AppInstanceReadyMail extends Mailable
      */
     public function __construct(
         public PolydockAppInstance $appInstance,
-        public User $toUser
+        public User $toUser,
     ) {}
 
     /**
@@ -49,6 +49,7 @@ class AppInstanceReadyMail extends Mailable
     {
         // dd(Config::get('mail.mjml-config'));
         $mjmlConfig = Config::get('mail.mjml-config');
+
         // $mjmlConfig['theme'] = $mjmlConfig['themes']['dark'];
 
         return new Content(

@@ -45,7 +45,9 @@ class PolydockCloneStoreAppCommand extends Command
             }
 
             // Create store selection array
-            $storeChoices = $stores->mapWithKeys(fn ($store) => [$store->id => "{$store->name} (ID: {$store->id})"])->toArray();
+            $storeChoices = $stores
+                ->mapWithKeys(fn ($store) => [$store->id => "{$store->name} (ID: {$store->id})"])
+                ->toArray();
 
             // Ask user which store to clone into
             $targetStoreId = array_search($this->choice(
@@ -53,7 +55,7 @@ class PolydockCloneStoreAppCommand extends Command
                 array_values($storeChoices),
                 null,
                 null,
-                false
+                false,
             ), $storeChoices);
 
             $this->info("Selected target store ID: {$targetStoreId}");
@@ -90,7 +92,7 @@ class PolydockCloneStoreAppCommand extends Command
                     ['Name', $newApp->name],
                     ['Store', $targetStore->name],
                     ['Status', $newApp->status->value],
-                ]
+                ],
             );
 
             Log::info('Store app cloned successfully', [

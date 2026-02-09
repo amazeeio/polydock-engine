@@ -14,11 +14,11 @@ class PollDeploymentStatusCommand extends Command
 
     protected $description = 'Poll deployment status for running instances';
 
-    private const LOOP_DURATION = 300; // 5 minutes
+    private const int LOOP_DURATION = 300; // 5 minutes
 
-    private const SLEEP_DURATION = 5; // 5 seconds
+    private const int SLEEP_DURATION = 5; // 5 seconds
 
-    private const MAX_INSTANCES = 10;
+    private const int MAX_INSTANCES = 10;
 
     public function handle(): int
     {

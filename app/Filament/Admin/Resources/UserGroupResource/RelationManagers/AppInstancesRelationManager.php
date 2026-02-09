@@ -14,6 +14,7 @@ class AppInstancesRelationManager extends RelationManager
 {
     protected static string $relationship = 'appInstances';
 
+    #[\Override]
     public function form(Form $form): Form
     {
         return $form

@@ -57,8 +57,16 @@ class DispatchTrialCompleteEmailJobsCommand extends Command
 
         // Dispatch jobs for each eligible instance
         foreach ($eligibleInstances as $instance) {
-            $this->info(sprintf('Dispatching trial complete email job for app instance %s (%s)', $instance->name, $instance->uuid));
-            Log::info(sprintf('Dispatching trial complete email job for app instance %s (%s)', $instance->name, $instance->uuid));
+            $this->info(sprintf(
+                'Dispatching trial complete email job for app instance %s (%s)',
+                $instance->name,
+                $instance->uuid,
+            ));
+            Log::info(sprintf(
+                'Dispatching trial complete email job for app instance %s (%s)',
+                $instance->name,
+                $instance->uuid,
+            ));
             ProcessTrialCompleteEmailJob::dispatch($instance->id);
         }
 

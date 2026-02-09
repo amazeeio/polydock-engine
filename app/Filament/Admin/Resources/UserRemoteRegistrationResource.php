@@ -23,6 +23,7 @@ class UserRemoteRegistrationResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -31,6 +32,7 @@ class UserRemoteRegistrationResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -63,6 +65,7 @@ class UserRemoteRegistrationResource extends Resource
             ->bulkActions([]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -70,16 +73,19 @@ class UserRemoteRegistrationResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function canEdit(Model $record): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
