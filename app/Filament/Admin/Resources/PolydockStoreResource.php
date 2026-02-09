@@ -38,8 +38,10 @@ class PolydockStoreResource extends Resource
                     ->options(PolydockStoreStatusEnum::class)
                     ->required(),
                 Forms\Components\Toggle::make('listed_in_marketplace')
+                    ->label('Listed in Marketplace')
                     ->required(),
                 Forms\Components\TextInput::make('lagoon_deploy_region_id_ext')
+                    ->label('Lagoon Deploy Region ID')
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
@@ -49,6 +51,7 @@ class PolydockStoreResource extends Resource
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
                 Forms\Components\TextInput::make('lagoon_deploy_project_prefix')
+                    ->label('Lagoon Deploy Project Prefix')
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
@@ -58,6 +61,7 @@ class PolydockStoreResource extends Resource
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
                 Forms\Components\TextInput::make('lagoon_deploy_organization_id_ext')
+                    ->label('Lagoon Deploy Organization ID')
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
@@ -67,6 +71,7 @@ class PolydockStoreResource extends Resource
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
                 Forms\Components\TextInput::make('amazee_ai_backend_region_id_ext')
+                    ->label('amazee.ai Backend Region ID')
                     ->numeric()
                     ->dehydrated(
                         fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
@@ -75,8 +80,9 @@ class PolydockStoreResource extends Resource
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
                 Forms\Components\Textarea::make('lagoon_deploy_private_key')
+                    ->label('Lagoon Deploy Private Key')
                     ->columnSpanFull()
-                    ->rows(5)
+                    ->rows(3)
                     ->formatStateUsing(fn ($state) => null)
                     ->dehydrated(fn ($state) => filled($state))
                     ->placeholder(fn ($record) => filled($record?->lagoon_deploy_private_key)
@@ -89,7 +95,7 @@ class PolydockStoreResource extends Resource
                         $set('derived_public_key', $keyToUse ? LagoonHelper::getPublicKeyFromPrivateKey($keyToUse) : null);
                     }),
                 Forms\Components\Textarea::make('derived_public_key')
-                    ->label('Derived Public Key')
+                    ->label('Lagoon Deploy Public Key')
                     ->helperText('This is the public key derived from the stored private key (or the one you just entered).')
                     ->disabled()
                     ->dehydrated(false)
