@@ -4,6 +4,7 @@ namespace App\PolydockEngine\Helpers;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use phpseclib3\Crypt\PublicKeyLoader;
 
 class LagoonHelper
 {
@@ -53,26 +54,14 @@ class LagoonHelper
             return null;
         }
 
-        $tempFile = tempnam(sys_get_temp_dir(), 'pk_');
-        file_put_contents($tempFile, $privateKey);
-        chmod($tempFile, 0600);
-
         try {
-            $result = \Illuminate\Support\Facades\Process::run(['ssh-keygen', '-y', '-f', $tempFile]);
+            $key = PublicKeyLoader::load($privateKey);
 
-            if ($result->successful()) {
-                return trim($result->output());
-            }
-
-            Log::error('ssh-keygen failed: '.$result->errorOutput());
+            return $key->getPublicKey()->toString('OpenSSH');
         } catch (\Throwable $e) {
             Log::error('Error generating public key: '.$e->getMessage());
-        } finally {
-            if (file_exists($tempFile)) {
-                unlink($tempFile);
-            }
-        }
 
-        return null;
+            return null;
+        }
     }
 }
