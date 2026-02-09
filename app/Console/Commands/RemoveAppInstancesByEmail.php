@@ -49,7 +49,11 @@ class RemoveAppInstancesByEmail extends Command
         // Find all app instances with the given email or pattern in their data
         if ($isPattern) {
             // Use raw SQL for pattern matching (compatible with MariaDB/MySQL)
-            $instances = PolydockAppInstance::whereRaw("JSON_UNQUOTE(JSON_EXTRACT(data, '$.\"user-email\"')) LIKE ?", [$email])->get();
+            $instances = PolydockAppInstance::where(
+                DB::raw('JSON_UNQUOTE(JSON_EXTRACT(data, \'$."user-email"\'))'),
+                'LIKE',
+                $email
+            )->get();
         } else {
             $instances = PolydockAppInstance::whereJsonContains('data->user-email', $email)->get();
         }
