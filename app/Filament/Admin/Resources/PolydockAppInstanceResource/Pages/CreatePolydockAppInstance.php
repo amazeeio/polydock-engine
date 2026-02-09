@@ -7,6 +7,8 @@ use App\Filament\Admin\Resources\PolydockAppInstanceResource;
 use App\Jobs\ProcessUserRemoteRegistration;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
+use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -34,6 +36,7 @@ class CreatePolydockAppInstance extends Page
             'aup_and_privacy_acceptance' => true,
             'opt_in_to_product_updates' => true,
             'is_trial' => true,
+            'custom_fields' => [],
         ]);
     }
 
@@ -103,6 +106,23 @@ class CreatePolydockAppInstance extends Page
                             ->default(true),
                     ])
                     ->columns(2),
+
+                Grid::make(2)->schema([
+                    Section::make('Custom Fields')
+                        ->description(
+                            'Add additional key-value data to pass through to the Polydock webhooks (e.g. to be consumed by n8n)',
+                        )
+                        ->schema([
+                            KeyValue::make('custom_fields')
+                                ->label('')
+                                ->keyLabel('Field Name')
+                                ->valueLabel('Value')
+                                ->addActionLabel('Add Custom Field')
+                                ->reorderable()
+                                ->columnSpanFull(),
+                        ])
+                        ->columnSpan(1),
+                ]),
             ])
             ->statePath('data');
     }
@@ -114,21 +134,30 @@ class CreatePolydockAppInstance extends Page
         Log::info('Admin creating app instance', ['data' => $data]);
 
         try {
+            // Build the request data array
+            $requestData = [
+                'email' => $data['email'],
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'organization' => $data['organization'] ?? '',
+                'job_title' => $data['job_title'] ?? '',
+                'register_type' => 'REQUEST_TRIAL',
+                'trial_app' => $data['trial_app'],
+                'aup_and_privacy_acceptance' => $data['aup_and_privacy_acceptance'] ? 1 : 0,
+                'opt_in_to_product_updates' => $data['opt_in_to_product_updates'] ? 1 : 0,
+                'admin_created' => true,
+                'is_trial' => $data['is_trial'],
+            ];
+
+            // Merge custom fields into request data
+            if (! empty($data['custom_fields'])) {
+                $requestData = array_merge($requestData, $data['custom_fields']);
+            }
+
             // Create the UserRemoteRegistration record
             $registration = UserRemoteRegistration::create([
                 'email' => $data['email'],
-                'request_data' => [
-                    'email' => $data['email'],
-                    'first_name' => $data['first_name'],
-                    'last_name' => $data['last_name'],
-                    'organization' => $data['organization'] ?? '',
-                    'job_title' => $data['job_title'] ?? '',
-                    'register_type' => 'REQUEST_TRIAL',
-                    'trial_app' => $data['trial_app'],
-                    'aup_and_privacy_acceptance' => $data['aup_and_privacy_acceptance'] ? 1 : 0,
-                    'opt_in_to_product_updates' => $data['opt_in_to_product_updates'] ? 1 : 0,
-                    'is_trial' => $data['is_trial'],
-                ],
+                'request_data' => $requestData,
             ]);
 
             Log::info('Created registration for admin-initiated instance', [

@@ -17,6 +17,6 @@ class PolydockAppInstanceCreatedWithNewStatus
      * Create a new event instance.
      */
     public function __construct(
-        public PolydockAppInstance $appInstance,
+        public PolydockAppInstance $appInstance
     ) {}
 }

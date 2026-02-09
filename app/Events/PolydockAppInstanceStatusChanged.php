@@ -19,6 +19,6 @@ class PolydockAppInstanceStatusChanged
      */
     public function __construct(
         public PolydockAppInstance $appInstance,
-        public ?PolydockAppInstanceStatus $previousStatus = null,
+        public ?PolydockAppInstanceStatus $previousStatus = null
     ) {}
 }
