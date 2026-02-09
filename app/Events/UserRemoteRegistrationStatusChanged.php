@@ -19,6 +19,6 @@ class UserRemoteRegistrationStatusChanged
      */
     public function __construct(
         public UserRemoteRegistration $registration,
-        public UserRemoteRegistrationStatusEnum $previousStatus,
+        public UserRemoteRegistrationStatusEnum $previousStatus
     ) {}
 }

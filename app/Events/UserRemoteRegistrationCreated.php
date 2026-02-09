@@ -17,6 +17,6 @@ class UserRemoteRegistrationCreated
      * Create a new event instance.
      */
     public function __construct(
-        public UserRemoteRegistration $registration,
+        public UserRemoteRegistration $registration
     ) {}
 }
