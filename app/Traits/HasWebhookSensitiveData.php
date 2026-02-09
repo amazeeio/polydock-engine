@@ -9,26 +9,27 @@ trait HasWebhookSensitiveData
      */
     public function getSensitiveDataKeys(): array
     {
-        return $this->sensitiveDataKeys ?? [
-            // Exact matches
-            'private_key',
-            'secret',
-            'password',
-            'token',
-            'api_key',
-            'ssh_key',
-            'recaptcha',
+        return
+            $this->sensitiveDataKeys ?? [
+                // Exact matches
+                'private_key',
+                'secret',
+                'password',
+                'token',
+                'api_key',
+                'ssh_key',
+                'recaptcha',
 
-            // Regex patterns (starting with /)
-            '/^.*_key.*$/',          // Anything containing _key
-            '/^.*private.*$/',       // Anything containing private
-            '/^.*secret.*$/',       // Anything containing secret
-            '/^.*pass.*$/',          // Anything containing pass
-            '/^.*username.*$/',      // Anything containing username
-            '/^.*token.*$/',         // Anything containing token
-            '/^.*api.*$/',           // Anything containing api
-            '/^.*ssh.*$/',           // Anything containing ssh
-        ];
+                // Regex patterns (starting with /)
+                '/^.*_key.*$/', // Anything containing _key
+                '/^.*private.*$/', // Anything containing private
+                '/^.*secret.*$/', // Anything containing secret
+                '/^.*pass.*$/', // Anything containing pass
+                '/^.*username.*$/', // Anything containing username
+                '/^.*token.*$/', // Anything containing token
+                '/^.*api.*$/', // Anything containing api
+                '/^.*ssh.*$/', // Anything containing ssh
+            ];
     }
 
     /**

@@ -97,13 +97,13 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'recaptcha',
 
         // Regex patterns
-        '/^.*_key$/',              // Anything ending with _key
-        '/^.*_secret$/',           // Anything ending with _secret
-        '/^.*password.*$/',        // Anything containing password
-        '/^.*username.*$/',        // Anything containing password
-        '/^.*token.*$/',           // Anything containing token
-        '/^.*api[_-]?key.*$/i',    // Any variation of api key
-        '/^.*ssh[_-]?key.*$/i',    // Any variation of ssh key
+        '/^.*_key$/', // Anything ending with _key
+        '/^.*_secret$/', // Anything ending with _secret
+        '/^.*password.*$/', // Anything containing password
+        '/^.*username.*$/', // Anything containing password
+        '/^.*token.*$/', // Anything containing token
+        '/^.*api[_-]?key.*$/i', // Any variation of api key
+        '/^.*ssh[_-]?key.*$/i', // Any variation of ssh key
         '/^.*private[_-]?key.*$/i', // Any variation of private key
     ];
 
@@ -270,10 +270,18 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'available-for-trials' => $storeApp->available_for_trials,
                     'lagoon-generate-app-admin-username' => $model->generateUniqueUsername(),
                     'lagoon-generate-app-admin-password' => $model->generateUniquePassword(),
-                    'polydock-app-instance-health-webhook-url' => str_replace(':status:', '', route('api.instance.health', [
-                        'uuid' => $model->uuid,
-                        'status' => ':status:',
-                    ], true)),
+                    'polydock-app-instance-health-webhook-url' => str_replace(
+                        ':status:',
+                        '',
+                        route(
+                            'api.instance.health',
+                            [
+                                'uuid' => $model->uuid,
+                                'status' => ':status:',
+                            ],
+                            true,
+                        ),
+                    ),
                 ];
 
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'post_deploy', 'post-deploy'));
@@ -392,7 +400,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function setAppType(string $appType): self
     {
-
         if (! class_exists($appType)) {
             throw new PolydockEngineAppNotFoundException($appType);
         }
@@ -599,16 +606,106 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     private function pickAnimal(): string
     {
         $animals = [
-            'Lion', 'Tiger', 'Bear', 'Wolf', 'Fox', 'Eagle', 'Hawk', 'Dolphin', 'Whale', 'Elephant',
-            'Giraffe', 'Zebra', 'Penguin', 'Kangaroo', 'Koala', 'Panda', 'Gorilla', 'Cheetah', 'Leopard', 'Jaguar',
-            'Rhinoceros', 'Hippopotamus', 'Crocodile', 'Alligator', 'Turtle', 'Snake', 'Lizard', 'Iguana', 'Chameleon', 'Gecko',
-            'Octopus', 'Squid', 'Jellyfish', 'Starfish', 'Seahorse', 'Shark', 'Stingray', 'Swordfish', 'Tuna', 'Salmon',
-            'Owl', 'Parrot', 'Toucan', 'Flamingo', 'Peacock', 'Hummingbird', 'Woodpecker', 'Cardinal', 'Sparrow', 'Robin',
-            'Butterfly', 'Dragonfly', 'Ladybug', 'Beetle', 'Ant', 'Spider', 'Scorpion', 'Crab', 'Lobster', 'Shrimp',
-            'Deer', 'Moose', 'Elk', 'Bison', 'Buffalo', 'Antelope', 'Gazelle', 'Camel', 'Llama', 'Alpaca',
-            'Raccoon', 'Badger', 'Beaver', 'Otter', 'Meerkat', 'Mongoose', 'Weasel', 'Ferret', 'Skunk', 'Armadillo',
-            'Sloth', 'Orangutan', 'Chimpanzee', 'Baboon', 'Lemur', 'Gibbon', 'Marmoset', 'Tamarin', 'Capuchin', 'Macaque',
-            'Platypus', 'Echidna', 'Opossum', 'Wombat', 'Tasmanian', 'Dingo', 'Quokka', 'Numbat', 'Wallaby', 'Bilby',
+            'Lion',
+            'Tiger',
+            'Bear',
+            'Wolf',
+            'Fox',
+            'Eagle',
+            'Hawk',
+            'Dolphin',
+            'Whale',
+            'Elephant',
+            'Giraffe',
+            'Zebra',
+            'Penguin',
+            'Kangaroo',
+            'Koala',
+            'Panda',
+            'Gorilla',
+            'Cheetah',
+            'Leopard',
+            'Jaguar',
+            'Rhinoceros',
+            'Hippopotamus',
+            'Crocodile',
+            'Alligator',
+            'Turtle',
+            'Snake',
+            'Lizard',
+            'Iguana',
+            'Chameleon',
+            'Gecko',
+            'Octopus',
+            'Squid',
+            'Jellyfish',
+            'Starfish',
+            'Seahorse',
+            'Shark',
+            'Stingray',
+            'Swordfish',
+            'Tuna',
+            'Salmon',
+            'Owl',
+            'Parrot',
+            'Toucan',
+            'Flamingo',
+            'Peacock',
+            'Hummingbird',
+            'Woodpecker',
+            'Cardinal',
+            'Sparrow',
+            'Robin',
+            'Butterfly',
+            'Dragonfly',
+            'Ladybug',
+            'Beetle',
+            'Ant',
+            'Spider',
+            'Scorpion',
+            'Crab',
+            'Lobster',
+            'Shrimp',
+            'Deer',
+            'Moose',
+            'Elk',
+            'Bison',
+            'Buffalo',
+            'Antelope',
+            'Gazelle',
+            'Camel',
+            'Llama',
+            'Alpaca',
+            'Raccoon',
+            'Badger',
+            'Beaver',
+            'Otter',
+            'Meerkat',
+            'Mongoose',
+            'Weasel',
+            'Ferret',
+            'Skunk',
+            'Armadillo',
+            'Sloth',
+            'Orangutan',
+            'Chimpanzee',
+            'Baboon',
+            'Lemur',
+            'Gibbon',
+            'Marmoset',
+            'Tamarin',
+            'Capuchin',
+            'Macaque',
+            'Platypus',
+            'Echidna',
+            'Opossum',
+            'Wombat',
+            'Tasmanian',
+            'Dingo',
+            'Quokka',
+            'Numbat',
+            'Wallaby',
+            'Bilby',
         ];
 
         return str_replace(' ', '', $animals[array_rand($animals)]);
@@ -620,16 +717,56 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     private function pickVerb(): string
     {
         $verbs = [
-            'Sleeping', 'Running', 'Jumping', 'Flying', 'Swimming',
-            'Dancing', 'Singing', 'Playing', 'Hunting', 'Dreaming',
-            'Climbing', 'Diving', 'Soaring', 'Prowling', 'Leaping',
-            'Gliding', 'Stalking', 'Bouncing', 'Dashing', 'Floating',
-            'Sprinting', 'Hopping', 'Crawling', 'Sliding', 'Swinging',
-            'Pouncing', 'Galloping', 'Prancing', 'Skipping', 'Strolling',
-            'Wandering', 'Exploring', 'Roaming', 'Meandering', 'Trotting',
-            'Charging', 'Lunging', 'Darting', 'Zigzagging', 'Circling',
-            'Twirling', 'Spinning', 'Rolling', 'Tumbling', 'Flipping',
-            'Stretching', 'Yawning', 'Resting', 'Lounging', 'Relaxing',
+            'Sleeping',
+            'Running',
+            'Jumping',
+            'Flying',
+            'Swimming',
+            'Dancing',
+            'Singing',
+            'Playing',
+            'Hunting',
+            'Dreaming',
+            'Climbing',
+            'Diving',
+            'Soaring',
+            'Prowling',
+            'Leaping',
+            'Gliding',
+            'Stalking',
+            'Bouncing',
+            'Dashing',
+            'Floating',
+            'Sprinting',
+            'Hopping',
+            'Crawling',
+            'Sliding',
+            'Swinging',
+            'Pouncing',
+            'Galloping',
+            'Prancing',
+            'Skipping',
+            'Strolling',
+            'Wandering',
+            'Exploring',
+            'Roaming',
+            'Meandering',
+            'Trotting',
+            'Charging',
+            'Lunging',
+            'Darting',
+            'Zigzagging',
+            'Circling',
+            'Twirling',
+            'Spinning',
+            'Rolling',
+            'Tumbling',
+            'Flipping',
+            'Stretching',
+            'Yawning',
+            'Resting',
+            'Lounging',
+            'Relaxing',
         ];
 
         return $verbs[array_rand($verbs)];
@@ -641,9 +778,21 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     private function pickColor(): string
     {
         $colors = [
-            'Red', 'Blue', 'Green', 'Yellow', 'Purple',
-            'Orange', 'Silver', 'Gold', 'Crimson', 'Azure',
-            'Emerald', 'Amber', 'Violet', 'Coral', 'Indigo',
+            'Red',
+            'Blue',
+            'Green',
+            'Yellow',
+            'Purple',
+            'Orange',
+            'Silver',
+            'Gold',
+            'Crimson',
+            'Azure',
+            'Emerald',
+            'Amber',
+            'Violet',
+            'Coral',
+            'Indigo',
         ];
 
         return $colors[array_rand($colors)];
@@ -658,11 +807,14 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function generateUniqueProjectName(string $prefix): string
     {
         return strtolower(
-            $prefix.'-'.
-            // $this->pickVerb() . '-' . // we're removing the verb for now, it's not necessary
-            $this->pickColor().'-'.
-            $this->pickAnimal().'-'.
-            uniqid()
+            $prefix
+                .'-'.
+                // $this->pickVerb() . '-' . // we're removing the verb for now, it's not necessary
+                $this->pickColor()
+                .'-'
+                .$this->pickAnimal()
+                .'-'
+                .uniqid(),
         );
     }
 
@@ -800,8 +952,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this;
     }
 
-    public function setAppUrl(string $url, ?string $oneTimeLoginUrl = null, ?int $numberOfHoursForOneTimeLoginUrl = 24): self
-    {
+    public function setAppUrl(
+        string $url,
+        ?string $oneTimeLoginUrl = null,
+        ?int $numberOfHoursForOneTimeLoginUrl = 24,
+    ): self {
         $this->app_url = trim($url);
         if ($oneTimeLoginUrl) {
             $this->setOneTimeLoginUrl(trim($oneTimeLoginUrl), $numberOfHoursForOneTimeLoginUrl);
