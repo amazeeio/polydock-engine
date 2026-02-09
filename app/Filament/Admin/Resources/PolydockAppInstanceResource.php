@@ -70,20 +70,28 @@ class PolydockAppInstanceResource extends Resource
                 TextColumn::make('send_midtrial_email_at')
                     ->label('Midtrial Email')
                     ->description(fn ($record) => $record->midtrial_email_sent ? 'Sent' : 'Pending')
-                    ->state(fn ($record) => $record->send_midtrial_email_at ? $record->send_midtrial_email_at->format('Y-m-d H:i:s') : ''),
+                    ->state(fn ($record) => $record->send_midtrial_email_at
+                        ? $record->send_midtrial_email_at->format('Y-m-d H:i:s')
+                        : ''),
                 TextColumn::make('send_one_day_left_email_at')
                     ->label('1D Left Email')
                     ->description(fn ($record) => $record->one_day_left_email_sent ? 'Sent' : 'Pending')
-                    ->state(fn ($record) => $record->send_one_day_left_email_at ? $record->send_one_day_left_email_at->format('Y-m-d H:i:s') : ''),
+                    ->state(fn ($record) => $record->send_one_day_left_email_at
+                        ? $record->send_one_day_left_email_at->format('Y-m-d H:i:s')
+                        : ''),
                 TextColumn::make('trial_complete_email_sent')
                     ->label('Trial Complete Email')
-                    ->state(fn ($record) => ($record->is_trial && $record->trial_complete_email_sent) ? 'Sent' : ($record->is_trial ? 'Pending' : '')),
+                    ->state(fn ($record) => $record->is_trial && $record->trial_complete_email_sent
+                        ? 'Sent'
+                        : ($record->is_trial ? 'Pending' : '')),
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->options(collect(PolydockAppInstanceStatus::cases())
-                        ->mapWithKeys(fn ($status) => [$status->value => $status->getLabel()])
-                        ->toArray())
+                    ->options(
+                        collect(PolydockAppInstanceStatus::cases())
+                            ->mapWithKeys(fn ($status) => [$status->value => $status->getLabel()])
+                            ->toArray(),
+                    )
                     ->multiple()
                     ->label('Instance Status')
                     ->indicator('Status'),
@@ -165,7 +173,8 @@ class PolydockAppInstanceResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
-            ])->headerActions([
+            ])
+            ->headerActions([
                 ExportAction::make()
                     ->label('Export registrations')
                     ->exporter(UserRemoteRegistrationExporter::class),
@@ -205,10 +214,19 @@ class PolydockAppInstanceResource extends Resource
                             ->schema([
                                 \Filament\Infolists\Components\TextEntry::make('storeApp.lagoon_deploy_region_id_ext')
                                     ->label('Deploy Region')
-                                    ->formatStateUsing(fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name')),
-                                \Filament\Infolists\Components\TextEntry::make('storeApp.amazee_ai_backend_region_id_ext')
+                                    ->formatStateUsing(
+                                        fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'),
+                                    ),
+                                \Filament\Infolists\Components\TextEntry::make(
+                                    'storeApp.amazee_ai_backend_region_id_ext',
+                                )
                                     ->label('AI Backend Region')
-                                    ->formatStateUsing(fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name')),
+                                    ->formatStateUsing(
+                                        fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion(
+                                            $state,
+                                            'name',
+                                        ),
+                                    ),
                             ]),
                     ])
                     ->columnSpan(2),
@@ -271,6 +289,7 @@ class PolydockAppInstanceResource extends Resource
         return $renderedArray;
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -281,7 +300,7 @@ class PolydockAppInstanceResource extends Resource
     #[\Override]
     public static function canCreate(): bool
     {
-        return false;
+        return true;
     }
 
     #[\Override]
@@ -289,6 +308,7 @@ class PolydockAppInstanceResource extends Resource
     {
         return [
             'index' => Pages\ListPolydockAppInstances::route('/'),
+            'create' => Pages\CreatePolydockAppInstance::route('/create'),
             'view' => Pages\ViewPolydockAppInstance::route('/{record}'),
             'edit' => Pages\EditPolydockAppInstance::route('/{record}/edit'),
         ];
