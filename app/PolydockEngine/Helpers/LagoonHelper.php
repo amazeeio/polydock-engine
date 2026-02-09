@@ -40,7 +40,7 @@ class LagoonHelper
         return $lagoonCoreDataForRegion;
     }
 
-    public static function getLagoonCodeDataValueForRegion(string $regionId, string $key): string
+    public static function getLagoonCodeDataValueForRegion(string $regionId, string $key): ?string
     {
         $lagoonCoreDataForRegion = self::getLagoonCoreDataForRegion($regionId);
 
@@ -63,6 +63,10 @@ class LagoonHelper
             if ($result->successful()) {
                 return trim($result->output());
             }
+
+            Log::error('ssh-keygen failed: '.$result->errorOutput());
+        } catch (\Throwable $e) {
+            Log::error('Error generating public key: '.$e->getMessage());
         } finally {
             if (file_exists($tempFile)) {
                 unlink($tempFile);
