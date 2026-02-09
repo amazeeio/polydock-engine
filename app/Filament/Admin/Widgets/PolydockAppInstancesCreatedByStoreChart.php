@@ -15,6 +15,7 @@ class PolydockAppInstancesCreatedByStoreChart extends ChartWidget
 
     protected static ?int $sort = 300;
 
+    #[\Override]
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
@@ -27,13 +28,17 @@ class PolydockAppInstancesCreatedByStoreChart extends ChartWidget
             ->where('polydock_app_instances.created_at', '>=', $startDate)
             ->where('polydock_app_instances.created_at', '<=', $endDate)
             ->select(
-                DB::raw('DATE(polydock_app_instances.created_at - INTERVAL WEEKDAY(polydock_app_instances.created_at) DAY) as week'),
+                DB::raw(
+                    'DATE(polydock_app_instances.created_at - INTERVAL WEEKDAY(polydock_app_instances.created_at) DAY) as week',
+                ),
                 'polydock_stores.name as store_name',
-                DB::raw('count(*) as count')
+                DB::raw('count(*) as count'),
             )
             ->groupBy(
-                DB::raw('DATE(polydock_app_instances.created_at - INTERVAL WEEKDAY(polydock_app_instances.created_at) DAY)'),
-                'polydock_stores.name'
+                DB::raw(
+                    'DATE(polydock_app_instances.created_at - INTERVAL WEEKDAY(polydock_app_instances.created_at) DAY)',
+                ),
+                'polydock_stores.name',
             )
             ->orderBy('week')
             ->get();
@@ -80,6 +85,7 @@ class PolydockAppInstancesCreatedByStoreChart extends ChartWidget
         return 'bar';
     }
 
+    #[\Override]
     protected function getOptions(): array
     {
         return [

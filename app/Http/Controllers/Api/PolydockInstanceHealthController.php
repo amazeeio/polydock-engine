@@ -78,7 +78,7 @@ class PolydockInstanceHealthController extends Controller
                 'status_code' => 400,
                 'allowed_statuses' => array_map(
                     fn ($status) => $status->value,
-                    PolydockAppInstance::$stageRunningStatuses
+                    PolydockAppInstance::$stageRunningStatuses,
                 ),
             ], 400);
         }

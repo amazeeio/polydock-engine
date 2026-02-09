@@ -24,6 +24,7 @@ class UserGroupResource extends Resource
 
     protected static ?int $navigationSort = 2;
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -32,6 +33,7 @@ class UserGroupResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -55,6 +57,7 @@ class UserGroupResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -63,6 +66,7 @@ class UserGroupResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -73,6 +77,7 @@ class UserGroupResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist

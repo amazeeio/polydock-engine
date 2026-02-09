@@ -19,7 +19,9 @@ class PollDeploymentJob extends BaseJob implements ShouldQueue
         $appInstance = $this->appInstance;
 
         if (! $appInstance) {
-            throw new \Exception('Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found');
+            throw new \Exception(
+                'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
+            );
         }
 
         try {

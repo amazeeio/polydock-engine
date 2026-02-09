@@ -153,6 +153,7 @@ class UserGroup extends Model
     /**
      * Boot the model
      */
+    #[\Override]
     protected static function booted()
     {
         static::saving(function ($userGroup) {
@@ -178,8 +179,10 @@ class UserGroup extends Model
         return self::getNewAppInstanceForThisAppForThisGroup($storeApp, $this);
     }
 
-    public static function getNewAppInstanceForThisAppForThisGroup(PolydockStoreApp $storeApp, UserGroup $userGroup): PolydockAppInstance
-    {
+    public static function getNewAppInstanceForThisAppForThisGroup(
+        PolydockStoreApp $storeApp,
+        UserGroup $userGroup,
+    ): PolydockAppInstance {
         Log::info('Creating unallocated instance', [
             'app_id' => $storeApp->id,
             'app_name' => $storeApp->name,
@@ -212,11 +215,17 @@ class UserGroup extends Model
             if ($lockedInstance->remoteRegistration) {
                 $lockedInstance->remoteRegistration->setResultValue('message', 'Configuring trial authentication...');
                 if ($lockedInstance->getKeyValue('lagoon-generate-app-admin-username')) {
-                    $lockedInstance->remoteRegistration->setResultValue('app_admin_username', $lockedInstance->getKeyValue('lagoon-generate-app-admin-username'));
+                    $lockedInstance->remoteRegistration->setResultValue(
+                        'app_admin_username',
+                        $lockedInstance->getKeyValue('lagoon-generate-app-admin-username'),
+                    );
                 }
 
                 if ($lockedInstance->getKeyValue('lagoon-generate-app-admin-password')) {
-                    $lockedInstance->remoteRegistration->setResultValue('app_admin_password', $lockedInstance->getKeyValue('lagoon-generate-app-admin-password'));
+                    $lockedInstance->remoteRegistration->setResultValue(
+                        'app_admin_password',
+                        $lockedInstance->getKeyValue('lagoon-generate-app-admin-password'),
+                    );
                 }
                 $lockedInstance->remoteRegistration->save();
             }

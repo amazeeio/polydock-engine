@@ -56,8 +56,16 @@ class DispatchMidtrialEmailJobsCommand extends Command
         Log::info(sprintf('Found %d eligible app instances. Dispatching jobs...', $eligibleInstances->count()));
         // Dispatch jobs for each eligible instance
         foreach ($eligibleInstances as $instance) {
-            $this->info(sprintf('Dispatching midtrial email job for app instance %s (%s)', $instance->name, $instance->uuid));
-            Log::info(sprintf('Dispatching midtrial email job for app instance %s (%s)', $instance->name, $instance->uuid));
+            $this->info(sprintf(
+                'Dispatching midtrial email job for app instance %s (%s)',
+                $instance->name,
+                $instance->uuid,
+            ));
+            Log::info(sprintf(
+                'Dispatching midtrial email job for app instance %s (%s)',
+                $instance->name,
+                $instance->uuid,
+            ));
             ProcessMidtrialEmailJob::dispatch($instance->id);
         }
 

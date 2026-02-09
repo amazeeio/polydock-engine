@@ -30,13 +30,9 @@ class LogsRelationManager extends RelationManager
                         'debug' => 'gray',
                     }),
             ])
-            ->filters([
-            ])
-            ->headerActions([
-            ])
-            ->actions([
-            ])
-            ->bulkActions([
-            ]);
+            ->filters([])
+            ->headerActions([])
+            ->actions([])
+            ->bulkActions([]);
     }
 }

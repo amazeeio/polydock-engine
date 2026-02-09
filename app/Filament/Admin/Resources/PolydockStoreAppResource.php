@@ -27,6 +27,7 @@ class PolydockStoreAppResource extends Resource
 
     protected static ?int $navigationSort = 5100;
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -106,47 +107,51 @@ class PolydockStoreAppResource extends Resource
                             ->minValue(1)
                             ->maxValue(365),
 
-                        Grid::make(2)->schema([
-                            Section::make('Mid-trial Email')
-                                ->schema([
-                                    Forms\Components\Toggle::make('send_midtrial_email')
-                                        ->label('Send Mid-trial Email'),
-                                    Forms\Components\TextInput::make('midtrial_email_subject')
-                                        ->label('Subject Line')
-                                        ->maxLength(255),
-                                    Forms\Components\MarkdownEditor::make('midtrial_email_markdown')
-                                        ->label('Email Content')
-                                        ->columnSpanFull(),
-                                ]),
+                        Grid::make(2)
+                            ->schema([
+                                Section::make('Mid-trial Email')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('send_midtrial_email')
+                                            ->label('Send Mid-trial Email'),
+                                        Forms\Components\TextInput::make('midtrial_email_subject')
+                                            ->label('Subject Line')
+                                            ->maxLength(255),
+                                        Forms\Components\MarkdownEditor::make('midtrial_email_markdown')
+                                            ->label('Email Content')
+                                            ->columnSpanFull(),
+                                    ]),
 
-                            Section::make('One Day Left Email')
-                                ->schema([
-                                    Forms\Components\Toggle::make('send_one_day_left_email')
-                                        ->label('Send One Day Left Email'),
-                                    Forms\Components\TextInput::make('one_day_left_email_subject')
-                                        ->label('Subject Line')
-                                        ->maxLength(255),
-                                    Forms\Components\MarkdownEditor::make('one_day_left_email_markdown')
-                                        ->label('Email Content')
-                                        ->columnSpanFull(),
-                                ]),
+                                Section::make('One Day Left Email')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('send_one_day_left_email')
+                                            ->label('Send One Day Left Email'),
+                                        Forms\Components\TextInput::make('one_day_left_email_subject')
+                                            ->label('Subject Line')
+                                            ->maxLength(255),
+                                        Forms\Components\MarkdownEditor::make('one_day_left_email_markdown')
+                                            ->label('Email Content')
+                                            ->columnSpanFull(),
+                                    ]),
 
-                            Section::make('Trial Complete Email')
-                                ->schema([
-                                    Forms\Components\Toggle::make('send_trial_complete_email')
-                                        ->label('Send Trial Complete Email'),
-                                    Forms\Components\TextInput::make('trial_complete_email_subject')
-                                        ->label('Subject Line')
-                                        ->maxLength(255),
-                                    Forms\Components\MarkdownEditor::make('trial_complete_email_markdown')
-                                        ->label('Email Content')
-                                        ->columnSpanFull(),
-                                ]),
-                        ])->columnSpanFull(),
-                    ])->columnSpanFull(),
+                                Section::make('Trial Complete Email')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('send_trial_complete_email')
+                                            ->label('Send Trial Complete Email'),
+                                        Forms\Components\TextInput::make('trial_complete_email_subject')
+                                            ->label('Subject Line')
+                                            ->maxLength(255),
+                                        Forms\Components\MarkdownEditor::make('trial_complete_email_markdown')
+                                            ->label('Email Content')
+                                            ->columnSpanFull(),
+                                    ]),
+                            ])
+                            ->columnSpanFull(),
+                    ])
+                    ->columnSpanFull(),
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -197,6 +202,7 @@ class PolydockStoreAppResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -204,6 +210,7 @@ class PolydockStoreAppResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -214,6 +221,7 @@ class PolydockStoreAppResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -350,7 +358,6 @@ class PolydockStoreAppResource extends Resource
                             ]),
                     ])
                     ->columnSpan(3),
-
             ])
             ->columns(3);
     }

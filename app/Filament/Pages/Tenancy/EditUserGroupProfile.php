@@ -13,6 +13,7 @@ class EditUserGroupProfile extends EditTenantProfile
         return 'Group details';
     }
 
+    #[\Override]
     public function form(Form $form): Form
     {
         return $form

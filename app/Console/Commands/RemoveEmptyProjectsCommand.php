@@ -50,7 +50,7 @@ class RemoveEmptyProjectsCommand extends Command
 
         $lagoonServiceProvider = new PolydockServiceProviderFTLagoon(
             config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon'),
-            $this->getLogger()
+            $this->getLogger(),
         );
 
         $lagoonClient = $lagoonServiceProvider->getLagoonClient();
@@ -84,6 +84,7 @@ class RemoveEmptyProjectsCommand extends Command
             } catch (\Exception $e) {
                 $this->error("✗ Failed to check project for instance {$instance->id}: {$e->getMessage()}");
                 $apiErrorCount++;
+
                 // Continue processing other instances even if one fails
             }
         }
@@ -128,7 +129,7 @@ class RemoveEmptyProjectsCommand extends Command
         if (! $force) {
             $confirmed = $this->confirm(
                 "Are you sure you want to remove these {$emptyProjects->count()} empty Lagoon project(s)?",
-                false
+                false,
             );
 
             if (! $confirmed) {
@@ -150,7 +151,9 @@ class RemoveEmptyProjectsCommand extends Command
                 $deleteResponse = $lagoonClient->deleteProjectByName($projectName);
 
                 if (isset($deleteResponse['error'])) {
-                    $this->error("✗ Failed to delete Lagoon project '{$projectName}': ".json_encode($deleteResponse['error']));
+                    $this->error(
+                        "✗ Failed to delete Lagoon project '{$projectName}': ".json_encode($deleteResponse['error']),
+                    );
                     $errorCount++;
                 } else {
                     $this->info("✓ Successfully removed Lagoon project: {$projectName} (Instance ID: {$instance->id})");
@@ -182,7 +185,9 @@ class RemoveEmptyProjectsCommand extends Command
         // Create logger that delegates to command output methods
         $logger = new class($this) implements PolydockAppLoggerInterface
         {
-            public function __construct(private $command) {}
+            public function __construct(
+                private $command,
+            ) {}
 
             public function info(string $message, array $context = []): void
             {

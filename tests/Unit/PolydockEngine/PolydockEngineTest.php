@@ -83,7 +83,10 @@ class PolydockEngineTest extends TestCase
     #[Test]
     public function it_creates_service_provider_with_config()
     {
-        $provider = new AlphaTestPolydockServiceProvider($this->testConfig[AlphaTestPolydockServiceProvider::class], $this->logger);
+        $provider = new AlphaTestPolydockServiceProvider(
+            $this->testConfig[AlphaTestPolydockServiceProvider::class],
+            $this->logger,
+        );
 
         $this->assertEquals($this->testConfig[AlphaTestPolydockServiceProvider::class], $provider->getConfig());
         $this->assertSame($this->logger, $provider->getLogger());
@@ -118,6 +121,7 @@ class PolydockEngineTest extends TestCase
         $this->assertInstanceOf(BetaTestPolydockServiceProvider::class, $secondInstance);
     }
 
+    #[\Override]
     protected function tearDown(): void
     {
         Mockery::close();

@@ -20,6 +20,7 @@ class ViewUserRemoteRegistration extends ViewRecord
         return [];
     }
 
+    #[\Override]
     public function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -52,7 +53,6 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     ->label('Requested')
                                     ->dateTime(),
                             ]),
-
                     ]),
 
                 Section::make('App Details')
@@ -67,7 +67,7 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     ->label('Instance')
                                     ->url(fn ($record) => route(
                                         'filament.admin.resources.polydock-app-instances.view',
-                                        ['record' => $record->appInstance]
+                                        ['record' => $record->appInstance],
                                     )),
                             ]),
                     ]),

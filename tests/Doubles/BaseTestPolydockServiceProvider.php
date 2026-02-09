@@ -7,7 +7,10 @@ use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
 
 abstract class BaseTestPolydockServiceProvider implements PolydockServiceProviderInterface
 {
-    public function __construct(private readonly array $config, private PolydockAppLoggerInterface $logger) {}
+    public function __construct(
+        private readonly array $config,
+        private PolydockAppLoggerInterface $logger,
+    ) {}
 
     abstract public function getName(): string;
 

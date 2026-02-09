@@ -13,6 +13,7 @@ class GroupsRelationManager extends RelationManager
 {
     protected static string $relationship = 'groups';
 
+    #[\Override]
     public function form(Form $form): Form
     {
         return $form

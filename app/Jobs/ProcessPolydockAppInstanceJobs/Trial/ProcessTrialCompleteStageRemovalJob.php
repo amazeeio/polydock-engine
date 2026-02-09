@@ -50,10 +50,12 @@ class ProcessTrialCompleteStageRemovalJob extends BaseJob implements ShouldQueue
         ]);
 
         // Set status to pending pre-remove
-        $this->appInstance->setStatus(
-            PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
-            'Trial completed, initiating removal process'
-        )->save();
+        $this->appInstance
+            ->setStatus(
+                PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
+                'Trial completed, initiating removal process',
+            )
+            ->save();
 
         $this->appInstance->info('Trial complete stage removal initiated', [
             'app_instance_id' => $this->appInstance->id,

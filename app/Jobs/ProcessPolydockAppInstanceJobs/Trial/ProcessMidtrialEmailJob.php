@@ -24,11 +24,11 @@ class ProcessMidtrialEmailJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
 
         if (
-            ! $this->appInstance->is_trial ||
-            ! $this->appInstance->storeApp->send_midtrial_email ||
-            ! $this->appInstance->send_midtrial_email_at ||
-            ! $this->appInstance->send_midtrial_email_at->isPast() ||
-            $this->appInstance->midtrial_email_sent
+            ! $this->appInstance->is_trial
+            || ! $this->appInstance->storeApp->send_midtrial_email
+            || ! $this->appInstance->send_midtrial_email_at
+            || ! $this->appInstance->send_midtrial_email_at->isPast()
+            || $this->appInstance->midtrial_email_sent
         ) {
             $this->appInstance->info('Midtrial email not sent', [
                 'app_instance_id' => $this->appInstance->id,

@@ -13,7 +13,11 @@ class CreateWebhookCallForAppInstanceStatusChanged
      */
     public function handle(PolydockAppInstanceStatusChanged $event): void
     {
-        $webhooks = $event->appInstance->storeApp->store->webhooks()
+        $webhooks = $event
+            ->appInstance
+            ->storeApp
+            ->store
+            ->webhooks()
             ->where('active', true)
             ->get();
 
@@ -52,7 +56,7 @@ class CreateWebhookCallForAppInstanceStatusChanged
                     'app_instance_id' => $event->appInstance->id,
                     'previous_status' => $event->previousStatus?->value,
                     'current_status' => $event->appInstance->status->value,
-                ]
+                ],
             );
         }
     }

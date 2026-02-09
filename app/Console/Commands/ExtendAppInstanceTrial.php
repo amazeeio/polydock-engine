@@ -110,7 +110,7 @@ class ExtendAppInstanceTrial extends Command
                     str_pad($data['id'], $maxWidths['id']),
                     str_pad((string) $data['name'], $maxWidths['name']),
                     str_pad((string) $data['email'], $maxWidths['email']),
-                    str_pad((string) $data['end'], $maxWidths['end'])
+                    str_pad((string) $data['end'], $maxWidths['end']),
                 );
                 $options[$id] = $label;
             }
@@ -121,7 +121,7 @@ class ExtendAppInstanceTrial extends Command
                 str_pad('ID', $maxWidths['id']),
                 str_pad('Name', $maxWidths['name']),
                 str_pad('Email', $maxWidths['email']),
-                str_pad('Current End', $maxWidths['end'])
+                str_pad('Current End', $maxWidths['end']),
             );
 
             $selectedIds = multiselect(
@@ -129,7 +129,7 @@ class ExtendAppInstanceTrial extends Command
                 options: $options,
                 default: array_keys($options),
                 scroll: 15,
-                hint: $header
+                hint: $header,
             );
 
             if (empty($selectedIds)) {
@@ -141,7 +141,11 @@ class ExtendAppInstanceTrial extends Command
             // Filter instances
             $instances = $instances->whereIn('id', $selectedIds);
 
-            if (! $this->confirm("Are you sure you want to update the trial date to {$newEndDate->toDateTimeString()} for ".$instances->count().' instances?')) {
+            if (! $this->confirm(
+                "Are you sure you want to update the trial date to {$newEndDate->toDateTimeString()} for "
+                .$instances->count()
+                .' instances?',
+            )) {
                 $this->info('Operation cancelled.');
 
                 return 0;

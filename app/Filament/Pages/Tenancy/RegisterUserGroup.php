@@ -14,6 +14,7 @@ class RegisterUserGroup extends RegisterTenant
         return 'Create new group';
     }
 
+    #[\Override]
     public function form(Form $form): Form
     {
         return $form
@@ -24,6 +25,7 @@ class RegisterUserGroup extends RegisterTenant
             ]);
     }
 
+    #[\Override]
     protected function handleRegistration(array $data): UserGroup
     {
         $userGroup = UserGroup::create($data);

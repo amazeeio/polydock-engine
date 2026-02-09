@@ -23,7 +23,9 @@ abstract class BaseJob implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(protected int $appInstanceId) {}
+    public function __construct(
+        protected int $appInstanceId,
+    ) {}
 
     public function getPolydockJobId()
     {
@@ -79,7 +81,7 @@ abstract class BaseJob implements ShouldQueue
 
         return [
             (new WithoutOverlapping($uniqueId))
-                ->expireAfter(5)  // 5 seconds
+                ->expireAfter(5) // 5 seconds
                 ->shared() // Use shared lock across different queues
                 ->dontRelease(),
         ];

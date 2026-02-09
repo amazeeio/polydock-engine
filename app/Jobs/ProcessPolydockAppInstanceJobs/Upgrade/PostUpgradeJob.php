@@ -16,7 +16,9 @@ class PostUpgradeJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
         $appInstance = $this->appInstance;
         if (! $appInstance) {
-            throw new \Exception('Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found');
+            throw new \Exception(
+                'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
+            );
         }
 
         Log::info('TODO: Implement '.class_basename(self::class));

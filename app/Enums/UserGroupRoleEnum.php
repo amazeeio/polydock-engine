@@ -46,8 +46,9 @@ enum UserGroupRoleEnum: string implements HasColor, HasIcon, HasLabel
 
     public static function getOptions(): array
     {
-        return collect(self::cases())->mapWithKeys(fn ($role) => [
-            $role->value => $role->getLabel(),
-        ])->all();
+        return collect(self::cases())
+            ->mapWithKeys(fn ($role) => [
+                $role->value => $role->getLabel(),
+            ])->all();
     }
 }

@@ -106,7 +106,7 @@ class SendAppInstanceMail extends Command
         if (! $force) {
             $confirmed = $this->confirm(
                 "Send {$mailType} email to ".count($recipients).' recipient(s)?',
-                false
+                false,
             );
 
             if (! $confirmed) {

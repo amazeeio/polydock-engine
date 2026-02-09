@@ -43,12 +43,12 @@ class CreateStore extends Command
 
         $status = $this->option('status') ?? $this->choice(
             'Store status',
-            ['public', 'private']
+            ['public', 'private'],
         );
 
         $listedInput = $this->option('listed') ?? $this->choice(
             'Listed in marketplace?',
-            ['true', 'false']
+            ['true', 'false'],
         );
         $listed = filter_var($listedInput, FILTER_VALIDATE_BOOLEAN);
 
@@ -63,7 +63,15 @@ class CreateStore extends Command
         $groupName = $this->option('group-name') ?? $this->ask('Lagoon deploy group name');
 
         // Check if all required values are set
-        if (empty($name) || empty($status) || empty($regionId) || empty($prefix) || empty($orgId) || empty($aiRegionId) || empty($groupName)) {
+        if (
+            empty($name)
+            || empty($status)
+            || empty($regionId)
+            || empty($prefix)
+            || empty($orgId)
+            || empty($aiRegionId)
+            || empty($groupName)
+        ) {
             $this->error('All fields are required. Exiting...');
 
             return 1;
@@ -72,7 +80,10 @@ class CreateStore extends Command
         // Get deploy key - allow override
         $customDeployKey = $this->option('deploy-key');
 
-        if (! $customDeployKey && $this->confirm('Do you want to use a custom deploy private key? (Press no to use default from config)')) {
+        if (
+            ! $customDeployKey
+            && $this->confirm('Do you want to use a custom deploy private key? (Press no to use default from config)')
+        ) {
             $this->info('Please paste your private key (multi-line input supported):');
             $customDeployKey = $this->secret('Deploy private key');
         }

@@ -93,6 +93,7 @@ class PolydockStoreApp extends Model
     /**
      * Boot the model.
      */
+    #[\Override]
     protected static function boot()
     {
         parent::boot();
@@ -107,6 +108,7 @@ class PolydockStoreApp extends Model
      *
      * @return string
      */
+    #[\Override]
     public function getRouteKeyName()
     {
         return 'uuid';

@@ -24,11 +24,11 @@ class ProcessOneDayLeftEmailJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
 
         if (
-            ! $this->appInstance->is_trial ||
-            ! $this->appInstance->storeApp->send_one_day_left_email ||
-            ! $this->appInstance->send_one_day_left_email_at ||
-            ! $this->appInstance->send_one_day_left_email_at->isPast() ||
-            $this->appInstance->one_day_left_email_sent
+            ! $this->appInstance->is_trial
+            || ! $this->appInstance->storeApp->send_one_day_left_email
+            || ! $this->appInstance->send_one_day_left_email_at
+            || ! $this->appInstance->send_one_day_left_email_at->isPast()
+            || $this->appInstance->one_day_left_email_sent
         ) {
             $this->appInstance->info('One day left email not sent', [
                 'app_instance_id' => $this->appInstance->id,

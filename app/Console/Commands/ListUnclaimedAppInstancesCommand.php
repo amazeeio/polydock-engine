@@ -53,7 +53,9 @@ class ListUnclaimedAppInstancesCommand extends Command
             if ($count === 0) {
                 $appFilterText = $appId ? " for app ID {$appId}" : '';
                 $this->info("No unclaimed instances found that are older than {$days} days{$appFilterText}.");
-                Log::info("No unclaimed instances found older than {$days} days".($appId ? " for app ID {$appId}" : ''));
+                Log::info(
+                    "No unclaimed instances found older than {$days} days".($appId ? " for app ID {$appId}" : ''),
+                );
 
                 return Command::SUCCESS;
             }

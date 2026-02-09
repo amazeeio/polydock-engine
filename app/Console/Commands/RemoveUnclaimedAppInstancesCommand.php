@@ -55,7 +55,9 @@ class RemoveUnclaimedAppInstancesCommand extends Command
             if ($count === 0) {
                 $appFilterText = $appId ? " for app ID {$appId}" : '';
                 $this->info("No unclaimed instances found that are older than {$days} days{$appFilterText}.");
-                Log::info("No unclaimed instances found older than {$days} days".($appId ? " for app ID {$appId}" : ''));
+                Log::info(
+                    "No unclaimed instances found older than {$days} days".($appId ? " for app ID {$appId}" : ''),
+                );
 
                 return Command::SUCCESS;
             }
@@ -108,7 +110,9 @@ class RemoveUnclaimedAppInstancesCommand extends Command
 
                     $this->line("✓ Updated instance: {$instance->name} (ID: {$instance->id})");
                 } catch (\Exception $e) {
-                    $this->error("✗ Failed to update instance {$instance->name} (ID: {$instance->id}): ".$e->getMessage());
+                    $this->error(
+                        "✗ Failed to update instance {$instance->name} (ID: {$instance->id}): ".$e->getMessage(),
+                    );
                     Log::error('Failed to update instance status', [
                         'instance_id' => $instance->id,
                         'instance_name' => $instance->name,

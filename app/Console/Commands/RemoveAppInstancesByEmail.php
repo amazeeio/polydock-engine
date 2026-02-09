@@ -52,7 +52,10 @@ class RemoveAppInstancesByEmail extends Command
         }
 
         // Filter out instances already in removal states
-        $removableInstances = $instances->filter(fn ($instance) => ! in_array($instance->status, PolydockAppInstance::$stageRemoveStatuses));
+        $removableInstances = $instances->filter(fn ($instance) => ! in_array(
+            $instance->status,
+            PolydockAppInstance::$stageRemoveStatuses,
+        ));
 
         $alreadyRemovingCount = $instances->count() - $removableInstances->count();
 
@@ -97,7 +100,7 @@ class RemoveAppInstancesByEmail extends Command
         if (! $force) {
             $confirmed = $this->confirm(
                 "Are you sure you want to set these {$removableInstances->count()} app instance(s) to PENDING_PRE_REMOVE status?",
-                false
+                false,
             );
 
             if (! $confirmed) {
@@ -117,11 +120,13 @@ class RemoveAppInstancesByEmail extends Command
 
                 $instance->setStatus(
                     PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
-                    "Marked for removal by email: {$email}"
+                    "Marked for removal by email: {$email}",
                 );
                 $instance->save();
 
-                $this->info("✓ Instance {$instance->id} ({$instance->name}) set to PENDING_PRE_REMOVE (was: {$previousStatus->getLabel()})");
+                $this->info(
+                    "✓ Instance {$instance->id} ({$instance->name}) set to PENDING_PRE_REMOVE (was: {$previousStatus->getLabel()})",
+                );
                 $successCount++;
             } catch (\Exception $e) {
                 $this->error("✗ Failed to update instance {$instance->id}: {$e->getMessage()}");
