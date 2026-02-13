@@ -15,6 +15,7 @@ class ViewUserRemoteRegistration extends ViewRecord
     protected static string $resource = UserRemoteRegistrationResource::class;
 
     // Remove any header actions (including edit button)
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [];

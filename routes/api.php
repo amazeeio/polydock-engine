@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\RegionsController;
 use App\Http\Controllers\Api\RegisterController;
 use Illuminate\Http\Request;

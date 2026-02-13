@@ -31,6 +31,7 @@ class PolydockAppInstanceResource extends Resource
 
     protected static ?int $navigationSort = 100;
 
+    #[\Override]
     public static function form(Form $form): Form
     {
         return $form
@@ -43,6 +44,7 @@ class PolydockAppInstanceResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -171,6 +173,7 @@ class PolydockAppInstanceResource extends Resource
             ->bulkActions([]);
     }
 
+    #[\Override]
     public static function infolist(Infolist $infolist): Infolist
     {
         return $infolist
@@ -192,7 +195,9 @@ class PolydockAppInstanceResource extends Resource
                                     ->badge()
                                     ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
                                     ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
-                                    ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel()),
+                                    ->formatStateUsing(
+                                        fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel(),
+                                    ),
                                 \Filament\Infolists\Components\TextEntry::make('status_message')
                                     ->label('Status Message'),
                             ]),
@@ -268,11 +273,13 @@ class PolydockAppInstanceResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

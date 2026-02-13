@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $serviceProviderSingletons = [
     'PolydockServiceProviderFTLagoon' => [
         'class' => App\PolydockServiceProviders\PolydockServiceProviderFTLagoon::class,

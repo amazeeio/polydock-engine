@@ -58,6 +58,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
      *
      * @return array<string, string>
      */
+    #[\Override]
     protected function casts(): array
     {
         return [

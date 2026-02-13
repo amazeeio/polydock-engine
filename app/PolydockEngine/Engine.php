@@ -51,6 +51,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  PolydockAppLoggerInterface  $logger  The logger to set
      * @return self Returns the instance for method chaining
      */
+    #[\Override]
     public function setLogger(PolydockAppLoggerInterface $logger): self
     {
         $this->logger = $logger;
@@ -63,6 +64,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      *
      * @return PolydockAppLoggerInterface The logger
      */
+    #[\Override]
     public function getLogger(): PolydockAppLoggerInterface
     {
         return $this->logger;
@@ -387,6 +389,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  array<string, mixed>  $context  The context for the message
      * @return self Returns the instance for method chaining
      */
+    #[\Override]
     public function info(string $message, array $context = []): self
     {
         $this->logger->info($message, $context);
@@ -401,6 +404,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  array<string, mixed>  $context  The context for the message
      * @return self Returns the instance for method chaining
      */
+    #[\Override]
     public function error(string $message, array $context = []): self
     {
         $this->logger->error($message, $context);
@@ -415,6 +419,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  array<string, mixed>  $context  The context for the message
      * @return self Returns the instance for method chaining
      */
+    #[\Override]
     public function warning(string $message, array $context = []): self
     {
         $this->logger->warning($message, $context);
@@ -429,6 +434,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  array<string, mixed>  $context  The context for the message
      * @return self Returns the instance for method chaining
      */
+    #[\Override]
     public function debug(string $message, array $context = []): self
     {
         $this->logger->debug($message, $context);

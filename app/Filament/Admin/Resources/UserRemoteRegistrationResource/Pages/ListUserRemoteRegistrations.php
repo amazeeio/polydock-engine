@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages;
 
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource;
@@ -10,6 +12,7 @@ class ListUserRemoteRegistrations extends ListRecords
 {
     protected static string $resource = UserRemoteRegistrationResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [

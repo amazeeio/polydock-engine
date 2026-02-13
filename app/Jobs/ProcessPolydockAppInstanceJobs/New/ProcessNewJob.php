@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\New;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
