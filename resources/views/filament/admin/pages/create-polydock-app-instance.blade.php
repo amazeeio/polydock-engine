@@ -1,5 +1,6 @@
 <x-filament-panels::page>
     <form wire:submit="create">
+        @csrf
         {{ $this->form }}
 
         <div class="mt-6">

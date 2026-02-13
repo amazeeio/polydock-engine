@@ -19,6 +19,7 @@ class PolydockStoreApp extends Model
     protected $fillable = [
         'polydock_store_id',
         'polydock_app_class',
+        'app_config',
         'name',
         'description',
         'author',
@@ -67,6 +68,7 @@ class PolydockStoreApp extends Model
 
     protected $casts = [
         'status' => PolydockStoreAppStatusEnum::class,
+        'app_config' => 'array',
         'available_for_trials' => 'boolean',
         'target_unallocated_app_instances' => 'integer',
         'send_midtrial_email' => 'boolean',

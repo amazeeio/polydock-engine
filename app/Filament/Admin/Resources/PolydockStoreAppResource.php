@@ -6,10 +6,13 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
+use App\Services\PolydockAppClassDiscovery;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -38,9 +41,16 @@ class PolydockStoreAppResource extends Resource
                     ->required()
                     ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
                     ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
-                Forms\Components\TextInput::make('polydock_app_class')
+                Forms\Components\Select::make('polydock_app_class')
+                    ->label('Polydock App Class')
+                    ->options(fn () => app(PolydockAppClassDiscovery::class)->getAvailableAppClasses())
                     ->required()
-                    ->maxLength(255),
+                    ->searchable()
+                    ->live(onBlur: false)
+                    ->afterStateUpdated(fn (Set $set) => null)
+                    ->helperText('The application class that controls deployment and lifecycle behaviour.')
+                    ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
+                    ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -67,12 +77,29 @@ class PolydockStoreAppResource extends Resource
                 Forms\Components\Select::make('status')
                     ->options(PolydockStoreAppStatusEnum::class)
                     ->required(),
-                Forms\Components\Toggle::make('available_for_trials')
-                    ->required(),
                 Forms\Components\TextInput::make('target_unallocated_app_instances')
                     ->required()
                     ->numeric()
                     ->default(0),
+                Forms\Components\Toggle::make('available_for_trials')
+                    ->label('Available for Trials')
+                    ->required()
+                    ->columnSpanFull(),
+                Forms\Components\Section::make('App-Specific Configuration')
+                    ->description('These fields are defined by the selected App Class and will be configurable for this Store App.')
+                    ->schema(fn (Get $get): array => app(PolydockAppClassDiscovery::class)
+                        ->getStoreAppFormSchema($get('polydock_app_class') ?? ''))
+                    ->visible(fn (Get $get): bool => ! empty(app(PolydockAppClassDiscovery::class)
+                        ->getStoreAppFormSchema($get('polydock_app_class') ?? '')))
+                    ->collapsible()
+                    ->collapsed(false)
+                    ->columnSpanFull(),
+                Forms\Components\Placeholder::make('no_app_specific_fields')
+                    ->label('')
+                    ->content('The selected App Class does not define any app-specific configuration fields.')
+                    ->visible(fn (Get $get): bool => ! empty($get('polydock_app_class')) &&
+                        empty(app(PolydockAppClassDiscovery::class)->getStoreAppFormSchema($get('polydock_app_class') ?? '')))
+                    ->columnSpanFull(),
                 Forms\Components\Section::make('Instance Ready Email Configuration')
                     ->schema([
                         Forms\Components\TextInput::make('email_subject_line')
@@ -147,6 +174,7 @@ class PolydockStoreAppResource extends Resource
                             ])
                             ->columnSpanFull(),
                     ])
+                    ->collapsible()
                     ->columnSpanFull(),
             ]);
     }
@@ -279,6 +307,14 @@ class PolydockStoreAppResource extends Resource
                             ]),
                     ])
                     ->columnSpan(1),
+
+                \Filament\Infolists\Components\Section::make('App-Specific Configuration')
+                    ->schema(fn ($record): array => app(PolydockAppClassDiscovery::class)
+                        ->getStoreAppInfolistSchema($record->polydock_app_class ?? ''))
+                    ->visible(fn ($record): bool => ! empty(app(PolydockAppClassDiscovery::class)
+                        ->getStoreAppInfolistSchema($record->polydock_app_class ?? '')))
+                    ->collapsible()
+                    ->columnSpan(3),
 
                 \Filament\Infolists\Components\Section::make('Support Information')
                     ->schema([

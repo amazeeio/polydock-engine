@@ -13,7 +13,7 @@ class PolydockStoreAppFactory extends Factory
     public function definition(): array
     {
         return [
-            'polydock_app_class' => 'FreedomtechHosting\\PolydockApp'.fake()->word().'\\PolydockApp',
+            'polydock_app_class' => \FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp::class,
             'name' => fake()->words(3, true),
             'description' => fake()->paragraph(),
             'author' => fake()->name(),
