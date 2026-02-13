@@ -226,6 +226,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      *
      * @return string
      */
+    #[\Override]
     public function getRouteKeyName()
     {
         return 'uuid';
@@ -234,6 +235,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Boot the model.
      */
+    #[\Override]
     protected static function boot()
     {
         parent::boot();

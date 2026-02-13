@@ -9,6 +9,7 @@ class EditPolydockAppInstance extends EditRecord
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [

@@ -14,6 +14,7 @@ class ViewPolydockAppInstance extends ViewRecord
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
