@@ -226,6 +226,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      *
      * @return string
      */
+    #[\Override]
     public function getRouteKeyName()
     {
         return 'uuid';
@@ -234,6 +235,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Boot the model.
      */
+    #[\Override]
     protected static function boot()
     {
         parent::boot();
@@ -383,10 +385,27 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
+     * Set name of app instance
+     */
+    public function setName(string $name): self
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
      * Set the type of the app instance
      *
      * @param  string  $appType  The type of the app instance
      * @return self Returns the instance for method chaining
+     *
+     * @throws PolydockEngineAppNotFoundException
      */
     public function setAppType(string $appType): self
     {

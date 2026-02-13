@@ -8,6 +8,7 @@ use App\Filament\Exports\UserRemoteRegistrationExporter;
 use App\Models\PolydockAppInstance;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
+use App\Services\PolydockAppClassDiscovery;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists\Infolist;
@@ -17,6 +18,7 @@ use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 
 class PolydockAppInstanceResource extends Resource
@@ -247,6 +249,13 @@ class PolydockAppInstanceResource extends Resource
                     ])
                     ->columnSpan(1),
 
+                \Filament\Infolists\Components\Section::make('Instance Configuration')
+                    ->description('Instance-specific settings configured at creation.')
+                    ->schema(fn ($record) => self::getRenderedInstanceConfigForRecord($record))
+                    ->visible(fn ($record) => self::hasInstanceConfigFields($record))
+                    ->columnSpan(3)
+                    ->collapsible(),
+
                 \Filament\Infolists\Components\Section::make('Instance Data')
                     ->description('Safe data that can be shared with webhooks')
                     ->schema(fn ($record) => self::getRenderedSafeDataForRecord($record))
@@ -281,6 +290,75 @@ class PolydockAppInstanceResource extends Resource
                 $renderedItem->state($value);
             } else {
                 $renderedItem->state([$value]);
+            }
+
+            $renderedArray[] = $renderedItem;
+        }
+
+        return $renderedArray;
+    }
+
+    /**
+     * Check if the record's app class defines instance configuration fields.
+     */
+    public static function hasInstanceConfigFields(PolydockAppInstance $record): bool
+    {
+        $storeApp = $record->storeApp;
+        if (! $storeApp || empty($storeApp->polydock_app_class)) {
+            return false;
+        }
+
+        $discovery = app(PolydockAppClassDiscovery::class);
+
+        return ! empty($discovery->getAppInstanceInfolistSchema($storeApp->polydock_app_class));
+    }
+
+    /**
+     * Get rendered infolist components for instance configuration fields.
+     *
+     * Values are loaded from PolydockVariables associated with the app instance.
+     */
+    public static function getRenderedInstanceConfigForRecord(PolydockAppInstance $record): array
+    {
+        $storeApp = $record->storeApp;
+        if (! $storeApp || empty($storeApp->polydock_app_class)) {
+            return [];
+        }
+
+        $discovery = app(PolydockAppClassDiscovery::class);
+        $fieldNames = $discovery->getAppInstanceFormFieldNames($storeApp->polydock_app_class);
+
+        if (empty($fieldNames)) {
+            return [];
+        }
+
+        // Build a simple display of instance config values from PolydockVariables
+        $renderedArray = [];
+        $instanceConfigPrefix = PolydockAppInstanceFields::FIELD_PREFIX;
+
+        foreach ($fieldNames as $fieldName) {
+            $value = $record->getPolydockVariableValue($fieldName);
+
+            // Create a human-readable label from the field name
+            // e.g., "instance_config_ai_model_override" -> "Ai Model Override"
+            $labelName = str_replace($instanceConfigPrefix, '', $fieldName);
+            $labelName = str_replace('_', ' ', $labelName);
+            $labelName = ucwords($labelName);
+
+            // Check if value should be masked (for encrypted fields)
+            $isEncrypted = $record->isPolydockVariableEncrypted($fieldName);
+
+            $renderedItem = \Filament\Infolists\Components\TextEntry::make('instance_config_display_'.$fieldName)
+                ->label($labelName);
+
+            if ($isEncrypted && $value !== null && $value !== '') {
+                // Mask encrypted values
+                $renderedItem->state('********');
+            } elseif ($value === null || $value === '') {
+                $renderedItem->state('Not configured')
+                    ->color('gray');
+            } else {
+                $renderedItem->state($value);
             }
 
             $renderedArray[] = $renderedItem;

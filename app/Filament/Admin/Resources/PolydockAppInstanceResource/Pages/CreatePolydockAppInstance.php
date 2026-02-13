@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\PolydockAppInstanceResource;
 use App\Jobs\ProcessUserRemoteRegistration;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
+use App\Services\PolydockAppClassDiscovery;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Section;
@@ -14,8 +15,10 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
+use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
 use Illuminate\Support\Facades\Log;
 
 class CreatePolydockAppInstance extends Page
@@ -40,6 +43,7 @@ class CreatePolydockAppInstance extends Page
         ]);
     }
 
+    #[\Override]
     public function form(Form $form): Form
     {
         return $form
@@ -84,6 +88,7 @@ class CreatePolydockAppInstance extends Page
                             )
                             ->required()
                             ->searchable()
+                            ->live()
                             ->placeholder('Select an app'),
                         Toggle::make('is_trial')
                             ->label('Is Trial Instance')
@@ -106,6 +111,39 @@ class CreatePolydockAppInstance extends Page
                             ->default(true),
                     ])
                     ->columns(2),
+
+                Section::make('Instance Configuration')
+                    ->description('Configure instance-specific settings defined by the app class.')
+                    ->schema(function (Get $get): array {
+                        $storeAppUuid = $get('trial_app');
+                        if (empty($storeAppUuid)) {
+                            return [];
+                        }
+
+                        $storeApp = PolydockStoreApp::where('uuid', $storeAppUuid)->first();
+                        if (! $storeApp || empty($storeApp->polydock_app_class)) {
+                            return [];
+                        }
+
+                        return app(PolydockAppClassDiscovery::class)
+                            ->getAppInstanceFormSchema($storeApp->polydock_app_class);
+                    })
+                    ->visible(function (Get $get): bool {
+                        $storeAppUuid = $get('trial_app');
+                        if (empty($storeAppUuid)) {
+                            return false;
+                        }
+
+                        $storeApp = PolydockStoreApp::where('uuid', $storeAppUuid)->first();
+                        if (! $storeApp || empty($storeApp->polydock_app_class)) {
+                            return false;
+                        }
+
+                        return ! empty(app(PolydockAppClassDiscovery::class)
+                            ->getAppInstanceFormSchema($storeApp->polydock_app_class));
+                    })
+                    ->collapsible()
+                    ->columnSpanFull(),
 
                 Grid::make(2)->schema([
                     Section::make('Custom Fields')
@@ -152,6 +190,14 @@ class CreatePolydockAppInstance extends Page
             // Merge custom fields into request data
             if (! empty($data['custom_fields'])) {
                 $requestData = array_merge($requestData, $data['custom_fields']);
+            }
+
+            // Extract and merge instance config fields (prefixed with 'instance_config_')
+            $instanceConfigPrefix = PolydockAppInstanceFields::FIELD_PREFIX;
+            foreach ($data as $key => $value) {
+                if (str_starts_with((string) $key, $instanceConfigPrefix) && $value !== null && $value !== '') {
+                    $requestData[$key] = $value;
+                }
             }
 
             // Create the UserRemoteRegistration record
