@@ -93,7 +93,14 @@ class PolydockStoreResource extends Resource
                     ->afterStateUpdated(function (Forms\Set $set, ?string $state, ?PolydockStore $record) {
                         $keyToUse = filled($state) ? $state : $record?->lagoon_deploy_private_key;
                         $set('derived_public_key', $keyToUse ? LagoonHelper::getPublicKeyFromPrivateKey($keyToUse) : null);
-                    }),
+                    })
+                    ->rules([
+                        fn () => function (string $attribute, $value, \Closure $fail) {
+                            if (filled($value) && ! LagoonHelper::getPublicKeyFromPrivateKey($value)) {
+                                $fail('The private key is invalid.');
+                            }
+                        },
+                    ]),
                 Forms\Components\Textarea::make('derived_public_key')
                     ->label('Lagoon Deploy Public Key')
                     ->helperText('This is the public key derived from the stored private key (or the one you just entered).')
@@ -101,8 +108,7 @@ class PolydockStoreResource extends Resource
                     ->dehydrated(false)
                     ->columnSpanFull()
                     ->rows(5)
-                    ->formatStateUsing(fn (?PolydockStore $record) =>
-                        $record?->lagoon_deploy_private_key
+                    ->formatStateUsing(fn (?PolydockStore $record) => $record?->lagoon_deploy_private_key
                             ? LagoonHelper::getPublicKeyFromPrivateKey($record->lagoon_deploy_private_key)
                             : null
                     ),
