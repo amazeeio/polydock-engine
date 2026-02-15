@@ -621,6 +621,24 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
+     * Set the name of the app instance
+     */
+    public function setName(string $name): PolydockAppInstanceInterface
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get the name of the app instance
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
      * Pick a random animal name
      */
     private function pickAnimal(): string
