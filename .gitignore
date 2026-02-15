@@ -25,3 +25,4 @@ yarn-error.log
 /.vscode
 /.zed
 amazeeai-trial.pass
+/*.sql

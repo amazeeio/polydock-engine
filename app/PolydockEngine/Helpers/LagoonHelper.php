@@ -4,6 +4,7 @@ namespace App\PolydockEngine\Helpers;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use phpseclib3\Crypt\PublicKeyLoader;
 
 class LagoonHelper
 {
@@ -40,10 +41,27 @@ class LagoonHelper
         return $lagoonCoreDataForRegion;
     }
 
-    public static function getLagoonCodeDataValueForRegion(string $regionId, string $key): string
+    public static function getLagoonCodeDataValueForRegion(string $regionId, string $key): ?string
     {
         $lagoonCoreDataForRegion = self::getLagoonCoreDataForRegion($regionId);
 
         return $lagoonCoreDataForRegion[$key] ?? null;
+    }
+
+    public static function getPublicKeyFromPrivateKey(string $privateKey): ?string
+    {
+        if (empty($privateKey)) {
+            return null;
+        }
+
+        try {
+            $key = PublicKeyLoader::load($privateKey);
+
+            return $key->getPublicKey()->toString('OpenSSH');
+        } catch (\Throwable $e) {
+            Log::error('Error generating public key: '.$e->getMessage());
+
+            return null;
+        }
     }
 }

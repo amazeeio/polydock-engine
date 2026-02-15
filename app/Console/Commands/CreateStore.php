@@ -108,10 +108,11 @@ class CreateStore extends Command
             'lagoon_deploy_region_id_ext' => $regionId,
             'lagoon_deploy_project_prefix' => $prefix,
             'lagoon_deploy_organization_id_ext' => $orgId,
-            'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => $aiRegionId,
             'lagoon_deploy_group_name' => $groupName,
         ]);
+
+        $store->setPolydockVariableValue('lagoon_deploy_private_key', $deployKey, true);
 
         $this->info("✅ Store '{$store->name}' created successfully with ID: {$store->id}");
 
