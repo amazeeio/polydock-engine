@@ -25,7 +25,9 @@ class UserGroup extends Model
      */
     public function users()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class, 'user_user_group', 'user_group_id', 'user_id')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     /**

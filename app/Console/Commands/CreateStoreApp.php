@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
+use App\Services\PolydockAppClassDiscovery;
 use Illuminate\Console\Command;
 
 class CreateStoreApp extends Command
@@ -72,7 +73,23 @@ class CreateStoreApp extends Command
 
         // Gather app information
         $name = $this->option('name') ?? $this->ask('App name');
-        $appClass = $this->option('app-class') ?? $this->ask('Polydock app class');
+        $discovery = app(PolydockAppClassDiscovery::class);
+        $availableClasses = $discovery->getAvailableAppClasses();
+        $appClass = $this->option('app-class');
+        if ($appClass) {
+            if (! $discovery->isValidAppClass($appClass)) {
+                $this->error("Invalid app class: {$appClass}. Must be a concrete PolydockAppInterface implementation.");
+
+                return 1;
+            }
+        } else {
+            if (empty($availableClasses)) {
+                $this->error('No Polydock app classes found. Ensure packages are installed correctly.');
+
+                return 1;
+            }
+            $appClass = $this->choice('Select Polydock app class', array_keys($availableClasses));
+        }
         $description = $this->option('description') ?? $this->ask('App description');
         $author = $this->option('author') ?? $this->ask('Author');
         $website = $this->option('website') ?? $this->ask('Author website');

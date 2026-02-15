@@ -82,7 +82,9 @@ class User extends Authenticatable implements FilamentUser, HasTenants
      */
     public function groups()
     {
-        return $this->belongsToMany(UserGroup::class);
+        return $this->belongsToMany(UserGroup::class, 'user_user_group', 'user_id', 'user_group_id')
+            ->withPivot('role')
+            ->withTimestamps();
     }
 
     /**
