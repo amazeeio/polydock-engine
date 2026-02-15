@@ -8,6 +8,10 @@ use Tests\TestCase;
 
 class LagoonHelperTest extends TestCase
 {
+    /**
+     * NOTE: This private key is a dummy key used strictly for unit testing public key derivation.
+     * It does not grant access to any system and is intended for repository-safe testing.
+     */
     private string $privateKey = <<<'EOD'
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAMwAAAAtzc2gtZW
