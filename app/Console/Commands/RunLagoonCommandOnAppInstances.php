@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
+use FreedomtechHosting\FtLagoonPhp\Client;
 use FreedomtechHosting\FtLagoonPhp\Ssh;
 use Illuminate\Console\Command;
 use Illuminate\Process\Pool;
@@ -20,17 +21,18 @@ class RunLagoonCommandOnAppInstances extends Command
      */
     protected $signature = 'polydock:instances:run-lagoon-command
                             {app_uuid : The UUID of the store app}
-                            {cmd : The command to run on the remote instances}
                             {--environment= : Optional environment override}
                             {--force : Force execution without confirmation}
-                            {--concurrency=1 : Number of concurrent processes to run (default: 1 for serial execution)}';
+                            {--variables-only : Only deploy variables}
+                            {--concurrency=1 : Number of concurrent processes to run (default: 1 for serial execution)}
+                            {--instance-id= : (Internal) Run for a specific instance ID}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Run a command via Lagoon CLI on all running instances of a specific app';
+    protected $description = 'Trigger a deployment via Lagoon API on all running instances of a specific app';
 
     /**
      * Execute the console command.
@@ -38,9 +40,39 @@ class RunLagoonCommandOnAppInstances extends Command
     public function handle()
     {
         $appUuid = $this->argument('app_uuid');
-        $commandToRun = $this->argument('cmd');
         $envOverride = $this->option('environment');
+        $variablesOnly = $this->option('variables-only');
         $concurrency = (int) $this->option('concurrency');
+        $instanceId = $this->option('instance-id');
+
+        // Configuration
+        $sshConfig = config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon', []);
+        $sshHost = $sshConfig['ssh_server'] ?? 'ssh.lagoon.amazeeio.cloud';
+        $sshPort = $sshConfig['ssh_port'] ?? '32222';
+        $globalKeyFile = $sshConfig['ssh_private_key_file'] ?? null;
+        $apiEndpoint = $sshConfig['endpoint'] ?? 'https://api.lagoon.amazeeio.cloud/graphql';
+
+        $clientConfig = [
+            'ssh_user' => $sshConfig['ssh_user'] ?? 'lagoon',
+            'ssh_server' => $sshHost,
+            'ssh_port' => $sshPort,
+            'endpoint' => $apiEndpoint,
+            'ssh_private_key_file' => $globalKeyFile,
+        ];
+
+        // --- Single Instance Mode (Worker) ---
+        if ($instanceId) {
+            $instance = PolydockAppInstance::find($instanceId);
+            if (! $instance) {
+                $this->error("Instance ID {$instanceId} not found.");
+
+                return 1;
+            }
+
+            return $this->deployToInstance($instance, $clientConfig, null, $envOverride, $variablesOnly);
+        }
+
+        // --- Bulk Mode (Coordinator) ---
 
         $storeApp = PolydockStoreApp::where('uuid', $appUuid)->first();
         if (! $storeApp) {
@@ -116,7 +148,7 @@ class RunLagoonCommandOnAppInstances extends Command
             );
 
             $selectedIds = multiselect(
-                label: 'Select instances to run the command on:',
+                label: 'Select instances to trigger deploy on:',
                 options: $options,
                 default: array_keys($options),
                 scroll: 15,
@@ -133,10 +165,14 @@ class RunLagoonCommandOnAppInstances extends Command
             $instances = $instances->whereIn('id', $selectedIds);
             $count = $instances->count();
 
-            if (! $this->confirm("Are you sure you want to run '{$commandToRun}' on {$count} selected instances?")) {
+            if (! $this->confirm("Are you sure you want to trigger deployments on {$count} selected instances?")) {
                 $this->info('Operation cancelled.');
 
                 return 0;
+            }
+
+            if (! $variablesOnly) {
+                $variablesOnly = $this->confirm('Do you want to run a variables-only deployment?', false);
             }
         } else {
             // Force mode: show table for audit/info purposes
@@ -152,167 +188,196 @@ class RunLagoonCommandOnAppInstances extends Command
             $this->table($headers, $rows);
         }
 
-        // Configuration
-        $sshConfig = config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon', []);
-        $sshHost = $sshConfig['ssh_server'] ?? 'ssh.lagoon.amazeeio.cloud';
-        $sshPort = $sshConfig['ssh_port'] ?? '32222';
-        $globalKeyFile = $sshConfig['ssh_private_key_file'] ?? null;
+        // Concurrency Logic
+        if ($concurrency > 1) {
+            $this->info("Running deployments concurrently on {$count} instances (concurrency: {$concurrency})...");
 
-        // Prepare temp files array to clean up later
-        $tempKeyFiles = [];
+            $phpBinary = PHP_BINARY;
+            $artisan = base_path('artisan');
+            $commandBase = [
+                $phpBinary,
+                $artisan,
+                'polydock:instances:run-lagoon-command',
+                $appUuid,
+                '--force',
+            ];
 
-        try {
-            if ($concurrency > 1) {
-                $this->info("Running commands concurrently on {$count} instances (concurrency: {$concurrency})...");
-
-                $pool = Process::pool(function (Pool $pool) use ($instances, $envOverride, $commandToRun, $sshHost, $sshPort, $globalKeyFile, &$tempKeyFiles) {
-                    foreach ($instances as $instance) {
-                        $fullCommand = $this->getLagoonSshCommand($instance, $commandToRun, $envOverride, $sshHost, $sshPort, $globalKeyFile, $tempKeyFiles);
-
-                        if ($fullCommand) {
-                            $pool->as($instance->id)->command($fullCommand);
-                        } else {
-                            $this->error("\nMissing project name or branch for instance {$instance->id} ({$instance->name})");
-                        }
-                    }
-                });
-
-                try {
-                    // Handle potential issues with Process::fake() returning an object that doesn't support concurrency
-                    $pool->concurrency($concurrency);
-                } catch (\Throwable) {
-                    // Ignore if method doesn't exist (e.g. in tests)
-                }
-
-                $poolResults = $pool->wait();
-
-                foreach ($poolResults as $instanceId => $result) {
-                    $instance = $instances->find($instanceId);
-                    // If instance was skipped (no command generated), result might not exist or need handling?
-                    // Actually pool results only contain what was added to the pool.
-                    // If we skipped adding it to the pool, it won't be in $poolResults.
-                    if (! $instance) {
-                        continue;
-                    }
-
-                    $projectName = $instance->getKeyValue('lagoon-project-name');
-
-                    if ($result->successful()) {
-                        if ($this->output->isVerbose()) {
-                            $this->info("\n[SUCCESS] {$projectName}: ".trim((string) $result->output()));
-                        }
-                    } else {
-                        $this->error("\n[FAILED] {$projectName}: ".trim((string) $result->errorOutput()));
-                    }
-                }
-
-                $this->info('Done.');
-
-                return 0;
+            if ($envOverride) {
+                $commandBase[] = "--environment={$envOverride}";
+            }
+            if ($variablesOnly) {
+                $commandBase[] = '--variables-only';
             }
 
-            $bar = $this->output->createProgressBar($count);
-            $bar->start();
+            $pool = Process::pool(function (Pool $pool) use ($instances, $commandBase) {
+                foreach ($instances as $instance) {
+                    $command = array_merge($commandBase, ["--instance-id={$instance->id}"]);
+                    $pool->as($instance->id)->command($command);
+                }
+            });
 
-            foreach ($instances as $instance) {
-                $projectName = $instance->getKeyValue('lagoon-project-name');
-                $fullCommand = $this->getLagoonSshCommand($instance, $commandToRun, $envOverride, $sshHost, $sshPort, $globalKeyFile, $tempKeyFiles);
+            try {
+                $pool->concurrency($concurrency);
+            } catch (\Throwable) {
+                // Ignore if method doesn't exist
+            }
 
-                if (! $fullCommand) {
-                    $this->error("\nMissing project name or branch for instance {$instance->id} ({$instance->name})");
-                    $bar->advance();
+            $poolResults = $pool->wait();
 
+            foreach ($poolResults as $instanceId => $result) {
+                $instance = $instances->find($instanceId);
+                if (! $instance) {
                     continue;
                 }
 
-                // Log what we are doing
-                // $this->line("\nExecuting on {$projectName} ({$branch})...");
-
-                $result = Process::run($fullCommand);
+                $projectName = $instance->getKeyValue('lagoon-project-name');
 
                 if ($result->successful()) {
-                    if ($this->output->isVerbose()) {
-                        $this->info("\n[SUCCESS] {$projectName}: ".trim($result->output()));
-                    }
+                    // Output already contains "SUCCESS" or "FAILED" messages from child process
+                    $this->output->write($result->output());
                 } else {
-                    $this->error("\n[FAILED] {$projectName}: ".trim($result->errorOutput()));
+                    $this->error("\n[FAILED] {$projectName} (Process Error): ".trim((string) $result->errorOutput()));
                 }
-
-                $bar->advance();
             }
 
-            $bar->finish();
-            $this->newLine();
             $this->info('Done.');
 
             return 0;
-        } finally {
-            // Cleanup temp files
-            foreach ($tempKeyFiles as $file) {
-                if (file_exists($file)) {
-                    @unlink($file);
-                }
-            }
         }
+
+        // Serial Logic
+        $this->info('Authenticating with Lagoon (Serial Mode)...');
+        try {
+            if (! $clientConfig['ssh_private_key_file'] || ! file_exists($clientConfig['ssh_private_key_file'])) {
+                $this->error('Global SSH private key not found or not configured.');
+
+                return 1;
+            }
+
+            $token = $this->getLagoonToken($clientConfig);
+            if (empty($token)) {
+                $this->error('Failed to retrieve Lagoon API token.');
+
+                return 1;
+            }
+
+            if (app()->bound(Client::class)) {
+                $client = app(Client::class);
+            } else {
+                $client = app()->makeWith(Client::class, ['config' => $clientConfig]);
+            }
+
+            $client->setLagoonToken($token);
+            $client->initGraphqlClient();
+
+        } catch (\Exception $e) {
+            $this->error("Authentication failed: {$e->getMessage()}");
+
+            return 1;
+        }
+
+        $bar = $this->output->createProgressBar($count);
+        $bar->start();
+
+        foreach ($instances as $instance) {
+            $this->deployToInstance($instance, $clientConfig, $client, $envOverride, $variablesOnly);
+            $bar->advance();
+        }
+
+        $bar->finish();
+        $this->newLine();
+        $this->info('Done.');
+
+        return 0;
     }
 
-    /**
-     * Helper to construct the Lagoon SSH command using the library.
-     * Returns null if project name or branch is missing.
-     */
-    protected function getLagoonSshCommand(
+    protected function deployToInstance(
         PolydockAppInstance $instance,
-        string $commandToRun,
-        ?string $envOverride,
-        string $sshHost,
-        string $sshPort,
-        ?string $globalKeyFile,
-        array &$tempKeyFiles
-    ): ?string {
+        array $clientConfig,
+        ?Client $client = null,
+        ?string $envOverride = null,
+        bool $variablesOnly = false
+    ): int {
         $projectName = $instance->getKeyValue('lagoon-project-name');
         $branch = $envOverride ?: $instance->getKeyValue('lagoon-deploy-branch');
 
         if (empty($projectName) || empty($branch)) {
-            return null;
+            $this->error("\nMissing project name or branch for instance {$instance->id} ({$instance->name})");
+
+            return 1;
         }
 
-        // Construct SSH user (project-environment)
-        // Replace / with - in branch name as per Lagoon convention
-        $sshUser = $projectName.'-'.str_replace('/', '-', $branch);
+        // If client is not provided (e.g. concurrent/child mode), authenticate now
+        if (! $client) {
+            try {
+                if (! $clientConfig['ssh_private_key_file'] || ! file_exists($clientConfig['ssh_private_key_file'])) {
+                    $this->error('Global SSH private key not found.');
 
-        // Determine private key
-        $privateKeyContent = $instance->getKeyValue('lagoon-deploy-private-key');
-        $privateKeyFile = $globalKeyFile;
+                    return 1;
+                }
 
-        if (! empty($privateKeyContent)) {
-            // Create temp file for the key
-            $tempFile = tempnam(sys_get_temp_dir(), 'lagoon_key_');
-            if ($tempFile === false) {
-                $this->error("Failed to create temporary key file for instance {$instance->id}");
+                $token = $this->getLagoonToken($clientConfig);
+                if (empty($token)) {
+                    $this->error("Failed to retrieve Lagoon API token for instance {$instance->id}.");
 
-                return null;
+                    return 1;
+                }
+
+                if (app()->bound(Client::class)) {
+                    $client = app(Client::class);
+                } else {
+                    $client = app()->makeWith(Client::class, ['config' => $clientConfig]);
+                }
+
+                $client->setLagoonToken($token);
+                $client->initGraphqlClient();
+            } catch (\Exception $e) {
+                $this->error("Authentication failed for instance {$instance->id}: {$e->getMessage()}");
+
+                return 1;
             }
-            file_put_contents($tempFile, $privateKeyContent);
-            chmod($tempFile, 0600); // Secure the key file
-            $tempKeyFiles[] = $tempFile;
-            $privateKeyFile = $tempFile;
         }
 
-        if (empty($privateKeyFile)) {
-            $this->error("No private key found for instance {$instance->id} and no global key configured.");
-
-            return null;
+        $buildVars = [];
+        if ($variablesOnly) {
+            $buildVars['LAGOON_VARIABLES_ONLY'] = 'true';
         }
 
         try {
-            // Use the library to create the SSH command
-            $ssh = Ssh::createLagoonConfigured($sshUser, $sshHost, $sshPort, $privateKeyFile);
+            $result = $client->deployProjectEnvironmentByName($projectName, $branch, $buildVars);
 
-            return $ssh->getCommandForExecute($commandToRun);
+            if (isset($result['error'])) {
+                $errors = is_array($result['error']) ? json_encode($result['error']) : $result['error'];
+                $this->error("\n[FAILED] {$projectName}: {$errors}");
+
+                return 1;
+            } else {
+                // In concurrent mode, we want to output to stdout so the parent can see it
+                // In serial mode, we might want to be quieter or use the progress bar, but for now verbose is fine
+                $this->info("\n[SUCCESS] {$projectName}: Deployment triggered.");
+
+                return 0;
+            }
         } catch (\Exception $e) {
-            $this->error("Failed to create SSH command for instance {$instance->id}: {$e->getMessage()}");
+            $this->error("\n[FAILED] {$projectName}: {$e->getMessage()}");
 
-            return null;
+            return 1;
         }
+    }
+
+    protected function getLagoonToken(array $config): string
+    {
+        if (app()->bound('polydock.lagoon.token_fetcher')) {
+            return app('polydock.lagoon.token_fetcher')($config);
+        }
+
+        $ssh = Ssh::createLagoonConfigured(
+            $config['ssh_user'],
+            $config['ssh_server'],
+            $config['ssh_port'],
+            $config['ssh_private_key_file']
+        );
+
+        return $ssh->executeLagoonGetToken();
     }
 }
