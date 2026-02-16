@@ -107,6 +107,10 @@ class ViewUserRemoteRegistration extends ViewRecord
                 $value = 'REDACTED';
             }
 
+            if ($value === null) {
+                $value = '';
+            }
+
             $renderKey = 'request_data_'.$key;
             $renderedItem = \Filament\Infolists\Components\TextEntry::make($renderKey)
                 ->label($key)
