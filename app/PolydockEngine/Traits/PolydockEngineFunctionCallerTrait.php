@@ -102,7 +102,7 @@ trait PolydockEngineFunctionCallerTrait
             }
         } catch (Exception $e) {
             $message = $appFunctionName.' failed - unknown exception';
-            $context = $outputContext + ['exception' => $e];
+            $context = $outputContext + ['exception' => $e->getMessage(), 'exception_class' => get_class($e)];
             $polydockApp->error($message, $context);
             $appInstance->logLine('error', $message, $context)->setStatus($failedStatus)->save();
         }
@@ -178,11 +178,11 @@ trait PolydockEngineFunctionCallerTrait
 
             return false;
         } catch (PolydockEngineProcessPolydockAppInstanceException $e) {
-            $polydockApp->error($appFunctionName.' failed - process exception', $outputContext + ['exception' => $e]);
+            $polydockApp->error($appFunctionName.' failed - process exception', $outputContext + ['exception' => $e->getMessage(), 'exception_class' => get_class($e)]);
 
             return false;
         } catch (Exception $e) {
-            $polydockApp->error($appFunctionName.' failed - unknown exception', $outputContext + ['exception' => $e]);
+            $polydockApp->error($appFunctionName.' failed - unknown exception', $outputContext + ['exception' => $e->getMessage(), 'exception_class' => get_class($e)]);
 
             return false;
         }
