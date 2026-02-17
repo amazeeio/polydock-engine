@@ -269,7 +269,8 @@ class PolydockStoreAppResource extends Resource
                             ]),
                         \Filament\Infolists\Components\TextEntry::make('description')
                             ->markdown()
-                            ->columnSpanFull(),
+                            ->columnSpanFull()
+                            ->hidden(fn ($record) => blank($record->description)),
 
                         \Filament\Infolists\Components\Grid::make(3)
                             ->schema([

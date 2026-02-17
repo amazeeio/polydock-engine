@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\PolydockStoreWebhookResource\Pages;
+use App\Models\PolydockStore;
 use App\Models\PolydockStoreWebhook;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -29,6 +30,10 @@ class PolydockStoreWebhookResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Select::make('polydock_store_id')
+                    ->label('Store')
+                    ->options(PolydockStore::all()->pluck('name', 'id'))
+                    ->required(),
                 Forms\Components\TextInput::make('url')
                     ->required()
                     ->maxLength(255)

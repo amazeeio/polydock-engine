@@ -164,7 +164,7 @@ class PolydockStoreApp extends Model
     /**
      * Get the Amazee AI backend region ID attribute
      */
-    public function getAmazeeAiBackendRegionIdExtAttribute(): string
+    public function getAmazeeAiBackendRegionIdExtAttribute(): ?string
     {
         return $this->store->amazee_ai_backend_region_id_ext;
     }
