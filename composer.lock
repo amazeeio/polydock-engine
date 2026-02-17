@@ -4,8 +4,55 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "227105b87cebeb9d8e33b0ad823e68d3",
+    "content-hash": "e310386e38a65e83d5071a758d2bc500",
     "packages": [
+        {
+            "name": "amazeeio/lagoon-logs",
+            "version": "v0.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amazeeio/laravel_lagoon_logs.git",
+                "reference": "2d25153b36f1de3c4c8ae45c167319c5164f3d83"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amazeeio/laravel_lagoon_logs/zipball/2d25153b36f1de3c4c8ae45c167319c5164f3d83",
+                "reference": "2d25153b36f1de3c4c8ae45c167319c5164f3d83",
+                "shasum": ""
+            },
+            "require": {
+                "monolog/monolog": "^2.0|^3.0"
+            },
+            "type": "package",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "amazeeio\\LagoonLogs\\LagoonLogsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "amazeeio\\LagoonLogs\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Blaize Kaye",
+                    "email": "blaize.kaye@amazee.com"
+                }
+            ],
+            "description": "Zero config logging module for Laravel and Lagoon",
+            "support": {
+                "issues": "https://github.com/amazeeio/laravel_lagoon_logs/issues",
+                "source": "https://github.com/amazeeio/laravel_lagoon_logs/tree/v0.0.5"
+            },
+            "time": "2023-04-19T05:21:35+00:00"
+        },
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
             "version": "v0.0.11",
