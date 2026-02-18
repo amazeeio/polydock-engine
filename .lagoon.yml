@@ -46,6 +46,27 @@ tasks:
         shell: bash
 
 environments:
+  prod:
+    cronjobs:
+      - name: Horizon Radiator
+        schedule: "*/3 * * * *"
+        command: /app/lagoon/workers/status-horizon.sh
+        service: worker
+
+  stage:
+    cronjobs:
+      - name: Horizon Radiator
+        schedule: "*/3 * * * *"
+        command: /app/lagoon/workers/status-horizon.sh
+        service: worker
+
+  dev:
+    cronjobs:
+      - name: Horizon Radiator
+        schedule: "*/3 * * * *"
+        command: /app/lagoon/workers/status-horizon.sh
+        service: worker
+
   main:
     cronjobs:
       - name: Horizon Radiator
