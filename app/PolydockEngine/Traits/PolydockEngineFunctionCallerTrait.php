@@ -58,10 +58,13 @@ trait PolydockEngineFunctionCallerTrait
                 return false;
             }
         } catch (Exception $e) {
-            $this->error(
-                $appFunctionName.' failed - unknown initialisation exception',
-                $outputContext + ['exception' => $e],
-            );
+            $message = $appFunctionName.' failed - unknown initialisation exception';
+            $context = $outputContext + [
+                'exception_message' => $e->getMessage(),
+                'exception_class' => get_class($e),
+                'exception_trace' => $e->getTraceAsString(),
+            ];
+            $this->error($message, $context);
 
             return false;
         }
@@ -84,7 +87,11 @@ trait PolydockEngineFunctionCallerTrait
             return true;
         } catch (PolydockAppInstanceStatusFlowException $e) {
             $message = $appFunctionName.' failed - status flow exception';
-            $context = $outputContext + ['exception' => $e->getMessage()];
+            $context = $outputContext + [
+                'exception_message' => $e->getMessage(),
+                'exception_class' => get_class($e),
+            ];
+            $this->error($message, $context);
             $polydockApp->error($message, $context);
             if ($appInstance->getStatus() !== $failedStatus) {
                 $polydockApp->info('Forcing status to '.$failedStatus->value, $outputContext);
@@ -94,15 +101,27 @@ trait PolydockEngineFunctionCallerTrait
             return false;
         } catch (PolydockEngineProcessPolydockAppInstanceException $e) {
             $message = $appFunctionName.' failed - process exception';
-            $context = $outputContext + ['exception' => $e];
+            $context = $outputContext + [
+                'exception_message' => $e->getMessage(),
+                'exception_class' => get_class($e),
+                'exception_trace' => $e->getTraceAsString(),
+            ];
+            $this->error($message, $context);
             $polydockApp->error($message, $context);
             if ($appInstance->getStatus() !== $failedStatus) {
                 $polydockApp->info('Forcing status to '.$failedStatus->value, $outputContext);
                 $appInstance->logLine('error', $message, $context)->setStatus($failedStatus)->save();
             }
+
+            return false;
         } catch (Exception $e) {
             $message = $appFunctionName.' failed - unknown exception';
-            $context = $outputContext + ['exception' => $e->getMessage(), 'exception_class' => get_class($e)];
+            $context = $outputContext + [
+                'exception_message' => $e->getMessage(),
+                'exception_class' => get_class($e),
+                'exception_trace' => $e->getTraceAsString(),
+            ];
+            $this->error($message, $context);
             $polydockApp->error($message, $context);
             $appInstance->logLine('error', $message, $context)->setStatus($failedStatus)->save();
         }
@@ -139,10 +158,13 @@ trait PolydockEngineFunctionCallerTrait
                 return false;
             }
         } catch (Exception $e) {
-            $this->error(
-                $appFunctionName.' failed - unknown initialisation exception',
-                $outputContext + ['exception' => $e],
-            );
+            $message = $appFunctionName.' failed - unknown initialisation exception';
+            $context = $outputContext + [
+                'exception_message' => $e->getMessage(),
+                'exception_class' => get_class($e),
+                'exception_trace' => $e->getTraceAsString(),
+            ];
+            $this->error($message, $context);
 
             return false;
         }
@@ -171,18 +193,35 @@ trait PolydockEngineFunctionCallerTrait
 
             return true;
         } catch (PolydockAppInstanceStatusFlowException $e) {
-            $polydockApp->error(
-                $appFunctionName.' failed - status flow exception',
-                $outputContext + ['exception' => $e],
-            );
+            $message = $appFunctionName.' failed - status flow exception';
+            $context = $outputContext + [
+                'exception_message' => $e->getMessage(),
+                'exception_class' => get_class($e),
+            ];
+            $this->error($message, $context);
+            $polydockApp->error($message, $context);
 
             return false;
         } catch (PolydockEngineProcessPolydockAppInstanceException $e) {
-            $polydockApp->error($appFunctionName.' failed - process exception', $outputContext + ['exception' => $e->getMessage(), 'exception_class' => get_class($e)]);
+            $message = $appFunctionName.' failed - process exception';
+            $context = $outputContext + [
+                'exception_message' => $e->getMessage(),
+                'exception_class' => get_class($e),
+                'exception_trace' => $e->getTraceAsString(),
+            ];
+            $this->error($message, $context);
+            $polydockApp->error($message, $context);
 
             return false;
         } catch (Exception $e) {
-            $polydockApp->error($appFunctionName.' failed - unknown exception', $outputContext + ['exception' => $e->getMessage(), 'exception_class' => get_class($e)]);
+            $message = $appFunctionName.' failed - unknown exception';
+            $context = $outputContext + [
+                'exception_message' => $e->getMessage(),
+                'exception_class' => get_class($e),
+                'exception_trace' => $e->getTraceAsString(),
+            ];
+            $this->error($message, $context);
+            $polydockApp->error($message, $context);
 
             return false;
         }
