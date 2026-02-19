@@ -19,15 +19,19 @@ return new class extends Migration
 
         foreach ($stores as $store) {
             if (! empty($store->lagoon_deploy_private_key)) {
-                DB::table('polydock_variables')->insert([
-                    'variabled_type' => \App\Models\PolydockStore::class,
-                    'variabled_id' => $store->id,
-                    'name' => 'lagoon_deploy_private_key',
-                    'value' => Crypt::encryptString($store->lagoon_deploy_private_key),
-                    'is_encrypted' => true,
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                DB::table('polydock_variables')->updateOrInsert(
+                    [
+                        'variabled_type' => \App\Models\PolydockStore::class,
+                        'variabled_id' => $store->id,
+                        'name' => 'lagoon_deploy_private_key',
+                    ],
+                    [
+                        'value' => Crypt::encryptString($store->lagoon_deploy_private_key),
+                        'is_encrypted' => true,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
             }
         }
 
