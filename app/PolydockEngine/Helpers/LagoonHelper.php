@@ -24,14 +24,14 @@ class LagoonHelper
         $lagoonCoreData = $allLagoonCoresData[$FTLAGOON_ENDPOINT] ?? null;
 
         if (! $lagoonCoreData) {
-            Log::error('No lagoon core data found for endpoint '.$FTLAGOON_ENDPOINT);
+            Log::error("No lagoon core data found for endpoint {$FTLAGOON_ENDPOINT}");
 
             return null;
         }
 
         $lagoonCoreDataForRegion = $lagoonCoreData['lagoon_deploy_regions'][$regionId] ?? null;
         if (! $lagoonCoreDataForRegion) {
-            Log::error('No lagoon core data found for region '.$regionId.' and endpoint '.$FTLAGOON_ENDPOINT);
+            Log::error("No lagoon core data found for region {$regionId} and endpoint {$FTLAGOON_ENDPOINT}");
 
             return null;
         }
@@ -58,8 +58,8 @@ class LagoonHelper
             $key = PublicKeyLoader::load($privateKey);
 
             return $key->getPublicKey()->toString('OpenSSH');
-        } catch (\Throwable $e) {
-            Log::error('Error generating public key: '.$e->getMessage());
+        } catch (\Throwable) {
+            // Parsing failures are expected when validating user-provided keys.
 
             return null;
         }

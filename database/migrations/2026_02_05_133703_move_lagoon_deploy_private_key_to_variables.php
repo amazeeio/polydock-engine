@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -19,7 +20,7 @@ return new class extends Migration
         foreach ($stores as $store) {
             if (! empty($store->lagoon_deploy_private_key)) {
                 DB::table('polydock_variables')->insert([
-                    'variabled_type' => 'App\Models\PolydockStore',
+                    'variabled_type' => \App\Models\PolydockStore::class,
                     'variabled_id' => $store->id,
                     'name' => 'lagoon_deploy_private_key',
                     'value' => Crypt::encryptString($store->lagoon_deploy_private_key),
@@ -46,9 +47,11 @@ return new class extends Migration
 
         // Restore keys from variables
         $variables = DB::table('polydock_variables')
-            ->where('variabled_type', 'App\Models\PolydockStore')
+            ->where('variabled_type', \App\Models\PolydockStore::class)
             ->where('name', 'lagoon_deploy_private_key')
             ->get();
+
+        $restoredIds = [];
 
         foreach ($variables as $variable) {
             try {
@@ -59,16 +62,22 @@ return new class extends Migration
                 DB::table('polydock_stores')
                     ->where('id', $variable->variabled_id)
                     ->update(['lagoon_deploy_private_key' => $value]);
+
+                $restoredIds[] = $variable->id;
             } catch (\Exception $e) {
-                // Handle decryption failure or other issues if necessary
-                continue;
+                Log::warning('Migration rollback: failed to decrypt lagoon_deploy_private_key, skipping delete to preserve data', [
+                    'variable_id' => $variable->id,
+                    'store_id' => $variable->variabled_id,
+                    'error' => $e->getMessage(),
+                ]);
             }
         }
 
-        // Clean up variables
-        DB::table('polydock_variables')
-            ->where('variabled_type', 'App\Models\PolydockStore')
-            ->where('name', 'lagoon_deploy_private_key')
-            ->delete();
+        // Only delete variables that were successfully restored
+        if (! empty($restoredIds)) {
+            DB::table('polydock_variables')
+                ->whereIn('id', $restoredIds)
+                ->delete();
+        }
     }
 };
