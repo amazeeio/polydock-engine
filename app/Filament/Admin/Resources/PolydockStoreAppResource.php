@@ -47,7 +47,15 @@ class PolydockStoreAppResource extends Resource
                     ->required()
                     ->searchable()
                     ->live(onBlur: false)
-                    ->afterStateUpdated(fn (Set $set) => null)
+                    ->afterStateUpdated(function (Set $set, ?string $old) {
+                        if ($old) {
+                            $fieldNames = app(PolydockAppClassDiscovery::class)
+                                ->getStoreAppFormFieldNames($old);
+                            foreach ($fieldNames as $fieldName) {
+                                $set($fieldName, null);
+                            }
+                        }
+                    })
                     ->helperText('The application class that controls deployment and lifecycle behaviour.')
                     ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
                     ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
