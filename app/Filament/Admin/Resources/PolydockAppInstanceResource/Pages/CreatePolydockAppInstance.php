@@ -169,8 +169,13 @@ class CreatePolydockAppInstance extends Page
     {
         $data = $this->form->getState();
 
-        Log::info('Admin creating app instance', ['data' => $data]);
+        $safeLogData = [
+            'email' => $data['email'] ?? null,
+            'trial_app' => $data['trial_app'] ?? null,
+            'is_trial' => $data['is_trial'] ?? null,
+        ];
 
+        Log::info('Admin creating app instance', $safeLogData);
         try {
             // Build the request data array
             $requestData = [
