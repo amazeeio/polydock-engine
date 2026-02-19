@@ -10,6 +10,7 @@ use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserRemoteRegistration;
 use Filament\Facades\Filament;
+use Livewire\Livewire;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
@@ -50,40 +51,21 @@ class CreatePolydockAppInstanceTest extends TestCase
     {
         Queue::fake();
 
-        // Directly call the create method on the page instance
-        $page = new CreatePolydockAppInstance;
-        $page->data = [
-            'email' => 'newuser@example.com',
-            'first_name' => 'John',
-            'last_name' => 'Doe',
-            'organization' => 'Test Org',
-            'trial_app' => $this->storeApp->uuid,
-            'is_trial' => true,
-            'aup_and_privacy_acceptance' => true,
-            'opt_in_to_product_updates' => true,
-        ];
-
-        // Mock form validation
         $this->actingAs($this->admin);
 
-        // Create registration directly as the form would
-        $registration = UserRemoteRegistration::create([
-            'email' => 'newuser@example.com',
-            'request_data' => [
+        Livewire::test(CreatePolydockAppInstance::class)
+            ->fillForm([
                 'email' => 'newuser@example.com',
                 'first_name' => 'John',
                 'last_name' => 'Doe',
                 'organization' => 'Test Org',
-                'register_type' => 'REQUEST_TRIAL',
                 'trial_app' => $this->storeApp->uuid,
-                'aup_and_privacy_acceptance' => 1,
-                'opt_in_to_product_updates' => 1,
-                'admin_created' => true,
                 'is_trial' => true,
-            ],
-        ]);
-
-        ProcessUserRemoteRegistration::dispatch($registration);
+                'aup_and_privacy_acceptance' => true,
+                'opt_in_to_product_updates' => true,
+            ])
+            ->call('create')
+            ->assertHasNoFormErrors();
 
         // Verify registration was created
         $this->assertDatabaseHas('user_remote_registrations', [
@@ -92,6 +74,26 @@ class CreatePolydockAppInstanceTest extends TestCase
 
         // Verify job was dispatched
         Queue::assertPushed(ProcessUserRemoteRegistration::class);
+    }
+
+    public function test_create_form_validates_required_fields(): void
+    {
+        $this->actingAs($this->admin);
+
+        Livewire::test(CreatePolydockAppInstance::class)
+            ->fillForm([
+                'email' => '',
+                'first_name' => '',
+                'last_name' => '',
+                'trial_app' => null,
+            ])
+            ->call('create')
+            ->assertHasFormErrors([
+                'email' => 'required',
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'trial_app' => 'required',
+            ]);
     }
 
     public function test_registration_includes_admin_created_flag(): void
