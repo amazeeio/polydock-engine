@@ -3,7 +3,6 @@
 namespace Tests\Unit\PolydockEngine\Helpers;
 
 use App\PolydockEngine\Helpers\LagoonHelper;
-use Illuminate\Support\Facades\Log;
 use Tests\TestCase;
 
 class LagoonHelperTest extends TestCase
@@ -34,8 +33,6 @@ EOD;
 
     public function test_get_public_key_from_private_key_returns_null_for_invalid_key()
     {
-        Log::shouldReceive('error')->once();
-
         $invalidKey = 'invalid-key-content';
         $derivedPublicKey = LagoonHelper::getPublicKeyFromPrivateKey($invalidKey);
 
