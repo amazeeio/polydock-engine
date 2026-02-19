@@ -234,6 +234,6 @@ class PolydockStoreApp extends Model
      */
     public function getLagoonProductionEnvironmentAttribute(): ?string
     {
-        return $this->app_config['lagoon_production_environment'] ?? null;
+        return $this->app_config['lagoon_production_environment'] ?? 'main';
     }
 }
