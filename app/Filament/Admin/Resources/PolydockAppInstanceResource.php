@@ -276,7 +276,7 @@ class PolydockAppInstanceResource extends Resource
             }
 
             if ($value === null) {
-                $value = '';
+                $value = 'N/A';
             }
 
             $renderKey = 'webhook_data_'.$key;

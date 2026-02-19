@@ -16,6 +16,11 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
 
     protected Client $AmazeeAiBackendClient;
 
+    /**
+     * Construct a new service provider amazee.ai backend.
+     *
+     * @throws PolydockEngineServiceProviderInitializationException
+     */
     public function __construct(array $config, PolydockAppLoggerInterface $logger)
     {
         $this->setLogger($logger);
@@ -86,26 +91,41 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
         }
     }
 
+    /**
+     * Get the amazee.ai backend client.
+     */
     public function getAmazeeAiBackendClient(): Client
     {
         return $this->AmazeeAiBackendClient;
     }
 
+    /**
+     * Fixed name for this provider.
+     */
     public function getName(): string
     {
         return 'Polydock-Amazee-AI-Backend-Client-Provider';
     }
 
+    /**
+     * Fixed description for this provider.
+     */
     public function getDescription(): string
     {
         return 'An implementation of the Polydock Amazee AI Backend Client from polydock-amazeeai-backend-client-php';
     }
 
+    /**
+     * Get the logger instance.
+     */
     public function getLogger(): PolydockAppLoggerInterface
     {
         return $this->logger;
     }
 
+    /**
+     * Set the logger instance. Return self for chaining.
+     */
     public function setLogger(PolydockAppLoggerInterface $logger): self
     {
         $this->logger = $logger;
@@ -113,6 +133,9 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
         return $this;
     }
 
+    /**
+     * Send a message marked as info level to the logger.
+     */
     public function info(string $message, array $context = []): self
     {
         $this->logger->info($message, $context);
@@ -120,6 +143,9 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
         return $this;
     }
 
+    /**
+     * Send a message marked as error level to the logger.
+     */
     public function error(string $message, array $context = []): self
     {
         $this->logger->error($message, $context);
@@ -127,6 +153,9 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
         return $this;
     }
 
+    /**
+     * Send a message marked as warning level to the logger.
+     */
     public function warning(string $message, array $context = []): self
     {
         $this->logger->warning($message, $context);
@@ -134,6 +163,9 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
         return $this;
     }
 
+    /**
+     * Send a message marked as debug level to the logger.
+     */
     public function debug(string $message, array $context = []): self
     {
         $this->logger->debug($message, $context);

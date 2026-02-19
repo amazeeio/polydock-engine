@@ -61,7 +61,7 @@ trait PolydockEngineFunctionCallerTrait
             $message = $appFunctionName.' failed - unknown initialisation exception';
             $context = $outputContext + [
                 'exception_message' => $e->getMessage(),
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
                 'exception_trace' => $e->getTraceAsString(),
             ];
             $this->error($message, $context);
@@ -89,7 +89,7 @@ trait PolydockEngineFunctionCallerTrait
             $message = $appFunctionName.' failed - status flow exception';
             $context = $outputContext + [
                 'exception_message' => $e->getMessage(),
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
             ];
             $this->error($message, $context);
             $polydockApp->error($message, $context);
@@ -103,7 +103,7 @@ trait PolydockEngineFunctionCallerTrait
             $message = $appFunctionName.' failed - process exception';
             $context = $outputContext + [
                 'exception_message' => $e->getMessage(),
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
                 'exception_trace' => $e->getTraceAsString(),
             ];
             $this->error($message, $context);
@@ -118,7 +118,7 @@ trait PolydockEngineFunctionCallerTrait
             $message = $appFunctionName.' failed - unknown exception';
             $context = $outputContext + [
                 'exception_message' => $e->getMessage(),
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
                 'exception_trace' => $e->getTraceAsString(),
             ];
             $this->error($message, $context);
@@ -161,7 +161,7 @@ trait PolydockEngineFunctionCallerTrait
             $message = $appFunctionName.' failed - unknown initialisation exception';
             $context = $outputContext + [
                 'exception_message' => $e->getMessage(),
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
                 'exception_trace' => $e->getTraceAsString(),
             ];
             $this->error($message, $context);
@@ -196,7 +196,7 @@ trait PolydockEngineFunctionCallerTrait
             $message = $appFunctionName.' failed - status flow exception';
             $context = $outputContext + [
                 'exception_message' => $e->getMessage(),
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
             ];
             $this->error($message, $context);
             $polydockApp->error($message, $context);
@@ -206,7 +206,7 @@ trait PolydockEngineFunctionCallerTrait
             $message = $appFunctionName.' failed - process exception';
             $context = $outputContext + [
                 'exception_message' => $e->getMessage(),
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
                 'exception_trace' => $e->getTraceAsString(),
             ];
             $this->error($message, $context);
@@ -217,7 +217,7 @@ trait PolydockEngineFunctionCallerTrait
             $message = $appFunctionName.' failed - unknown exception';
             $context = $outputContext + [
                 'exception_message' => $e->getMessage(),
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
                 'exception_trace' => $e->getTraceAsString(),
             ];
             $this->error($message, $context);

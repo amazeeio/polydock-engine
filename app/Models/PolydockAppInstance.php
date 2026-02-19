@@ -84,6 +84,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     private PolydockAppLoggerInterface $logger;
 
+    /**
+     * The name of the app instance
+     */
+    private string $name;
+
     // Add default sensitive keys specific to app instances
     protected array $sensitiveDataKeys = [
         // Exact matches
@@ -394,6 +399,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this;
     }
 
+    /**
+     * Get the name of the app instance
+     */
     public function getName(): string
     {
         return $this->name;

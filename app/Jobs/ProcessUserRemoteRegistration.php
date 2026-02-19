@@ -6,6 +6,7 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\UserGroupRoleEnum;
 use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Enums\UserRemoteRegistrationType;
+use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
@@ -355,7 +356,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
      * @param  \App\Models\PolydockAppInstance  $appInstance  The app instance to store variables on
      * @param  PolydockStoreApp  $storeApp  The store app to get field schema from
      */
-    private function storeInstanceConfigFields($appInstance, PolydockStoreApp $storeApp): void
+    private function storeInstanceConfigFields(PolydockAppInstance $appInstance, PolydockStoreApp $storeApp): void
     {
         $instanceConfigPrefix = PolydockAppInstanceFields::FIELD_PREFIX;
         $requestData = $this->registration->request_data ?? [];
