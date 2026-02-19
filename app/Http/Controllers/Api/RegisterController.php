@@ -52,6 +52,7 @@ class RegisterController extends Controller
         try {
             $registration = UserRemoteRegistration::where('uuid', $uuid)->firstOrFail();
             Log::info('Showing user remote registration', ['registration' => $registration->toArray()]);
+            $responseResultData = $registration->result_data ?? [];
 
             if ($registration->appInstance) {
                 $appInstance = $registration->appInstance;
@@ -65,12 +66,20 @@ class RegisterController extends Controller
                     $registration->setResultValue('result_type', 'registration_failed');
                     $registration->save();
                 }
+
+                if ($appInstance->getKeyValue('lagoon-project-id')) {
+                    $responseResultData['lagoon-project-id'] = $appInstance->getKeyValue('lagoon-project-id');
+                }
+
+                if ($appInstance->getKeyValue('lagoon-deploy-branch')) {
+                    $responseResultData['lagoon-deploy-branch'] = $appInstance->getKeyValue('lagoon-deploy-branch');
+                }
             }
 
             return response()->json([
                 'status' => $registration->status->value,
                 'email' => $registration->email,
-                'result_data' => $registration->result_data,
+                'result_data' => $responseResultData,
                 'created_at' => $registration->created_at,
                 'updated_at' => $registration->updated_at,
             ]);
