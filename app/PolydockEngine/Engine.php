@@ -7,6 +7,7 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineProcessPolydockAppInstanceStatusException;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
+use FreedomtechHosting\PolydockApp\PolydockAppInterface;
 use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use FreedomtechHosting\PolydockApp\PolydockEngineBase;
 use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
@@ -123,7 +124,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to process
      * @return PolydockAppInstanceInterface The app instance
      */
-    public function processPolydockAppInstance(PolydockAppInstanceInterface $appInstance)
+    public function processPolydockAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $appInstance->setLogger($this->logger);
         $appInstance->setEngine($this);
@@ -131,6 +132,12 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $polydockAppClass = $appInstance->storeApp->polydock_app_class;
         if (! class_exists($polydockAppClass)) {
             throw new PolydockEngineAppNotFoundException('Class '.$polydockAppClass.' not found');
+        }
+
+        if (! is_subclass_of($polydockAppClass, PolydockAppInterface::class)) {
+            throw new PolydockEngineAppNotFoundException(
+                'Class '.$polydockAppClass.' does not implement PolydockAppInterface'
+            );
         }
 
         $app = new $polydockAppClass(

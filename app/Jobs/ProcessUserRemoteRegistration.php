@@ -6,10 +6,13 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\UserGroupRoleEnum;
 use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Enums\UserRemoteRegistrationType;
+use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Models\UserRemoteRegistration;
+use App\Services\PolydockAppClassDiscovery;
+use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -304,6 +307,9 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 }
 
                 $allocatedInstance->save();
+
+                // Store instance config fields as PolydockVariables
+                $this->storeInstanceConfigFields($allocatedInstance, $trialApp);
             }
         } catch (\Exception $e) {
             Log::error('Failed to process trial registration', [
@@ -339,5 +345,43 @@ class ProcessUserRemoteRegistration implements ShouldQueue
         Log::info('Handling unknown registration type', ['registration' => $this->registration->toArray()]);
         $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
         $this->registration->setResultValue('message', 'Unknown registration type');
+    }
+
+    /**
+     * Store instance config fields as PolydockVariables on the app instance.
+     *
+     * Extracts fields prefixed with 'instance_config_' from the registration request data
+     * and stores them as PolydockVariables, respecting encryption settings.
+     *
+     * @param  \App\Models\PolydockAppInstance  $appInstance  The app instance to store variables on
+     * @param  PolydockStoreApp  $storeApp  The store app to get field schema from
+     */
+    private function storeInstanceConfigFields(PolydockAppInstance $appInstance, PolydockStoreApp $storeApp): void
+    {
+        $instanceConfigPrefix = PolydockAppInstanceFields::FIELD_PREFIX;
+        $requestData = $this->registration->request_data ?? [];
+
+        // Get field encryption map from the app class schema
+        $discovery = app(PolydockAppClassDiscovery::class);
+        $schema = $discovery->getAppInstanceFormSchema($storeApp->polydock_app_class ?? '');
+        $encryptionMap = $discovery->getFieldEncryptionMap($schema);
+
+        $storedFields = [];
+
+        foreach ($requestData as $key => $value) {
+            if (str_starts_with((string) $key, $instanceConfigPrefix) && $value !== null && $value !== '') {
+                $encrypted = $encryptionMap[$key] ?? false;
+                $appInstance->setPolydockVariableValue($key, (string) $value, $encrypted);
+                $storedFields[] = $key;
+            }
+        }
+
+        if (! empty($storedFields)) {
+            Log::info('Stored instance config fields as PolydockVariables', [
+                'registration_id' => $this->registration->id,
+                'app_instance_id' => $appInstance->id,
+                'fields' => $storedFields,
+            ]);
+        }
     }
 }
