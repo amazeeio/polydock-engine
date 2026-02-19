@@ -4,6 +4,7 @@ namespace App\PolydockEngine\Helpers;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use phpseclib3\Crypt\PublicKeyLoader;
 
 class LagoonHelper
 {
@@ -23,14 +24,14 @@ class LagoonHelper
         $lagoonCoreData = $allLagoonCoresData[$FTLAGOON_ENDPOINT] ?? null;
 
         if (! $lagoonCoreData) {
-            Log::error('No lagoon core data found for endpoint '.$FTLAGOON_ENDPOINT);
+            Log::error("No lagoon core data found for endpoint {$FTLAGOON_ENDPOINT}");
 
             return null;
         }
 
         $lagoonCoreDataForRegion = $lagoonCoreData['lagoon_deploy_regions'][$regionId] ?? null;
         if (! $lagoonCoreDataForRegion) {
-            Log::error('No lagoon core data found for region '.$regionId.' and endpoint '.$FTLAGOON_ENDPOINT);
+            Log::error("No lagoon core data found for region {$regionId} and endpoint {$FTLAGOON_ENDPOINT}");
 
             return null;
         }
@@ -40,10 +41,27 @@ class LagoonHelper
         return $lagoonCoreDataForRegion;
     }
 
-    public static function getLagoonCodeDataValueForRegion(string $regionId, string $key): string
+    public static function getLagoonCodeDataValueForRegion(string $regionId, string $key): ?string
     {
         $lagoonCoreDataForRegion = self::getLagoonCoreDataForRegion($regionId);
 
         return $lagoonCoreDataForRegion[$key] ?? null;
+    }
+
+    public static function getPublicKeyFromPrivateKey(string $privateKey): ?string
+    {
+        if (empty($privateKey)) {
+            return null;
+        }
+
+        try {
+            $key = PublicKeyLoader::load($privateKey);
+
+            return $key->getPublicKey()->toString('OpenSSH');
+        } catch (\Throwable) {
+            // Parsing failures are expected when validating user-provided keys.
+
+            return null;
+        }
     }
 }

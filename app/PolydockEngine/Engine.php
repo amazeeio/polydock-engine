@@ -123,7 +123,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to process
      * @return PolydockAppInstanceInterface The app instance
      */
-    public function processPolydockAppInstance(PolydockAppInstanceInterface $appInstance)
+    public function processPolydockAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $appInstance->setLogger($this->logger);
         $appInstance->setEngine($this);

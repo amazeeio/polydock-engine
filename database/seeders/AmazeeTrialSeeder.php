@@ -46,9 +46,9 @@ class AmazeeTrialSeeder extends Seeder
             'lagoon_deploy_region_id_ext' => '126',
             'lagoon_deploy_project_prefix' => 'ait-us',
             'lagoon_deploy_organization_id_ext' => '549',
-            'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => 68,
         ]);
+        $usStore->setPolydockVariableValue('lagoon_deploy_private_key', $deployKey, true);
 
         $chStore = \App\Models\PolydockStore::create([
             'name' => 'Switzerland Store',
@@ -57,9 +57,9 @@ class AmazeeTrialSeeder extends Seeder
             'lagoon_deploy_region_id_ext' => '131',
             'lagoon_deploy_project_prefix' => 'ait-ch',
             'lagoon_deploy_organization_id_ext' => '549',
-            'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => 34,
         ]);
+        $chStore->setPolydockVariableValue('lagoon_deploy_private_key', $deployKey, true);
 
         $auStore = \App\Models\PolydockStore::create([
             'name' => 'Australia Store',
@@ -68,9 +68,9 @@ class AmazeeTrialSeeder extends Seeder
             'lagoon_deploy_region_id_ext' => '132',
             'lagoon_deploy_project_prefix' => 'ait-au',
             'lagoon_deploy_organization_id_ext' => '549',
-            'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => 69,
         ]);
+        $auStore->setPolydockVariableValue('lagoon_deploy_private_key', $deployKey, true);
 
         $deStore = \App\Models\PolydockStore::create([
             'name' => 'Europe Store',
@@ -79,9 +79,9 @@ class AmazeeTrialSeeder extends Seeder
             'lagoon_deploy_region_id_ext' => '115',
             'lagoon_deploy_project_prefix' => 'ait-de',
             'lagoon_deploy_organization_id_ext' => '549',
-            'lagoon_deploy_private_key' => $deployKey,
             'amazee_ai_backend_region_id_ext' => 67,
         ]);
+        $deStore->setPolydockVariableValue('lagoon_deploy_private_key', $deployKey, true);
 
         // Add webhook to both stores
         $webhookUrl = 'https://webhook.site/bbe9c2ef-bb18-4c13-8d40-14fb428c7b64';

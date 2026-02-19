@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\PolydockStoreResource\Pages;
 use App\Filament\Admin\Resources\PolydockStoreResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Database\Eloquent\Model;
 
 class EditPolydockStore extends EditRecord
 {
@@ -27,5 +28,19 @@ class EditPolydockStore extends EditRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
+    }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $key = $data['lagoon_deploy_private_key'] ?? null;
+        unset($data['lagoon_deploy_private_key']);
+
+        $record->update($data);
+
+        if ($key) {
+            $record->setPolydockVariableValue('lagoon_deploy_private_key', $key, true);
+        }
+
+        return $record;
     }
 }

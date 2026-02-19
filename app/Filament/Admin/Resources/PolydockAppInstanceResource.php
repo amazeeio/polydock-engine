@@ -241,10 +241,15 @@ class PolydockAppInstanceResource extends Resource
     public static function getRenderedSafeDataForRecord(PolydockAppInstance $record): array
     {
         $safeData = $record->data;
+        $sensitiveKeys = $record->getSensitiveDataKeys();
         $renderedArray = [];
         foreach ($safeData as $key => $value) {
-            if ($record->shouldFilterKey($key, $record->getSensitiveDataKeys())) {
+            if ($record->shouldFilterKey($key, $sensitiveKeys)) {
                 $value = 'REDACTED';
+            }
+
+            if ($value === null) {
+                $value = '';
             }
 
             $renderKey = 'webhook_data_'.$key;
