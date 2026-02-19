@@ -79,6 +79,16 @@ class PolydockStoreResource extends Resource
                     ->disabled(
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
+                Forms\Components\TextInput::make('lagoon_deploy_group_name')
+                    ->label('Lagoon Deploy Group Name')
+                    ->required()
+                    ->maxLength(255)
+                    ->dehydrated(
+                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                    )
+                    ->disabled(
+                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                    ),
                 Forms\Components\Textarea::make('lagoon_deploy_private_key')
                     ->label('Lagoon Deploy Private Key')
                     ->columnSpanFull()
@@ -141,6 +151,9 @@ class PolydockStoreResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('lagoon_deploy_organization_id_ext')
                     ->label('Deploy Org')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('lagoon_deploy_group_name')
+                    ->label('Deploy Group')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -247,6 +260,13 @@ class PolydockStoreResource extends Resource
                                     ->label('Deploy Organization')
                                     ->icon('heroicon-m-building-office')
                                     ->iconColor('warning'),
+                            ]),
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_group_name')
+                                    ->label('Deploy Group Name')
+                                    ->icon('heroicon-m-users')
+                                    ->iconColor('primary'),
                             ]),
                     ])
                     ->columnSpan(1),

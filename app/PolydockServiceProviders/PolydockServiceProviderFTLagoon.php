@@ -16,8 +16,12 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
 
     protected Client $LagoonClient;
 
-    /** @var int Maximum age in minutes before a token is considered expired */
-    const MAX_TOKEN_AGE_MINUTES = 2;
+    /**
+     * Maximum age in minutes before a token is considered expired.
+     *
+     * @var int
+     */
+    private const int MAX_TOKEN_AGE_MINUTES = 2;
 
     public function __construct(array $config, PolydockAppLoggerInterface $logger)
     {
@@ -106,31 +110,49 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         }
     }
 
+    /**
+     * Return the lagoon client.
+     */
     public function getLagoonClient(): Client
     {
         return $this->LagoonClient;
     }
 
+    /**
+     * Return the max token age in minutes.
+     */
     public function getMaxTokenAgeMinutes(): int
     {
         return self::MAX_TOKEN_AGE_MINUTES;
     }
 
+    /**
+     * Fixed name for this provider.
+     */
     public function getName(): string
     {
         return 'FT-Lagoon-Client-Provider';
     }
 
+    /**
+     * Fixed description of this provider.
+     */
     public function getDescription(): string
     {
         return 'An implementation of the FT Lagoon Client from ft-lagoon-php';
     }
 
+    /**
+     * Get the logger instance.
+     */
     public function getLogger(): PolydockAppLoggerInterface
     {
         return $this->logger;
     }
 
+    /**
+     * Set the logger instance. Return self for chaining.
+     */
     public function setLogger(PolydockAppLoggerInterface $logger): self
     {
         $this->logger = $logger;
@@ -138,6 +160,9 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         return $this;
     }
 
+    /**
+     * Send a message marked as info level to the logger.
+     */
     public function info(string $message, array $context = []): self
     {
         $this->logger->info($message, $context);
@@ -145,6 +170,9 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         return $this;
     }
 
+    /**
+     * Send a message marked as error level to the logger.
+     */
     public function error(string $message, array $context = []): self
     {
         $this->logger->error($message, $context);
@@ -152,6 +180,9 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         return $this;
     }
 
+    /**
+     * Send a message marked as warning level to the logger.
+     */
     public function warning(string $message, array $context = []): self
     {
         $this->logger->warning($message, $context);
@@ -159,6 +190,9 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         return $this;
     }
 
+    /**
+     * Send a message marked as debug level to the logger.
+     */
     public function debug(string $message, array $context = []): self
     {
         $this->logger->debug($message, $context);

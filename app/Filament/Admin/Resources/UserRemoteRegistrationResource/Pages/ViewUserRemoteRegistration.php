@@ -108,7 +108,7 @@ class ViewUserRemoteRegistration extends ViewRecord
             }
 
             if ($value === null) {
-                $value = '';
+                $value = 'N/A';
             }
 
             $renderKey = 'request_data_'.$key;
