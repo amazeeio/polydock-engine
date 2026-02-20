@@ -57,17 +57,35 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->searchable()
             ->columns([
-                TextColumn::make('first_name'),
-                TextColumn::make('last_name'),
-                TextColumn::make('email'),
+                TextColumn::make('first_name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('last_name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('email')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('groups_count')
                     ->counts('groups')
-                    ->label('Groups'),
-                TextColumn::make('created_at')->dateTime(),
+                    ->label('Groups')
+                    ->sortable(),
+                TextColumn::make('created_at')->dateTime()
+                    ->sortable(),
             ])
             ->filters([
-                //
+                Tables\Filters\Filter::make('created_from')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from'),
+                    ])
+                    ->query(function ($query, array $data) {
+                        return $query->when(
+                            $data['created_from'],
+                            fn ($query) => $query->where('created_at', '>=', $data['created_from']),
+                        );
+                    }),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

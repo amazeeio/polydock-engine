@@ -90,6 +90,8 @@ class PolydockStoreApp extends Model
         'unallocated_instances_count',
         'needs_more_unallocated_instances',
         'lagoon_deploy_group_name',
+        'lagoon_auto_idle',
+        'lagoon_production_environment',
     ];
 
     /**
@@ -217,5 +219,21 @@ class PolydockStoreApp extends Model
     public function getLagoonDeployGroupNameAttribute(): ?string
     {
         return $this->store->lagoon_deploy_group_name;
+    }
+
+    /**
+     * Get the Lagoon autoIdle setting from app_config
+     */
+    public function getLagoonAutoIdleAttribute(): ?int
+    {
+        return $this->app_config['lagoon_auto_idle'] ?? 0;
+    }
+
+    /**
+     * Get the Lagoon production environment from app_config
+     */
+    public function getLagoonProductionEnvironmentAttribute(): ?string
+    {
+        return $this->app_config['lagoon_production_environment'] ?? null;
     }
 }

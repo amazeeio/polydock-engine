@@ -3,7 +3,10 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages;
+use App\Models\PolydockStore;
+use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
+use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -36,17 +39,30 @@ class UserRemoteRegistrationResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->searchable()
             ->columns([
                 TextColumn::make('type')
                     ->badge()
                     ->color(fn ($state): string => $state ? $state->getColor() : 'gray')
                     ->icon(fn ($state): string => $state ? $state->getIcon() : '')
                     ->sortable(),
-                TextColumn::make('email'),
-                TextColumn::make('user.name'),
-                TextColumn::make('userGroup.name'),
-                TextColumn::make('storeApp.store.name'),
-                TextColumn::make('storeApp.name'),
+                TextColumn::make('email')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('user.name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('userGroup.name')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('storeApp.store.name')
+                    ->label('Store')
+                    ->searchable()
+                    ->sortable(),
+                TextColumn::make('storeApp.name')
+                    ->label('Store App')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn ($state): string => match ($state->value) {
@@ -55,10 +71,25 @@ class UserRemoteRegistrationResource extends Resource
                         'success' => 'success',
                         'failed' => 'danger',
                         default => 'gray',
-                    }),
-                TextColumn::make('created_at')->dateTime(),
+                    })
+                    ->sortable(),
+                TextColumn::make('created_at')->dateTime()
+                    ->sortable(),
             ])
-            ->filters([])
+            ->filters([
+                Tables\Filters\SelectFilter::make('store_id')
+                    ->label('Store')
+                    ->options(fn () => PolydockStore::pluck('name', 'id'))
+                    ->query(function ($query, array $data) {
+                        return $query->when($data['value'], fn ($query) => $query->whereHas('storeApp', fn ($q) => $q->where('polydock_store_id', $data['value'])));
+                    }),
+                Tables\Filters\SelectFilter::make('store_app_id')
+                    ->label('Store App')
+                    ->options(fn () => PolydockStoreApp::pluck('name', 'id'))
+                    ->query(function ($query, array $data) {
+                        return $query->when($data['value'], fn ($query) => $query->where('polydock_store_app_id', $data['value']));
+                    }),
+            ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
             ])

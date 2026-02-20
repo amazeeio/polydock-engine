@@ -129,9 +129,11 @@ class PolydockStoreResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->searchable()
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\IconColumn::make('listed_in_marketplace')
                     ->label('Listed')

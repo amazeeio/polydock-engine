@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e310386e38a65e83d5071a758d2bc500",
+    "content-hash": "2b6342ce3c11cc91087fd3c28bfc7d71",
     "packages": [
         {
             "name": "amazeeio/lagoon-logs",
@@ -55,28 +55,28 @@
         },
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
-            "version": "v0.0.11",
+            "version": "v0.0.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt.git",
-                "reference": "f19eb47855515e104bf64d3cb78e538be84af641"
+                "reference": "fe64d58fc223e6b7e2754c154c1f253b39296078"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/f19eb47855515e104bf64d3cb78e538be84af641",
-                "reference": "f19eb47855515e104bf64d3cb78e538be84af641",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/fe64d58fc223e6b7e2754c154c1f253b39296078",
+                "reference": "fe64d58fc223e6b7e2754c154c1f253b39296078",
                 "shasum": ""
             },
             "require": {
-                "cuyz/valinor": "^1.0",
-                "freedomtech-hosting/ft-lagoon-php": "^0.0.11",
-                "freedomtech-hosting/polydock-app": "^0.0.30",
-                "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.0.79",
-                "guzzlehttp/guzzle": "^7.0"
+                "cuyz/valinor": "^2.3.2",
+                "freedomtech-hosting/ft-lagoon-php": "^0.0.12",
+                "freedomtech-hosting/polydock-app": "^0.0.31",
+                "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.0.80",
+                "guzzlehttp/guzzle": "^7.10.0"
             },
             "require-dev": {
-                "laravel/pint": "^1.22",
-                "mockery/mockery": "*",
+                "laravel/pint": "^1.27.1",
+                "mockery/mockery": "^1.6.12",
                 "orchestra/testbench": "*",
                 "phpstan/extension-installer": "*",
                 "phpstan/phpstan": "^1.10",
@@ -102,9 +102,9 @@
             "description": "Polydock App - amazee.io PrivateGPT with Direct API Integration",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/v0.0.11"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/v0.0.13"
             },
-            "time": "2026-02-18T20:41:03+00:00"
+            "time": "2026-02-20T19:01:43+00:00"
         },
         {
             "name": "anourvalar/eloquent-serialize",
@@ -453,30 +453,28 @@
         },
         {
             "name": "cuyz/valinor",
-            "version": "1.17.0",
+            "version": "2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CuyZ/Valinor.git",
-                "reference": "9eb2802797e36f3af1fd6e13ff23e4e3d0058022"
+                "reference": "3b9f3f54901371d589776502aab3da3a046801a7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CuyZ/Valinor/zipball/9eb2802797e36f3af1fd6e13ff23e4e3d0058022",
-                "reference": "9eb2802797e36f3af1fd6e13ff23e4e3d0058022",
+                "url": "https://api.github.com/repos/CuyZ/Valinor/zipball/3b9f3f54901371d589776502aab3da3a046801a7",
+                "reference": "3b9f3f54901371d589776502aab3da3a046801a7",
                 "shasum": ""
             },
             "require": {
-                "composer-runtime-api": "^2.0",
-                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0",
-                "psr/simple-cache": "^1.0 || ^2.0 || ^3.0"
+                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
             },
             "conflict": {
                 "phpstan/phpstan": "<1.0 || >= 3.0",
                 "vimeo/psalm": "<5.0 || >=7.0"
             },
             "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.4",
-                "infection/infection": "^0.29",
+                "friendsofphp/php-cs-fixer": "^3.91",
+                "infection/infection": "^0.31",
                 "marcocesarato/php-conventional-changelog": "^1.12",
                 "mikey179/vfsstream": "^1.6.10",
                 "phpbench/phpbench": "^1.3",
@@ -504,7 +502,7 @@
                     "homepage": "https://github.com/romm"
                 }
             ],
-            "description": "Library that helps to map any input into a strongly-typed value object structure.",
+            "description": "Dependency free PHP library that helps to map any input into a strongly-typed structure.",
             "homepage": "https://github.com/CuyZ/Valinor",
             "keywords": [
                 "array",
@@ -519,7 +517,7 @@
             ],
             "support": {
                 "issues": "https://github.com/CuyZ/Valinor/issues",
-                "source": "https://github.com/CuyZ/Valinor/tree/1.17.0"
+                "source": "https://github.com/CuyZ/Valinor/tree/2.3.2"
             },
             "funding": [
                 {
@@ -527,7 +525,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-06-20T06:40:38+00:00"
+            "time": "2026-01-23T15:26:34+00:00"
         },
         {
             "name": "danharrin/date-format-converter",
@@ -1230,7 +1228,7 @@
         },
         {
             "name": "filament/actions",
-            "version": "v3.3.48",
+            "version": "v3.3.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/actions.git",
@@ -1283,7 +1281,7 @@
         },
         {
             "name": "filament/filament",
-            "version": "v3.3.48",
+            "version": "v3.3.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/panels.git",
@@ -1348,16 +1346,16 @@
         },
         {
             "name": "filament/forms",
-            "version": "v3.3.48",
+            "version": "v3.3.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/forms.git",
-                "reference": "45f6e9337d60154f2d0ad3b2c4e47f7e16912971"
+                "reference": "c64bf142f808d292b0c6c21fdd3c75cbef9e9d30"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/filamentphp/forms/zipball/45f6e9337d60154f2d0ad3b2c4e47f7e16912971",
-                "reference": "45f6e9337d60154f2d0ad3b2c4e47f7e16912971",
+                "url": "https://api.github.com/repos/filamentphp/forms/zipball/c64bf142f808d292b0c6c21fdd3c75cbef9e9d30",
+                "reference": "c64bf142f808d292b0c6c21fdd3c75cbef9e9d30",
                 "shasum": ""
             },
             "require": {
@@ -1400,11 +1398,11 @@
                 "issues": "https://github.com/filamentphp/filament/issues",
                 "source": "https://github.com/filamentphp/filament"
             },
-            "time": "2026-02-07T21:51:43+00:00"
+            "time": "2026-02-19T23:07:33+00:00"
         },
         {
             "name": "filament/infolists",
-            "version": "v3.3.48",
+            "version": "v3.3.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/infolists.git",
@@ -1455,7 +1453,7 @@
         },
         {
             "name": "filament/notifications",
-            "version": "v3.3.48",
+            "version": "v3.3.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/notifications.git",
@@ -1507,7 +1505,7 @@
         },
         {
             "name": "filament/support",
-            "version": "v3.3.48",
+            "version": "v3.3.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/support.git",
@@ -1566,7 +1564,7 @@
         },
         {
             "name": "filament/tables",
-            "version": "v3.3.48",
+            "version": "v3.3.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/tables.git",
@@ -1618,7 +1616,7 @@
         },
         {
             "name": "filament/widgets",
-            "version": "v3.3.48",
+            "version": "v3.3.49",
             "source": {
                 "type": "git",
                 "url": "https://github.com/filamentphp/widgets.git",
@@ -1662,16 +1660,16 @@
         },
         {
             "name": "freedomtech-hosting/ft-lagoon-php",
-            "version": "v0.0.11",
+            "version": "v0.0.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-lagoon-php-lib.git",
-                "reference": "f9c12b2be5b204c6ba37a64c86ace8af4745da23"
+                "reference": "2543ae3aea1f3d5e176e6c918c8e8c6b4cc27cb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-lagoon-php-lib/zipball/f9c12b2be5b204c6ba37a64c86ace8af4745da23",
-                "reference": "f9c12b2be5b204c6ba37a64c86ace8af4745da23",
+                "url": "https://api.github.com/repos/amazeeio/polydock-lagoon-php-lib/zipball/2543ae3aea1f3d5e176e6c918c8e8c6b4cc27cb7",
+                "reference": "2543ae3aea1f3d5e176e6c918c8e8c6b4cc27cb7",
                 "shasum": ""
             },
             "require": {
@@ -1698,9 +1696,9 @@
             "description": "The Freedom Tech Lagoon PHP library",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-lagoon-php-lib/issues",
-                "source": "https://github.com/amazeeio/polydock-lagoon-php-lib/tree/v0.0.11"
+                "source": "https://github.com/amazeeio/polydock-lagoon-php-lib/tree/v0.0.12"
             },
-            "time": "2026-02-17T11:31:32+00:00"
+            "time": "2026-02-20T12:39:54+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-amazeeai-backend-client-php",
@@ -1745,16 +1743,16 @@
         },
         {
             "name": "freedomtech-hosting/polydock-app",
-            "version": "v0.0.30",
+            "version": "v0.0.31",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-lib.git",
-                "reference": "b779e9dac1b8fea63e9f617931991c840674436c"
+                "reference": "cf234a3d6722cd01f0296e0fc01c34e3553c9340"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-lib/zipball/b779e9dac1b8fea63e9f617931991c840674436c",
-                "reference": "b779e9dac1b8fea63e9f617931991c840674436c",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-lib/zipball/cf234a3d6722cd01f0296e0fc01c34e3553c9340",
+                "reference": "cf234a3d6722cd01f0296e0fc01c34e3553c9340",
                 "shasum": ""
             },
             "require": {
@@ -1779,28 +1777,28 @@
             "description": "Library for Polydock Apps",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-lib/issues",
-                "source": "https://github.com/amazeeio/polydock-app-lib/tree/v0.0.30"
+                "source": "https://github.com/amazeeio/polydock-app-lib/tree/v0.0.31"
             },
-            "time": "2026-02-13T02:15:27+00:00"
+            "time": "2026-02-20T18:31:16+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "v0.0.79",
+            "version": "v0.0.80",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeio-generic.git",
-                "reference": "ab18815f8f26d605e9af32dc5e551ce3fb2fc81d"
+                "reference": "459b0e91e04bf489a36279bf80a94cea361db6ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-generic/zipball/ab18815f8f26d605e9af32dc5e551ce3fb2fc81d",
-                "reference": "ab18815f8f26d605e9af32dc5e551ce3fb2fc81d",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-generic/zipball/459b0e91e04bf489a36279bf80a94cea361db6ef",
+                "reference": "459b0e91e04bf489a36279bf80a94cea361db6ef",
                 "shasum": ""
             },
             "require": {
-                "freedomtech-hosting/ft-lagoon-php": "^0.0.11",
+                "freedomtech-hosting/ft-lagoon-php": "^0.0.12",
                 "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.0.6",
-                "freedomtech-hosting/polydock-app": "^0.0.30"
+                "freedomtech-hosting/polydock-app": "^0.0.31"
             },
             "type": "library",
             "autoload": {
@@ -1821,9 +1819,9 @@
             "description": "Polydock App - amazee.io Generic",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeio-generic/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeio-generic/tree/v0.0.79"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeio-generic/tree/v0.0.80"
             },
-            "time": "2026-02-18T20:37:21+00:00"
+            "time": "2026-02-20T18:33:49+00:00"
         },
         {
             "name": "fruitcake/php-cors",
