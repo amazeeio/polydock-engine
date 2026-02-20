@@ -12,7 +12,7 @@
         "php": "^8.3",
         "ext-curl": "*",
         "amazeeio/lagoon-logs": "^0.0.5",
-        "amazeeio/polydock-app-amazeeio-privategpt": "^0.0.12",
+        "amazeeio/polydock-app-amazeeio-privategpt": "^0.0.13",
         "evanschleret/lara-mjml": "^0.3.0",
         "filament/filament": "^3.2",
         "freedomtech-hosting/ft-lagoon-php": "^0.0.12",
