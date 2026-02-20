@@ -50,10 +50,12 @@ class PolydockAppInstanceResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->searchable()
             ->columns([
                 TextColumn::make('name')
                     ->description(fn ($record) => $record->storeApp->store->name.' - '.$record->storeApp->name)
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('userGroup.name')
                     ->label('User Group')
                     ->searchable(),
@@ -61,14 +63,16 @@ class PolydockAppInstanceResource extends Resource
                     ->badge()
                     ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
                     ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
-                    ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel()),
+                    ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel())
+                    ->sortable(),
                 TextColumn::make('is_trial')
                     ->state(fn ($record) => $record->is_trial ? 'Yes' : 'No')
                     ->label('Trial'),
                 TextColumn::make('trial_ends_at')
                     ->label('Trial Ends At')
                     ->description(fn ($record) => $record->trial_completed ? 'Trial completed' : 'Trial active')
-                    ->dateTime(),
+                    ->dateTime()
+                    ->sortable(),
                 TextColumn::make('send_midtrial_email_at')
                     ->label('Midtrial Email')
                     ->description(fn ($record) => $record->midtrial_email_sent ? 'Sent' : 'Pending')
@@ -86,6 +90,14 @@ class PolydockAppInstanceResource extends Resource
                     ->state(fn ($record) => $record->is_trial && $record->trial_complete_email_sent
                         ? 'Sent'
                         : ($record->is_trial ? 'Pending' : '')),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('status')
