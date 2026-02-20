@@ -68,11 +68,15 @@ class RegisterController extends Controller
                 }
 
                 if ($appInstance->getKeyValue('lagoon-project-id')) {
-                    $responseResultData['lagoon-project-id'] = $appInstance->getKeyValue('lagoon-project-id');
+                    $responseResultData['lagoon_project_id'] = $appInstance->getKeyValue('lagoon-project-id');
                 }
 
                 if ($appInstance->getKeyValue('lagoon-deploy-branch')) {
-                    $responseResultData['lagoon-deploy-branch'] = $appInstance->getKeyValue('lagoon-deploy-branch');
+                    $responseResultData['lagoon_deploy_branch'] = $appInstance->getKeyValue('lagoon-deploy-branch');
+                }
+
+                if ($appInstance->getKeyValue('lagoon-project-name')) {
+                    $responseResultData['lagoon_project_name'] = $appInstance->getKeyValue('lagoon-project-name');
                 }
             }
 
