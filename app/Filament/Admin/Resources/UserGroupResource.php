@@ -37,14 +37,17 @@ class UserGroupResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->searchable()
             ->columns([
-                TextColumn::make('name'),
+                TextColumn::make('name')
+                    ->searchable()
+                    ->sortable(),
                 TextColumn::make('users_count')
                     ->counts('users')
-                    ->label('Users'),
-            ])
-            ->filters([
-                //
+                    ->label('Users')
+                    ->sortable(),
+                TextColumn::make('created_at')->dateTime()
+                    ->sortable(),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

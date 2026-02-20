@@ -298,10 +298,12 @@ class PolydockStoreAppResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('store.name')
                     ->label('Store')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\IconColumn::make('available_for_trials')
                     ->label('Trials')
