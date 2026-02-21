@@ -198,6 +198,24 @@ class PolydockStoreAppResource extends Resource
                     ->label('Available for Trials')
                     ->required()
                     ->columnSpanFull(),
+                Section::make('Lagoon Runtime Settings')
+                    ->description('Configuration used by app instance creation for Lagoon runtime behavior.')
+                    ->schema([
+                        Forms\Components\TextInput::make('lagoon_auto_idle')
+                            ->label('Lagoon Auto Idle')
+                            ->numeric()
+                            ->minValue(0)
+                            ->default(0)
+                            ->helperText('Minutes before idle actions apply. Use 0 to disable auto-idle logic.'),
+                        Forms\Components\TextInput::make('lagoon_production_environment')
+                            ->label('Lagoon Production Environment')
+                            ->default('main')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Lagoon environment name considered production (for example: main).'),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
                 Forms\Components\Section::make('App-Specific Configuration')
                     ->description('These fields are defined by the selected App Class and will be configurable for this Store App.')
                     ->schema(fn (Get $get): array => app(PolydockAppClassDiscovery::class)
@@ -420,6 +438,14 @@ class PolydockStoreAppResource extends Resource
                                     ->state(fn ($record) => $record->allocatedInstances()->count())
                                     ->icon('heroicon-m-check-circle')
                                     ->iconColor('success'),
+                                \Filament\Infolists\Components\TextEntry::make('lagoon_production_environment')
+                                    ->label('Lagoon Production Environment')
+                                    ->icon('heroicon-m-flag')
+                                    ->iconColor('primary'),
+                                \Filament\Infolists\Components\TextEntry::make('lagoon_auto_idle')
+                                    ->label('Lagoon Auto Idle')
+                                    ->icon('heroicon-m-clock')
+                                    ->iconColor('gray'),
                             ]),
                     ])
                     ->columnSpan(1),
