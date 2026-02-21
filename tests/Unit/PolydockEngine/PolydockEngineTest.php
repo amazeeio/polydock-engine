@@ -3,7 +3,11 @@
 namespace Tests\Unit\PolydockEngine;
 
 use App\PolydockEngine\Engine;
+use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineValidationException;
+use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
+use FreedomtechHosting\PolydockApp\PolydockAppInterface;
 use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
+use FreedomtechHosting\PolydockApp\PolydockAppVariableDefinitionBase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Doubles\AlphaTestPolydockServiceProvider;
@@ -119,6 +123,40 @@ class PolydockEngineTest extends TestCase
         $this->assertNotSame($firstInstance, $secondInstance);
         $this->assertInstanceOf(AlphaTestPolydockServiceProvider::class, $firstInstance);
         $this->assertInstanceOf(BetaTestPolydockServiceProvider::class, $secondInstance);
+    }
+
+    #[Test]
+    public function it_accepts_zero_string_for_required_variable_validation(): void
+    {
+        $app = Mockery::mock(PolydockAppInterface::class);
+        $app->shouldReceive('getVariableDefinitions')
+            ->once()
+            ->andReturn([new PolydockAppVariableDefinitionBase('lagoon-auto-idle')]);
+
+        $appInstance = Mockery::mock(PolydockAppInstanceInterface::class);
+        $appInstance->shouldReceive('getApp')->once()->andReturn($app);
+        $appInstance->shouldReceive('getKeyValue')->with('lagoon-auto-idle')->once()->andReturn('0');
+
+        $this->assertTrue($this->engine->validateAppInstanceHasAllRequiredVariables($appInstance));
+    }
+
+    #[Test]
+    public function it_throws_when_required_variable_is_empty_string(): void
+    {
+        $app = Mockery::mock(PolydockAppInterface::class);
+        $app->shouldReceive('getVariableDefinitions')
+            ->once()
+            ->andReturn([new PolydockAppVariableDefinitionBase('lagoon-auto-idle')]);
+
+        $appInstance = Mockery::mock(PolydockAppInstanceInterface::class);
+        $appInstance->shouldReceive('getApp')->once()->andReturn($app);
+        $appInstance->shouldReceive('getKeyValue')->with('lagoon-auto-idle')->once()->andReturn('');
+        $appInstance->shouldReceive('getAppType')->once()->andReturn('Test_App');
+
+        $this->expectException(PolydockEngineValidationException::class);
+        $this->expectExceptionMessage('missing required variable lagoon-auto-idle');
+
+        $this->engine->validateAppInstanceHasAllRequiredVariables($appInstance);
     }
 
     #[\Override]
