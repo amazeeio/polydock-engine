@@ -5,6 +5,7 @@ namespace App\PolydockEngine;
 use App\PolydockEngine\Traits\PolydockEngineFunctionCallerTrait;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineProcessPolydockAppInstanceStatusException;
+use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineValidationException;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 use FreedomtechHosting\PolydockApp\PolydockAppInterface;
@@ -69,6 +70,50 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
     public function getLogger(): PolydockAppLoggerInterface
     {
         return $this->logger;
+    }
+
+    /**
+     * Validate that an app instance has all required variables.
+     *
+     * The upstream base implementation uses a truthy check, which treats "0"
+     * as missing. We only treat truly missing values (empty string) as missing.
+     *
+     * @throws PolydockEngineValidationException
+     */
+    #[\Override]
+    public function validateAppInstanceHasAllRequiredVariables(PolydockAppInstanceInterface $appInstance): bool
+    {
+        foreach ($appInstance->getApp()->getVariableDefinitions() as $variableDefinition) {
+            if ($appInstance->getKeyValue($variableDefinition->getName()) === '') {
+                throw new PolydockEngineValidationException(
+                    sprintf(
+                        'App instance %s is missing required variable %s',
+                        $appInstance->getAppType(),
+                        $variableDefinition->getName()
+                    )
+                );
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Backfill Lagoon runtime defaults on legacy app instances.
+     */
+    protected function hydrateLagoonRuntimeDefaultsOnInstance(PolydockAppInstanceInterface $appInstance): void
+    {
+        $runtimeDefaults = [
+            'lagoon-auto-idle' => (string) ($appInstance->storeApp->lagoon_auto_idle ?? 0),
+            'lagoon-production-environment' => (string) ($appInstance->storeApp->lagoon_production_environment ?? 'main'),
+        ];
+
+        foreach ($runtimeDefaults as $key => $value) {
+            if ($appInstance->getKeyValue($key) === '') {
+                $appInstance->storeKeyValue($key, $value);
+                $this->info('Backfilled missing app instance runtime variable', ['key' => $key, 'value' => $value]);
+            }
+        }
     }
 
     /**
@@ -156,6 +201,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $this->info('App Website: '.$app->getAppWebsite());
         $this->info('App Support Email: '.$app->getAppSupportEmail());
         $appInstance->setApp($app);
+        $this->hydrateLagoonRuntimeDefaultsOnInstance($appInstance);
 
         $this->info('Validating app instance has all required variables');
 

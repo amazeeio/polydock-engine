@@ -273,6 +273,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'lagoon-project-name' => $model->name,
                     'amazee-ai-backend-region-id' => $storeApp->amazee_ai_backend_region_id_ext,
                     'available-for-trials' => $storeApp->available_for_trials,
+                    'lagoon-auto-idle' => $storeApp->lagoon_auto_idle,
+                    'lagoon-production-environment' => $storeApp->lagoon_production_environment,
                     'lagoon-generate-app-admin-username' => $model->generateUniqueUsername(),
                     'lagoon-generate-app-admin-password' => $model->generateUniquePassword(),
                     'polydock-app-instance-health-webhook-url' => str_replace(':status:', '', route('api.instance.health', [

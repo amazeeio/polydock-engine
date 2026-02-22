@@ -50,7 +50,6 @@ services:
             lagoon.name: worker
             lagoon.persistent.name: nginx
             lagoon.persistent: /app/storage/
-        
 
     mariadb:
         image: uselagoon/mysql-8.0
