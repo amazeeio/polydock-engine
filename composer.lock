@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0d4180c7ba86d1e67ab64cb9e475a589",
+    "content-hash": "84160f51d4b1949e7eafab36a50aaf2c",
     "packages": [
         {
             "name": "amazeeio/lagoon-logs",
@@ -55,16 +55,16 @@
         },
         {
             "name": "amazeeio/polydock-app-amazeeclaw",
-            "version": "v0.1.0",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeclaw.git",
-                "reference": "6e2f206b067a4ec21d55c127a2bc86dbdd9cf981"
+                "reference": "88d32f246f2fb2199c0c7df079798aadec133860"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeclaw/zipball/6e2f206b067a4ec21d55c127a2bc86dbdd9cf981",
-                "reference": "6e2f206b067a4ec21d55c127a2bc86dbdd9cf981",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeclaw/zipball/88d32f246f2fb2199c0c7df079798aadec133860",
+                "reference": "88d32f246f2fb2199c0c7df079798aadec133860",
                 "shasum": ""
             },
             "require": {
@@ -84,9 +84,9 @@
             "description": "Polydock App - AmazeeClaw AI",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeclaw/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeclaw/tree/v0.1.0"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeclaw/tree/v0.1.1"
             },
-            "time": "2026-02-22T04:10:10+00:00"
+            "time": "2026-02-22T05:02:55+00:00"
         },
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
@@ -1737,16 +1737,16 @@
         },
         {
             "name": "freedomtech-hosting/polydock-amazeeai-backend-client-php",
-            "version": "v0.1.0",
+            "version": "v0.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-amazeeai-backend-php-lib.git",
-                "reference": "d95d5b4539fef11fcb0c8c598c10f853b3115540"
+                "reference": "9b24487727b04cfc3970478855989508779e52b1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-amazeeai-backend-php-lib/zipball/d95d5b4539fef11fcb0c8c598c10f853b3115540",
-                "reference": "d95d5b4539fef11fcb0c8c598c10f853b3115540",
+                "url": "https://api.github.com/repos/amazeeio/polydock-amazeeai-backend-php-lib/zipball/9b24487727b04cfc3970478855989508779e52b1",
+                "reference": "9b24487727b04cfc3970478855989508779e52b1",
                 "shasum": ""
             },
             "require": {
@@ -1772,9 +1772,9 @@
             "description": "The Freedom Tech amazee.ai Private AI PHP library",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-amazeeai-backend-php-lib/issues",
-                "source": "https://github.com/amazeeio/polydock-amazeeai-backend-php-lib/tree/v0.1.0"
+                "source": "https://github.com/amazeeio/polydock-amazeeai-backend-php-lib/tree/v0.1.1"
             },
-            "time": "2026-02-22T03:59:51+00:00"
+            "time": "2026-02-22T05:02:41+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-app",
