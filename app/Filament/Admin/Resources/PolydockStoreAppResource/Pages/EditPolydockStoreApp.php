@@ -37,6 +37,9 @@ class EditPolydockStoreApp extends EditRecord
             $data[$key] = $value;
         }
 
+        $data['lagoon_auto_idle'] = $appConfig['lagoon_auto_idle'] ?? 0;
+        $data['lagoon_production_environment'] = $appConfig['lagoon_production_environment'] ?? 'main';
+
         return $data;
     }
 
@@ -72,6 +75,18 @@ class EditPolydockStoreApp extends EditRecord
                 }
             }
         }
+
+        // Always persist these runtime settings in app_config for app-instance defaults.
+        $existingAppConfig = $this->record->app_config ?? [];
+        $appConfig['lagoon_auto_idle'] = isset($data['lagoon_auto_idle'])
+            ? (int) $data['lagoon_auto_idle']
+            : (int) ($existingAppConfig['lagoon_auto_idle'] ?? 0);
+        $appConfig['lagoon_production_environment'] = (string) (
+            $data['lagoon_production_environment']
+            ?? $existingAppConfig['lagoon_production_environment']
+            ?? 'main'
+        );
+        unset($data['lagoon_auto_idle'], $data['lagoon_production_environment']);
 
         // Store the app config as JSON
         $data['app_config'] = ! empty($appConfig) ? $appConfig : null;
