@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2b6342ce3c11cc91087fd3c28bfc7d71",
+    "content-hash": "1090fc82b167364b893bb83552f389b2",
     "packages": [
         {
             "name": "amazeeio/lagoon-logs",
@@ -9367,6 +9367,72 @@
                 "source": "https://github.com/laravel/sail"
             },
             "time": "2026-02-06T12:16:02+00:00"
+        },
+        {
+            "name": "malikad778/laravel-migration-guard",
+            "version": "v1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/malikad778/Laravel-migration-guard.git",
+                "reference": "9e6563562efb9681d084e3ebf928b2b8296eb6d0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/malikad778/Laravel-migration-guard/zipball/9e6563562efb9681d084e3ebf928b2b8296eb6d0",
+                "reference": "9e6563562efb9681d084e3ebf928b2b8296eb6d0",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": "^10.0|^11.0|^12.0",
+                "illuminate/database": "^10.0|^11.0|^12.0",
+                "illuminate/events": "^10.0|^11.0|^12.0",
+                "illuminate/notifications": "^10.0|^11.0|^12.0",
+                "illuminate/support": "^10.0|^11.0|^12.0",
+                "nikic/php-parser": "^5.0",
+                "php": "^8.2"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^8.0|^9.0",
+                "pestphp/pest": "^2.0|^3.0",
+                "pestphp/pest-plugin-laravel": "^2.0|^3.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Malikad778\\MigrationGuard\\MigrationGuardServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Malikad778\\MigrationGuard\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Adnan Malik",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Catch dangerous database migrations before they reach production. The strong_migrations equivalent for Laravel. Zero configuration. Framework-native.",
+            "keywords": [
+                "guard",
+                "laravel",
+                "migration",
+                "production",
+                "safety",
+                "zero-downtime"
+            ],
+            "support": {
+                "issues": "https://github.com/malikad778/Laravel-migration-guard/issues",
+                "source": "https://github.com/malikad778/Laravel-migration-guard/tree/v1.0.0"
+            },
+            "time": "2026-02-23T10:53:27+00:00"
         },
         {
             "name": "mockery/mockery",
