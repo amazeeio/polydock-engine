@@ -152,15 +152,16 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         Process::assertRan(function ($process) use ($instance1) {
             $cmd = $process->command;
             $hasId = is_array($cmd) ? in_array("--instance-id={$instance1->id}", $cmd) : str_contains($cmd, "--instance-id={$instance1->id}");
+
             return $hasId && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'));
         });
         Process::assertRan(function ($process) use ($instance2) {
             $cmd = $process->command;
             $hasId = is_array($cmd) ? in_array("--instance-id={$instance2->id}", $cmd) : str_contains($cmd, "--instance-id={$instance2->id}");
+
             return $hasId && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'));
         });
     }
-
 
     public function test_it_skips_instances_missing_metadata()
     {
@@ -205,6 +206,4 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         ])
             ->assertExitCode(0);
     }
-
-
 }

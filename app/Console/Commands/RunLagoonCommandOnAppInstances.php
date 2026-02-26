@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
+use App\Services\LagoonClientService;
 use FreedomtechHosting\FtLagoonPhp\Client;
-use FreedomtechHosting\FtLagoonPhp\Ssh;
 use Illuminate\Console\Command;
 use Illuminate\Process\Pool;
 use Illuminate\Support\Facades\Process;
@@ -64,22 +64,6 @@ class RunLagoonCommandOnAppInstances extends Command
             return 1;
         }
 
-        // Configuration
-        $sshConfig = config(key: 'polydock.service_providers_singletons.PolydockServiceProviderFTLagoon', default: []);
-        $sshUser = $sshConfig['ssh_user'] ?? 'lagoon';
-        $sshHost = $sshConfig['ssh_server'] ?? 'ssh.lagoon.amazeeio.cloud';
-        $sshPort = $sshConfig['ssh_port'] ?? '32222';
-        $globalKeyFile = $sshConfig['ssh_private_key_file'] ?? getenv(name: 'HOME').'/.ssh/id_rsa';
-        $apiEndpoint = $sshConfig['endpoint'] ?? 'https://api.lagoon.amazeeio.cloud/graphql';
-
-        $clientConfig = [
-            'ssh_user' => $sshUser,
-            'ssh_server' => $sshHost,
-            'ssh_port' => $sshPort,
-            'endpoint' => $apiEndpoint,
-            'ssh_private_key_file' => $globalKeyFile,
-        ];
-
         // --- Single Instance Mode (Worker) ---
         if ($instanceId) {
             $instance = PolydockAppInstance::find(id: $instanceId);
@@ -91,7 +75,6 @@ class RunLagoonCommandOnAppInstances extends Command
 
             return $this->runCommandOnInstance(
                 instance: $instance,
-                clientConfig: $clientConfig,
                 command: $commandName,
                 client: null,
                 envOverride: $envOverride,
@@ -136,6 +119,7 @@ class RunLagoonCommandOnAppInstances extends Command
 
             $instanceData = [];
 
+            /** @var \App\Models\PolydockAppInstance $instance */
             foreach ($instances as $instance) {
                 $projectName = $instance->getKeyValue(key: 'lagoon-project-name');
                 $branch = $envOverride ?: $instance->getKeyValue(key: 'lagoon-deploy-branch');
@@ -203,6 +187,7 @@ class RunLagoonCommandOnAppInstances extends Command
             $headers = ['ID', 'Name', 'Lagoon Project', 'Branch'];
             $rows = [];
 
+            /** @var \App\Models\PolydockAppInstance $instance */
             foreach ($instances as $instance) {
                 $projectName = $instance->getKeyValue(key: 'lagoon-project-name');
                 $branch = $envOverride ?: $instance->getKeyValue(key: 'lagoon-deploy-branch');
@@ -276,28 +261,7 @@ class RunLagoonCommandOnAppInstances extends Command
         // Serial Logic
         $this->info(string: 'Authenticating with Lagoon (Serial Mode)...');
         try {
-            if (! $clientConfig['ssh_private_key_file'] || ! file_exists(filename: $clientConfig['ssh_private_key_file'])) {
-                $this->error(string: 'Global SSH private key not found or not configured.');
-
-                return 1;
-            }
-
-            $token = $this->getLagoonToken(config: $clientConfig);
-            if (empty($token)) {
-                $this->error(string: 'Failed to retrieve Lagoon API token.');
-
-                return 1;
-            }
-
-            if (app()->bound(abstract: Client::class)) {
-                $client = app(abstract: Client::class);
-            } else {
-                $client = app()->makeWith(abstract: Client::class, parameters: ['config' => $clientConfig]);
-            }
-
-            $client->setLagoonToken($token);
-            $client->initGraphqlClient();
-
+            $client = app(LagoonClientService::class)->getAuthenticatedClient();
         } catch (\Exception $e) {
             $this->error(string: "Authentication failed: {$e->getMessage()}");
 
@@ -311,7 +275,6 @@ class RunLagoonCommandOnAppInstances extends Command
         foreach ($instances as $instance) {
             $this->runCommandOnInstance(
                 instance: $instance,
-                clientConfig: $clientConfig,
                 command: $commandName,
                 client: $client,
                 envOverride: $envOverride,
@@ -330,7 +293,6 @@ class RunLagoonCommandOnAppInstances extends Command
 
     protected function runCommandOnInstance(
         PolydockAppInstance $instance,
-        array $clientConfig,
         string $command,
         ?Client $client = null,
         ?string $envOverride = null,
@@ -348,27 +310,7 @@ class RunLagoonCommandOnAppInstances extends Command
 
         if (! $client) {
             try {
-                if (! $clientConfig['ssh_private_key_file'] || ! file_exists($clientConfig['ssh_private_key_file'])) {
-                    $this->error('Global SSH private key not found.');
-
-                    return 1;
-                }
-
-                $token = $this->getLagoonToken($clientConfig);
-                if (empty($token)) {
-                    $this->error("Failed to retrieve Lagoon API token for instance {$instance->id}.");
-
-                    return 1;
-                }
-
-                if (app()->bound(Client::class)) {
-                    $client = app(Client::class);
-                } else {
-                    $client = app()->makeWith(Client::class, ['config' => $clientConfig]);
-                }
-
-                $client->setLagoonToken($token);
-                $client->initGraphqlClient();
+                $client = app(LagoonClientService::class)->getAuthenticatedClient();
             } catch (\Exception $e) {
                 $this->error(string: "Authentication failed for instance {$instance->id}: {$e->getMessage()}");
 
@@ -400,21 +342,5 @@ class RunLagoonCommandOnAppInstances extends Command
 
             return 1;
         }
-    }
-
-    protected function getLagoonToken(array $config): string
-    {
-        if (app()->bound(abstract: 'polydock.lagoon.token_fetcher')) {
-            return app(abstract: 'polydock.lagoon.token_fetcher')($config);
-        }
-
-        $ssh = Ssh::createLagoonConfigured(
-            user: $config['ssh_user'],
-            server: $config['ssh_server'],
-            port: $config['ssh_port'],
-            privateKeyFile: $config['ssh_private_key_file']
-        );
-
-        return $ssh->executeLagoonGetToken();
     }
 }
