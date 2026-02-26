@@ -92,14 +92,32 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
 
             $this->LagoonClient->getLagoonTokenOverSsh();
 
-            if ($this->LagoonClient->getLagoonToken()) {
+            $token = $this->LagoonClient->getLagoonToken();
+            if ($token) {
                 if ($debug) {
                     $this->debug('Saved token to: '.$tokenFile);
                 }
-                file_put_contents($tokenFile, $this->LagoonClient->getLagoonToken());
+                file_put_contents($tokenFile, $token);
             } else {
-                $this->error('Could not load a Lagoon token');
+                $this->error('Could not load a Lagoon token - SSH token fetch returned empty');
             }
+        }
+
+        $token = $this->LagoonClient->getLagoonToken();
+        if (empty($token)) {
+            // Log more details for debugging
+            $this->error('Token debug info', [
+                'ssh_server' => $config['ssh_server'] ?? 'not set',
+                'ssh_port' => $config['ssh_port'] ?? 'not set',
+                'ssh_user' => $config['ssh_user'] ?? 'not set',
+                'ssh_key_exists' => ! empty($config['ssh_private_key_file']) && file_exists($config['ssh_private_key_file']),
+                'ssh_key_file' => $config['ssh_private_key_file'] ?? 'not set',
+                'endpoint' => $config['endpoint'] ?? 'not set',
+            ]);
+
+            throw new PolydockEngineServiceProviderInitializationException(
+                'Failed to get Lagoon token - SSH may be failing or token command not working. Check logs for debug info.'
+            );
         }
 
         $this->LagoonClient->initGraphqlClient();
