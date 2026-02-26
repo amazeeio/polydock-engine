@@ -39,12 +39,12 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
-        $mock->shouldReceive('deployProjectEnvironmentByName')
-            ->with('project-1', 'main', [])
+        $mock->shouldReceive('executeCommandOnProjectEnvironment')
+            ->with('project-1', 'main', 'drush cr', 'cli', 'cli')
             ->once()
             ->andReturn(['data' => 'success']);
-        $mock->shouldReceive('deployProjectEnvironmentByName')
-            ->with('project-2', 'develop', [])
+        $mock->shouldReceive('executeCommandOnProjectEnvironment')
+            ->with('project-2', 'develop', 'drush cr', 'cli', 'cli')
             ->once()
             ->andReturn(['data' => 'success']);
         $this->app->instance(Client::class, $mock);
@@ -63,6 +63,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
 
         // Manually create instances since factory might not exist or be complex
         $instance1 = new PolydockAppInstance;
+        $instance1->uuid = 'test-instance-uuid-1';
         $instance1->polydock_store_app_id = $storeApp->id;
         $instance1->name = 'test-instance-1';
         $instance1->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
@@ -74,6 +75,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         $instance1->saveQuietly(); // Skip events
 
         $instance2 = new PolydockAppInstance;
+        $instance2->uuid = 'test-instance-uuid-2';
         $instance2->polydock_store_app_id = $storeApp->id;
         $instance2->name = 'test-instance-2';
         $instance2->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
@@ -89,6 +91,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         // Act
         $this->artisan('polydock:instances:run-lagoon-command', [
             'app_uuid' => $storeApp->uuid,
+            'command_name' => 'drush cr',
             '--force' => true,
         ])
             ->expectsOutput('Found 2 running instances.')
@@ -110,6 +113,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         ]);
 
         $instance1 = new PolydockAppInstance;
+        $instance1->uuid = 'test-instance-uuid-1';
         $instance1->polydock_store_app_id = $storeApp->id;
         $instance1->name = 'test-instance-1';
         $instance1->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
@@ -121,6 +125,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         $instance1->saveQuietly();
 
         $instance2 = new PolydockAppInstance;
+        $instance2->uuid = 'test-instance-uuid-2';
         $instance2->polydock_store_app_id = $storeApp->id;
         $instance2->name = 'test-instance-2';
         $instance2->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
@@ -136,6 +141,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         // Act
         $this->artisan('polydock:instances:run-lagoon-command', [
             'app_uuid' => $storeApp->uuid,
+            'command_name' => 'drush cr',
             '--force' => true,
             '--concurrency' => 2,
         ])
@@ -145,78 +151,16 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         // Assert
         Process::assertRan(function ($process) use ($instance1) {
             $cmd = $process->command;
-            if (is_array($cmd)) {
-                return in_array("--instance-id={$instance1->id}", $cmd);
-            }
-
-            return str_contains($cmd, "--instance-id={$instance1->id}");
+            $hasId = is_array($cmd) ? in_array("--instance-id={$instance1->id}", $cmd) : str_contains($cmd, "--instance-id={$instance1->id}");
+            return $hasId && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'));
         });
         Process::assertRan(function ($process) use ($instance2) {
             $cmd = $process->command;
-            if (is_array($cmd)) {
-                return in_array("--instance-id={$instance2->id}", $cmd);
-            }
-
-            return str_contains($cmd, "--instance-id={$instance2->id}");
+            $hasId = is_array($cmd) ? in_array("--instance-id={$instance2->id}", $cmd) : str_contains($cmd, "--instance-id={$instance2->id}");
+            return $hasId && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'));
         });
     }
 
-    public function test_it_passes_variables_only_flag()
-    {
-        config(['polydock.service_providers_singletons.PolydockServiceProviderFTLagoon' => [
-            'ssh_server' => 'ssh.lagoon.test',
-            'ssh_port' => '2222',
-            'ssh_private_key_file' => base_path('tests/fixtures/lagoon-private-key'),
-        ]]);
-
-        if (! file_exists(base_path('tests/fixtures'))) {
-            mkdir(base_path('tests/fixtures'), 0777, true);
-        }
-        file_put_contents(base_path('tests/fixtures/lagoon-private-key'), 'dummy-key');
-
-        $this->app->instance('polydock.lagoon.token_fetcher', fn () => 'fake-token');
-
-        $mock = \Mockery::mock(Client::class);
-        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
-        $mock->shouldReceive('initGraphqlClient')->once();
-        $mock->shouldReceive('deployProjectEnvironmentByName')
-            ->with('project-1', 'main', ['LAGOON_VARIABLES_ONLY' => 'true'])
-            ->once()
-            ->andReturn(['data' => 'success']);
-        $this->app->instance(Client::class, $mock);
-
-        // Arrange
-        $store = \App\Models\PolydockStore::factory()->create([
-            'lagoon_deploy_project_prefix' => 'test-prefix',
-        ]);
-
-        $storeApp = PolydockStoreApp::factory()->create([
-            'polydock_store_id' => $store->id,
-            'uuid' => 'test-app-uuid',
-            'lagoon_deploy_branch' => 'main',
-        ]);
-
-        $instance1 = new PolydockAppInstance;
-        $instance1->polydock_store_app_id = $storeApp->id;
-        $instance1->name = 'test-instance-1';
-        $instance1->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
-        $instance1->app_type = 'test_app_type';
-        $instance1->data = [
-            'lagoon-project-name' => 'project-1',
-            'lagoon-deploy-branch' => 'main',
-        ];
-        $instance1->saveQuietly();
-
-        Process::fake();
-
-        // Act
-        $this->artisan('polydock:instances:run-lagoon-command', [
-            'app_uuid' => $storeApp->uuid,
-            '--force' => true,
-            '--variables-only' => true,
-        ])
-            ->assertExitCode(0);
-    }
 
     public function test_it_skips_instances_missing_metadata()
     {
@@ -229,6 +173,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         ]);
 
         $instance1 = new PolydockAppInstance;
+        $instance1->uuid = 'test-instance-uuid-1';
         $instance1->polydock_store_app_id = $storeApp->id;
         $instance1->name = 'test-instance-broken';
         $instance1->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
@@ -249,75 +194,17 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
-        $mock->shouldNotReceive('deployProjectEnvironmentByName');
+        $mock->shouldNotReceive('executeCommandOnProjectEnvironment');
         $this->app->instance(Client::class, $mock);
 
         // Act
         $this->artisan('polydock:instances:run-lagoon-command', [
             'app_uuid' => $storeApp->uuid,
+            'command_name' => 'drush cr',
             '--force' => true,
         ])
             ->assertExitCode(0);
     }
 
-    public function test_it_asks_for_variables_only()
-    {
-        config(['polydock.service_providers_singletons.PolydockServiceProviderFTLagoon' => [
-            'ssh_server' => 'ssh.lagoon.test',
-            'ssh_port' => '2222',
-            'ssh_private_key_file' => base_path('tests/fixtures/lagoon-private-key'),
-        ]]);
 
-        if (! file_exists(base_path('tests/fixtures'))) {
-            mkdir(base_path('tests/fixtures'), 0777, true);
-        }
-        file_put_contents(base_path('tests/fixtures/lagoon-private-key'), 'dummy-key');
-
-        $this->app->instance('polydock.lagoon.token_fetcher', fn () => 'fake-token');
-
-        $mock = \Mockery::mock(Client::class);
-        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
-        $mock->shouldReceive('initGraphqlClient')->once();
-        $mock->shouldReceive('deployProjectEnvironmentByName')
-            ->with('project-1', 'main', ['LAGOON_VARIABLES_ONLY' => 'true'])
-            ->once()
-            ->andReturn(['data' => 'success']);
-        $this->app->instance(Client::class, $mock);
-
-        // Arrange
-        $store = \App\Models\PolydockStore::factory()->create([
-            'lagoon_deploy_project_prefix' => 'test-prefix',
-        ]);
-
-        $storeApp = PolydockStoreApp::factory()->create([
-            'polydock_store_id' => $store->id,
-            'uuid' => 'test-app-uuid',
-            'lagoon_deploy_branch' => 'main',
-        ]);
-
-        $instance1 = new PolydockAppInstance;
-        $instance1->polydock_store_app_id = $storeApp->id;
-        $instance1->name = 'test-instance-1';
-        $instance1->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
-        $instance1->app_type = 'test_app_type';
-        $instance1->data = [
-            'lagoon-project-name' => 'project-1',
-            'lagoon-deploy-branch' => 'main',
-        ];
-        $instance1->saveQuietly();
-
-        Process::fake();
-
-        // Act
-        $this->artisan('polydock:instances:run-lagoon-command', [
-            'app_uuid' => $storeApp->uuid,
-            // No force, no variables-only
-        ])
-            ->expectsQuestion('Select instances to trigger deploy on:', [$instance1->id])
-            ->expectsConfirmation('Are you sure you want to trigger deployments on 1 selected instances?', 'yes')
-            ->expectsConfirmation('Do you want to run a variables-only deployment?', 'yes')
-            ->expectsOutput('Found 1 running instances.')
-            ->expectsOutput('Authenticating with Lagoon (Serial Mode)...')
-            ->assertExitCode(0);
-    }
 }
