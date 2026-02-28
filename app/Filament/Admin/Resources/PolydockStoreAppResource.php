@@ -201,12 +201,14 @@ class PolydockStoreAppResource extends Resource
                 Section::make('Lagoon Runtime Settings')
                     ->description('Configuration used by app instance creation for Lagoon runtime behavior.')
                     ->schema([
-                        Forms\Components\TextInput::make('lagoon_auto_idle')
+                        Forms\Components\Select::make('lagoon_auto_idle')
                             ->label('Lagoon Auto Idle')
-                            ->numeric()
-                            ->minValue(0)
+                            ->options([
+                                0 => '0 - Off',
+                                1 => '1 - On (4-hour auto-idle)',
+                            ])
                             ->default(0)
-                            ->helperText('Minutes before idle actions apply. Use 0 to disable auto-idle logic.'),
+                            ->helperText('See https://docs.lagoon.sh/concepts-advanced/environment-idling/'),
                         Forms\Components\TextInput::make('lagoon_production_environment')
                             ->label('Lagoon Production Environment')
                             ->default('main')
