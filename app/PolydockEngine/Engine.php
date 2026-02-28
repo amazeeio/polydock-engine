@@ -164,24 +164,6 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
     }
 
     /**
-     * Backfill Lagoon runtime defaults on legacy app instances.
-     */
-    protected function hydrateLagoonRuntimeDefaultsOnInstance(PolydockAppInstanceInterface $appInstance): void
-    {
-        $runtimeDefaults = [
-            'lagoon-auto-idle' => (string) ($appInstance->storeApp->lagoon_auto_idle ?? 0),
-            'lagoon-production-environment' => (string) ($appInstance->storeApp->lagoon_production_environment ?? 'main'),
-        ];
-
-        foreach ($runtimeDefaults as $key => $value) {
-            if ($appInstance->getKeyValue($key) === '') {
-                $appInstance->storeKeyValue($key, $value);
-                $this->info('Backfilled missing app instance runtime variable', ['key' => $key, 'value' => $value]);
-            }
-        }
-    }
-
-    /**
      * Process the polydock app instance
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to process

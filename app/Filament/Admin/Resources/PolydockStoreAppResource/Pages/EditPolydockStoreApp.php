@@ -39,9 +39,6 @@ class EditPolydockStoreApp extends EditRecord
         $data['lagoon_auto_idle'] = $appConfig['lagoon_auto_idle'] ?? 0;
         $data['lagoon_production_environment'] = $appConfig['lagoon_production_environment'] ?? 'main';
 
-        $data['lagoon_auto_idle'] = $appConfig['lagoon_auto_idle'] ?? 0;
-        $data['lagoon_production_environment'] = $appConfig['lagoon_production_environment'] ?? 'main';
-
         return $data;
     }
 
