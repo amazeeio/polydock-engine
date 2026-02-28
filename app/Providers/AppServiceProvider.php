@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Services\PolydockAppClassDiscovery;
+use Dedoc\Scramble\Scramble;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -16,6 +19,8 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(PolydockAppClassDiscovery::class);
+
+        Scramble::ignoreDefaultRoutes();
     }
 
     /**
@@ -23,6 +28,13 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        Gate::define('viewApiDocs', fn (?Authenticatable $user) => true);
+
+        Scramble::configure()->expose(
+            ui: '/api',
+            document: '/api/openapi.json',
+        );
+
+        Scramble::routes(fn (\Illuminate\Routing\Route $route) => str_starts_with($route->uri(), 'api/'));
     }
 }
