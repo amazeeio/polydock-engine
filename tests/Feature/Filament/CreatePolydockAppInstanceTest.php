@@ -10,9 +10,9 @@ use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserRemoteRegistration;
 use Filament\Facades\Filament;
-use Livewire\Livewire;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
+use Livewire\Livewire;
 use Tests\TestCase;
 
 class CreatePolydockAppInstanceTest extends TestCase

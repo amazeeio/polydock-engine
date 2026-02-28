@@ -18,7 +18,7 @@ $serviceProviderSingletons = [
 if (env('PolydockServiceProviderAmazeeAiBackend', '') == 'true') {
     $serviceProviderSingletons['PolydockServiceProviderAmazeeAiBackend'] = [
         'class' => App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend::class,
-        'debug' => false,
+        'debug' => true,
         'base_url' => env('AMAZEE_AI_BACKEND_BASE_URL', 'https://backend.main.amazeeai.us2.amazee.io'),
         'token_file' => env('AMAZEE_AI_BACKEND_TOKEN_FILE', storage_path('amazee-ai-backend/token')),
     ];
