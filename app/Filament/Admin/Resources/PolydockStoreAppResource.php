@@ -82,6 +82,111 @@ class PolydockStoreAppResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->default('main'),
+                Section::make('Lagoon Script Configuration')
+                    ->description('Optional scripts run during app lifecycle stages.')
+                    ->schema([
+                        Section::make('Post Deploy')
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_post_deploy_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)->schema([
+                                    Forms\Components\TextInput::make('lagoon_post_deploy_service')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                    Forms\Components\TextInput::make('lagoon_post_deploy_container')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                ]),
+                            ]),
+                        Section::make('Pre Upgrade')
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_pre_upgrade_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)->schema([
+                                    Forms\Components\TextInput::make('lagoon_pre_upgrade_service')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                    Forms\Components\TextInput::make('lagoon_pre_upgrade_container')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                ]),
+                            ]),
+                        Section::make('Upgrade')
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_upgrade_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)->schema([
+                                    Forms\Components\TextInput::make('lagoon_upgrade_service')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                    Forms\Components\TextInput::make('lagoon_upgrade_container')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                ]),
+                            ]),
+                        Section::make('Post Upgrade')
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_post_upgrade_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)->schema([
+                                    Forms\Components\TextInput::make('lagoon_post_upgrade_service')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                    Forms\Components\TextInput::make('lagoon_post_upgrade_container')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                ]),
+                            ]),
+                        Section::make('Claim')
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_claim_script')
+                                    ->label('Script')
+                                    ->rows(3)
+                                    ->helperText('When set, command output must be a valid URL and becomes app URL.'),
+                                Grid::make(2)->schema([
+                                    Forms\Components\TextInput::make('lagoon_claim_service')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                    Forms\Components\TextInput::make('lagoon_claim_container')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                ]),
+                            ]),
+                        Section::make('Pre Remove')
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_pre_remove_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)->schema([
+                                    Forms\Components\TextInput::make('lagoon_pre_remove_service')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                    Forms\Components\TextInput::make('lagoon_pre_remove_container')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                ]),
+                            ]),
+                        Section::make('Remove')
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_remove_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)->schema([
+                                    Forms\Components\TextInput::make('lagoon_remove_service')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                    Forms\Components\TextInput::make('lagoon_remove_container')
+                                        ->maxLength(255)
+                                        ->placeholder('cli'),
+                                ]),
+                            ]),
+                    ])
+                    ->collapsible()
+                    ->collapsed(),
                 Forms\Components\Select::make('status')
                     ->options(PolydockStoreAppStatusEnum::class)
                     ->required(),
