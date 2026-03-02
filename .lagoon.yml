@@ -34,6 +34,11 @@ tasks:
         service: cli
         shell: bash
     - run:
+        name: Ensure Scribe / OpenAPI is up to date
+        command: php artisan scribe:generate
+        service: cli
+        shell: bash
+    - run:
         name: Build caches when pushing to production
         when: LAGOON_ENVIRONMENT_TYPE == "production"
         command: php artisan optimize
