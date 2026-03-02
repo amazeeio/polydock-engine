@@ -7,7 +7,13 @@ use App\Models\PolydockAppInstance;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Knuckles\Scribe\Attributes\Endpoint;
+use Knuckles\Scribe\Attributes\Group;
 
+// #[Header("Accept", "application/json")]
+// #[Authenticated]
+#[Group(name: 'App Instance', description: '', authenticated: false)]
+#[Endpoint(title: 'App Instance Health Status', description: 'Updates the health status of a specific Polydock App Instance.', authenticated: false)]
 class PolydockInstanceHealthController extends Controller
 {
     /**

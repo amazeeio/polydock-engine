@@ -1,0 +1,68 @@
+name: 'App Instance'
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+      - POST
+    uri: 'api/instance/{uuid}/health/{status}'
+    metadata:
+      custom: []
+      groupName: 'App Instance'
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'App Instance Health Status'
+      description: 'Updates the health status of a specific Polydock App Instance.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters:
+      uuid:
+        custom: []
+        name: uuid
+        description: ''
+        required: true
+        example: 6ff8f7f6-1eb3-3525-be4a-3932c805afed
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+      status:
+        custom: []
+        name: status
+        description: ''
+        required: true
+        example: architecto
+        type: string
+        enumValues: []
+        exampleWasSpecified: false
+        nullable: false
+        deprecated: false
+    cleanUrlParameters:
+      uuid: 6ff8f7f6-1eb3-3525-be4a-3932c805afed
+      status: architecto
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 404
+        content: '{"error":"Instance not found","status_code":404}'
+        headers:
+          cache-control: 'no-cache, private'
+          content-type: application/json
+          access-control-allow-origin: '*'
+        description: null
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
