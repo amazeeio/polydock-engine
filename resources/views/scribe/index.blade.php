@@ -597,7 +597,7 @@ You can switch the language used with the tabs at the top right (or from the nav
                 <span>Example:</span> <!-- <span> important for spacing -->
                 <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
                     <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        123e4567-e89b-12d3-a456-426614174000
+                        inst-abcd-1234-efgh
                     </div>
                 </div>
             </div>
@@ -720,7 +720,7 @@ You can switch the language used with the tabs at the top right (or from the nav
                                         <input aria-label="uuid" name="uuid"
                                                id="urlparam-GETapi-instance--uuid--health--status--uuid"
                                                placeholder="The UUID of the app instance."
-                                               value="123e4567-e89b-12d3-a456-426614174000" data-component="url"
+                                               value="inst-abcd-1234-efgh" data-component="url"
                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
                                     </div>
                                 </div>
@@ -828,7 +828,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/instance/123e4567-e89b-12d3-a456-426614174000/health/running_healthy_claimed" \
+    --get "http://localhost/api/instance/inst-abcd-1234-efgh/health/running_healthy_claimed" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
                                     </div>
@@ -838,7 +838,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/instance/123e4567-e89b-12d3-a456-426614174000/health/running_healthy_claimed"
+    "http://localhost/api/instance/inst-abcd-1234-efgh/health/running_healthy_claimed"
 );
 
 const headers = {
@@ -892,7 +892,7 @@ fetch(url, {
                                             <pre><code style="max-height: 300px;"
                                                        class="language-json sl-overflow-x-auto sl-overflow-y-auto">{
     &quot;message&quot;: &quot;Health status updated successfully&quot;,
-    &quot;instance&quot;: &quot;123e4567-e89b-12d3-a456-426614174000&quot;,
+    &quot;instance&quot;: &quot;inst-abcd-1234-efgh&quot;,
     &quot;status&quot;: &quot;running_healthy_claimed&quot;,
     &quot;status_code&quot;: 200
 }</code></pre>
@@ -1562,11 +1562,15 @@ fetch(url, {
             {
                 &quot;uuid&quot;: null,
                 &quot;id&quot;: 1,
-                &quot;label&quot;: &quot;us-east-1&quot;,
+                &quot;label&quot;: &quot;Demo US East Region Store&quot;,
                 &quot;apps&quot;: [
                     {
-                        &quot;uuid&quot;: &quot;app-123&quot;,
-                        &quot;label&quot;: &quot;Wordpress&quot;
+                        &quot;uuid&quot;: &quot;app-abcd-1234&quot;,
+                        &quot;label&quot;: &quot;Example Analytics App&quot;
+                    },
+                    {
+                        &quot;uuid&quot;: &quot;app-efgh-5678&quot;,
+                        &quot;label&quot;: &quot;Acme Monitoring App&quot;
                     }
                 ]
             }
@@ -1709,7 +1713,7 @@ fetch(url, {
                 <span>Example:</span> <!-- <span> important for spacing -->
                 <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
                     <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        test@example.com
+                        demo.user@example.com
                     </div>
                 </div>
             </div>
@@ -1803,7 +1807,7 @@ fetch(url, {
                                      id="json-body-POSTapi-register"
                                      style="font-family: var(--font-code); font-size: 12px; line-height: var(--lh-code);"
                                 >{
-    "email": "test@example.com"
+    "email": "demo.user@example.com"
 }</div>
                             </div>
                                             </div>
@@ -1899,7 +1903,7 @@ You can check the Dev Tools console for debugging information.</p>
     --header "Content-Type: application/json" \
     --header "Accept: application/json" \
     --data "{
-    \"email\": \"test@example.com\"
+    \"email\": \"demo.user@example.com\"
 }"
 </code></pre>                                        </div>
                                     </div>
@@ -1918,7 +1922,7 @@ const headers = {
 };
 
 let body = {
-    "email": "test@example.com"
+    "email": "demo.user@example.com"
 };
 
 fetch(url, {
@@ -1967,7 +1971,7 @@ fetch(url, {
                                                        class="language-json sl-overflow-x-auto sl-overflow-y-auto">{
     &quot;status&quot;: &quot;pending&quot;,
     &quot;message&quot;: &quot;Registration pending&quot;,
-    &quot;id&quot;: &quot;123e4567-e89b-12d3-a456-426614174000&quot;
+    &quot;id&quot;: &quot;abcd-1234-efgh-5678-ijkl&quot;
 }</code></pre>
                                                                             </div>
                                 </div>
@@ -2090,7 +2094,7 @@ fetch(url, {
                 <span>Example:</span> <!-- <span> important for spacing -->
                 <div class="sl-flex sl-flex-1 sl-flex-wrap" style="gap: 4px;">
                     <div class="sl-max-w-full sl-break-all sl-px-1 sl-bg-canvas-tint sl-text-muted sl-rounded sl-border">
-                        6ff8f7f6-1eb3-3525-be4a-3932c805afed
+                        abcd-1234-efgh-5678-ijkl
                     </div>
                 </div>
             </div>
@@ -2187,7 +2191,7 @@ fetch(url, {
                                         <input aria-label="uuid" name="uuid"
                                                id="urlparam-GETapi-register--uuid--uuid"
                                                placeholder="The UUID of the registration to check."
-                                               value="6ff8f7f6-1eb3-3525-be4a-3932c805afed" data-component="url"
+                                               value="abcd-1234-efgh-5678-ijkl" data-component="url"
                                                class="sl-relative sl-w-full sl-h-md sl-text-base sl-pr-2.5 sl-pl-2.5 sl-rounded sl-border-transparent hover:sl-border-input focus:sl-border-primary sl-border">
                                     </div>
                                 </div>
@@ -2283,7 +2287,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-bash">curl --request GET \
-    --get "http://localhost/api/register/6ff8f7f6-1eb3-3525-be4a-3932c805afed" \
+    --get "http://localhost/api/register/abcd-1234-efgh-5678-ijkl" \
     --header "Content-Type: application/json" \
     --header "Accept: application/json"</code></pre>                                        </div>
                                     </div>
@@ -2293,7 +2297,7 @@ You can check the Dev Tools console for debugging information.</p>
                                     <div class="sl-px-0 sl-py-1">
                                         <div style="max-height: 400px;" class="sl-overflow-y-auto sl-rounded">
                                             <pre><code class="language-javascript">const url = new URL(
-    "http://localhost/api/register/6ff8f7f6-1eb3-3525-be4a-3932c805afed"
+    "http://localhost/api/register/abcd-1234-efgh-5678-ijkl"
 );
 
 const headers = {
@@ -2346,10 +2350,10 @@ fetch(url, {
                                             <pre><code style="max-height: 300px;"
                                                        class="language-json sl-overflow-x-auto sl-overflow-y-auto">{
     &quot;status&quot;: &quot;pending&quot;,
-    &quot;email&quot;: &quot;test@example.com&quot;,
+    &quot;email&quot;: &quot;demo.user@example.com&quot;,
     &quot;result_data&quot;: null,
-    &quot;created_at&quot;: &quot;2023-10-27T10:00:00.000000Z&quot;,
-    &quot;updated_at&quot;: &quot;2023-10-27T10:00:00.000000Z&quot;
+    &quot;created_at&quot;: &quot;2024-05-15T12:00:00.000000Z&quot;,
+    &quot;updated_at&quot;: &quot;2024-05-15T12:00:00.000000Z&quot;
 }</code></pre>
                                                                             </div>
                                 </div>
