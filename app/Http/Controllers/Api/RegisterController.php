@@ -15,7 +15,24 @@ use Illuminate\Support\Facades\Log;
 class RegisterController extends Controller
 {
     /**
+     * Process Registration
+     *
      * Store a newly created resource in storage.
+     *
+     * @group Registration
+     * @unauthenticated
+     *
+     * @bodyParam email string required The email address of the user. Example: test@example.com
+     *
+     * @response 202 {
+     *   "status": "pending",
+     *   "message": "Registration pending",
+     *   "id": "123e4567-e89b-12d3-a456-426614174000"
+     * }
+     * @response 500 {
+     *   "status": "failed",
+     *   "message": "Error details..."
+     * }
      */
     public function processRegister(Request $request): JsonResponse
     {
@@ -45,7 +62,26 @@ class RegisterController extends Controller
     }
 
     /**
+     * Show Registration Status
+     *
      * Display the specified resource.
+     *
+     * @group Registration
+     * @unauthenticated
+     *
+     * @urlParam uuid string required The UUID of the registration to check.
+     *
+     * @response 200 {
+     *   "status": "pending",
+     *   "email": "test@example.com",
+     *   "result_data": null,
+     *   "created_at": "2023-10-27T10:00:00.000000Z",
+     *   "updated_at": "2023-10-27T10:00:00.000000Z"
+     * }
+     * @response 404 {
+     *   "status": "error",
+     *   "message": "Registration not found"
+     * }
      */
     public function showRegister(string $uuid): JsonResponse
     {

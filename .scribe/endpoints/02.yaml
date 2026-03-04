@@ -1,0 +1,72 @@
+name: Regions
+description: ''
+endpoints:
+  -
+    custom: []
+    httpMethods:
+      - GET
+    uri: api/regions
+    metadata:
+      custom: []
+      groupName: Regions
+      groupDescription: ''
+      subgroup: ''
+      subgroupDescription: ''
+      title: 'List Regions and Apps'
+      description: 'Get all public regions with their available apps.'
+      authenticated: false
+      deprecated: false
+    headers:
+      Content-Type: application/json
+      Accept: application/json
+    urlParameters: []
+    cleanUrlParameters: []
+    queryParameters: []
+    cleanQueryParameters: []
+    bodyParameters: []
+    cleanBodyParameters: []
+    fileParameters: []
+    responses:
+      -
+        custom: []
+        status: 200
+        content: |-
+          {
+            "status": "success",
+            "message": "Regions and apps retrieved successfully",
+            "data": {
+              "regions": [
+                {
+                  "uuid": null,
+                  "id": 1,
+                  "label": "us-east-1",
+                  "apps": [
+                    {
+                      "uuid": "app-123",
+                      "label": "Wordpress"
+                    }
+                  ]
+                }
+              ]
+            },
+            "status_code": 200
+          }
+        headers: []
+        description: ''
+      -
+        custom: []
+        status: 500
+        content: |-
+          {
+            "status": "error",
+            "message": "Failed to retrieve regions and apps",
+            "data": null,
+            "status_code": 500
+          }
+        headers: []
+        description: ''
+    responseFields: []
+    auth: []
+    controller: null
+    method: null
+    route: null
