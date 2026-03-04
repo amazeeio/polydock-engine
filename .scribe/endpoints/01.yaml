@@ -29,14 +29,14 @@ endpoints:
         name: email
         description: 'The email address of the user.'
         required: true
-        example: test@example.com
+        example: demo.user@example.com
         type: string
         enumValues: []
         exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanBodyParameters:
-      email: test@example.com
+      email: demo.user@example.com
     fileParameters: []
     responses:
       -
@@ -46,7 +46,7 @@ endpoints:
           {
             "status": "pending",
             "message": "Registration pending",
-            "id": "123e4567-e89b-12d3-a456-426614174000"
+            "id": "abcd-1234-efgh-5678-ijkl"
           }
         headers: []
         description: ''
@@ -89,14 +89,14 @@ endpoints:
         name: uuid
         description: 'The UUID of the registration to check.'
         required: true
-        example: 6ff8f7f6-1eb3-3525-be4a-3932c805afed
+        example: abcd-1234-efgh-5678-ijkl
         type: string
         enumValues: []
-        exampleWasSpecified: false
+        exampleWasSpecified: true
         nullable: false
         deprecated: false
     cleanUrlParameters:
-      uuid: 6ff8f7f6-1eb3-3525-be4a-3932c805afed
+      uuid: abcd-1234-efgh-5678-ijkl
     queryParameters: []
     cleanQueryParameters: []
     bodyParameters: []
@@ -109,10 +109,10 @@ endpoints:
         content: |-
           {
             "status": "pending",
-            "email": "test@example.com",
+            "email": "demo.user@example.com",
             "result_data": null,
-            "created_at": "2023-10-27T10:00:00.000000Z",
-            "updated_at": "2023-10-27T10:00:00.000000Z"
+            "created_at": "2024-05-15T12:00:00.000000Z",
+            "updated_at": "2024-05-15T12:00:00.000000Z"
           }
         headers: []
         description: ''

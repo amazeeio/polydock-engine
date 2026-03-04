@@ -19,12 +19,12 @@ class PolydockInstanceHealthController extends Controller
     /**
      * Handle both GET and POST requests for instance health updates
      *
-     * @urlParam uuid string required The UUID of the app instance. Example: 123e4567-e89b-12d3-a456-426614174000
+     * @urlParam uuid string required The UUID of the app instance. Example: inst-abcd-1234-efgh
      * @urlParam status string required The health status. Example: running_healthy_claimed
      *
      * @response 200 {
      *   "message": "Health status updated successfully",
-     *   "instance": "123e4567-e89b-12d3-a456-426614174000",
+     *   "instance": "inst-abcd-1234-efgh",
      *   "status": "running_healthy_claimed",
      *   "status_code": 200
      * }

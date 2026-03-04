@@ -26,11 +26,15 @@ class RegionsController extends Controller
      *       {
      *         "uuid": null,
      *         "id": 1,
-     *         "label": "us-east-1",
+     *         "label": "Demo US East Region Store",
      *         "apps": [
      *           {
-     *             "uuid": "app-123",
-     *             "label": "Wordpress"
+     *             "uuid": "app-abcd-1234",
+     *             "label": "Example Analytics App"
+     *           },
+     *           {
+     *             "uuid": "app-efgh-5678",
+     *             "label": "Acme Monitoring App"
      *           }
      *         ]
      *       }

@@ -22,12 +22,12 @@ class RegisterController extends Controller
      * @group Registration
      * @unauthenticated
      *
-     * @bodyParam email string required The email address of the user. Example: test@example.com
+     * @bodyParam email string required The email address of the user. Example: demo.user@example.com
      *
      * @response 202 {
      *   "status": "pending",
      *   "message": "Registration pending",
-     *   "id": "123e4567-e89b-12d3-a456-426614174000"
+     *   "id": "abcd-1234-efgh-5678-ijkl"
      * }
      * @response 500 {
      *   "status": "failed",
@@ -69,14 +69,14 @@ class RegisterController extends Controller
      * @group Registration
      * @unauthenticated
      *
-     * @urlParam uuid string required The UUID of the registration to check.
+     * @urlParam uuid string required The UUID of the registration to check. Example: abcd-1234-efgh-5678-ijkl
      *
      * @response 200 {
      *   "status": "pending",
-     *   "email": "test@example.com",
+     *   "email": "demo.user@example.com",
      *   "result_data": null,
-     *   "created_at": "2023-10-27T10:00:00.000000Z",
-     *   "updated_at": "2023-10-27T10:00:00.000000Z"
+     *   "created_at": "2024-05-15T12:00:00.000000Z",
+     *   "updated_at": "2024-05-15T12:00:00.000000Z"
      * }
      * @response 404 {
      *   "status": "error",
