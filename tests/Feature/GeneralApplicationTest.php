@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -25,7 +26,7 @@ class GeneralApplicationTest extends TestCase
     public function test_user_creation_with_database(): void
     {
         // Create a user using the factory
-        $user = \App\Models\User::factory()->create([
+        $user = User::factory()->create([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'test@example.com',
@@ -39,7 +40,7 @@ class GeneralApplicationTest extends TestCase
         ]);
 
         // Verify we can retrieve it
-        $retrievedUser = \App\Models\User::where('email', 'test@example.com')->first();
+        $retrievedUser = User::where('email', 'test@example.com')->first();
         $this->assertNotNull($retrievedUser);
         $this->assertEquals('Test', $retrievedUser->first_name);
         $this->assertEquals('User', $retrievedUser->last_name);

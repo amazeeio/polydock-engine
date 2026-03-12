@@ -3,10 +3,11 @@
 namespace Database\Factories;
 
 use App\Enums\PolydockStoreStatusEnum;
+use App\Models\PolydockStore;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PolydockStore>
+ * @extends Factory<PolydockStore>
  */
 class PolydockStoreFactory extends Factory
 {

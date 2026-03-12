@@ -9,6 +9,10 @@ use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -207,13 +211,13 @@ class PolydockStoreResource extends Resource
     {
         return $infolist
             ->schema([
-                \Filament\Infolists\Components\Section::make('Store Details')
+                Section::make('Store Details')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label('Store Name'),
-                                \Filament\Infolists\Components\TextEntry::make('status')
+                                TextEntry::make('status')
                                     ->badge()
                                     ->color(fn ($state) => match ($state->value) {
                                         PolydockStoreStatusEnum::PUBLIC->value => 'success',
@@ -221,29 +225,29 @@ class PolydockStoreResource extends Resource
                                         default => 'gray',
                                     }),
                             ]),
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar')
                                     ->iconColor('gray'),
-                                \Filament\Infolists\Components\IconEntry::make('listed_in_marketplace')
+                                IconEntry::make('listed_in_marketplace')
                                     ->label('Listed in Marketplace')
                                     ->boolean(),
                             ]),
                     ])
                     ->columnSpan(2),
 
-                \Filament\Infolists\Components\Section::make('Deployment Configuration')
+                Section::make('Deployment Configuration')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_region_id_ext')
+                                TextEntry::make('lagoon_deploy_region_id_ext')
                                     ->label('Deploy Region')
                                     ->formatStateUsing(
                                         fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'),
                                     ),
-                                \Filament\Infolists\Components\TextEntry::make('amazee_ai_backend_region_id_ext')
+                                TextEntry::make('amazee_ai_backend_region_id_ext')
                                     ->label('AI Backend Region')
                                     ->formatStateUsing(
                                         fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion(
@@ -252,20 +256,20 @@ class PolydockStoreResource extends Resource
                                         ),
                                     ),
                             ]),
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_project_prefix')
+                                TextEntry::make('lagoon_deploy_project_prefix')
                                     ->label('Project Prefix')
                                     ->icon('heroicon-m-code-bracket')
                                     ->iconColor('success'),
-                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_organization_id_ext')
+                                TextEntry::make('lagoon_deploy_organization_id_ext')
                                     ->label('Deploy Organization')
                                     ->icon('heroicon-m-building-office')
                                     ->iconColor('warning'),
                             ]),
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_group_name')
+                                TextEntry::make('lagoon_deploy_group_name')
                                     ->label('Deploy Group Name')
                                     ->icon('heroicon-m-users')
                                     ->iconColor('primary'),

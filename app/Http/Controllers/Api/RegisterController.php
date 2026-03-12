@@ -20,6 +20,7 @@ class RegisterController extends Controller
      * Store a newly created resource in storage.
      *
      * @group Registration
+     *
      * @unauthenticated
      *
      * @bodyParam email string required The email address of the user. Example: demo.user@example.com
@@ -67,6 +68,7 @@ class RegisterController extends Controller
      * Display the specified resource.
      *
      * @group Registration
+     *
      * @unauthenticated
      *
      * @urlParam uuid string required The UUID of the registration to check. Example: abcd-1234-efgh-5678-ijkl

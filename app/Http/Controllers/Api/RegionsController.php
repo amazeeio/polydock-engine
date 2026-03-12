@@ -16,6 +16,7 @@ class RegionsController extends Controller
      * Get all public regions with their available apps.
      *
      * @group Regions
+     *
      * @unauthenticated
      *
      * @response 200 {

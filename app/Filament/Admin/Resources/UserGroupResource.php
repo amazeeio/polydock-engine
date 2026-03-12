@@ -6,6 +6,9 @@ use App\Filament\Admin\Resources\UserGroupResource\Pages;
 use App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 use App\Models\UserGroup;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -85,37 +88,37 @@ class UserGroupResource extends Resource
     {
         return $infolist
             ->schema([
-                \Filament\Infolists\Components\Section::make('Group Details')
+                Section::make('Group Details')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label('Group Name')
                                     ->icon('heroicon-m-user-group')
                                     ->iconColor('primary'),
-                                \Filament\Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar')
                                     ->iconColor('gray'),
                             ]),
-                        \Filament\Infolists\Components\TextEntry::make('users_count')
+                        TextEntry::make('users_count')
                             ->label('Total Users')
                             ->state(fn ($record) => $record->users()->count())
                             ->icon('heroicon-m-users')
                             ->iconColor('success'),
-                        \Filament\Infolists\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('owners_count')
+                                TextEntry::make('owners_count')
                                     ->label('Number of Owners')
                                     ->state(fn ($record) => $record->owners()->count())
                                     ->icon('heroicon-m-user-group')
                                     ->iconColor('success'),
-                                \Filament\Infolists\Components\TextEntry::make('members_count')
+                                TextEntry::make('members_count')
                                     ->label('Number of Members')
                                     ->state(fn ($record) => $record->members()->count())
                                     ->icon('heroicon-m-user-group')
                                     ->iconColor('success'),
-                                \Filament\Infolists\Components\TextEntry::make('viewers_count')
+                                TextEntry::make('viewers_count')
                                     ->label('Number of Viewers')
                                     ->state(fn ($record) => $record->viewers()->count())
                                     ->icon('heroicon-m-eye')
@@ -124,41 +127,41 @@ class UserGroupResource extends Resource
                     ])
                     ->columnSpan(2),
 
-                \Filament\Infolists\Components\Section::make('App Instances')
+                Section::make('App Instances')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('polydock_app_instances_count')
+                                TextEntry::make('polydock_app_instances_count')
                                     ->label('Count')
                                     ->state(fn ($record) => $record->appInstances()->count())
                                     ->icon('heroicon-m-squares-2x2')
                                     ->iconColor('warning'),
-                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_create_count')
+                                TextEntry::make('app_instances_stage_create_count')
                                     ->label('Stage Create')
                                     ->state(fn ($record) => $record->appInstancesStageCreate()->count())
                                     ->icon('heroicon-m-plus-circle')
                                     ->iconColor('info'),
-                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_deploy_count')
+                                TextEntry::make('app_instances_stage_deploy_count')
                                     ->label('Stage Deploy')
                                     ->state(fn ($record) => $record->appInstancesStageDeploy()->count())
                                     ->icon('heroicon-m-rocket-launch')
                                     ->iconColor('success'),
-                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_upgrade_count')
+                                TextEntry::make('app_instances_stage_upgrade_count')
                                     ->label('Stage Upgrade')
                                     ->state(fn ($record) => $record->appInstancesStageUpgrade()->count())
                                     ->icon('heroicon-m-arrow-up-circle')
                                     ->iconColor('primary'),
-                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_remove_count')
+                                TextEntry::make('app_instances_stage_remove_count')
                                     ->label('Stage Remove')
                                     ->state(fn ($record) => $record->appInstancesStageRemove()->count())
                                     ->icon('heroicon-m-trash')
                                     ->iconColor('danger'),
-                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_running_count')
+                                TextEntry::make('app_instances_stage_running_count')
                                     ->label('Stage Running')
                                     ->state(fn ($record) => $record->appInstancesStageRunning()->count())
                                     ->icon('heroicon-m-play-circle')
                                     ->iconColor('success'),
-                                \Filament\Infolists\Components\TextEntry::make('app_instances_stage_failed_count')
+                                TextEntry::make('app_instances_stage_failed_count')
                                     ->label('Stage Failed')
                                     ->state(fn ($record) => $record->appInstancesFailed()->count())
                                     ->icon('heroicon-m-x-circle')
