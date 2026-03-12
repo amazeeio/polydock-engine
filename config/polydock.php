@@ -1,10 +1,12 @@
 <?php
 
 declare(strict_types=1);
+use App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend;
+use App\PolydockServiceProviders\PolydockServiceProviderFTLagoon;
 
 $serviceProviderSingletons = [
     'PolydockServiceProviderFTLagoon' => [
-        'class' => App\PolydockServiceProviders\PolydockServiceProviderFTLagoon::class,
+        'class' => PolydockServiceProviderFTLagoon::class,
         'debug' => true,
         'token_cache_dir' => env('FTLAGOON_TOKEN_CACHE_DIR', storage_path('ftlagoon/.tokencache/')),
         'ssh_private_key_file' => env('FTLAGOON_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-private-key'),
@@ -17,8 +19,8 @@ $serviceProviderSingletons = [
 
 if (env('PolydockServiceProviderAmazeeAiBackend', '') == 'true') {
     $serviceProviderSingletons['PolydockServiceProviderAmazeeAiBackend'] = [
-        'class' => App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend::class,
-        'debug' => true,
+        'class' => PolydockServiceProviderAmazeeAiBackend::class,
+        'debug' => false,
         'base_url' => env('AMAZEE_AI_BACKEND_BASE_URL', 'https://backend.main.amazeeai.us2.amazee.io'),
         'token_file' => env('AMAZEE_AI_BACKEND_TOKEN_FILE', storage_path('amazee-ai-backend/token')),
     ];

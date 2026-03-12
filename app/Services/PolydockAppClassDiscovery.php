@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use Composer\Autoload\ClassLoader;
+use Filament\Forms\Components\Component;
 use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
 use FreedomtechHosting\PolydockApp\Attributes\PolydockAppStoreFields;
 use FreedomtechHosting\PolydockApp\Attributes\PolydockAppTitle;
@@ -139,7 +140,7 @@ class PolydockAppClassDiscovery
      * Field names are automatically prefixed with 'app_config_'.
      *
      * @param  string  $className  The fully qualified class name
-     * @return array<\Filament\Forms\Components\Component> Array of Filament form components
+     * @return array<Component> Array of Filament form components
      */
     public function getStoreAppFormSchema(string $className): array
     {
@@ -294,7 +295,7 @@ class PolydockAppClassDiscovery
      * Field names are automatically prefixed with 'instance_config_'.
      *
      * @param  string  $className  The fully qualified class name
-     * @return array<\Filament\Forms\Components\Component> Array of Filament form components
+     * @return array<Component> Array of Filament form components
      */
     public function getAppInstanceFormSchema(string $className): array
     {

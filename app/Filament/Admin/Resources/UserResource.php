@@ -7,6 +7,9 @@ use App\Filament\Admin\Resources\UserResource\RelationManagers;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -122,23 +125,23 @@ class UserResource extends Resource
     {
         return $infolist
             ->schema([
-                \Filament\Infolists\Components\Section::make('User Details')
+                Section::make('User Details')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label('Name'),
-                                \Filament\Infolists\Components\TextEntry::make('email')
+                                TextEntry::make('email')
                                     ->icon('heroicon-m-envelope')
                                     ->iconColor('primary'),
                             ]),
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar')
                                     ->iconColor('gray'),
-                                \Filament\Infolists\Components\TextEntry::make('updated_at')
+                                TextEntry::make('updated_at')
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar')
                                     ->iconColor('gray'),
@@ -146,14 +149,14 @@ class UserResource extends Resource
                     ])
                     ->columnSpan(2),
 
-                \Filament\Infolists\Components\Section::make('Group Membership')
+                Section::make('Group Membership')
                     ->schema([
-                        \Filament\Infolists\Components\TextEntry::make('groups_count')
+                        TextEntry::make('groups_count')
                             ->label('Number of Groups')
                             ->state(fn ($record) => $record->groups()->count())
                             ->icon('heroicon-m-user-group')
                             ->iconColor('success'),
-                        \Filament\Infolists\Components\TextEntry::make('groups.name')
+                        TextEntry::make('groups.name')
                             ->label('Member of')
                             ->listWithLineBreaks()
                             ->bulleted()

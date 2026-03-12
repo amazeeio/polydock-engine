@@ -3,6 +3,7 @@
 namespace Tests\Feature\Console\Commands;
 
 use App\Models\PolydockAppInstance;
+use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use FreedomtechHosting\FtLagoonPhp\Client;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
@@ -50,7 +51,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         $this->app->instance(Client::class, $mock);
 
         // Arrange
-        $store = \App\Models\PolydockStore::factory()->create([
+        $store = PolydockStore::factory()->create([
             'lagoon_deploy_project_prefix' => 'test-prefix',
         ]);
 
@@ -102,7 +103,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
     public function test_it_runs_concurrently()
     {
         // Arrange
-        $store = \App\Models\PolydockStore::factory()->create([
+        $store = PolydockStore::factory()->create([
             'lagoon_deploy_project_prefix' => 'test-prefix',
         ]);
 
@@ -152,20 +153,21 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         Process::assertRan(function ($process) use ($instance1) {
             $cmd = $process->command;
             $hasId = is_array($cmd) ? in_array("--instance-id={$instance1->id}", $cmd) : str_contains($cmd, "--instance-id={$instance1->id}");
+
             return $hasId && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'));
         });
         Process::assertRan(function ($process) use ($instance2) {
             $cmd = $process->command;
             $hasId = is_array($cmd) ? in_array("--instance-id={$instance2->id}", $cmd) : str_contains($cmd, "--instance-id={$instance2->id}");
+
             return $hasId && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'));
         });
     }
 
-
     public function test_it_skips_instances_missing_metadata()
     {
         // Arrange
-        $store = \App\Models\PolydockStore::factory()->create();
+        $store = PolydockStore::factory()->create();
 
         $storeApp = PolydockStoreApp::factory()->create([
             'polydock_store_id' => $store->id,
@@ -205,6 +207,4 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         ])
             ->assertExitCode(0);
     }
-
-
 }

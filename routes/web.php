@@ -2,6 +2,8 @@
 
 use App\Models\PolydockAppInstance;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\Yaml\Yaml;
 
 Route::get('/', function () {
     if (! config('polydock.redirect_landing_page_to')) {
@@ -30,11 +32,12 @@ Route::get('/api', function () {
 
 // OpenAPI JSON endpoint
 Route::get('/api/openapi.json', function () {
-    $path = \Illuminate\Support\Facades\Storage::disk('local')->path('scribe/openapi.yaml');
-    if (!file_exists($path)) {
+    $path = Storage::disk('local')->path('scribe/openapi.yaml');
+    if (! file_exists($path)) {
         abort(404, 'Documentation not generated yet.');
     }
 
-    $yaml = \Symfony\Component\Yaml\Yaml::parseFile($path);
+    $yaml = Yaml::parseFile($path);
+
     return response()->json($yaml);
 })->name('scribe.json');
