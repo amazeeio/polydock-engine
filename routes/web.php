@@ -2,8 +2,6 @@
 
 use App\Models\PolydockAppInstance;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
-use Symfony\Component\Yaml\Yaml;
 
 Route::get('/', function () {
     if (! config('polydock.redirect_landing_page_to')) {

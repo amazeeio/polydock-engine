@@ -29,7 +29,20 @@ return [
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => '',
+        'description' => <<<'MD'
+            **Polydock Engine** is the core server powering the Polydock platform. It manages the full lifecycle of app instances — provisioning, deployment, health monitoring, and removal — across one or more Lagoon-based stores (regions).
+
+            This API surface is intended for internal consumers, enabling programmatic control over:
+
+            - **Store Apps** — Discover available apps and their availability across stores.
+            - **Instances** — Retrieve, create, and delete app instances tied to a user's email.
+            - **Status Polling** — Decouple provisioning from polling by tracking deployment state via `GET /instance/{uuid}/status`.
+
+            All endpoints are secured via **Bearer tokens**. Include your token in requests as:
+            ```
+            Authorization: Bearer {YOUR_AUTH_TOKEN}
+            ```
+            MD,
     ],
 
     /*
