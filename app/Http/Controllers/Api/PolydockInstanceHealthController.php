@@ -7,36 +7,9 @@ use App\Models\PolydockAppInstance;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Knuckles\Scribe\Attributes\Endpoint;
-use Knuckles\Scribe\Attributes\Group;
 
-// #[Header("Accept", "application/json")]
-// #[Authenticated]
-#[Group(name: 'App Instance', description: '', authenticated: false)]
-#[Endpoint(title: 'App Instance Health Status', description: 'Updates the health status of a specific Polydock App Instance.', authenticated: false)]
 class PolydockInstanceHealthController extends Controller
 {
-    /**
-     * Handle both GET and POST requests for instance health updates
-     *
-     * @urlParam uuid string required The UUID of the app instance. Example: inst-abcd-1234-efgh
-     * @urlParam status string required The health status. Example: running_healthy_claimed
-     *
-     * @response 200 {
-     *   "message": "Health status updated successfully",
-     *   "instance": "inst-abcd-1234-efgh",
-     *   "status": "running_healthy_claimed",
-     *   "status_code": 200
-     * }
-     * @response 400 {
-     *   "error": "Invalid status value",
-     *   "status_code": 400
-     * }
-     * @response 404 {
-     *   "error": "Instance not found",
-     *   "status_code": 404
-     * }
-     */
     public function __invoke(Request $request, string $uuid, string $status)
     {
         $logContext = [

@@ -24,20 +24,3 @@ Route::get('/app-instances/{appInstance}', function (PolydockAppInstance $appIns
 
     abort(404, 'No URL available for this app instance');
 })->name('app-instances.show');
-
-// OpenAPI - Scribe Custom Routes
-Route::get('/api', function () {
-    return view('scribe.index');
-})->name('scribe');
-
-// OpenAPI JSON endpoint
-Route::get('/api/openapi.json', function () {
-    $path = Storage::disk('local')->path('scribe/openapi.yaml');
-    if (! file_exists($path)) {
-        abort(404, 'Documentation not generated yet.');
-    }
-
-    $yaml = Yaml::parseFile($path);
-
-    return response()->json($yaml);
-})->name('scribe.json');
