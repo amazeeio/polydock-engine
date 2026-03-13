@@ -8,6 +8,9 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
+// Health check for Horizon
+Schedule::command(\Spatie\Health\Commands\RunHealthChecksCommand::class)->everyFiveMinutes();
+
 // ///// Midtrial Emails ///////
 Schedule::command('polydock:dispatch-midtrial-emails')
     ->hourlyAt(5)
@@ -48,3 +51,4 @@ Schedule::command('polydock:dispatch-trial-complete-stage-removal')
 // Schedule::command('polydock:remove-unclaimed-instances --force --limit=5')
 //     ->hourly()
 //     ->withoutOverlapping();
+

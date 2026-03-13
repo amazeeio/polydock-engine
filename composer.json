@@ -24,7 +24,9 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "phpseclib/phpseclib": "^3.0",
-        "spatie/mjml-php": "^1.2"
+        "spatie/laravel-health": "^1.39",
+        "spatie/mjml-php": "^1.2",
+        "spatie/security-advisories-health-check": "^1.3"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
