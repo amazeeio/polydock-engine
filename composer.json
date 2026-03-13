@@ -20,7 +20,6 @@
         "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.1",
         "freedomtech-hosting/polydock-app": "^0.0.31",
         "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.1",
-        "knuckleswtf/scribe": "^5.8",
         "laravel/framework": "^11.31",
         "laravel/horizon": "^5.30",
         "laravel/sanctum": "^4.0",
@@ -30,6 +29,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "hotmeteor/spectator": "*",
         "larastan/larastan": "^3.9",
         "laravel/pail": "^1.1",
         "laravel/pint": "^1.13",
