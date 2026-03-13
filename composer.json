@@ -14,6 +14,7 @@
         "amazeeio/lagoon-logs": "^0.0.5",
         "amazeeio/polydock-app-amazeeclaw": "^0.1.7",
         "amazeeio/polydock-app-amazeeio-privategpt": "^0.1",
+        "dedoc/scramble": "^0.13.14",
         "evanschleret/lara-mjml": "^0.3.0",
         "filament/filament": "^3.2",
         "freedomtech-hosting/ft-lagoon-php": "^0.0.16",
