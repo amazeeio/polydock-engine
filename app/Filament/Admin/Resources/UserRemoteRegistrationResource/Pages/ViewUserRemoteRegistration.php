@@ -112,7 +112,7 @@ class ViewUserRemoteRegistration extends ViewRecord
             }
 
             $renderKey = 'request_data_'.$key;
-            $renderedItem = \Filament\Infolists\Components\TextEntry::make($renderKey)
+            $renderedItem = TextEntry::make($renderKey)
                 ->label($key)
                 ->markdown()
                 ->columnSpanFull()

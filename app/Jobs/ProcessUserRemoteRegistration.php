@@ -15,6 +15,7 @@ use App\Services\PolydockAppClassDiscovery;
 use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
@@ -159,7 +160,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
 
                     return false;
                 }
-            } catch (\Illuminate\Database\Eloquent\ModelNotFoundException) {
+            } catch (ModelNotFoundException) {
                 // Log the real reason but return a vague message
                 Log::warning('Trial app not found', [
                     'registration_id' => $this->registration->id,
@@ -353,7 +354,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
      * Extracts fields prefixed with 'instance_config_' from the registration request data
      * and stores them as PolydockVariables, respecting encryption settings.
      *
-     * @param  \App\Models\PolydockAppInstance  $appInstance  The app instance to store variables on
+     * @param  PolydockAppInstance  $appInstance  The app instance to store variables on
      * @param  PolydockStoreApp  $storeApp  The store app to get field schema from
      */
     private function storeInstanceConfigFields(PolydockAppInstance $appInstance, PolydockStoreApp $storeApp): void

@@ -8,6 +8,7 @@ use App\Jobs\ProcessUserRemoteRegistration;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
 use App\Services\PolydockAppClassDiscovery;
+use Filament\Actions\Action;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Section;
@@ -244,7 +245,7 @@ class CreatePolydockAppInstance extends Page
     protected function getFormActions(): array
     {
         return [
-            \Filament\Actions\Action::make('create')
+            Action::make('create')
                 ->label('Create Instance')
                 ->submit('create'),
         ];

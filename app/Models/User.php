@@ -4,20 +4,25 @@ namespace App\Models;
 
 use App\Enums\UserGroupRoleEnum;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser, HasTenants
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasApiTokens;
+
+    /** @use HasFactory<UserFactory> */
     use HasFactory;
 
     use Notifiable;
@@ -78,7 +83,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /**
      * Get all user groups this user belongs to
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function groups()
     {
@@ -90,7 +95,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /**
      * Get all primary groups this user belongs to
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function primaryGroups()
     {
@@ -101,7 +106,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /**
      * Get all member groups this user belongs to
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function memberGroups()
     {
@@ -112,7 +117,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /**
      * Get all viewer groups this user belongs to
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function viewerGroups()
     {
