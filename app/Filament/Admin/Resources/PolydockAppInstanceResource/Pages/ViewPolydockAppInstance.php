@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
+use App\Services\LagoonClientService;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Actions\Action;
@@ -10,10 +11,7 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use FreedomtechHosting\FtLagoonPhp\Client;
-use FreedomtechHosting\FtLagoonPhp\Ssh;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 
 class ViewPolydockAppInstance extends ViewRecord
@@ -45,34 +43,19 @@ class ViewPolydockAppInstance extends ViewRecord
                                     return 'Unknown (Missing Project Name)';
                                 }
 
-                                $sshConfig = config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon', []);
-                                $clientConfig = [
-                                    'ssh_user' => $sshConfig['ssh_user'] ?? 'lagoon',
-                                    'ssh_server' => $sshConfig['ssh_server'] ?? 'ssh.lagoon.amazeeio.cloud',
-                                    'ssh_port' => $sshConfig['ssh_port'] ?? '32222',
-                                    'endpoint' => $sshConfig['endpoint'] ?? 'https://api.lagoon.amazeeio.cloud/graphql',
-                                    'ssh_private_key_file' => $sshConfig['ssh_private_key_file'] ?? getenv('HOME').'/.ssh/id_rsa',
-                                ];
+                                $lagoonClientService = app(LagoonClientService::class);
+                                $clientConfig = $lagoonClientService->getClientConfig();
 
-                                // Cache the SSH token to prevent 5-second page loads
-                                $token = Cache::remember('lagoon_api_token_'.md5(json_encode($clientConfig)), now()->addMinutes(2), function () use ($clientConfig) {
-                                    $ssh = Ssh::createLagoonConfigured(
-                                        $clientConfig['ssh_user'],
-                                        $clientConfig['ssh_server'],
-                                        $clientConfig['ssh_port'],
-                                        $clientConfig['ssh_private_key_file']
-                                    );
-
-                                    return $ssh->executeLagoonGetToken();
+                                // Cache the API token (string) to prevent repeated 5-second SSH token fetches
+                                $token = Cache::remember('lagoon_api_token_'.md5(json_encode($clientConfig)), now()->addMinutes(2), function () use ($lagoonClientService, $clientConfig) {
+                                    return $lagoonClientService->getLagoonToken($clientConfig);
                                 });
 
                                 if (empty($token)) {
-                                    return 'Error: Unable to authenticate with Lagoon';
+                                    return 'Error: Unable to authenticate with Lagoon API';
                                 }
 
-                                $client = app()->makeWith(Client::class, ['config' => $clientConfig]);
-                                $client->setLagoonToken($token);
-                                $client->initGraphqlClient();
+                                $client = $lagoonClientService->buildClientWithToken($clientConfig, $token);
 
                                 $deployments = $client->getProjectEnvironmentDeployments($projectName, $environmentName);
 
@@ -105,39 +88,57 @@ class ViewPolydockAppInstance extends ViewRecord
                         }),
                 ])
                 ->action(function (array $data, $record): void {
-                    // TODO ensure we get the correct instance_id ?
-                    $instanceUuid = $record->getKeyValue('uuid');
+                    $projectName = $record->getKeyValue('lagoon-project-name');
                     $environment = $data['environment'] ?? ($record->getKeyValue('lagoon-deploy-branch') ?: 'main');
 
-                    if (empty($environment)) {
+                    if (empty($projectName)) {
                         Notification::make()
                             ->title('Deployment Failed')
                             ->danger()
-                            ->body('Missing branch')
+                            ->body('Missing Lagoon project name')
                             ->send();
 
                         return;
                     }
 
-                    $exitCode = Artisan::call('polydock:app-instance:trigger-deploy', [
-                        'instance_uuid' => $instanceUuid,
-                        '--environment' => $environment,
-                        '--force' => true,
-                    ]);
-
-                    $output = Artisan::output();
-
-                    if ($exitCode === 0) {
-                        Notification::make()
-                            ->title('Deployment Triggered')
-                            ->success()
-                            ->body($output ?: "Deployment triggered for branch {$environment}")
-                            ->send();
-                    } else {
+                    if (empty($environment)) {
                         Notification::make()
                             ->title('Deployment Failed')
                             ->danger()
-                            ->body($output ?: 'Failed to trigger deployment')
+                            ->body('Missing deploy branch')
+                            ->send();
+
+                        return;
+                    }
+
+                    try {
+                        $client = app(LagoonClientService::class)->getAuthenticatedClient();
+                        $result = $client->deployProjectEnvironmentByName(
+                            projectName: $projectName,
+                            deployBranch: $environment,
+                        );
+
+                        if (isset($result['error'])) {
+                            $errors = is_array($result['error'])
+                                ? (json_encode($result['error']) ?: implode(', ', $result['error']))
+                                : (string) $result['error'];
+                            Notification::make()
+                                ->title('Deployment Failed')
+                                ->danger()
+                                ->body($errors)
+                                ->send();
+                        } else {
+                            Notification::make()
+                                ->title('Deployment Triggered')
+                                ->success()
+                                ->body("Deployment triggered for branch {$environment}")
+                                ->send();
+                        }
+                    } catch (\Throwable $e) {
+                        Notification::make()
+                            ->title('Deployment Failed')
+                            ->danger()
+                            ->body($e->getMessage())
                             ->send();
                     }
                 }),
