@@ -55,7 +55,7 @@ class ViewPolydockAppInstance extends ViewRecord
                                 ];
 
                                 // Cache the SSH token to prevent 5-second page loads
-                                $token = Cache::remember('lagoon_api_token_'.md5($clientConfig['ssh_server']), now()->addMinutes(2), function () use ($clientConfig) {
+                                $token = Cache::remember('lagoon_api_token_'.md5(json_encode($clientConfig)), now()->addMinutes(2), function () use ($clientConfig) {
                                     $ssh = Ssh::createLagoonConfigured(
                                         $clientConfig['ssh_user'],
                                         $clientConfig['ssh_server'],
