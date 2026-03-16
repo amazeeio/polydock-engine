@@ -34,7 +34,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         }
         file_put_contents(base_path('tests/fixtures/lagoon-private-key'), 'dummy-key');
 
-        $this->app->instance('polydock.lagoon.token_fetcher', fn () => 'fake-token');
+        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
 
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
@@ -190,7 +190,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         }
         file_put_contents(base_path('tests/fixtures/lagoon-private-key'), 'dummy-key');
 
-        $this->app->instance('polydock.lagoon.token_fetcher', fn () => 'fake-token');
+        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
 
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
