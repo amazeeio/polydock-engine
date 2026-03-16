@@ -25,6 +25,16 @@ class LagoonClientService
             throw new \Exception('Failed to retrieve Lagoon API token.');
         }
 
+        return $this->buildClientWithToken($clientConfig, $token);
+    }
+
+    /**
+     * Build a Client using a pre-fetched token (useful when the token is cached externally)
+     *
+     * @throws \Exception
+     */
+    public function buildClientWithToken(array $clientConfig, string $token): Client
+    {
         if (app()->bound(Client::class)) {
             $client = app(Client::class);
         } else {
@@ -56,8 +66,10 @@ class LagoonClientService
     /**
      * Helper to get a token either from a bound fetcher or directly via SSH.
      */
-    protected function getLagoonToken(array $config): string
+    public function getLagoonToken(?array $config = null): string
     {
+        $config = $config ?? $this->getClientConfig();
+
         if (app()->bound('polydock.lagoon.token_fetcher')) {
             return app('polydock.lagoon.token_fetcher')($config);
         }
