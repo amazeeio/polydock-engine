@@ -130,7 +130,14 @@ class AuthenticatedApiController extends Controller
             'email' => 'required|email',
             'storeAppId' => 'required|string|exists:polydock_store_apps,uuid',
             'config' => 'nullable|array',
-            'config.*' => 'nullable|string',
+            'config.*' => [
+                'nullable',
+                function ($attribute, $value, $fail) {
+                    if (is_array($value) || is_object($value)) {
+                        $fail('The ' . $attribute . ' must be a scalar value.');
+                    }
+                },
+            ],
         ]);
 
         $email = $request->input('email');
