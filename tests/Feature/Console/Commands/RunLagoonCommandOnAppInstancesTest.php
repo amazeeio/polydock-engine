@@ -62,6 +62,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         }
 
         $lagoonKeyPath = $this->lagoonKeyDir.DIRECTORY_SEPARATOR.'lagoon-private-key';
+        file_put_contents($lagoonKeyPath, 'dummy-key');
 
         config(['polydock.service_providers_singletons.PolydockServiceProviderFTLagoon' => [
             'ssh_server' => 'ssh.lagoon.test',
