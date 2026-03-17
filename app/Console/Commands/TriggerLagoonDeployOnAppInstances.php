@@ -224,7 +224,7 @@ class TriggerLagoonDeployOnAppInstances extends Command
         $bar = $this->output->createProgressBar(max: $count);
         $bar->start();
 
-        /** @var \App\Models\PolydockAppInstance $instance */
+        /** @var PolydockAppInstance $instance */
         foreach ($instances as $instance) {
             $this->deployToInstance(
                 instance: $instance,

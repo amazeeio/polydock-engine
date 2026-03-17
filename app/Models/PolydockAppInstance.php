@@ -8,6 +8,7 @@ use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Traits\HasWebhookSensitiveData;
+use Carbon\Carbon;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
 use FreedomtechHosting\PolydockApp\PolydockAppInterface;
@@ -932,7 +933,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Calculate and set trial dates based on end datetime
      *
-     * @param  \DateTime|\Carbon\Carbon  $trialEndDateTime  When the trial should end
+     * @param  \DateTime|Carbon  $trialEndDateTime  When the trial should end
      * @param  bool  $saveModel  Whether to save the model after setting trial dates
      */
     public function calculateAndSetTrialDatesFromEndDate($trialEndDateTime, bool $saveModel = false): self

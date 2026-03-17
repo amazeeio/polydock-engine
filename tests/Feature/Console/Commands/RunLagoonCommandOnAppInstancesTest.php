@@ -3,6 +3,7 @@
 namespace Tests\Feature\Console\Commands;
 
 use App\Models\PolydockAppInstance;
+use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use FreedomtechHosting\FtLagoonPhp\Client;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
@@ -16,8 +17,6 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
 
     /**
      * Path to the temporary directory holding the Lagoon SSH key for this test.
-     *
-     * @var string|null
      */
     protected ?string $lagoonKeyDir = null;
 
@@ -42,7 +41,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
                 continue;
             }
 
-            $path = $directory . DIRECTORY_SEPARATOR . $item;
+            $path = $directory.DIRECTORY_SEPARATOR.$item;
 
             if (is_dir($path)) {
                 $this->deleteDirectory($path);
@@ -56,13 +55,13 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
 
     public function test_it_runs_serially_by_default()
     {
-        $this->lagoonKeyDir = storage_path('framework/testing/lagoon-key-' . uniqid('', true));
+        $this->lagoonKeyDir = storage_path('framework/testing/lagoon-key-'.uniqid('', true));
 
         if (! is_dir($this->lagoonKeyDir)) {
             mkdir($this->lagoonKeyDir, 0700, true);
         }
 
-        $lagoonKeyPath = $this->lagoonKeyDir . DIRECTORY_SEPARATOR . 'lagoon-private-key';
+        $lagoonKeyPath = $this->lagoonKeyDir.DIRECTORY_SEPARATOR.'lagoon-private-key';
 
         config(['polydock.service_providers_singletons.PolydockServiceProviderFTLagoon' => [
             'ssh_server' => 'ssh.lagoon.test',
@@ -89,7 +88,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         $this->app->instance(Client::class, $mock);
 
         // Arrange
-        $store = \App\Models\PolydockStore::factory()->create([
+        $store = PolydockStore::factory()->create([
             'lagoon_deploy_project_prefix' => 'test-prefix',
         ]);
 
@@ -141,7 +140,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
     public function test_it_runs_concurrently()
     {
         // Arrange
-        $store = \App\Models\PolydockStore::factory()->create([
+        $store = PolydockStore::factory()->create([
             'lagoon_deploy_project_prefix' => 'test-prefix',
         ]);
 
@@ -205,7 +204,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
     public function test_it_skips_instances_missing_metadata()
     {
         // Arrange
-        $store = \App\Models\PolydockStore::factory()->create();
+        $store = PolydockStore::factory()->create();
 
         $storeApp = PolydockStoreApp::factory()->create([
             'polydock_store_id' => $store->id,

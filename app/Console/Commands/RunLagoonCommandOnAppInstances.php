@@ -119,7 +119,7 @@ class RunLagoonCommandOnAppInstances extends Command
 
             $instanceData = [];
 
-            /** @var \App\Models\PolydockAppInstance $instance */
+            /** @var PolydockAppInstance $instance */
             foreach ($instances as $instance) {
                 $projectName = $instance->getKeyValue(key: 'lagoon-project-name');
                 $branch = $envOverride ?: $instance->getKeyValue(key: 'lagoon-deploy-branch');
@@ -187,7 +187,7 @@ class RunLagoonCommandOnAppInstances extends Command
             $headers = ['ID', 'Name', 'Lagoon Project', 'Branch'];
             $rows = [];
 
-            /** @var \App\Models\PolydockAppInstance $instance */
+            /** @var PolydockAppInstance $instance */
             foreach ($instances as $instance) {
                 $projectName = $instance->getKeyValue(key: 'lagoon-project-name');
                 $branch = $envOverride ?: $instance->getKeyValue(key: 'lagoon-deploy-branch');
@@ -271,7 +271,7 @@ class RunLagoonCommandOnAppInstances extends Command
         $bar = $this->output->createProgressBar(max: $count);
         $bar->start();
 
-        /** @var \App\Models\PolydockAppInstance $instance */
+        /** @var PolydockAppInstance $instance */
         foreach ($instances as $instance) {
             $this->runCommandOnInstance(
                 instance: $instance,

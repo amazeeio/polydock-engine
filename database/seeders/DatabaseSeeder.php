@@ -2,10 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PolydockStoreAppStatusEnum;
+use App\Enums\PolydockStoreStatusEnum;
 use App\Enums\UserGroupRoleEnum;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\PolydockStore;
+use App\Models\PolydockStoreApp;
+use App\Models\PolydockStoreWebhook;
 use App\Models\User;
 use App\Models\UserGroup;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp;
+use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -69,9 +76,9 @@ class DatabaseSeeder extends Seeder
         $deployKey = file_get_contents(config('polydock.lagoon_deploy_private_key_file'));
 
         // Create the stores
-        $usaStore = \App\Models\PolydockStore::create([
+        $usaStore = PolydockStore::create([
             'name' => 'USA Store',
-            'status' => \App\Enums\PolydockStoreStatusEnum::PUBLIC,
+            'status' => PolydockStoreStatusEnum::PUBLIC,
             'listed_in_marketplace' => true,
             'lagoon_deploy_region_id_ext' => '1',
             'lagoon_deploy_project_prefix' => 'ft-us',
@@ -81,9 +88,9 @@ class DatabaseSeeder extends Seeder
         ]);
         $usaStore->setPolydockVariableValue('lagoon_deploy_private_key', $deployKey, true);
 
-        $switzerlandStore = \App\Models\PolydockStore::create([
+        $switzerlandStore = PolydockStore::create([
             'name' => 'Switzerland Store',
-            'status' => \App\Enums\PolydockStoreStatusEnum::PUBLIC,
+            'status' => PolydockStoreStatusEnum::PUBLIC,
             'listed_in_marketplace' => true,
             'lagoon_deploy_region_id_ext' => '1',
             'lagoon_deploy_project_prefix' => 'ft-ch',
@@ -96,110 +103,110 @@ class DatabaseSeeder extends Seeder
         // Add webhook to both stores
         $webhookUrl = 'https://webhook.site/bbe9c2ef-bb18-4c13-8d40-14fb428c7b64';
 
-        \App\Models\PolydockStoreWebhook::create([
+        PolydockStoreWebhook::create([
             'polydock_store_id' => $usaStore->id,
             'url' => $webhookUrl,
             'active' => true,
         ]);
 
-        \App\Models\PolydockStoreWebhook::create([
+        PolydockStoreWebhook::create([
             'polydock_store_id' => $switzerlandStore->id,
             'url' => $webhookUrl,
             'active' => true,
         ]);
 
-        \App\Models\PolydockStoreApp::create([
+        PolydockStoreApp::create([
             'polydock_store_id' => $usaStore->id,
             'name' => 'USA Simple amazee.io AI Node.js',
-            'polydock_app_class' => \FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp::class,
+            'polydock_app_class' => PolydockAiApp::class,
             'description' => 'A simple amazee.io AI Node.js app deployed to the USA',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://freedomtech.hosting/',
             'support_email' => 'hello@freedomtech.hosting',
             'lagoon_deploy_git' => 'git@github.com:Freedomtech-Hosting/polydock-demo-node-simple.git',
             'lagoon_deploy_branch' => 'main',
-            'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
         ]);
 
-        \App\Models\PolydockStoreApp::create([
+        PolydockStoreApp::create([
             'polydock_store_id' => $switzerlandStore->id,
             'name' => 'Switzerland Simple amazee.io Node.js',
-            'polydock_app_class' => \FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp::class,
+            'polydock_app_class' => PolydockApp::class,
             'description' => 'A simple amazee.io Node.js app deployed to Switzerland',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://freedomtech.hosting/',
             'support_email' => 'hello@freedomtech.hosting',
             'lagoon_deploy_git' => 'git@github.com:Freedomtech-Hosting/polydock-demo-node-simple.git',
             'lagoon_deploy_branch' => 'main',
-            'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
         ]);
 
-        \App\Models\PolydockStoreApp::create([
+        PolydockStoreApp::create([
             'polydock_store_id' => $usaStore->id,
             'name' => 'USA amazee.io AI - Categorize Pages',
-            'polydock_app_class' => \FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp::class,
+            'polydock_app_class' => PolydockAiApp::class,
             'description' => 'A demo of amazee.io AI - Categorize Pages Functionality',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://try.amazee.ai/',
             'support_email' => 'ai.support@amazee.io',
             'lagoon_deploy_git' => 'git@github.com:amazeeio-demos/polydock-ai-trial-drupal-cms-caegorize-page.git',
             'lagoon_deploy_branch' => 'main',
-            'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 1,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
             'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
 
-        \App\Models\PolydockStoreApp::create([
+        PolydockStoreApp::create([
             'polydock_store_id' => $switzerlandStore->id,
             'name' => 'Switzerland amazee.io AI - Categorize Pages',
-            'polydock_app_class' => \FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp::class,
+            'polydock_app_class' => PolydockAiApp::class,
             'description' => 'A demo of amazee.io AI - Categorize Pages Functionality',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://try.amazee.ai/',
             'support_email' => 'ai.support@amazee.io',
             'lagoon_deploy_git' => 'git@github.com:amazeeio-demos/polydock-ai-trial-drupal-cms-caegorize-page.git',
             'lagoon_deploy_branch' => 'main',
-            'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
             'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
 
-        \App\Models\PolydockStoreApp::create([
+        PolydockStoreApp::create([
             'polydock_store_id' => $usaStore->id,
             'name' => 'USA amazee.io AI - CK Editor',
-            'polydock_app_class' => \FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp::class,
+            'polydock_app_class' => PolydockAiApp::class,
             'description' => 'A demo of amazee.io AI - CK Editor Functionality',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://try.amazee.ai/',
             'support_email' => 'ai.support@amazee.io',
             'lagoon_deploy_git' => 'git@github.com:amazeeio-demos/polydock-ai-trial-drupal-cms-ck-editor.git',
             'lagoon_deploy_branch' => 'main',
-            'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
             'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
         ]);
 
-        \App\Models\PolydockStoreApp::create([
+        PolydockStoreApp::create([
             'polydock_store_id' => $switzerlandStore->id,
             'name' => 'Switzerland amazee.io AI - CK Editor',
-            'polydock_app_class' => \FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp::class,
+            'polydock_app_class' => PolydockAiApp::class,
             'description' => 'A demo of amazee.io AI - CK Editor Functionality',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://try.amazee.ai/',
             'support_email' => 'ai.support@amazee.io',
             'lagoon_deploy_git' => 'git@github.com:amazeeio-demos/polydock-ai-trial-drupal-cms-ck-editor.git',
             'lagoon_deploy_branch' => 'main',
-            'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
             'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
@@ -207,7 +214,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Add some example apps to each store
-        \App\Models\PolydockStoreApp::factory()
+        PolydockStoreApp::factory()
             ->count(8)
             ->sequence(
                 ['polydock_store_id' => $usaStore->id],

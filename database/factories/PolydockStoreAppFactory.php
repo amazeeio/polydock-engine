@@ -3,17 +3,19 @@
 namespace Database\Factories;
 
 use App\Enums\PolydockStoreAppStatusEnum;
+use App\Models\PolydockStoreApp;
+use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PolydockStoreApp>
+ * @extends Factory<PolydockStoreApp>
  */
 class PolydockStoreAppFactory extends Factory
 {
     public function definition(): array
     {
         return [
-            'polydock_app_class' => \FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp::class,
+            'polydock_app_class' => PolydockAiApp::class,
             'name' => fake()->words(3, true),
             'description' => fake()->paragraph(),
             'author' => fake()->name(),
