@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Traits\HasPolydockVariables;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +13,73 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property int $polydock_store_id
+ * @property string $polydock_app_class
+ * @property array|null $app_config
+ * @property string $name
+ * @property string $description
+ * @property string $author
+ * @property string|null $website
+ * @property string $support_email
+ * @property string $lagoon_deploy_git
+ * @property string $lagoon_deploy_branch
+ * @property string|null $lagoon_post_deploy_script
+ * @property string|null $lagoon_pre_upgrade_script
+ * @property string|null $lagoon_upgrade_script
+ * @property string|null $lagoon_post_upgrade_script
+ * @property string|null $lagoon_claim_script
+ * @property string|null $lagoon_pre_remove_script
+ * @property string|null $lagoon_remove_script
+ * @property string|null $email_subject_line
+ * @property string|null $email_body_markdown
+ * @property PolydockStoreAppStatusEnum $status
+ * @property string $uuid
+ * @property bool $available_for_trials
+ * @property int $target_unallocated_app_instances
+ * @property int|null $trial_duration_days
+ * @property bool $send_midtrial_email
+ * @property string|null $midtrial_email_subject
+ * @property string|null $midtrial_email_markdown
+ * @property bool $send_one_day_left_email
+ * @property string|null $one_day_left_email_subject
+ * @property string|null $one_day_left_email_markdown
+ * @property bool $send_trial_complete_email
+ * @property string|null $trial_complete_email_subject
+ * @property string|null $trial_complete_email_markdown
+ * @property string|null $lagoon_post_deploy_service
+ * @property string|null $lagoon_post_deploy_container
+ * @property string|null $lagoon_pre_upgrade_service
+ * @property string|null $lagoon_pre_upgrade_container
+ * @property string|null $lagoon_upgrade_service
+ * @property string|null $lagoon_upgrade_container
+ * @property string|null $lagoon_post_upgrade_service
+ * @property string|null $lagoon_post_upgrade_container
+ * @property string|null $lagoon_claim_service
+ * @property string|null $lagoon_claim_container
+ * @property string|null $lagoon_pre_remove_service
+ * @property string|null $lagoon_pre_remove_container
+ * @property string|null $lagoon_remove_service
+ * @property string|null $lagoon_remove_container
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property string $lagoon_deploy_region_id_ext
+ * @property string $lagoon_deploy_project_prefix
+ * @property string $lagoon_deploy_organization_id_ext
+ * @property string $lagoon_deploy_private_key
+ * @property string|null $amazee_ai_backend_region_id_ext
+ * @property int $unallocated_instances_count
+ * @property bool $needs_more_unallocated_instances
+ * @property string|null $lagoon_deploy_group_name
+ * @property int|null $lagoon_auto_idle
+ * @property string|null $lagoon_production_environment
+ * @property PolydockStore $store
+ * @property Collection|PolydockAppInstance[] $instances
+ * @property Collection|PolydockAppInstance[] $unallocatedInstances
+ * @property Collection|PolydockAppInstance[] $allocatedInstances
+ * @property Collection|PolydockVariable[] $variables
+ */
 class PolydockStoreApp extends Model
 {
     use HasFactory;

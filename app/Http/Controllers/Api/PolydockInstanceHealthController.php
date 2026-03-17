@@ -10,9 +10,6 @@ use Illuminate\Support\Facades\Log;
 
 class PolydockInstanceHealthController extends Controller
 {
-    /**
-     * Handle both GET and POST requests for instance health updates
-     */
     public function __invoke(Request $request, string $uuid, string $status)
     {
         $logContext = [
