@@ -66,10 +66,12 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     ->label('App'),
                                 TextEntry::make('appInstance.name')
                                     ->label('Instance')
-                                    ->url(fn ($record) => route(
-                                        'filament.admin.resources.polydock-app-instances.view',
-                                        ['record' => $record->appInstance],
-                                    )),
+                                    ->url(fn ($record) => $record->appInstance
+                                        ? route(
+                                            'filament.admin.resources.polydock-app-instances.view',
+                                            ['record' => $record->appInstance],
+                                        )
+                                        : null),
                             ]),
                     ]),
 
@@ -112,7 +114,7 @@ class ViewUserRemoteRegistration extends ViewRecord
             }
 
             $renderKey = 'request_data_'.$key;
-            $renderedItem = \Filament\Infolists\Components\TextEntry::make($renderKey)
+            $renderedItem = TextEntry::make($renderKey)
                 ->label($key)
                 ->markdown()
                 ->columnSpanFull()

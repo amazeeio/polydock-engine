@@ -11,6 +11,9 @@ use App\PolydockEngine\Helpers\LagoonHelper;
 use App\Services\PolydockAppClassDiscovery;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\Section;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -201,37 +204,37 @@ class PolydockAppInstanceResource extends Resource
     {
         return $infolist
             ->schema([
-                \Filament\Infolists\Components\Section::make('Instance Details')
+                Section::make('Instance Details')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label('Instance Name'),
-                                \Filament\Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar')
                                     ->iconColor('gray'),
                             ]),
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('status')
+                                TextEntry::make('status')
                                     ->badge()
                                     ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
                                     ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
                                     ->formatStateUsing(
                                         fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel(),
                                     ),
-                                \Filament\Infolists\Components\TextEntry::make('status_message')
+                                TextEntry::make('status_message')
                                     ->label('Status Message'),
                             ]),
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('storeApp.lagoon_deploy_region_id_ext')
+                                TextEntry::make('storeApp.lagoon_deploy_region_id_ext')
                                     ->label('Deploy Region')
                                     ->formatStateUsing(
                                         fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'),
                                     ),
-                                \Filament\Infolists\Components\TextEntry::make(
+                                TextEntry::make(
                                     'storeApp.amazee_ai_backend_region_id_ext',
                                 )
                                     ->label('AI Backend Region')
@@ -245,13 +248,13 @@ class PolydockAppInstanceResource extends Resource
                     ])
                     ->columnSpan(2),
 
-                \Filament\Infolists\Components\Section::make('App & Group')
+                Section::make('App & Group')
                     ->schema([
-                        \Filament\Infolists\Components\TextEntry::make('storeApp.name')
+                        TextEntry::make('storeApp.name')
                             ->label('Store App')
                             ->icon('heroicon-m-squares-2x2')
                             ->iconColor('primary'),
-                        \Filament\Infolists\Components\TextEntry::make('userGroup.name')
+                        TextEntry::make('userGroup.name')
                             ->label('User Group')
                             ->visible(fn ($record) => $record->userGroup !== null)
                             ->url(fn ($record) => UserGroupResource::getUrl('view', ['record' => $record->userGroup]))
@@ -261,14 +264,14 @@ class PolydockAppInstanceResource extends Resource
                     ])
                     ->columnSpan(1),
 
-                \Filament\Infolists\Components\Section::make('Instance Configuration')
+                Section::make('Instance Configuration')
                     ->description('Instance-specific settings configured at creation.')
                     ->schema(fn ($record) => self::getRenderedInstanceConfigForRecord($record))
                     ->visible(fn ($record) => self::hasInstanceConfigFields($record))
                     ->columnSpan(3)
                     ->collapsible(),
 
-                \Filament\Infolists\Components\Section::make('Instance Data')
+                Section::make('Instance Data')
                     ->description('Safe data that can be shared with webhooks')
                     ->schema(fn ($record) => self::getRenderedSafeDataForRecord($record))
                     ->columnSpan(3)
@@ -292,7 +295,7 @@ class PolydockAppInstanceResource extends Resource
             }
 
             $renderKey = 'webhook_data_'.$key;
-            $renderedItem = \Filament\Infolists\Components\TextEntry::make($renderKey)
+            $renderedItem = TextEntry::make($renderKey)
                 ->label($key)
                 ->markdown()
                 ->columnSpanFull()
@@ -360,7 +363,7 @@ class PolydockAppInstanceResource extends Resource
             // Check if value should be masked (for encrypted fields)
             $isEncrypted = $record->isPolydockVariableEncrypted($fieldName);
 
-            $renderedItem = \Filament\Infolists\Components\TextEntry::make('instance_config_display_'.$fieldName)
+            $renderedItem = TextEntry::make('instance_config_display_'.$fieldName)
                 ->label($labelName);
 
             if ($isEncrypted && $value !== null && $value !== '') {

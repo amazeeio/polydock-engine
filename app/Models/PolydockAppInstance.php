@@ -8,6 +8,7 @@ use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Traits\HasWebhookSensitiveData;
+use Carbon\Carbon;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
 use FreedomtechHosting\PolydockApp\PolydockAppInterface;
@@ -20,6 +21,32 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
+/**
+ * @property int $id
+ * @property string $name
+ * @property int $polydock_store_app_id
+ * @property int|null $user_group_id
+ * @property string $app_type
+ * @property PolydockAppInstanceStatus $status
+ * @property string|null $status_message
+ * @property bool $is_trial
+ * @property Carbon|null $trial_ends_at
+ * @property bool $trial_completed
+ * @property Carbon|null $send_midtrial_email_at
+ * @property bool $midtrial_email_sent
+ * @property Carbon|null $send_one_day_left_email_at
+ * @property bool $one_day_left_email_sent
+ * @property bool $trial_complete_email_sent
+ * @property string|null $app_url
+ * @property string|null $app_one_time_login_url
+ * @property Carbon|null $app_one_time_login_valid_until
+ * @property array|null $data
+ * @property string $uuid
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property PolydockStoreApp $storeApp
+ * @property UserGroup|null $userGroup
+ */
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
     use HasPolydockVariables;
@@ -932,7 +959,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Calculate and set trial dates based on end datetime
      *
-     * @param  \DateTime|\Carbon\Carbon  $trialEndDateTime  When the trial should end
+     * @param  \DateTime|Carbon  $trialEndDateTime  When the trial should end
      * @param  bool  $saveModel  Whether to save the model after setting trial dates
      */
     public function calculateAndSetTrialDatesFromEndDate($trialEndDateTime, bool $saveModel = false): self

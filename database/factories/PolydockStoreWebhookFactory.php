@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\PolydockStoreWebhook;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\PolydockStoreWebhook>
+ * @extends Factory<PolydockStoreWebhook>
  */
 class PolydockStoreWebhookFactory extends Factory
 {

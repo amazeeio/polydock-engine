@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\PolydockStore;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Crypt;
@@ -21,7 +22,7 @@ return new class extends Migration
             if (! empty($store->lagoon_deploy_private_key)) {
                 DB::table('polydock_variables')->updateOrInsert(
                     [
-                        'variabled_type' => \App\Models\PolydockStore::class,
+                        'variabled_type' => PolydockStore::class,
                         'variabled_id' => $store->id,
                         'name' => 'lagoon_deploy_private_key',
                     ],
@@ -51,7 +52,7 @@ return new class extends Migration
 
         // Restore keys from variables
         $variables = DB::table('polydock_variables')
-            ->where('variabled_type', \App\Models\PolydockStore::class)
+            ->where('variabled_type', PolydockStore::class)
             ->where('name', 'lagoon_deploy_private_key')
             ->get();
 
@@ -68,7 +69,7 @@ return new class extends Migration
                     ->update(['lagoon_deploy_private_key' => $value]);
 
                 $restoredIds[] = $variable->id;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::warning('Migration rollback: failed to decrypt lagoon_deploy_private_key, skipping delete to preserve data', [
                     'variable_id' => $variable->id,
                     'store_id' => $variable->variabled_id,

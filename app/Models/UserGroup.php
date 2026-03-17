@@ -6,6 +6,7 @@ use App\Enums\UserGroupRoleEnum;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -21,7 +22,7 @@ class UserGroup extends Model
     /**
      * Get all users in this group
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function users()
     {
@@ -33,7 +34,7 @@ class UserGroup extends Model
     /**
      * Get all users with 'owner' role in this group
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function owners()
     {
@@ -44,7 +45,7 @@ class UserGroup extends Model
     /**
      * Get all users with 'member' role in this group
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function members()
     {
@@ -55,7 +56,7 @@ class UserGroup extends Model
     /**
      * Get all users with 'viewer' role in this group
      *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * @return BelongsToMany
      */
     public function viewers()
     {

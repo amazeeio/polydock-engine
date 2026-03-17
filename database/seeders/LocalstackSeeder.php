@@ -2,9 +2,15 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PolydockStoreAppStatusEnum;
+use App\Enums\PolydockStoreStatusEnum;
 use App\Enums\UserGroupRoleEnum;
+use App\Models\PolydockStore;
+use App\Models\PolydockStoreApp;
+use App\Models\PolydockStoreWebhook;
 use App\Models\User;
 use App\Models\UserGroup;
+use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -34,9 +40,9 @@ class LocalstackSeeder extends Seeder
         $deployKey = file_get_contents(config('polydock.lagoon_deploy_private_key_file'));
 
         // Create the stores
-        $store = \App\Models\PolydockStore::create([
+        $store = PolydockStore::create([
             'name' => 'Localstack Store',
-            'status' => \App\Enums\PolydockStoreStatusEnum::PUBLIC,
+            'status' => PolydockStoreStatusEnum::PUBLIC,
             'listed_in_marketplace' => true,
             'lagoon_deploy_region_id_ext' => '2001',
             'lagoon_deploy_project_prefix' => 'localstack',
@@ -49,23 +55,23 @@ class LocalstackSeeder extends Seeder
         // Add webhook to both stores
         $webhookUrl = 'https://webhook.site/bbe9c2ef-bb18-4c13-8d40-14fb428c7b64';
 
-        \App\Models\PolydockStoreWebhook::create([
+        PolydockStoreWebhook::create([
             'polydock_store_id' => $store->id,
             'url' => $webhookUrl,
             'active' => true,
         ]);
 
-        \App\Models\PolydockStoreApp::create([
+        PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
             'name' => 'Localstack amazee.io Node.js',
-            'polydock_app_class' => \FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp::class,
+            'polydock_app_class' => PolydockApp::class,
             'description' => 'A simple amazee.io Node.js app deployed to Localstack',
             'author' => 'Bryan Gruneberg',
             'website' => 'https://freedomtech.hosting/',
             'support_email' => 'hello@freedomtech.hosting',
             'lagoon_deploy_git' => 'git@github.com:Freedomtech-Hosting/polydock-demo-node-simple.git',
             'lagoon_deploy_branch' => 'main',
-            'status' => \App\Enums\PolydockStoreAppStatusEnum::AVAILABLE,
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
             'target_unallocated_app_instances' => 0,
         ]);

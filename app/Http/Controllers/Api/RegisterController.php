@@ -15,7 +15,25 @@ use Illuminate\Support\Facades\Log;
 class RegisterController extends Controller
 {
     /**
+     * Process Registration
+     *
      * Store a newly created resource in storage.
+     *
+     * @group Registration
+     *
+     * @unauthenticated
+     *
+     * @bodyParam email string required The email address of the user. Example: demo.user@example.com
+     *
+     * @response 202 {
+     *   "status": "pending",
+     *   "message": "Registration pending",
+     *   "id": "abcd-1234-efgh-5678-ijkl"
+     * }
+     * @response 500 {
+     *   "status": "failed",
+     *   "message": "Error details..."
+     * }
      */
     public function processRegister(Request $request): JsonResponse
     {
@@ -45,13 +63,34 @@ class RegisterController extends Controller
     }
 
     /**
+     * Show Registration Status
+     *
      * Display the specified resource.
+     *
+     * @group Registration
+     *
+     * @unauthenticated
+     *
+     * @urlParam uuid string required The UUID of the registration to check. Example: abcd-1234-efgh-5678-ijkl
+     *
+     * @response 200 {
+     *   "status": "pending",
+     *   "email": "demo.user@example.com",
+     *   "result_data": null,
+     *   "created_at": "2024-05-15T12:00:00.000000Z",
+     *   "updated_at": "2024-05-15T12:00:00.000000Z"
+     * }
+     * @response 404 {
+     *   "status": "error",
+     *   "message": "Registration not found"
+     * }
      */
     public function showRegister(string $uuid): JsonResponse
     {
         try {
             $registration = UserRemoteRegistration::where('uuid', $uuid)->firstOrFail();
             Log::info('Showing user remote registration', ['registration' => $registration->toArray()]);
+            $responseResultData = $registration->result_data ?? [];
 
             if ($registration->appInstance) {
                 $appInstance = $registration->appInstance;
@@ -65,12 +104,24 @@ class RegisterController extends Controller
                     $registration->setResultValue('result_type', 'registration_failed');
                     $registration->save();
                 }
+
+                if ($appInstance->getKeyValue('lagoon-project-id')) {
+                    $responseResultData['lagoon_project_id'] = $appInstance->getKeyValue('lagoon-project-id');
+                }
+
+                if ($appInstance->getKeyValue('lagoon-deploy-branch')) {
+                    $responseResultData['lagoon_deploy_branch'] = $appInstance->getKeyValue('lagoon-deploy-branch');
+                }
+
+                if ($appInstance->getKeyValue('lagoon-project-name')) {
+                    $responseResultData['lagoon_project_name'] = $appInstance->getKeyValue('lagoon-project-name');
+                }
             }
 
             return response()->json([
                 'status' => $registration->status->value,
                 'email' => $registration->email,
-                'result_data' => $registration->result_data,
+                'result_data' => $responseResultData,
                 'created_at' => $registration->created_at,
                 'updated_at' => $registration->updated_at,
             ]);

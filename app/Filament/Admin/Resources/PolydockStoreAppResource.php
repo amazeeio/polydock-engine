@@ -13,6 +13,8 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
+use Filament\Infolists\Components\IconEntry;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -93,7 +95,27 @@ class PolydockStoreAppResource extends Resource
                     ->label('Available for Trials')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\Section::make('App-Specific Configuration')
+                Section::make('Lagoon Runtime Settings')
+                    ->description('Configuration used by app instance creation for Lagoon runtime behavior.')
+                    ->schema([
+                        Forms\Components\Select::make('lagoon_auto_idle')
+                            ->label('Lagoon Auto Idle')
+                            ->options([
+                                0 => '0 - Off',
+                                1 => '1 - On (4-hour auto-idle)',
+                            ])
+                            ->default(0)
+                            ->helperText('See https://docs.lagoon.sh/concepts-advanced/environment-idling/'),
+                        Forms\Components\TextInput::make('lagoon_production_environment')
+                            ->label('Lagoon Production Environment')
+                            ->default('main')
+                            ->required()
+                            ->maxLength(255)
+                            ->helperText('Lagoon environment name considered production (for example: main).'),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
+                Section::make('App-Specific Configuration')
                     ->description('These fields are defined by the selected App Class and will be configurable for this Store App.')
                     ->schema(fn (Get $get): array => app(PolydockAppClassDiscovery::class)
                         ->getStoreAppFormSchema($get('polydock_app_class') ?? ''))
@@ -108,7 +130,7 @@ class PolydockStoreAppResource extends Resource
                     ->visible(fn (Get $get): bool => ! empty($get('polydock_app_class')) &&
                         empty(app(PolydockAppClassDiscovery::class)->getStoreAppFormSchema($get('polydock_app_class') ?? '')))
                     ->columnSpanFull(),
-                Forms\Components\Section::make('Instance Ready Email Configuration')
+                Section::make('Instance Ready Email Configuration')
                     ->schema([
                         Forms\Components\TextInput::make('email_subject_line')
                             ->label('Email Subject Line')
@@ -268,29 +290,29 @@ class PolydockStoreAppResource extends Resource
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(3)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('name')
+                                TextEntry::make('name')
                                     ->label('App Name'),
-                                \Filament\Infolists\Components\TextEntry::make('store.name')
+                                TextEntry::make('store.name')
                                     ->label('Store')
                                     ->icon('heroicon-m-building-storefront')
                                     ->iconColor('primary'),
-                                \Filament\Infolists\Components\TextEntry::make('status')
+                                TextEntry::make('status')
                                     ->badge(),
                             ]),
-                        \Filament\Infolists\Components\TextEntry::make('description')
+                        TextEntry::make('description')
                             ->markdown()
                             ->columnSpanFull()
                             ->hidden(fn ($record) => blank($record->description)),
 
                         \Filament\Infolists\Components\Grid::make(3)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_git')
+                                TextEntry::make('lagoon_deploy_git')
                                     ->copyable()
                                     ->label('Git Repository')
                                     ->icon('heroicon-m-code-bracket')
                                     ->iconColor('gray')
                                     ->columnSpan(2),
-                                \Filament\Infolists\Components\TextEntry::make('lagoon_deploy_branch')
+                                TextEntry::make('lagoon_deploy_branch')
                                     ->label('Deploy Branch')
                                     ->icon('heroicon-m-code-bracket-square')
                                     ->iconColor('warning'),
@@ -302,19 +324,27 @@ class PolydockStoreAppResource extends Resource
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(1)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('unallocated_instances_count')
+                                TextEntry::make('unallocated_instances_count')
                                     ->label('Unallocated Instances')
                                     ->icon('heroicon-m-queue-list')
                                     ->iconColor('warning'),
-                                \Filament\Infolists\Components\TextEntry::make('target_unallocated_app_instances')
+                                TextEntry::make('target_unallocated_app_instances')
                                     ->label('Target Unallocated Instances')
                                     ->icon('heroicon-m-queue-list')
                                     ->iconColor('warning'),
-                                \Filament\Infolists\Components\TextEntry::make('allocatedInstances')
+                                TextEntry::make('allocatedInstances')
                                     ->label('Allocated Instances')
                                     ->state(fn ($record) => $record->allocatedInstances()->count())
                                     ->icon('heroicon-m-check-circle')
                                     ->iconColor('success'),
+                                TextEntry::make('lagoon_production_environment')
+                                    ->label('Lagoon Production Environment')
+                                    ->icon('heroicon-m-flag')
+                                    ->iconColor('primary'),
+                                TextEntry::make('lagoon_auto_idle')
+                                    ->label('Lagoon Auto Idle')
+                                    ->icon('heroicon-m-clock')
+                                    ->iconColor('gray'),
                             ]),
                     ])
                     ->columnSpan(1),
@@ -331,14 +361,14 @@ class PolydockStoreAppResource extends Resource
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\TextEntry::make('author')
+                                TextEntry::make('author')
                                     ->icon('heroicon-m-user')
                                     ->iconColor('primary'),
-                                \Filament\Infolists\Components\TextEntry::make('support_email')
+                                TextEntry::make('support_email')
                                     ->icon('heroicon-m-envelope')
                                     ->iconColor('success'),
                             ]),
-                        \Filament\Infolists\Components\TextEntry::make('website')
+                        TextEntry::make('website')
                             ->url(fn ($state) => $state)
                             ->openUrlInNewTab()
                             ->icon('heroicon-m-globe-alt')
@@ -350,10 +380,10 @@ class PolydockStoreAppResource extends Resource
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\IconEntry::make('available_for_trials')
+                                IconEntry::make('available_for_trials')
                                     ->label('Available for Trials')
                                     ->boolean(),
-                                \Filament\Infolists\Components\TextEntry::make('trial_duration_days')
+                                TextEntry::make('trial_duration_days')
                                     ->label('Trial Duration')
                                     ->suffix(' days')
                                     ->placeholder('Not set'),
@@ -365,10 +395,10 @@ class PolydockStoreAppResource extends Resource
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\IconEntry::make('send_midtrial_email')
+                                IconEntry::make('send_midtrial_email')
                                     ->label('Email Enabled')
                                     ->boolean(),
-                                \Filament\Infolists\Components\TextEntry::make('midtrial_email_subject')
+                                TextEntry::make('midtrial_email_subject')
                                     ->label('Subject Line')
                                     ->visible(fn ($record) => $record->send_midtrial_email)
                                     ->placeholder('Not configured'),
@@ -380,10 +410,10 @@ class PolydockStoreAppResource extends Resource
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\IconEntry::make('send_one_day_left_email')
+                                IconEntry::make('send_one_day_left_email')
                                     ->label('Email Enabled')
                                     ->boolean(),
-                                \Filament\Infolists\Components\TextEntry::make('one_day_left_email_subject')
+                                TextEntry::make('one_day_left_email_subject')
                                     ->label('Subject Line')
                                     ->visible(fn ($record) => $record->send_one_day_left_email)
                                     ->placeholder('Not configured'),
@@ -395,10 +425,10 @@ class PolydockStoreAppResource extends Resource
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(2)
                             ->schema([
-                                \Filament\Infolists\Components\IconEntry::make('send_trial_complete_email')
+                                IconEntry::make('send_trial_complete_email')
                                     ->label('Email Enabled')
                                     ->boolean(),
-                                \Filament\Infolists\Components\TextEntry::make('trial_complete_email_subject')
+                                TextEntry::make('trial_complete_email_subject')
                                     ->label('Subject Line')
                                     ->visible(fn ($record) => $record->send_trial_complete_email)
                                     ->placeholder('Not configured'),
