@@ -39,6 +39,12 @@ class TriggerLagoonDeployOnAppInstance extends Command
             return 1;
         }
 
+        if (! in_array($instance->status, PolydockAppInstance::$stageRunningStatuses, true)) {
+            $this->error(string: "Instance UUID {$instanceUuid} is not in a running state (current status: {$instance->status}).");
+
+            return 1;
+        }
+
         $this->info(string: "Found App Instance: {$instance->name} (UUID: {$instance->uuid})");
 
         if (! $this->option(key: 'force')) {
