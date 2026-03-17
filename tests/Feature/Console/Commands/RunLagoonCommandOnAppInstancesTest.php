@@ -14,25 +14,64 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Path to the temporary directory holding the Lagoon SSH key for this test.
+     *
+     * @var string|null
+     */
+    protected ?string $lagoonKeyDir = null;
+
     protected function tearDown(): void
     {
+        if ($this->lagoonKeyDir !== null && is_dir($this->lagoonKeyDir)) {
+            $this->deleteDirectory($this->lagoonKeyDir);
+            $this->lagoonKeyDir = null;
+        }
+
         \Mockery::close();
         parent::tearDown();
     }
 
+    /**
+     * Recursively delete a directory and its contents.
+     */
+    private function deleteDirectory(string $directory): void
+    {
+        foreach (scandir($directory) ?: [] as $item) {
+            if ($item === '.' || $item === '..') {
+                continue;
+            }
+
+            $path = $directory . DIRECTORY_SEPARATOR . $item;
+
+            if (is_dir($path)) {
+                $this->deleteDirectory($path);
+            } else {
+                @unlink($path);
+            }
+        }
+
+        @rmdir($directory);
+    }
+
     public function test_it_runs_serially_by_default()
     {
+        $this->lagoonKeyDir = storage_path('framework/testing/lagoon-key-' . uniqid('', true));
+
+        if (! is_dir($this->lagoonKeyDir)) {
+            mkdir($this->lagoonKeyDir, 0700, true);
+        }
+
+        $lagoonKeyPath = $this->lagoonKeyDir . DIRECTORY_SEPARATOR . 'lagoon-private-key';
+
         config(['polydock.service_providers_singletons.PolydockServiceProviderFTLagoon' => [
             'ssh_server' => 'ssh.lagoon.test',
             'ssh_port' => '2222',
-            'ssh_private_key_file' => base_path('tests/fixtures/lagoon-private-key'),
+            'ssh_private_key_file' => $lagoonKeyPath,
         ]]);
 
         // Ensure key file exists for test
-        if (! file_exists(base_path('tests/fixtures'))) {
-            mkdir(base_path('tests/fixtures'), 0777, true);
-        }
-        file_put_contents(base_path('tests/fixtures/lagoon-private-key'), 'dummy-key');
+        file_put_contents($lagoonKeyPath, 'dummy-key');
 
         $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
 
