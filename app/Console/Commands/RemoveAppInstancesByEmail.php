@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\PolydockAppInstance;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 
 class RemoveAppInstancesByEmail extends Command
 {
