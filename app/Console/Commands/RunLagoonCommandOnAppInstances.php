@@ -199,7 +199,7 @@ class RunLagoonCommandOnAppInstances extends Command
 
         // Concurrency Logic
         if ($concurrency > 1) {
-            $this->info(string: "Running deployments concurrently on {$count} instances (concurrency: {$concurrency})...");
+            $this->info(string: "Running Lagoon commands concurrently on {$count} instances (concurrency: {$concurrency})...");
 
             $phpBinary = PHP_BINARY;
             $artisan = base_path('artisan');

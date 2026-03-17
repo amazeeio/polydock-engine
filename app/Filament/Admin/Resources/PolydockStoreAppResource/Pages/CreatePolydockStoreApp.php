@@ -41,6 +41,11 @@ class CreatePolydockStoreApp extends CreateRecord
             }
         }
 
+        // Always persist these runtime settings in app_config for app-instance defaults.
+        $appConfig['lagoon_auto_idle'] = isset($data['lagoon_auto_idle']) ? (int) $data['lagoon_auto_idle'] : 0;
+        $appConfig['lagoon_production_environment'] = (string) ($data['lagoon_production_environment'] ?? 'main');
+        unset($data['lagoon_auto_idle'], $data['lagoon_production_environment']);
+
         // Store the app config as JSON
         $data['app_config'] = ! empty($appConfig) ? $appConfig : null;
 

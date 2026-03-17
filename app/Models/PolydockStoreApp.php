@@ -226,7 +226,7 @@ class PolydockStoreApp extends Model
      */
     public function getLagoonAutoIdleAttribute(): ?int
     {
-        return $this->app_config['lagoon_auto_idle'] ?? 0;
+        return data_get($this->app_config, 'lagoon_auto_idle', 0);
     }
 
     /**
@@ -234,6 +234,6 @@ class PolydockStoreApp extends Model
      */
     public function getLagoonProductionEnvironmentAttribute(): ?string
     {
-        return $this->app_config['lagoon_production_environment'] ?? null;
+        return data_get($this->app_config, 'lagoon_production_environment', 'main');
     }
 }
