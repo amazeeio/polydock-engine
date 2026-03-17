@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Services\PolydockAppClassDiscovery;
 use Dedoc\Scramble\Scramble;
 use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -35,6 +36,6 @@ class AppServiceProvider extends ServiceProvider
             document: '/api/openapi.json',
         );
 
-        Scramble::routes(fn (\Illuminate\Routing\Route $route) => str_starts_with($route->uri(), 'api/'));
+        Scramble::routes(fn (Route $route) => str_starts_with($route->uri(), 'api/'));
     }
 }

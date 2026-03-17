@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\PolydockStoreAppStatusEnum;
+use App\Enums\PolydockStoreStatusEnum;
 use App\Enums\UserGroupRoleEnum;
 use App\Http\Controllers\Controller;
 use App\Models\PolydockAppInstance;
@@ -11,8 +13,6 @@ use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockStore\Enums\PolydockStoreAppStatusEnum;
-use FreedomtechHosting\PolydockStore\Enums\PolydockStoreStatusEnum;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
