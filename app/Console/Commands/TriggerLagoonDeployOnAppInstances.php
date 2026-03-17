@@ -163,7 +163,7 @@ class TriggerLagoonDeployOnAppInstances extends Command
             $commandBase = [
                 $phpBinary,
                 $artisan,
-                'polydock:instances:run-lagoon-command',
+                'polydock:instances:deploy-app-instance',
                 $appUuid,
                 '--force',
             ];
