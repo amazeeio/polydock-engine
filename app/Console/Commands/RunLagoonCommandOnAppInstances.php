@@ -160,7 +160,7 @@ class RunLagoonCommandOnAppInstances extends Command
             );
 
             $selectedIds = multiselect(
-                label: 'Select instances to trigger deploy on:',
+                label: 'Select instances to run the Lagoon command on:',
                 options: $options,
                 default: array_keys($options),
                 scroll: 15,
