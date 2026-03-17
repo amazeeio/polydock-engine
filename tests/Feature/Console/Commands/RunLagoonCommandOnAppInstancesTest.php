@@ -137,6 +137,29 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
 
     public function test_it_runs_concurrently()
     {
+        $this->lagoonKeyDir = storage_path('framework/testing/lagoon-key-'.uniqid('', true));
+
+        if (! is_dir($this->lagoonKeyDir)) {
+            mkdir($this->lagoonKeyDir, 0700, true);
+        }
+
+        $lagoonKeyPath = $this->lagoonKeyDir.DIRECTORY_SEPARATOR.'lagoon-private-key';
+        file_put_contents($lagoonKeyPath, 'dummy-key');
+
+        config(['polydock.service_providers_singletons.PolydockServiceProviderFTLagoon' => [
+            'ssh_server' => 'ssh.lagoon.test',
+            'ssh_port' => '2222',
+            'ssh_private_key_file' => $lagoonKeyPath,
+        ]]);
+
+        // The coordinator should fetch the token exactly once before spawning workers.
+        $tokenFetchCount = 0;
+        $this->app->instance('polydock.lagoon.token_fetcher', function (array $config) use (&$tokenFetchCount) {
+            $tokenFetchCount++;
+
+            return 'fake-token-concurrent';
+        });
+
         // Arrange
         $store = PolydockStore::factory()->create([
             'lagoon_deploy_project_prefix' => 'test-prefix',
@@ -182,20 +205,30 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
             '--concurrency' => 2,
         ])
             ->expectsOutput('Running Lagoon commands concurrently on 2 instances (concurrency: 2)...')
+            ->expectsOutput('Pre-fetching Lagoon token for concurrent workers...')
             ->assertExitCode(0);
 
-        // Assert
+        // Token should have been fetched exactly once by the coordinator.
+        $this->assertSame(1, $tokenFetchCount, 'Token should be fetched exactly once in the coordinator, not once per worker.');
+
+        // Assert subprocesses were launched with the pre-fetched token in their environment.
         Process::assertRan(function ($process) use ($instance1) {
             $cmd = $process->command;
             $hasId = is_array($cmd) ? in_array("--instance-id={$instance1->id}", $cmd) : str_contains($cmd, "--instance-id={$instance1->id}");
+            $hasToken = isset($process->environment['LAGOON_PREFETCHED_TOKEN']) && $process->environment['LAGOON_PREFETCHED_TOKEN'] === 'fake-token-concurrent';
 
-            return $hasId && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'));
+            return $hasId
+                && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'))
+                && $hasToken;
         });
         Process::assertRan(function ($process) use ($instance2) {
             $cmd = $process->command;
             $hasId = is_array($cmd) ? in_array("--instance-id={$instance2->id}", $cmd) : str_contains($cmd, "--instance-id={$instance2->id}");
+            $hasToken = isset($process->environment['LAGOON_PREFETCHED_TOKEN']) && $process->environment['LAGOON_PREFETCHED_TOKEN'] === 'fake-token-concurrent';
 
-            return $hasId && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'));
+            return $hasId
+                && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'))
+                && $hasToken;
         });
     }
 

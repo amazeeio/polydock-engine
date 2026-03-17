@@ -73,6 +73,13 @@ class RunLagoonCommandOnAppInstances extends Command
                 return 1;
             }
 
+            // Use a pre-fetched token passed from the coordinator (concurrency mode)
+            // to avoid each worker independently fetching the token via SSH.
+            $prefetchedToken = getenv('LAGOON_PREFETCHED_TOKEN');
+            if ($prefetchedToken) {
+                app()->instance('polydock.lagoon.token_fetcher', fn ($config) => $prefetchedToken);
+            }
+
             return $this->runCommandOnInstance(
                 instance: $instance,
                 command: $commandName,
@@ -201,6 +208,18 @@ class RunLagoonCommandOnAppInstances extends Command
         if ($concurrency > 1) {
             $this->info(string: "Running Lagoon commands concurrently on {$count} instances (concurrency: {$concurrency})...");
 
+            // Pre-fetch the Lagoon token once here in the coordinator so that each
+            // worker subprocess can reuse it instead of independently fetching it via SSH.
+            $this->info(string: 'Pre-fetching Lagoon token for concurrent workers...');
+            try {
+                $lagoonClientService = app(LagoonClientService::class);
+                $prefetchedToken = $lagoonClientService->getLagoonToken();
+            } catch (\Exception $e) {
+                $this->error(string: "Authentication failed: {$e->getMessage()}");
+
+                return 1;
+            }
+
             $phpBinary = PHP_BINARY;
             $artisan = base_path('artisan');
             $commandBase = [
@@ -222,10 +241,10 @@ class RunLagoonCommandOnAppInstances extends Command
                 $commandBase[] = "--container={$containerName}";
             }
 
-            $pool = Process::pool(function (Pool $pool) use ($instances, $commandBase) {
+            $pool = Process::pool(function (Pool $pool) use ($instances, $commandBase, $prefetchedToken) {
                 foreach ($instances as $instance) {
                     $command = array_merge($commandBase, ["--instance-id={$instance->id}"]);
-                    $pool->as($instance->id)->command($command);
+                    $pool->as($instance->id)->command($command)->env(['LAGOON_PREFETCHED_TOKEN' => $prefetchedToken]);
                 }
             });
 
