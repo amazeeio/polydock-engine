@@ -75,7 +75,7 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_get_store_apps_returns_formatted_data(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['instances.read']);
 
         $response = $this->getJson('/api/store-apps');
 
@@ -103,7 +103,7 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_get_instances_returns_user_instances(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['instances.read']);
 
         $group = UserGroup::create(['name' => 'Test Group']);
         $this->user->groups()->attach($group->id, ['role' => 'owner']);
@@ -124,7 +124,7 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_create_instance_provisions_instance_and_creates_user(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['instances.write']);
 
         $newEmail = 'new.user@example.com';
 
@@ -149,7 +149,7 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_get_instance_status(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['instances.read']);
 
         $instance = PolydockAppInstance::create([
             'polydock_store_app_id' => $this->storeApp->id,
@@ -167,7 +167,7 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_delete_instance_sets_pre_remove_status(): void
     {
-        Sanctum::actingAs($this->user);
+        Sanctum::actingAs($this->user, ['instances.write']);
 
         $instance = PolydockAppInstance::create([
             'polydock_store_app_id' => $this->storeApp->id,
