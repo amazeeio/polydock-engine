@@ -251,13 +251,18 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         $instance1->data = []; // Missing lagoon-project-name
         $instance1->saveQuietly();
 
-        config(['polydock.service_providers_singletons.PolydockServiceProviderFTLagoon' => [
-            'ssh_private_key_file' => base_path('tests/fixtures/lagoon-private-key'),
-        ]]);
-        if (! file_exists(base_path('tests/fixtures'))) {
-            mkdir(base_path('tests/fixtures'), 0777, true);
+        $this->lagoonKeyDir = storage_path('framework/testing/lagoon-key-'.uniqid('', true));
+
+        if (! is_dir($this->lagoonKeyDir)) {
+            mkdir($this->lagoonKeyDir, 0700, true);
         }
-        file_put_contents(base_path('tests/fixtures/lagoon-private-key'), 'dummy-key');
+
+        $lagoonKeyPath = $this->lagoonKeyDir.DIRECTORY_SEPARATOR.'lagoon-private-key';
+        file_put_contents($lagoonKeyPath, 'dummy-key');
+
+        config(['polydock.service_providers_singletons.PolydockServiceProviderFTLagoon' => [
+            'ssh_private_key_file' => $lagoonKeyPath,
+        ]]);
 
         $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
 
