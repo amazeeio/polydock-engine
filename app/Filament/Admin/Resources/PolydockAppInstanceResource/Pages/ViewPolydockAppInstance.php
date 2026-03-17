@@ -11,7 +11,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use FreedomtechHosting\FtLagoonPhp\Ssh;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Support\Facades\Cache;
 
@@ -89,7 +88,7 @@ class ViewPolydockAppInstance extends ViewRecord
                         }),
                 ])
                 ->action(function (array $data, $record): void {
-                    // TODO ensure we get the correct instance_id ?
+                    $projectName = $record->getKeyValue('lagoon-project-name');
                     $environment = $data['environment'] ?? ($record->getKeyValue('lagoon-deploy-branch') ?: 'main');
 
                     if (empty($projectName)) {
@@ -97,6 +96,16 @@ class ViewPolydockAppInstance extends ViewRecord
                             ->title('Deployment Failed')
                             ->danger()
                             ->body('Missing Lagoon project name')
+                            ->send();
+
+                        return;
+                    }
+
+                    if (empty($environment)) {
+                        Notification::make()
+                            ->title('Deployment Failed')
+                            ->danger()
+                            ->body('Missing deploy branch')
                             ->send();
 
                         return;

@@ -70,7 +70,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
             'ssh_private_key_file' => $lagoonKeyPath,
         ]]);
 
-        $this->app->instance('polydock.lagoon.token_fetcher', fn ($config) => 'fake-token');
+        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
 
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();

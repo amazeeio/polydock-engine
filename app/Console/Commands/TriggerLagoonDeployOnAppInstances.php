@@ -38,11 +38,6 @@ class TriggerLagoonDeployOnAppInstances extends Command
         $variablesOnly = $this->option(key: 'variables-only');
         $concurrency = max(1, (int) $this->option(key: 'concurrency'));
 
-        // Configuration
-        /** @var LagoonClientService $lagoonClientService */
-        $lagoonClientService = app(LagoonClientService::class);
-        $clientConfig = $lagoonClientService->getClientConfig();
-
         /** @var PolydockStoreApp $storeApp */
         $storeApp = PolydockStoreApp::where(column: 'uuid', operator: '=', value: $appUuid)->first();
         if (! $storeApp) {
