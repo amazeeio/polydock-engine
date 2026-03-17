@@ -16,12 +16,11 @@ Route::get('/register/{uuid}', [RegisterController::class, 'showRegister'])->nam
 
 Route::get('/regions', [RegionsController::class, 'index'])->name('regions.index');
 
-// TODO: This is just a test to verify if the authentication is working. Replace with actual CRUD endpoints.
-Route::prefix('/v1')
-    ->middleware(['auth:sanctum', EnsureInstancesReadAbility::class])
-    ->group(function (): void {
-        Route::get('/register/{uuid}', [RegisterController::class, 'showRegister'])->name('register.show');
-    });
+Route::prefix('/v1')->group(function (): void {
+    Route::get('/instances/{uuid}', [RegisterController::class, 'showRegister'])
+        ->middleware(['auth:sanctum', EnsureInstancesReadAbility::class])
+        ->name('v1.instances.show');
+});
 
 Route::match(['get', 'post'], '/instance/{uuid}/health/{status}', [
     PolydockInstanceHealthController::class,

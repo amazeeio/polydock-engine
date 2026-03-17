@@ -31,6 +31,9 @@ class TriggerLagoonDeployOnAppInstance extends Command
         $envOverride = $this->option(key: 'environment');
         $variablesOnly = $this->option(key: 'variables-only');
 
+        // Configuration via LagoonClientService to keep defaults/validation consistent.
+        $clientConfig = app(LagoonClientService::class)->getClientConfig();
+
         /** @var PolydockAppInstance|null $instance */
         $instance = PolydockAppInstance::where('uuid', $instanceUuid)->first();
         if (! $instance) {

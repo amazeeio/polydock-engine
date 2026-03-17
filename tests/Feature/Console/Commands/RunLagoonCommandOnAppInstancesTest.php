@@ -69,10 +69,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
             'ssh_private_key_file' => $lagoonKeyPath,
         ]]);
 
-        // Ensure key file exists for test
-        file_put_contents($lagoonKeyPath, 'dummy-key');
-
-        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
+        $this->app->instance('polydock.lagoon.token_fetcher', fn ($config) => 'fake-token');
 
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
@@ -183,7 +180,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
             '--force' => true,
             '--concurrency' => 2,
         ])
-            ->expectsOutput('Running deployments concurrently on 2 instances (concurrency: 2)...')
+            ->expectsOutput('Running Lagoon commands concurrently on 2 instances (concurrency: 2)...')
             ->assertExitCode(0);
 
         // Assert

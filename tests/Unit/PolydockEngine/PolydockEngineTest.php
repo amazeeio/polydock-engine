@@ -154,7 +154,7 @@ class PolydockEngineTest extends TestCase
         $appInstance->shouldReceive('getAppType')->once()->andReturn('Test_App');
 
         $this->expectException(PolydockEngineValidationException::class);
-        $this->expectExceptionMessage('missing required variable lagoon-auto-idle');
+        $this->expectExceptionMessageMatches('/App instance .* is missing required variable lagoon-auto-idle/');
 
         $this->engine->validateAppInstanceHasAllRequiredVariables($appInstance);
     }

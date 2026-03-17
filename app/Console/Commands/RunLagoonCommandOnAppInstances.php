@@ -15,6 +15,21 @@ use function Laravel\Prompts\multiselect;
 class RunLagoonCommandOnAppInstances extends Command
 {
     /**
+     * Lagoon client service instance.
+     */
+    private LagoonClientService $lagoonClientService;
+
+    /**
+     * Create a new command instance.
+     */
+    public function __construct(LagoonClientService $lagoonClientService)
+    {
+        parent::__construct();
+
+        $this->lagoonClientService = $lagoonClientService;
+    }
+
+    /**
      * The name and signature of the console command.
      *
      * @var string
@@ -63,6 +78,9 @@ class RunLagoonCommandOnAppInstances extends Command
 
             return 1;
         }
+
+        // Configuration (delegated to LagoonClientService to centralize defaults/validation)
+        $clientConfig = $this->lagoonClientService->getClientConfig();
 
         // --- Single Instance Mode (Worker) ---
         if ($instanceId) {
@@ -199,7 +217,7 @@ class RunLagoonCommandOnAppInstances extends Command
 
         // Concurrency Logic
         if ($concurrency > 1) {
-            $this->info(string: "Running deployments concurrently on {$count} instances (concurrency: {$concurrency})...");
+            $this->info(string: "Running Lagoon commands concurrently on {$count} instances (concurrency: {$concurrency})...");
 
             $phpBinary = PHP_BINARY;
             $artisan = base_path('artisan');

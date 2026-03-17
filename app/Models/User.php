@@ -20,8 +20,9 @@ use Illuminate\Support\Str;
 class User extends Authenticatable implements FilamentUser, HasTenants
 {
     /** @use HasFactory<UserFactory> */
-    use HasFactory;
+    use HasApiTokens;
 
+    use HasFactory;
     use Notifiable;
 
     /**
