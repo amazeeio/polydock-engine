@@ -12,12 +12,18 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', fn (Request $request) => $request->user());
 
-    // Routes consumed by MoaD
-    Route::get('/store-apps', [AuthenticatedApiController::class, 'getStoreApps'])->name('api.store-apps');
-    Route::get('/instances', [AuthenticatedApiController::class, 'getInstances'])->name('api.instances.get');
-    Route::post('/instance', [AuthenticatedApiController::class, 'createInstance'])->name('api.instance.create');
-    Route::get('/instance/{uuid}/status', [AuthenticatedApiController::class, 'getInstanceStatus'])->name('api.instance.status');
-    Route::delete('/instance/{uuid}', [AuthenticatedApiController::class, 'deleteInstance'])->name('api.instance.delete');
+    // Routes consumed by MoaD - read operations
+    Route::middleware('instances.read.ability')->group(function () {
+        Route::get('/store-apps', [AuthenticatedApiController::class, 'getStoreApps'])->name('api.store-apps');
+        Route::get('/instances', [AuthenticatedApiController::class, 'getInstances'])->name('api.instances.get');
+        Route::get('/instance/{uuid}/status', [AuthenticatedApiController::class, 'getInstanceStatus'])->name('api.instance.status');
+    });
+
+    // Routes consumed by MoaD - write operations
+    Route::middleware('instances.write.ability')->group(function () {
+        Route::post('/instance', [AuthenticatedApiController::class, 'createInstance'])->name('api.instance.create');
+        Route::delete('/instance/{uuid}', [AuthenticatedApiController::class, 'deleteInstance'])->name('api.instance.delete');
+    });
 });
 
 Route::post('/register', [RegisterController::class, 'processRegister'])->name('register.process');

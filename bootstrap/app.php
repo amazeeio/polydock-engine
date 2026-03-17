@@ -14,7 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware) {
-        //
+        $middleware->alias([
+            'instances.read.ability' => \App\Http\Middleware\EnsureInstancesReadAbility::class,
+            'instances.write.ability' => \App\Http\Middleware\EnsureInstancesWriteAbility::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
