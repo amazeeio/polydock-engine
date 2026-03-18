@@ -1,0 +1,27 @@
+name: "Trigger Release PR"
+on:
+  workflow_dispatch:
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Open PR from Dev to Prod
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Pulls unique commits in dev not yet in prod
+          LOG=$(git log origin/prod..origin/dev --oneline --no-merges)
+          DATE=$(date +'%Y-%m-%d')
+
+          gh pr create \
+            --base prod \
+            --head dev \
+            --title "Release ($DATE)" \
+            --body "### Changes in this release:
+            $LOG"

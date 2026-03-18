@@ -1,0 +1,19 @@
+name: "Protect Prod Branch"
+on:
+  pull_request:
+    branches: [ "prod" ]
+
+jobs:
+  check-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate Source Branch
+        run: |
+          SRC="${{ github.head_ref }}"
+          if [[ "$SRC" == "dev" || "$SRC" == hotfix* ]]; then
+            echo "Source branch $SRC is valid."
+            exit 0
+          else
+            echo "Error: Only 'dev' or 'hotfix*' branches can target 'prod'."
+            exit 1
+          fi
