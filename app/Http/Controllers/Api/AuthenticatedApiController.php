@@ -6,7 +6,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
+use App\Enums\PolydockStoreWebhookCallStatusEnum;
+use App\Enums\PolydockVariableScopeEnum;
 use App\Enums\UserGroupRoleEnum;
+use App\Enums\UserRemoteRegistrationStatusEnum;
+use App\Enums\UserRemoteRegistrationType;
 use App\Http\Controllers\Controller;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
@@ -54,6 +58,31 @@ class AuthenticatedApiController extends Controller
 
         return response()->json([
             'data' => $formattedApps,
+        ]);
+    }
+
+    /**
+     * Get all available enums
+     *
+     * Retrieve a list of all available enums used in the Polydock API and their possible values/labels.
+     *
+     * @group External API
+     *
+     * @subgroup Meta
+     */
+    public function getEnums(): JsonResponse
+    {
+        return response()->json([
+            'data' => [
+                'PolydockAppInstanceStatus' => PolydockAppInstanceStatus::getOptions(),
+                'PolydockStoreAppStatus' => PolydockStoreAppStatusEnum::getOptions(),
+                'PolydockStoreStatus' => PolydockStoreStatusEnum::getOptions(),
+                'PolydockStoreWebhookCallStatus' => PolydockStoreWebhookCallStatusEnum::getOptions(),
+                'PolydockVariableScope' => PolydockVariableScopeEnum::getOptions(),
+                'UserGroupRole' => UserGroupRoleEnum::getOptions(),
+                'UserRemoteRegistrationStatus' => UserRemoteRegistrationStatusEnum::getOptions(),
+                'UserRemoteRegistrationType' => UserRemoteRegistrationType::getOptions(),
+            ],
         ]);
     }
 

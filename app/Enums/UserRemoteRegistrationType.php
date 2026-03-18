@@ -45,4 +45,12 @@ enum UserRemoteRegistrationType: string implements HasColor, HasIcon, HasLabel
     {
         return array_column(self::cases(), 'value');
     }
+
+    public static function getOptions(): array
+    {
+        return collect(self::cases())
+            ->mapWithKeys(fn ($status) => [
+                $status->value => $status->getLabel(),
+            ])->all();
+    }
 }

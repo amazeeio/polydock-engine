@@ -46,7 +46,6 @@ class RegionsApiTest extends TestCase
                 'data' => [
                     'regions' => [
                         '*' => [
-                            'uuid',
                             'id',
                             'label',
                             'apps' => [

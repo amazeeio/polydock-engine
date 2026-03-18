@@ -49,4 +49,12 @@ enum PolydockStoreWebhookCallStatusEnum: string implements HasColor, HasIcon, Ha
     {
         return array_column(self::cases(), 'value');
     }
+
+    public static function getOptions(): array
+    {
+        return collect(self::cases())
+            ->mapWithKeys(fn ($status) => [
+                $status->value => $status->getLabel(),
+            ])->all();
+    }
 }

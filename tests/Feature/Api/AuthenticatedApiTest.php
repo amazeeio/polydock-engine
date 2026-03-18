@@ -67,6 +67,31 @@ class AuthenticatedApiTest extends TestCase
         // The storeApp needs valid app_class that exists, or we might hit PolydockEngineAppNotFoundException. Let's ensure a mock or valid class exists.
     }
 
+    public function test_get_enums_returns_all_enum_options(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $response = $this->getJson('/api/enums');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    'PolydockAppInstanceStatus',
+                    'PolydockStoreAppStatus',
+                    'PolydockStoreStatus',
+                    'PolydockStoreWebhookCallStatus',
+                    'PolydockVariableScope',
+                    'UserGroupRole',
+                    'UserRemoteRegistrationStatus',
+                    'UserRemoteRegistrationType',
+                ],
+            ]);
+
+        $this->assertIsArray($response->json('data.PolydockAppInstanceStatus'));
+        $this->assertArrayHasKey('new', $response->json('data.PolydockAppInstanceStatus'));
+        $this->assertEquals('New', $response->json('data.PolydockAppInstanceStatus.new'));
+    }
+
     public function test_unauthenticated_requests_are_rejected(): void
     {
         $response = $this->getJson('/api/store-apps');
