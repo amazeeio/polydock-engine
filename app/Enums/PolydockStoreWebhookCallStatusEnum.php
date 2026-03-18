@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use App\Traits\HasEnumOptions;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 enum PolydockStoreWebhookCallStatusEnum: string implements HasColor, HasIcon, HasLabel
 {
+    use HasEnumOptions;
+
     case PENDING = 'pending';
     case PROCESSING = 'processing';
     case SUCCESS = 'success';
@@ -48,13 +51,5 @@ enum PolydockStoreWebhookCallStatusEnum: string implements HasColor, HasIcon, Ha
     public static function getValues(): array
     {
         return array_column(self::cases(), 'value');
-    }
-
-    public static function getOptions(): array
-    {
-        return collect(self::cases())
-            ->mapWithKeys(fn ($status) => [
-                $status->value => $status->getLabel(),
-            ])->all();
     }
 }

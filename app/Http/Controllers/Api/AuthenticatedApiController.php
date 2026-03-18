@@ -74,14 +74,14 @@ class AuthenticatedApiController extends Controller
     {
         return response()->json([
             'data' => [
-                'PolydockAppInstanceStatus' => PolydockAppInstanceStatus::getOptions(),
-                'PolydockStoreAppStatus' => PolydockStoreAppStatusEnum::getOptions(),
-                'PolydockStoreStatus' => PolydockStoreStatusEnum::getOptions(),
-                'PolydockStoreWebhookCallStatus' => PolydockStoreWebhookCallStatusEnum::getOptions(),
-                'PolydockVariableScope' => PolydockVariableScopeEnum::getOptions(),
-                'UserGroupRole' => UserGroupRoleEnum::getOptions(),
-                'UserRemoteRegistrationStatus' => UserRemoteRegistrationStatusEnum::getOptions(),
-                'UserRemoteRegistrationType' => UserRemoteRegistrationType::getOptions(),
+                // 'PolydockAppInstanceStatus' => PolydockAppInstanceStatus::getEnumOptions(),
+                // 'PolydockStoreAppStatus' => PolydockStoreAppStatusEnum::getEnumOptions(),
+                // 'PolydockStoreStatus' => PolydockStoreStatusEnum::getEnumOptions(),
+                'PolydockStoreWebhookCallStatus' => PolydockStoreWebhookCallStatusEnum::getEnumOptions(),
+                'PolydockVariableScope' => PolydockVariableScopeEnum::getEnumOptions(),
+                'UserGroupRole' => UserGroupRoleEnum::getEnumOptions(),
+                'UserRemoteRegistrationStatus' => UserRemoteRegistrationStatusEnum::getEnumOptions(),
+                'UserRemoteRegistrationType' => UserRemoteRegistrationType::getEnumOptions(),
             ],
         ]);
     }

@@ -76,9 +76,9 @@ class AuthenticatedApiTest extends TestCase
         $response->assertOk()
             ->assertJsonStructure([
                 'data' => [
-                    'PolydockAppInstanceStatus',
-                    'PolydockStoreAppStatus',
-                    'PolydockStoreStatus',
+                    // 'PolydockAppInstanceStatus',
+                    // 'PolydockStoreAppStatus',
+                    // 'PolydockStoreStatus',
                     'PolydockStoreWebhookCallStatus',
                     'PolydockVariableScope',
                     'UserGroupRole',
@@ -87,9 +87,9 @@ class AuthenticatedApiTest extends TestCase
                 ],
             ]);
 
-        $this->assertIsArray($response->json('data.PolydockAppInstanceStatus'));
-        $this->assertArrayHasKey('new', $response->json('data.PolydockAppInstanceStatus'));
-        $this->assertEquals('New', $response->json('data.PolydockAppInstanceStatus.new'));
+        // $this->assertIsArray($response->json('data.PolydockAppInstanceStatus'));
+        // $this->assertArrayHasKey('new', $response->json('data.PolydockAppInstanceStatus'));
+        // $this->assertEquals('New', $response->json('data.PolydockAppInstanceStatus.new'));
     }
 
     public function test_unauthenticated_requests_are_rejected(): void

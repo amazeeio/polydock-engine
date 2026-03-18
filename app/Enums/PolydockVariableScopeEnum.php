@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use App\Traits\HasEnumOptions;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 enum PolydockVariableScopeEnum: string implements HasColor, HasIcon, HasLabel
 {
+    use HasEnumOptions;
+
     case GLOBAL = 'global';
     case BUILD = 'build';
     case RUNTIME = 'runtime';
@@ -48,13 +51,5 @@ enum PolydockVariableScopeEnum: string implements HasColor, HasIcon, HasLabel
     public static function getValues(): array
     {
         return array_column(self::cases(), 'value');
-    }
-
-    public static function getOptions(): array
-    {
-        return collect(self::cases())
-            ->mapWithKeys(fn ($status) => [
-                $status->value => $status->getLabel(),
-            ])->all();
     }
 }
