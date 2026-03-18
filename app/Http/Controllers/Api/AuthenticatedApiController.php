@@ -62,9 +62,9 @@ class AuthenticatedApiController extends Controller
     }
 
     /**
-     * Get all available enums
+     * Get selected enums
      *
-     * Retrieve a list of all available enums used in the Polydock API and their possible values/labels.
+     * Retrieve a list of selected enums used in the Polydock API and their possible values/labels.
      *
      * @group External API
      *
