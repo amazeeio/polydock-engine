@@ -228,7 +228,9 @@ class AuthenticatedApiController extends Controller
      *  "data": {
      *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
      *    "status": "running-healthy-claimed",
-     *    "status_message": "Instance is running smoothly."
+     *    "status_message": "Instance is running smoothly.",
+     *    "claim_script_output": "https://example.com/claim-output",
+     *    "lagoon_project_name": "example-project"
      *  }
      * }
      */
@@ -241,6 +243,8 @@ class AuthenticatedApiController extends Controller
                 'uuid' => $instance->uuid,
                 'status' => $instance->status?->value,
                 'status_message' => $instance->status_message,
+                'claim_script_output' => $instance->getKeyValue('claim-command-output'),
+                'lagoon_project_name' => $instance->name,
             ],
         ]);
     }

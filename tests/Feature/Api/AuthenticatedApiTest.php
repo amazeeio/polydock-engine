@@ -180,6 +180,7 @@ class AuthenticatedApiTest extends TestCase
             'polydock_store_app_id' => $this->storeApp->id,
         ]);
 
+        $instance->storeKeyValue('claim-command-output', 'https://example.com/claim-output');
         $instance->setStatus(PolydockAppInstanceStatus::PRE_CREATE_RUNNING, 'Creating...');
         $instance->save();
 
@@ -188,6 +189,8 @@ class AuthenticatedApiTest extends TestCase
         $response->assertOk();
         $this->assertEquals($instance->status->value, $response->json('data.status'));
         $this->assertEquals('Creating...', $response->json('data.status_message'));
+        $this->assertEquals('https://example.com/claim-output', $response->json('data.claim_script_output'));
+        $this->assertEquals($instance->name, $response->json('data.lagoon_project_name'));
     }
 
     public function test_delete_instance_sets_pre_remove_status(): void
