@@ -38,7 +38,8 @@ class AppServiceProvider extends ServiceProvider
             document: '/api/openapi.json',
         )
         ->withDocumentTransformers(function (OpenApi $openApi) {
-            $openApi->secure(
+            $openApi->components->addSecurityScheme(
+                'BearerAuth',
                 SecurityScheme::http('bearer')
             );
         });
