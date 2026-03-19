@@ -143,12 +143,14 @@ class AuthenticatedApiController extends Controller
      *
      * @bodyParam email email required The email address of the user. Example: new.user@example.com
      * @bodyParam storeAppId string required The UUID of the store app to provision. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
+     * @bodyParam name string optional The display name for this instance. Defaults to lagoon-project-name if not provided. Example: "My awesome instance"
      * @bodyParam config object optional Key-value overrides or configurations for this individual deployment. Example: {"lagoon_auto_idle": "1"}
      *
      * @response 201 {
      *  "message": "Instance provisioned",
      *  "data": {
      *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
+     *    "name": "My awesome instance",
      *    "status": "new"
      *  }
      * }
@@ -158,6 +160,7 @@ class AuthenticatedApiController extends Controller
         $request->validate([
             'email' => 'required|email',
             'storeAppId' => 'required|string|exists:polydock_store_apps,uuid',
+            'name' => 'nullable|string|max:255',
             'config' => 'nullable|array',
             'config.*' => [
                 'nullable',
@@ -192,11 +195,15 @@ class AuthenticatedApiController extends Controller
 
         $storeApp = PolydockStoreApp::where('uuid', $request->input('storeAppId'))->firstOrFail();
 
-        // Use the existing allocation mechanism or create a new instance
-        $instance = UserGroup::getNewAppInstanceForThisAppForThisGroup($storeApp, $primaryGroup);
-
         // Apply config if provided
         $config = $request->input('config', []);
+
+        // Use name from request, or fallback to lagoon-project-name from config if provided
+        $name = $request->input('name') ?? $config['lagoon-project-name'] ?? null;
+
+        // Use the existing allocation mechanism or create a new instance
+        $instance = UserGroup::getNewAppInstanceForThisAppForThisGroup($storeApp, $primaryGroup, $name ? (string) $name : null);
+
         if (! empty($config)) {
             foreach ($config as $key => $value) {
                 // If it's a known root column we could update it, otherwise data blob key-value store
@@ -208,6 +215,7 @@ class AuthenticatedApiController extends Controller
             'message' => 'Instance provisioned',
             'data' => [
                 'uuid' => $instance->uuid,
+                'name' => $instance->name,
                 'status' => $instance->status?->value,
             ],
         ], 201);

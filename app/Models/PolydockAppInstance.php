@@ -283,7 +283,15 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 // Set the app type using the store app's class
                 $model->setAppType($storeApp->polydock_app_class);
 
-                $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
+                if (empty($model->name)) {
+                    $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
+                }
+
+                // Ensure name uniqueness
+                $baseName = $model->name;
+                while (static::where('name', $model->name)->exists()) {
+                    $model->name = $baseName . '-' . strtolower(Str::random(4));
+                }
 
                 // Fill the UUID
                 $model->uuid = Str::uuid()->toString();
