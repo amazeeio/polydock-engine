@@ -162,8 +162,8 @@ class AuthenticatedApiController extends Controller
             'config.*' => [
                 'nullable',
                 function ($attribute, $value, $fail) {
-                    if (is_array($value) || is_object($value)) {
-                        $fail('The ' . $attribute . ' must be a scalar value.');
+                    if (\is_array($value) || \is_object($value)) {
+                        $fail('The '.$attribute.' must be a scalar value.');
                     }
                 },
             ],
@@ -229,7 +229,7 @@ class AuthenticatedApiController extends Controller
      *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
      *    "status": "running-healthy-claimed",
      *    "status_message": "Instance is running smoothly.",
-     *    "claim_script_output": "https://example.com/claim-output",
+     *    "lagoon_claim_script": "/lagoon/polydock_claim.sh",
      *    "lagoon_project_name": "example-project"
      *  }
      * }
@@ -243,8 +243,8 @@ class AuthenticatedApiController extends Controller
                 'uuid' => $instance->uuid,
                 'status' => $instance->status?->value,
                 'status_message' => $instance->status_message,
-                'claim_script_output' => $instance->getKeyValue('claim-command-output'),
-                'lagoon_project_name' => $instance->name,
+                'lagoon_claim_script' => $instance->getKeyValue(key: 'lagoon-claim-script'),
+                'lagoon_project_name' => $instance->getKeyValue(key: 'lagoon-project-name'),
             ],
         ]);
     }

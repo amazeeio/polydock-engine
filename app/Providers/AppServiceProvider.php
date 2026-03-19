@@ -37,11 +37,11 @@ class AppServiceProvider extends ServiceProvider
             ui: '/api',
             document: '/api/openapi.json',
         )
-        ->withDocumentTransformers(function (OpenApi $openApi) {
-            $openApi->secure(
-                SecurityScheme::http('bearer')->as('BearerAuth')
-            );
-        });
+            ->withDocumentTransformers(function (OpenApi $openApi) {
+                $openApi->secure(
+                    SecurityScheme::http('bearer')->as('BearerAuth')
+                );
+            });
 
         Scramble::routes(fn (Route $route) => str_starts_with($route->uri(), 'api/'));
     }

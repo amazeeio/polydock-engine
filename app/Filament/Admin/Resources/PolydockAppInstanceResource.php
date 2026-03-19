@@ -301,7 +301,7 @@ class PolydockAppInstanceResource extends Resource
                 ->columnSpanFull()
                 ->bulleted();
 
-            if (is_array($value)) {
+            if (\is_array($value)) {
                 $renderedItem->state($value);
             } else {
                 $renderedItem->state([$value]);

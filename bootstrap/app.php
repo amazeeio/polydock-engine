@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\EnsureInstancesReadAbility;
+use App\Http\Middleware\EnsureInstancesWriteAbility;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -15,8 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
-            'instances.read.ability' => \App\Http\Middleware\EnsureInstancesReadAbility::class,
-            'instances.write.ability' => \App\Http\Middleware\EnsureInstancesWriteAbility::class,
+            'instances.read.ability' => EnsureInstancesReadAbility::class,
+            'instances.write.ability' => EnsureInstancesWriteAbility::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
