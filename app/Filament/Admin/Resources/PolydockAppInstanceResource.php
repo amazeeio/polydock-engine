@@ -266,14 +266,14 @@ class PolydockAppInstanceResource extends Resource
 
                 Section::make('Instance Configuration')
                     ->description('Instance-specific settings configured at creation.')
-                    ->schema(fn ($record) => self::getRenderedInstanceConfigForRecord($record))
-                    ->visible(fn ($record) => self::hasInstanceConfigFields($record))
+                    ->schema(self::getRenderedInstanceConfigForRecord(...))
+                    ->visible(self::hasInstanceConfigFields(...))
                     ->columnSpan(3)
                     ->collapsible(),
 
                 Section::make('Instance Data')
                     ->description('Safe data that can be shared with webhooks')
-                    ->schema(fn ($record) => self::getRenderedSafeDataForRecord($record))
+                    ->schema(self::getRenderedSafeDataForRecord(...))
                     ->columnSpan(3)
                     ->collapsible(),
             ])
@@ -294,7 +294,7 @@ class PolydockAppInstanceResource extends Resource
                 $value = 'N/A';
             }
 
-            $renderKey = 'webhook_data_'.$key;
+            $renderKey = "webhook_data_{$key}";
             $renderedItem = TextEntry::make($renderKey)
                 ->label($key)
                 ->markdown()
@@ -363,7 +363,7 @@ class PolydockAppInstanceResource extends Resource
             // Check if value should be masked (for encrypted fields)
             $isEncrypted = $record->isPolydockVariableEncrypted($fieldName);
 
-            $renderedItem = TextEntry::make('instance_config_display_'.$fieldName)
+            $renderedItem = TextEntry::make("instance_config_display_{$fieldName}")
                 ->label($labelName);
 
             if ($isEncrypted && $value !== null && $value !== '') {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "845a7c0612806aecef24ddc2a8656180",
+    "content-hash": "21671b993795f609ac107199f42e6251",
     "packages": [
         {
             "name": "amazeeio/lagoon-logs",
