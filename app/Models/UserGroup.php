@@ -25,9 +25,33 @@ class UserGroup extends Model
      */
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'user_group_user')
+        return $this->belongsToMany(User::class, 'user_user_group')
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    /**
+     * Get the users who are owners of the group.
+     */
+    public function owners(): BelongsToMany
+    {
+        return $this->users()->wherePivot('role', UserGroupRoleEnum::OWNER->value);
+    }
+
+    /**
+     * Get the users who are members of the group.
+     */
+    public function members(): BelongsToMany
+    {
+        return $this->users()->wherePivot('role', UserGroupRoleEnum::MEMBER->value);
+    }
+
+    /**
+     * Get the users who are viewers of the group.
+     */
+    public function viewers(): BelongsToMany
+    {
+        return $this->users()->wherePivot('role', UserGroupRoleEnum::VIEWER->value);
     }
 
     /**
