@@ -290,7 +290,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 // Ensure name uniqueness
                 $baseName = $model->name;
                 while (static::where('name', $model->name)->exists()) {
-                    $model->name = $baseName . '-' . strtolower(Str::random(4));
+                    $model->name = $baseName.'-'.strtolower(Str::random(4));
                 }
 
                 // Fill the UUID
