@@ -566,7 +566,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function getKeyValue(string $key): mixed
     {
-        return data_get($this->data, $key);
+        return data_get($this->data, $key, '');
     }
 
     /**
