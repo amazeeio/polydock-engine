@@ -304,7 +304,8 @@ class PolydockAppInstanceResource extends Resource
 
                             foreach ($safeData as $key => $value) {
                                 // Split combined key-value strings like "instance_config_VAR=VALUE"
-                                if (\is_string($value) && str_contains($value, '=')) {
+                                // but skip if it's a URL or if the key is already a non-numeric string.
+                                if (\is_int($key) && \is_string($value) && str_contains($value, '=') && ! str_starts_with($value, 'http')) {
                                     [$newKey, $newValue] = explode('=', (string) $value, 2);
                                     $key = $newKey;
                                     $value = $newValue;
