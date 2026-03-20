@@ -37,9 +37,10 @@ class RemoveAppInstancesByEmail extends Command
 
         // Check if this is a pattern (contains %) or exact email
         $isPattern = str_contains($email, '%');
-        
+
         if (! $isPattern && ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->error('Invalid email address provided. Use % for wildcard patterns (e.g., %@example.com).');
+
             return 1;
         }
 
@@ -60,6 +61,7 @@ class RemoveAppInstancesByEmail extends Command
 
         if ($instances->isEmpty()) {
             $this->info("No app instances found matching {$searchType}: {$email}");
+
             return 0;
         }
 

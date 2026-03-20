@@ -6,6 +6,8 @@ namespace App\Providers;
 
 use App\Services\PolydockAppClassDiscovery;
 use Dedoc\Scramble\Scramble;
+use Dedoc\Scramble\Support\Generator\OpenApi;
+use Dedoc\Scramble\Support\Generator\SecurityScheme;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Gate;
@@ -34,7 +36,12 @@ class AppServiceProvider extends ServiceProvider
         Scramble::configure()->expose(
             ui: '/api',
             document: '/api/openapi.json',
-        );
+        )
+            ->withDocumentTransformers(function (OpenApi $openApi) {
+                $openApi->secure(
+                    SecurityScheme::http('bearer')->as('BearerAuth')
+                );
+            });
 
         Scramble::routes(fn (Route $route) => str_starts_with($route->uri(), 'api/'));
     }
