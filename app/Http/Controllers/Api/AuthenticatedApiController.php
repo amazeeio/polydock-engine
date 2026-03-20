@@ -144,7 +144,17 @@ class AuthenticatedApiController extends Controller
      * @bodyParam email email required The email address of the user. Example: new.user@example.com
      * @bodyParam storeAppId string required The UUID of the store app to provision. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
      * @bodyParam name string optional The display name for this instance. Defaults to lagoon-project-name if not provided. Example: "My awesome instance"
-     * @bodyParam config object optional Key-value overrides or configurations for this individual deployment. Example: {"lagoon_auto_idle": "1"}
+     * @bodyParam secret object optional Sensitive AI and VectorDB credentials. Example: {"ai": {"llm_url": "https://llm", "api_key": "sk-123"}, "vector": {"db_host": "localhost", "db_port": 5432, "db_name": "db_d1234", "db_user": "admin", "db_pass": "pass"}}
+     * @bodyParam secret.ai object optional AI LLM configuration.
+     * @bodyParam secret.ai.llm_url string optional The LLM API base URL. Example: https://llm.local
+     * @bodyParam secret.ai.api_key string optional The LLM API key. Example: sk-123...
+     * @bodyParam secret.vector object optional Vector Database configuration.
+     * @bodyParam secret.vector.db_host string optional The database host. Example: localhost
+     * @bodyParam secret.vector.db_port int optional The database port. Example: 5432
+     * @bodyParam secret.vector.db_name string optional The database name. Example: db_d1234
+     * @bodyParam secret.vector.db_user string optional The database username. Example: admin
+     * @bodyParam secret.vector.db_pass string optional The database password. Example: secret-pass
+     * @bodyParam config object optional Key-value overrides or configurations for this individual deployment. Example: {"lagoon-auto-idle": "1"}
      *
      * @response 201 {
      *  "message": "Instance provisioned",
@@ -161,12 +171,31 @@ class AuthenticatedApiController extends Controller
             'email' => 'required|email',
             'storeAppId' => 'required|string|exists:polydock_store_apps,uuid',
             'name' => 'nullable|string|max:255',
+            'secret' => 'nullable|array',
+            'secret.ai' => 'nullable|array',
+            'secret.ai.llm_url' => 'nullable|string',
+            'secret.ai.api_key' => 'nullable|string',
+            'secret.vector' => 'nullable|array',
+            'secret.vector.db_host' => 'nullable|string',
+            'secret.vector.db_port' => 'nullable|integer',
+            'secret.vector.db_name' => 'nullable|string',
+            'secret.vector.db_user' => 'nullable|string',
+            'secret.vector.db_pass' => 'nullable|string',
             'config' => 'nullable|array',
             'config.*' => [
                 'nullable',
                 function ($attribute, $value, $fail) {
+                    // Allow 'secret' to be an array if passed within config (legacy support)
+                    if (str_ends_with($attribute, '.secret')) {
+                        if (! \is_array($value)) {
+                            $fail("The {$attribute} must be an array.");
+                        }
+
+                        return;
+                    }
+
                     if (\is_array($value) || \is_object($value)) {
-                        $fail('The '.$attribute.' must be a scalar value.');
+                        $fail("The {$attribute} must be a scalar value.");
                     }
                 },
             ],
@@ -204,10 +233,19 @@ class AuthenticatedApiController extends Controller
         // Use the existing allocation mechanism or create a new instance
         $instance = UserGroup::getNewAppInstanceForThisAppForThisGroup($storeApp, $primaryGroup, $name ? (string) $name : null);
 
+        // Handle top-level secret if provided
+        if ($request->filled('secret')) {
+            $instance->storeKeyValue('secret', $request->input('secret'));
+        }
+
         if (! empty($config)) {
             foreach ($config as $key => $value) {
                 // If it's a known root column we could update it, otherwise data blob key-value store
-                $instance->storeKeyValue((string) $key, (string) $value);
+                // Skip if we already stored it from top-level secret to avoid overwriting with potentially partial data
+                if ((string) $key === 'secret' && $request->filled('secret')) {
+                    continue;
+                }
+                $instance->storeKeyValue((string) $key, $value === null ? '' : $value);
             }
         }
 

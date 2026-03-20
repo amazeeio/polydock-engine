@@ -213,4 +213,88 @@ class AuthenticatedApiTest extends TestCase
         $instance->refresh();
         $this->assertEquals(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, $instance->status);
     }
+
+    public function test_create_instance_with_custom_name_and_secrets(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $customName = 'My Custom Instance';
+        $secret = [
+            'llm_key' => 'secret-api-key',
+            'llm_url' => 'https://llm.local',
+        ];
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+            'name' => $customName,
+            'config' => [
+                'secret' => $secret,
+            ],
+        ]);
+
+        $response->assertCreated();
+        $this->assertEquals($customName, $response->json('data.name'));
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($customName, $instance->name);
+        $this->assertEquals($secret, $instance->getKeyValue('secret'));
+    }
+
+    public function test_create_instance_ensures_unique_name(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $duplicateName = 'duplicate-name';
+
+        // Create first instance
+        PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'name' => $duplicateName,
+        ]);
+
+        // Create second instance with same name
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+            'name' => $duplicateName,
+        ]);
+
+        $response->assertCreated();
+        $newName = $response->json('data.name');
+
+        $this->assertNotEquals($duplicateName, $newName);
+        $this->assertStringContainsString($duplicateName, $newName);
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($newName, $instance->name);
+        $this->assertEquals($newName, $instance->getKeyValue('lagoon-project-name'));
+    }
+
+    public function test_create_instance_with_nested_secrets(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $secret = [
+            'ai' => [
+                'llm_url' => 'https://ai.example.com',
+                'api_key' => 'ai-secret-123',
+            ],
+            'vector' => [
+                'db_host' => 'vectordb.example.com',
+                'db_port' => 5432,
+            ],
+        ];
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+            'secret' => $secret,
+        ]);
+
+        $response->assertCreated();
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($secret, $instance->getKeyValue('secret'));
+    }
 }
