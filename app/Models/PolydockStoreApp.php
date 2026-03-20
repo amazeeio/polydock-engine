@@ -219,7 +219,7 @@ class PolydockStoreApp extends Model
     /**
      * Get the Lagoon deploy private key attribute
      */
-    public function getLagoonDeployPrivateKeyAttribute(): string
+    public function getLagoonDeployPrivateKeyAttribute(): ?string
     {
         return $this->store->lagoon_deploy_private_key;
     }
