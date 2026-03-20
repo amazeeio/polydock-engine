@@ -17,159 +17,78 @@ class UserGroup extends Model
 
     protected $fillable = [
         'name',
+        'slug',
     ];
 
     /**
-     * Get all users in this group
-     *
-     * @return BelongsToMany
+     * Get the users associated with the group.
      */
-    public function users()
+    public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'user_user_group', 'user_group_id', 'user_id')
+        return $this->belongsToMany(User::class, 'user_group_user')
             ->withPivot('role')
             ->withTimestamps();
     }
 
     /**
-     * Get all users with 'owner' role in this group
-     *
-     * @return BelongsToMany
-     */
-    public function owners()
-    {
-        return $this->belongsToMany(User::class, 'user_user_group')
-            ->wherePivot('role', UserGroupRoleEnum::OWNER->value);
-    }
-
-    /**
-     * Get all users with 'member' role in this group
-     *
-     * @return BelongsToMany
-     */
-    public function members()
-    {
-        return $this->belongsToMany(User::class, 'user_user_group')
-            ->wherePivot('role', UserGroupRoleEnum::MEMBER->value);
-    }
-
-    /**
-     * Get all users with 'viewer' role in this group
-     *
-     * @return BelongsToMany
-     */
-    public function viewers()
-    {
-        return $this->belongsToMany(User::class, 'user_user_group')
-            ->wherePivot('role', UserGroupRoleEnum::VIEWER->value);
-    }
-
-    /**
-     * Get all app instances for this group
+     * Get the app instances associated with the group.
      */
     public function appInstances(): HasMany
     {
         return $this->hasMany(PolydockAppInstance::class);
     }
 
-    /**
-     * Get pending app instances
-     */
-    public function appInstancesPending(): HasMany
-    {
-        return $this->appInstances()
-            ->whereIn('status', PolydockAppInstance::$pendingStatuses);
-    }
-
-    /**
-     * Get completed app instances
-     */
-    public function appInstancesCompleted(): HasMany
-    {
-        return $this->appInstances()
-            ->whereIn('status', PolydockAppInstance::$completedStatuses);
-    }
-
-    /**
-     * Get failed app instances
-     */
-    public function appInstancesFailed(): HasMany
-    {
-        return $this->appInstances()
-            ->whereIn('status', PolydockAppInstance::$failedStatuses);
-    }
-
-    /**
-     * Get polling app instances
-     */
-    public function appInstancesPolling(): HasMany
-    {
-        return $this->appInstances()
-            ->whereIn('status', PolydockAppInstance::$pollingStatuses);
-    }
-
-    /**
-     * Get create stage app instances
-     */
     public function appInstancesStageCreate(): HasMany
     {
-        return $this->appInstances()
-            ->whereIn('status', PolydockAppInstance::$stageCreateStatuses);
+        return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageCreateStatuses);
     }
 
-    /**
-     * Get deploy stage app instances
-     */
     public function appInstancesStageDeploy(): HasMany
     {
-        return $this->appInstances()
-            ->whereIn('status', PolydockAppInstance::$stageDeployStatuses);
+        return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageDeployStatuses);
     }
 
-    /**
-     * Get remove stage app instances
-     */
-    public function appInstancesStageRemove(): HasMany
-    {
-        return $this->appInstances()
-            ->whereIn('status', PolydockAppInstance::$stageRemoveStatuses);
-    }
-
-    /**
-     * Get upgrade stage app instances
-     */
     public function appInstancesStageUpgrade(): HasMany
     {
-        return $this->appInstances()
-            ->whereIn('status', PolydockAppInstance::$stageUpgradeStatuses);
+        return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageUpgradeStatuses);
     }
 
-    /**
-     * Get running stage app instances
-     */
+    public function appInstancesStageRemove(): HasMany
+    {
+        return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageRemoveStatuses);
+    }
+
     public function appInstancesStageRunning(): HasMany
     {
-        return $this->appInstances()
-            ->whereIn('status', PolydockAppInstance::$stageRunningStatuses);
+        return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageRunningStatuses);
+    }
+
+    public function appInstancesFailed(): HasMany
+    {
+        return $this->appInstances()->whereIn('status', PolydockAppInstance::$failedStatuses);
     }
 
     /**
-     * Boot the model
+     * Get the group name.
      */
-    #[\Override]
-    protected static function booted()
+    public function getName(): string
     {
-        static::saving(function ($userGroup) {
-            $userGroup->name = preg_replace('/\s+/', ' ', trim((string) $userGroup->name));
-        });
+        return $this->name;
+    }
+
+    protected static function boot()
+    {
+        parent::boot();
 
         static::creating(function ($userGroup) {
-            if (! $userGroup->slug) {
+            if (empty($userGroup->slug)) {
                 $slug = Str::slug($userGroup->name);
+                $originalSlug = $slug;
                 $count = 1;
 
                 while (static::where('slug', $slug)->exists()) {
-                    $slug = Str::slug($userGroup->name).'-'.$count++;
+                    $slug = $originalSlug.'-'.$count;
+                    $count++;
                 }
 
                 $userGroup->slug = $slug;

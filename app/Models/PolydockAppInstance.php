@@ -111,11 +111,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     private PolydockAppLoggerInterface $logger;
 
-    /**
-     * The name of the app instance
-     */
-    private string $name;
-
     // Add default sensitive keys specific to app instances
     protected array $sensitiveDataKeys = [
         // Exact matches
@@ -431,7 +426,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->attributes['name'] = $name;
 
         return $this;
     }
@@ -550,10 +545,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * Store a key-value pair for the app instance
      *
      * @param  string  $key  The key to store
-     * @param  string  $value  The value to store
+     * @param  mixed  $value  The value to store
      * @return self Returns the instance for method chaining
      */
-    public function storeKeyValue(string $key, string $value): self
+    public function storeKeyValue(string $key, mixed $value): self
     {
         $resultData = $this->data ?? [];
         data_set($resultData, $key, $value);
@@ -567,11 +562,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * Get a stored value by key
      *
      * @param  string  $key  The key to retrieve
-     * @return string The stored value, or empty string if not found
+     * @return mixed The stored value, or empty string if not found
      */
-    public function getKeyValue(string $key): string
+    public function getKeyValue(string $key): mixed
     {
-        return data_get($this->data, $key) ?? '';
+        return data_get($this->data, $key);
     }
 
     /**
