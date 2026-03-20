@@ -55,20 +55,19 @@
         },
         {
             "name": "amazeeio/polydock-app-amazeeclaw",
-            "version": "v0.1.7",
+            "version": "v0.1.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeclaw.git",
-                "reference": "603312a19812e89ff332304f58940b68a76a45ab"
+                "reference": "c43274ae5042acd1a6a36167d74f8ab59ce63338"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeclaw/zipball/603312a19812e89ff332304f58940b68a76a45ab",
-                "reference": "603312a19812e89ff332304f58940b68a76a45ab",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeclaw/zipball/c43274ae5042acd1a6a36167d74f8ab59ce63338",
+                "reference": "c43274ae5042acd1a6a36167d74f8ab59ce63338",
                 "shasum": ""
             },
             "require": {
-                "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.1",
                 "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.1"
             },
             "type": "library",
@@ -84,9 +83,9 @@
             "description": "Polydock App - AmazeeClaw AI",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeclaw/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeclaw/tree/v0.1.7"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeclaw/tree/v0.1.8"
             },
-            "time": "2026-02-24T01:49:32+00:00"
+            "time": "2026-03-20T22:03:00+00:00"
         },
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
