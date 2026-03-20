@@ -11,8 +11,10 @@ class HasWebhookSensitiveDataTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->traitObject = new class {
+        $this->traitObject = new class
+        {
             use HasWebhookSensitiveData;
+
             public $sensitiveDataKeys;
         };
     }
@@ -20,7 +22,7 @@ class HasWebhookSensitiveDataTest extends TestCase
     public function test_get_sensitive_data_keys_returns_defaults()
     {
         $keys = $this->traitObject->getSensitiveDataKeys();
-        
+
         $this->assertIsArray($keys);
         $this->assertContains('private_key', $keys);
         $this->assertContains('secret', $keys);
@@ -30,7 +32,7 @@ class HasWebhookSensitiveDataTest extends TestCase
     {
         $this->traitObject->registerSensitiveDataKeys('new_key');
         $keys = $this->traitObject->getSensitiveDataKeys();
-        
+
         $this->assertContains('new_key', $keys);
         $this->assertContains('private_key', $keys);
     }
@@ -39,7 +41,7 @@ class HasWebhookSensitiveDataTest extends TestCase
     {
         $this->traitObject->registerSensitiveDataKeys(['key1', 'key2']);
         $keys = $this->traitObject->getSensitiveDataKeys();
-        
+
         $this->assertContains('key1', $keys);
         $this->assertContains('key2', $keys);
         $this->assertContains('private_key', $keys);

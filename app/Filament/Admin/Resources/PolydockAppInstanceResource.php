@@ -328,7 +328,7 @@ class PolydockAppInstanceResource extends Resource
 
                             return $redactedData;
                         })
-                        ->columnSpan(2)
+                        ->columnSpan(2),
                 ])
                 ->columns(3),
         ];
