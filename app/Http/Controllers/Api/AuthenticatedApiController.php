@@ -154,7 +154,7 @@ class AuthenticatedApiController extends Controller
      * @bodyParam secret.vector.db_name string optional The database name. Example: db_d1234
      * @bodyParam secret.vector.db_user string optional The database username. Example: admin
      * @bodyParam secret.vector.db_pass string optional The database password. Example: secret-pass
-     * @bodyParam config object optional Key-value overrides or configurations for this individual deployment. Example: {"lagoon_auto_idle": "1"}
+     * @bodyParam config object optional Key-value overrides or configurations for this individual deployment. Example: {"lagoon-auto-idle": "1"}
      *
      * @response 201 {
      *  "message": "Instance provisioned",
