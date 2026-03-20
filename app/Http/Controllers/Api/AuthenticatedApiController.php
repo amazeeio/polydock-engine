@@ -245,7 +245,7 @@ class AuthenticatedApiController extends Controller
                 if ((string) $key === 'secret' && $request->has('secret')) {
                     continue;
                 }
-                $instance->storeKeyValue((string) $key, $value);
+                $instance->storeKeyValue((string) $key, $value === null ? '' : $value);
             }
         }
 
