@@ -36,8 +36,6 @@ return [
 
     'expire_on_close' => env('SESSION_EXPIRE_ON_CLOSE', false),
 
-    'secure' => env('SESSION_SECURE_COOKIE', false),
-
     /*
     |--------------------------------------------------------------------------
     | Session Encryption

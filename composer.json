@@ -19,7 +19,7 @@
         "filament/filament": "^3.2",
         "freedomtech-hosting/ft-lagoon-php": "^0.0.16",
         "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.1",
-        "freedomtech-hosting/polydock-app": "^0.0.32",
+        "freedomtech-hosting/polydock-app": "^0.0.33",
         "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.1",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.30",

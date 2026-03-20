@@ -546,7 +546,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      *
      * @param  string  $key  The key to store
      * @param  mixed  $value  The value to store
-     * @return self Returns the instance for method chaining
+     * @return PolydockAppInstanceInterface Returns the instance for method chaining
      */
     public function storeKeyValue(string $key, $value): PolydockAppInstanceInterface
     {
