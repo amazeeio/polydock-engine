@@ -12,6 +12,7 @@ use App\Services\PolydockAppClassDiscovery;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
@@ -245,6 +246,15 @@ class PolydockAppInstanceResource extends Resource
                                         ),
                                     ),
                             ]),
+                        Grid::make(2)
+                            ->schema([
+                                TextEntry::make('app_url')
+                                    ->label('App URL')
+                                    ->url(fn ($record) => $record->app_url)
+                                    ->openUrlInNewTab()
+                                    ->icon('heroicon-m-link')
+                                    ->iconColor('primary'),
+                            ]),
                     ])
                     ->columnSpan(2),
 
@@ -282,35 +292,45 @@ class PolydockAppInstanceResource extends Resource
 
     public static function getRenderedSafeDataForRecord(PolydockAppInstance $record): array
     {
-        $safeData = $record->data;
-        $sensitiveKeys = $record->getSensitiveDataKeys();
-        $renderedArray = [];
-        foreach ($safeData as $key => $value) {
-            if ($record->shouldFilterKey($key, $sensitiveKeys)) {
-                $value = 'REDACTED';
-            }
+        return [
+            Grid::make()
+                ->schema([
+                    KeyValueEntry::make('data')
+                        ->label('')
+                        ->state(function (PolydockAppInstance $record) {
+                            $safeData = $record->data ?? [];
+                            $sensitiveKeys = $record->getSensitiveDataKeys();
+                            $redactedData = [];
 
-            if ($value === null) {
-                $value = 'N/A';
-            }
+                            foreach ($safeData as $key => $value) {
+                                // Split combined key-value strings like "instance_config_VAR=VALUE"
+                                if (\is_string($value) && str_contains($value, '=')) {
+                                    [$newKey, $newValue] = explode('=', (string) $value, 2);
+                                    $key = $newKey;
+                                    $value = $newValue;
+                                }
 
-            $renderKey = "webhook_data_{$key}";
-            $renderedItem = TextEntry::make($renderKey)
-                ->label($key)
-                ->markdown()
-                ->columnSpanFull()
-                ->bulleted();
+                                if ($record->shouldFilterKey($key, $sensitiveKeys)) {
+                                    $value = 'REDACTED';
+                                }
 
-            if (\is_array($value)) {
-                $renderedItem->state($value);
-            } else {
-                $renderedItem->state([$value]);
-            }
+                                if ($value === null) {
+                                    $value = 'N/A';
+                                }
 
-            $renderedArray[] = $renderedItem;
-        }
+                                if (\is_array($value)) {
+                                    $value = json_encode($value);
+                                }
 
-        return $renderedArray;
+                                $redactedData[$key] = $value;
+                            }
+
+                            return $redactedData;
+                        })
+                        ->columnSpan(2)
+                ])
+                ->columns(3),
+        ];
     }
 
     /**

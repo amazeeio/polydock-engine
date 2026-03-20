@@ -4,7 +4,6 @@ namespace App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
-use App\Jobs\ProcessUserRemoteRegistration;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
 use App\Services\PolydockAppClassDiscovery;
@@ -216,9 +215,6 @@ class CreatePolydockAppInstance extends Page
                 'registration_id' => $registration->id,
                 'registration_uuid' => $registration->uuid,
             ]);
-
-            // Dispatch the job to process the registration
-            ProcessUserRemoteRegistration::dispatch($registration);
 
             Notification::make()
                 ->title('Instance creation started')
