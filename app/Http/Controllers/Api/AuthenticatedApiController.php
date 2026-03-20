@@ -234,7 +234,7 @@ class AuthenticatedApiController extends Controller
         $instance = UserGroup::getNewAppInstanceForThisAppForThisGroup($storeApp, $primaryGroup, $name ? (string) $name : null);
 
         // Handle top-level secret if provided
-        if ($request->has('secret')) {
+        if ($request->filled('secret')) {
             $instance->storeKeyValue('secret', $request->input('secret'));
         }
 
@@ -242,7 +242,7 @@ class AuthenticatedApiController extends Controller
             foreach ($config as $key => $value) {
                 // If it's a known root column we could update it, otherwise data blob key-value store
                 // Skip if we already stored it from top-level secret to avoid overwriting with potentially partial data
-                if ((string) $key === 'secret' && $request->has('secret')) {
+                if ((string) $key === 'secret' && $request->filled('secret')) {
                     continue;
                 }
                 $instance->storeKeyValue((string) $key, $value === null ? '' : $value);
