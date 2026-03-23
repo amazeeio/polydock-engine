@@ -111,11 +111,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     private PolydockAppLoggerInterface $logger;
 
-    /**
-     * The name of the app instance
-     */
-    private string $name;
-
     // Add default sensitive keys specific to app instances
     protected array $sensitiveDataKeys = [
         // Exact matches
@@ -283,7 +278,15 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 // Set the app type using the store app's class
                 $model->setAppType($storeApp->polydock_app_class);
 
-                $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
+                if (empty($model->name)) {
+                    $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
+                }
+
+                // Ensure name uniqueness
+                $baseName = $model->name;
+                while (static::where('name', $model->name)->exists()) {
+                    $model->name = $baseName.'-'.strtolower(Str::random(4));
+                }
 
                 // Fill the UUID
                 $model->uuid = Str::uuid()->toString();
@@ -423,7 +426,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function setName(string $name): self
     {
-        $this->name = $name;
+        $this->attributes['name'] = $name;
 
         return $this;
     }
@@ -542,10 +545,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * Store a key-value pair for the app instance
      *
      * @param  string  $key  The key to store
-     * @param  string  $value  The value to store
-     * @return self Returns the instance for method chaining
+     * @param  mixed  $value  The value to store
+     * @return PolydockAppInstanceInterface Returns the instance for method chaining
      */
-    public function storeKeyValue(string $key, string $value): self
+    public function storeKeyValue(string $key, $value): PolydockAppInstanceInterface
     {
         $resultData = $this->data ?? [];
         data_set($resultData, $key, $value);
@@ -559,11 +562,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * Get a stored value by key
      *
      * @param  string  $key  The key to retrieve
-     * @return string The stored value, or empty string if not found
+     * @return mixed The stored value, or empty string if not found
      */
-    public function getKeyValue(string $key): string
+    public function getKeyValue(string $key): mixed
     {
-        return data_get($this->data, $key) ?? '';
+        return data_get($this->data, $key, '');
     }
 
     /**

@@ -2,12 +2,15 @@
 
 namespace App\Enums;
 
+use App\Traits\HasEnumOptions;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 enum UserRemoteRegistrationStatusEnum: string implements HasColor, HasIcon, HasLabel
 {
+    use HasEnumOptions;
+
     case PENDING = 'pending';
     case PROCESSING = 'processing';
     case SUCCESS = 'success';
@@ -46,13 +49,5 @@ enum UserRemoteRegistrationStatusEnum: string implements HasColor, HasIcon, HasL
     public static function getValues(): array
     {
         return array_column(self::cases(), 'value');
-    }
-
-    public static function getOptions(): array
-    {
-        return collect(self::cases())
-            ->mapWithKeys(fn ($status) => [
-                $status->value => $status->getLabel(),
-            ])->all();
     }
 }

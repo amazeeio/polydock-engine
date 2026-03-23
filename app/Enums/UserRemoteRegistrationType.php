@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use App\Traits\HasEnumOptions;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 enum UserRemoteRegistrationType: string implements HasColor, HasIcon, HasLabel
 {
+    use HasEnumOptions;
+
     case TEST_FAIL = 'TEST_FAIL';
     case REQUEST_TRIAL = 'REQUEST_TRIAL';
     case REQUEST_TRIAL_UNLISTED_REGION = 'REQUEST_TRIAL_UNLISTED_REGION';
