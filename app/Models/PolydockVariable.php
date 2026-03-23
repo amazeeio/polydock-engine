@@ -35,7 +35,7 @@ class PolydockVariable extends Model
             try {
                 return Crypt::decryptString($this->value);
             } catch (DecryptException $e) {
-                Log::error('PolydockVariable decryption failed for variable name: ' . ($this->name ?? 'unknown') . '. Error: ' . $e->getMessage());
+                Log::error('PolydockVariable decryption failed for variable name: '.($this->name ?? 'unknown').'. Error: '.$e->getMessage());
 
                 return '[DECRYPTION_FAILED: PLEASE_RESET_VALUE]';
             }

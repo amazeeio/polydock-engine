@@ -115,6 +115,131 @@ class PolydockStoreAppResource extends Resource
                     ])
                     ->columns(2)
                     ->collapsible(),
+                Section::make('Lagoon Scripts')
+                    ->description('Scripts to be executed at various stages of the application lifecycle.')
+                    ->schema([
+                        Section::make('Post Deploy')
+                            ->collapsed()
+                            ->collapsible()
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_post_deploy_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('lagoon_post_deploy_service')
+                                            ->label('Service')
+                                            ->placeholder('cli'),
+                                        Forms\Components\TextInput::make('lagoon_post_deploy_container')
+                                            ->label('Container')
+                                            ->placeholder('cli'),
+                                    ]),
+                            ]),
+                        Section::make('Pre Upgrade')
+                            ->collapsed()
+                            ->collapsible()
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_pre_upgrade_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('lagoon_pre_upgrade_service')
+                                            ->label('Service')
+                                            ->placeholder('cli'),
+                                        Forms\Components\TextInput::make('lagoon_pre_upgrade_container')
+                                            ->label('Container')
+                                            ->placeholder('cli'),
+                                    ]),
+                            ]),
+                        Section::make('Upgrade')
+                            ->collapsed()
+                            ->collapsible()
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_upgrade_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('lagoon_upgrade_service')
+                                            ->label('Service')
+                                            ->placeholder('cli'),
+                                        Forms\Components\TextInput::make('lagoon_upgrade_container')
+                                            ->label('Container')
+                                            ->placeholder('cli'),
+                                    ]),
+                            ]),
+                        Section::make('Post Upgrade')
+                            ->collapsed()
+                            ->collapsible()
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_post_upgrade_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('lagoon_post_upgrade_service')
+                                            ->label('Service')
+                                            ->placeholder('cli'),
+                                        Forms\Components\TextInput::make('lagoon_post_upgrade_container')
+                                            ->label('Container')
+                                            ->placeholder('cli'),
+                                    ]),
+                            ]),
+                        Section::make('Claim')
+                            ->collapsed()
+                            ->collapsible()
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_claim_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('lagoon_claim_service')
+                                            ->label('Service')
+                                            ->placeholder('cli'),
+                                        Forms\Components\TextInput::make('lagoon_claim_container')
+                                            ->label('Container')
+                                            ->placeholder('cli'),
+                                    ]),
+                            ]),
+                        Section::make('Pre Remove')
+                            ->collapsed()
+                            ->collapsible()
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_pre_remove_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('lagoon_pre_remove_service')
+                                            ->label('Service')
+                                            ->placeholder('cli'),
+                                        Forms\Components\TextInput::make('lagoon_pre_remove_container')
+                                            ->label('Container')
+                                            ->placeholder('cli'),
+                                    ]),
+                            ]),
+                        Section::make('Remove')
+                            ->collapsed()
+                            ->collapsible()
+                            ->schema([
+                                Forms\Components\Textarea::make('lagoon_remove_script')
+                                    ->label('Script')
+                                    ->rows(3),
+                                Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('lagoon_remove_service')
+                                            ->label('Service')
+                                            ->placeholder('cli'),
+                                        Forms\Components\TextInput::make('lagoon_remove_container')
+                                            ->label('Container')
+                                            ->placeholder('cli'),
+                                    ]),
+                            ]),
+                    ])
+                    ->collapsible()
+                    ->collapsed(),
                 Section::make('App-Specific Configuration')
                     ->description('These fields are defined by the selected App Class and will be configurable for this Store App.')
                     ->schema(fn (Get $get): array => app(PolydockAppClassDiscovery::class)
@@ -348,6 +473,91 @@ class PolydockStoreAppResource extends Resource
                             ]),
                     ])
                     ->columnSpan(1),
+
+                \Filament\Infolists\Components\Section::make('Lagoon Scripts')
+                    ->schema([
+                        \Filament\Infolists\Components\Grid::make(2)
+                            ->schema([
+                                TextEntry::make('lagoon_post_deploy_script')
+                                    ->label('Post Deploy Script')
+                                    ->columnSpanFull()
+                                    ->hidden(fn ($record) => blank($record->lagoon_post_deploy_script)),
+                                TextEntry::make('lagoon_post_deploy_service')
+                                    ->label('Post Deploy Service')
+                                    ->hidden(fn ($record) => blank($record->lagoon_post_deploy_script)),
+                                TextEntry::make('lagoon_post_deploy_container')
+                                    ->label('Post Deploy Container')
+                                    ->hidden(fn ($record) => blank($record->lagoon_post_deploy_script)),
+
+                                TextEntry::make('lagoon_pre_upgrade_script')
+                                    ->label('Pre Upgrade Script')
+                                    ->columnSpanFull()
+                                    ->hidden(fn ($record) => blank($record->lagoon_pre_upgrade_script)),
+                                TextEntry::make('lagoon_pre_upgrade_service')
+                                    ->label('Pre Upgrade Service')
+                                    ->hidden(fn ($record) => blank($record->lagoon_pre_upgrade_script)),
+                                TextEntry::make('lagoon_pre_upgrade_container')
+                                    ->label('Pre Upgrade Container')
+                                    ->hidden(fn ($record) => blank($record->lagoon_pre_upgrade_script)),
+
+                                TextEntry::make('lagoon_upgrade_script')
+                                    ->label('Upgrade Script')
+                                    ->columnSpanFull()
+                                    ->hidden(fn ($record) => blank($record->lagoon_upgrade_script)),
+                                TextEntry::make('lagoon_upgrade_service')
+                                    ->label('Upgrade Service')
+                                    ->hidden(fn ($record) => blank($record->lagoon_upgrade_script)),
+                                TextEntry::make('lagoon_upgrade_container')
+                                    ->label('Upgrade Container')
+                                    ->hidden(fn ($record) => blank($record->lagoon_upgrade_script)),
+
+                                TextEntry::make('lagoon_post_upgrade_script')
+                                    ->label('Post Upgrade Script')
+                                    ->columnSpanFull()
+                                    ->hidden(fn ($record) => blank($record->lagoon_post_upgrade_script)),
+                                TextEntry::make('lagoon_post_upgrade_service')
+                                    ->label('Post Upgrade Service')
+                                    ->hidden(fn ($record) => blank($record->lagoon_post_upgrade_script)),
+                                TextEntry::make('lagoon_post_upgrade_container')
+                                    ->label('Post Upgrade Container')
+                                    ->hidden(fn ($record) => blank($record->lagoon_post_upgrade_script)),
+
+                                TextEntry::make('lagoon_claim_script')
+                                    ->label('Claim Script')
+                                    ->columnSpanFull()
+                                    ->hidden(fn ($record) => blank($record->lagoon_claim_script)),
+                                TextEntry::make('lagoon_claim_service')
+                                    ->label('Claim Service')
+                                    ->hidden(fn ($record) => blank($record->lagoon_claim_script)),
+                                TextEntry::make('lagoon_claim_container')
+                                    ->label('Claim Container')
+                                    ->hidden(fn ($record) => blank($record->lagoon_claim_script)),
+
+                                TextEntry::make('lagoon_pre_remove_script')
+                                    ->label('Pre Remove Script')
+                                    ->columnSpanFull()
+                                    ->hidden(fn ($record) => blank($record->lagoon_pre_remove_script)),
+                                TextEntry::make('lagoon_pre_remove_service')
+                                    ->label('Pre Remove Service')
+                                    ->hidden(fn ($record) => blank($record->lagoon_pre_remove_script)),
+                                TextEntry::make('lagoon_pre_remove_container')
+                                    ->label('Pre Remove Container')
+                                    ->hidden(fn ($record) => blank($record->lagoon_pre_remove_script)),
+
+                                TextEntry::make('lagoon_remove_script')
+                                    ->label('Remove Script')
+                                    ->columnSpanFull()
+                                    ->hidden(fn ($record) => blank($record->lagoon_remove_script)),
+                                TextEntry::make('lagoon_remove_service')
+                                    ->label('Remove Service')
+                                    ->hidden(fn ($record) => blank($record->lagoon_remove_script)),
+                                TextEntry::make('lagoon_remove_container')
+                                    ->label('Remove Container')
+                                    ->hidden(fn ($record) => blank($record->lagoon_remove_script)),
+                            ]),
+                    ])
+                    ->collapsible()
+                    ->columnSpanFull(),
 
                 \Filament\Infolists\Components\Section::make('App-Specific Configuration')
                     ->schema(fn ($record): array => app(PolydockAppClassDiscovery::class)
