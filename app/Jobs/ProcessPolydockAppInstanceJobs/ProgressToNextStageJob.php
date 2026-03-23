@@ -73,21 +73,12 @@ class ProgressToNextStageJob extends BaseJob implements ShouldQueue
                     ->save();
                 break;
             case PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED:
-                if ($appInstance->remoteRegistration) {
-                    Log::info('Progressing app instance '
-                    .$appInstance->id
-                    .' to next stage from POST_DEPLOY_COMPLETED to PENDING_POLYDOCK_CLAIM');
-                    $appInstance
-                        ->setStatus(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM)
-                        ->save();
-                } else {
-                    Log::info('Progressing app instance '
-                    .$appInstance->id
-                    .' to next stage from POST_DEPLOY_COMPLETED to RUNNING_HEALTHY_UNCLAIMED');
-                    $appInstance
-                        ->setStatus(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
-                        ->save();
-                }
+                Log::info('Progressing app instance '
+                .$appInstance->id
+                .' to next stage from POST_DEPLOY_COMPLETED to PENDING_POLYDOCK_CLAIM');
+                $appInstance
+                    ->setStatus(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM)
+                    ->save();
                 break;
             case PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED:
                 Log::info('Progressing app instance '

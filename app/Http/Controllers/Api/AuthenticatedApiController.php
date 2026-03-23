@@ -292,22 +292,31 @@ class AuthenticatedApiController extends Controller
     {
         $instance = PolydockAppInstance::where('uuid', $uuid)->with('storeApp')->firstOrFail();
 
-        return response()->json([
-            'data' => [
-                'uuid' => $instance->uuid,
-                'name' => $instance->name,
-                'status' => $instance->status?->value,
-                'status_message' => $instance->status_message,
-                'app_url' => $instance->app_url,
-                'store_app' => [
-                    'uuid' => $instance->storeApp->uuid,
-                    'name' => $instance->storeApp->name,
-                    'git_url' => $instance->storeApp->lagoon_deploy_git,
-                ],
-                'created_at' => $instance->created_at,
-                'lagoon_claim_script' => $instance->getKeyValue(key: 'lagoon-claim-script'),
-                'lagoon_project_name' => $instance->getKeyValue(key: 'lagoon-project-name'),
+        $data = [
+            'uuid' => $instance->uuid,
+            'name' => $instance->name,
+            'status' => $instance->status?->value,
+            'status_message' => $instance->status_message,
+            'app_url' => $instance->app_url,
+            'store_app' => [
+                'uuid' => $instance->storeApp->uuid,
+                'name' => $instance->storeApp->name,
+                'git_url' => $instance->storeApp->lagoon_deploy_git,
             ],
+            'created_at' => $instance->created_at,
+            'lagoon_claim_script' => $instance->getKeyValue(key: 'lagoon-claim-script'),
+            'lagoon_project_name' => $instance->getKeyValue(key: 'lagoon-project-name'),
+        ];
+
+        // Include credentials if they exist and instance is at least in claimed status
+        if ($instance->status === PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED) {
+            $data['app_admin_username'] = $instance->getGeneratedAppAdminUsername();
+            $data['app_admin_password'] = $instance->getGeneratedAppAdminPassword();
+            $data['app_admin_api_key'] = $instance->getKeyValue('app-admin-api-key');
+        }
+
+        return response()->json([
+            'data' => $data,
         ]);
     }
 
