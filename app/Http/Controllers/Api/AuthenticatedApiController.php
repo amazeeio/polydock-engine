@@ -273,8 +273,16 @@ class AuthenticatedApiController extends Controller
      * @response {
      *  "data": {
      *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
+     *    "name": "my-instance",
      *    "status": "running-healthy-claimed",
      *    "status_message": "Instance is running smoothly.",
+     *    "app_url": "https://my-instance.example.com",
+     *    "store_app": {
+     *      "uuid": "7b206eb2-1d98-54db-0bd9-83898gd6f426",
+     *      "name": "My App",
+     *      "git_url": "git@github.com:example/repo.git"
+     *    },
+     *    "created_at": "2025-01-01T00:00:00.000000Z"
      *    "lagoon_claim_script": "/lagoon/polydock_claim.sh",
      *    "lagoon_project_name": "example-project"
      *  }
@@ -282,13 +290,21 @@ class AuthenticatedApiController extends Controller
      */
     public function getInstanceStatus(string $uuid): JsonResponse
     {
-        $instance = PolydockAppInstance::where('uuid', $uuid)->firstOrFail();
+        $instance = PolydockAppInstance::where('uuid', $uuid)->with('storeApp')->firstOrFail();
 
         return response()->json([
             'data' => [
                 'uuid' => $instance->uuid,
+                'name' => $instance->name,
                 'status' => $instance->status?->value,
                 'status_message' => $instance->status_message,
+                'app_url' => $instance->app_url,
+                'store_app' => [
+                    'uuid' => $instance->storeApp->uuid,
+                    'name' => $instance->storeApp->name,
+                    'git_url' => $instance->storeApp->lagoon_deploy_git,
+                ],
+                'created_at' => $instance->created_at,
                 'lagoon_claim_script' => $instance->getKeyValue(key: 'lagoon-claim-script'),
                 'lagoon_project_name' => $instance->getKeyValue(key: 'lagoon-project-name'),
             ],
