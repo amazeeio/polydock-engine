@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "554fc46879a330fe2c307132832151ae",
+    "content-hash": "fbba65f5c99e0d3e84b588b6648fa373",
     "packages": [
         {
             "name": "amazeeio/lagoon-logs",
@@ -55,16 +55,16 @@
         },
         {
             "name": "amazeeio/polydock-app-amazeeclaw",
-            "version": "v0.1.10",
+            "version": "v0.1.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeclaw.git",
-                "reference": "2217facd32081ecd25ae6974f6a1f04f1c8aaacd"
+                "reference": "332d956eba34bf8f0fb708383f169594c49c32f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeclaw/zipball/2217facd32081ecd25ae6974f6a1f04f1c8aaacd",
-                "reference": "2217facd32081ecd25ae6974f6a1f04f1c8aaacd",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeclaw/zipball/332d956eba34bf8f0fb708383f169594c49c32f1",
+                "reference": "332d956eba34bf8f0fb708383f169594c49c32f1",
                 "shasum": ""
             },
             "require": {
@@ -83,9 +83,9 @@
             "description": "Polydock App - AmazeeClaw AI",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeclaw/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeclaw/tree/v0.1.10"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeclaw/tree/v0.1.11"
             },
-            "time": "2026-03-23T18:45:52+00:00"
+            "time": "2026-03-23T19:47:52+00:00"
         },
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
