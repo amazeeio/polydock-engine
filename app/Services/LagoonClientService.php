@@ -68,11 +68,21 @@ class LagoonClientService
 
         // Final fallback to system default
         if (empty($keyFile)) {
-            $keyFile = getenv('HOME').'/.ssh/id_rsa';
+            $home = getenv('HOME');
+            if ($home === false || $home === '') {
+                $home = $_SERVER['HOME'] ?? null;
+            }
+
+            if (! empty($home)) {
+                $keyFile = rtrim($home, '/').'/.ssh/id_rsa';
+            } else {
+                // Leave $keyFile empty; it will be validated later in getAuthenticatedClient()
+                $keyFile = null;
+            }
         }
 
-        // Fallback or override via content if provided
-        $keyContent = env('FTLAGOON_PRIVATE_KEY_CONTENT');
+        // Fallback or override via content if provided (from config, not env())
+        $keyContent = config('polydock.ftlagoon_private_key_content');
 
         if ($keyContent) {
             // Use storage/app/ssh as a safe default for writing the temp key
@@ -80,8 +90,11 @@ class LagoonClientService
 
             $tempKeyFile = $baseDir.'/env_id_rsa';
 
-            if (! is_dir(dirname($tempKeyFile))) {
-                mkdir(dirname($tempKeyFile), 0755, true);
+            $dir = dirname($tempKeyFile);
+            if (! is_dir($dir)) {
+                if (! @mkdir($dir, 0700, true) && ! is_dir($dir)) {
+                    throw new \RuntimeException('Failed to create SSH key directory: '.$dir);
+                }
             }
 
             if (! file_exists($tempKeyFile) || file_get_contents($tempKeyFile) !== $keyContent) {
