@@ -9,8 +9,10 @@ use Monolog\Processor\PsrLogMessageProcessor;
 
 $stackChannels = explode(',', (string) env('LOG_STACK', 'single'));
 
-if (env('LAGOON_PROJECT')) {
-    $stackChannels[] = 'LagoonLogs';
+$lagoonChannel = env('LAGOON_LOGS_CHANNEL');
+
+if (env('LAGOON_PROJECT') && $lagoonChannel) {
+    $stackChannels[] = $lagoonChannel;
 }
 
 if (env('LOG_SLACK_WEBHOOK_URL')) {
