@@ -210,8 +210,8 @@ class AuthenticatedApiController extends Controller
         $user = User::firstOrCreate(
             ['email' => $email],
             [
-                'first_name' => $request->input('first_name') ?? 'Auto', // Dummy default
-                'last_name' => $request->input('last_name') ?? 'User',
+                'first_name' => $request->filled('first_name') ? $request->input('first_name') : 'Auto', // Dummy default
+                'last_name' => $request->filled('last_name') ? $request->input('last_name') : 'User',
                 'password' => Hash::make(Str::random(32)),
             ]
         );
