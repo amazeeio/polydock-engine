@@ -112,6 +112,7 @@ class AuthenticatedApiTest extends TestCase
                         'name',
                         'description',
                         'author', // etc...
+                        'git_url',
                         'store' => [
                             'name',
                             'status',
@@ -124,6 +125,7 @@ class AuthenticatedApiTest extends TestCase
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals('Test App', $response->json('data.0.name'));
         $this->assertEquals('Test Store', $response->json('data.0.store.name'));
+        $this->assertEquals('git@github.com:example/repo.git', $response->json('data.0.git_url'));
     }
 
     public function test_get_instances_returns_user_instances(): void
