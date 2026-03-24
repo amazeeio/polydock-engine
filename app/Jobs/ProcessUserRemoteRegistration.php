@@ -62,34 +62,38 @@ class ProcessUserRemoteRegistration implements ShouldQueue
         // Bind the current registration to the container so that PolydockAppInstance::created() can link to it
         app()->instance('current_user_remote_registration', $this->registration);
 
-        if (! $this->validateRequestData()) {
-            $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
-            $this->registration->setResultValue('message', 'Malformed registration request');
+        try {
+            if (! $this->validateRequestData()) {
+                $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
+                $this->registration->setResultValue('message', 'Malformed registration request');
+                $this->registration->save();
+
+                Log::warning('Malformed registration request', [
+                    'registration_id' => $this->registration->id,
+                    'uuid' => $this->registration->uuid,
+                    'request_data' => $this->registration->request_data,
+                ]);
+
+                return;
+            }
+
+            // Set the type from request_data
+            $this->registration->type = UserRemoteRegistrationType::from(
+                $this->registration->getRequestValue('register_type'),
+            );
             $this->registration->save();
 
-            Log::warning('Malformed registration request', [
-                'registration_id' => $this->registration->id,
-                'uuid' => $this->registration->uuid,
-                'request_data' => $this->registration->request_data,
-            ]);
+            match ($this->registration->type) {
+                UserRemoteRegistrationType::TEST_FAIL => $this->handleTestFail(),
+                UserRemoteRegistrationType::REQUEST_TRIAL => $this->handleRequestTrial(),
+                UserRemoteRegistrationType::REQUEST_TRIAL_UNLISTED_REGION => $this->handleRequestUnlistedRegion(),
+                default => $this->handleUnknownType(),
+            };
 
-            return;
+            $this->registration->save();
+        } finally {
+            app()->forgetInstance('current_user_remote_registration');
         }
-
-        // Set the type from request_data
-        $this->registration->type = UserRemoteRegistrationType::from(
-            $this->registration->getRequestValue('register_type'),
-        );
-        $this->registration->save();
-
-        match ($this->registration->type) {
-            UserRemoteRegistrationType::TEST_FAIL => $this->handleTestFail(),
-            UserRemoteRegistrationType::REQUEST_TRIAL => $this->handleRequestTrial(),
-            UserRemoteRegistrationType::REQUEST_TRIAL_UNLISTED_REGION => $this->handleRequestUnlistedRegion(),
-            default => $this->handleUnknownType(),
-        };
-
-        $this->registration->save();
     }
 
     /**
