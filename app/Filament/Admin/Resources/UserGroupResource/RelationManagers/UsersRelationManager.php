@@ -61,7 +61,7 @@ class UsersRelationManager extends RelationManager
                     ->url(fn ($record) => UserResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
                 Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('role')
+                Tables\Columns\TextColumn::make('pivot.role')
                     ->badge(),
                 Tables\Columns\TextColumn::make('groups_count')
                     ->counts('groups')
