@@ -59,6 +59,9 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             'uuid' => $this->registration->uuid,
         ]);
 
+        // Bind the current registration to the container so that PolydockAppInstance::created() can link to it
+        app()->instance('current_user_remote_registration', $this->registration);
+
         if (! $this->validateRequestData()) {
             $this->registration->status = UserRemoteRegistrationStatusEnum::FAILED;
             $this->registration->setResultValue('message', 'Malformed registration request');

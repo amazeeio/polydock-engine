@@ -338,6 +338,13 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         });
 
         static::created(function ($appInstance) {
+            // If we're in the middle of a remote registration, link it
+            if (app()->bound('current_user_remote_registration')) {
+                $registration = app('current_user_remote_registration');
+                $registration->polydock_app_instance_id = $appInstance->id;
+                $registration->save();
+            }
+
             // Fire the NEW status event if applicable
             if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
                 $appInstance->info('MODEL: New app instance created', [
@@ -816,6 +823,14 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function remoteRegistration(): HasOne
     {
         return $this->hasOne(UserRemoteRegistration::class, 'polydock_app_instance_id');
+    }
+
+    /**
+     * Get the remote registration associated with this instance (aliased for clarity in some contexts)
+     */
+    public function getRemoteRegistrationAttribute(): ?UserRemoteRegistration
+    {
+        return $this->remoteRegistration()->first();
     }
 
     // Helper method to check if trial is active
