@@ -106,7 +106,7 @@ class UsersRelationManager extends RelationManager
 
                                         return User::query()
                                             ->whereNotIn('id', $alreadyInGroup)
-                                            ->where('email', 'like', '%' . $search . '%')
+                                            ->where('email', 'like', '%'.$search.'%')
                                             ->limit(50)
                                             ->pluck('email', 'id')
                                             ->toArray();
