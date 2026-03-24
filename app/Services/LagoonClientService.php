@@ -17,12 +17,16 @@ class LagoonClientService
         $clientConfig = $this->getClientConfig();
 
         if (! $clientConfig['ssh_private_key_file'] || ! file_exists($clientConfig['ssh_private_key_file'])) {
-            throw new \Exception('Global SSH private key not found.');
+            $msg = 'Global SSH private key not found at: '.($clientConfig['ssh_private_key_file'] ?: 'not set');
+            \Log::error($msg);
+            throw new \Exception($msg);
         }
 
         $token = $this->getLagoonToken($clientConfig);
         if (empty($token)) {
-            throw new \Exception('Failed to retrieve Lagoon API token.');
+            $msg = 'Failed to retrieve Lagoon API token. Ensure the SSH key at '.$clientConfig['ssh_private_key_file'].' is valid and authorized in Lagoon.';
+            \Log::error($msg);
+            throw new \Exception($msg);
         }
 
         return $this->buildClientWithToken($clientConfig, $token);
@@ -54,12 +58,45 @@ class LagoonClientService
     {
         $sshConfig = config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon', []);
 
+        // Primary source: config (which reads FTLAGOON_PRIVATE_KEY_FILE)
+        $keyFile = $sshConfig['ssh_private_key_file'] ?? null;
+
+        // Fallback to POLYDOCK_LAGOON_DEPLOY_PRIVATE_KEY_FILE if first is missing or default
+        if (empty($keyFile) || $keyFile === 'tests/fixtures/lagoon-private-key') {
+            $keyFile = config('polydock.lagoon_deploy_private_key_file');
+        }
+
+        // Final fallback to system default
+        if (empty($keyFile)) {
+            $keyFile = getenv('HOME').'/.ssh/id_rsa';
+        }
+
+        // Fallback or override via content if provided
+        $keyContent = env('FTLAGOON_PRIVATE_KEY_CONTENT');
+
+        if ($keyContent) {
+            // Use storage/app/ssh as a safe default for writing the temp key
+            $baseDir = storage_path('app/ssh');
+
+            $tempKeyFile = $baseDir.'/env_id_rsa';
+
+            if (! is_dir(dirname($tempKeyFile))) {
+                mkdir(dirname($tempKeyFile), 0755, true);
+            }
+
+            if (! file_exists($tempKeyFile) || file_get_contents($tempKeyFile) !== $keyContent) {
+                file_put_contents($tempKeyFile, $keyContent);
+                chmod($tempKeyFile, 0600);
+            }
+            $keyFile = $tempKeyFile;
+        }
+
         return [
             'ssh_user' => $sshConfig['ssh_user'] ?? 'lagoon',
             'ssh_server' => $sshConfig['ssh_server'] ?? 'ssh.lagoon.amazeeio.cloud',
             'ssh_port' => $sshConfig['ssh_port'] ?? '32222',
             'endpoint' => $sshConfig['endpoint'] ?? 'https://api.lagoon.amazeeio.cloud/graphql',
-            'ssh_private_key_file' => $sshConfig['ssh_private_key_file'] ?? getenv('HOME').'/.ssh/id_rsa',
+            'ssh_private_key_file' => $keyFile,
         ];
     }
 
@@ -81,6 +118,24 @@ class LagoonClientService
             privateKeyFile: $config['ssh_private_key_file']
         );
 
-        return $ssh->executeLagoonGetToken();
+        // Add IdentitiesOnly to prevent fallback to local keys, making it fail faster and more predictably
+        $ssh->addExtraOption('-o IdentitiesOnly=yes');
+
+        $sshCommand = $ssh->getTokenCommand();
+        $result = $ssh->executeRawSshCommand($sshCommand);
+
+        if ($result['successful']) {
+            return ltrim(rtrim($result['output']));
+        }
+
+        \Log::error('Lagoon SSH token fetch failed', [
+            'exit_code' => $result['result'],
+            'output' => $result['output'],
+            'error' => $result['error'],
+            'command' => $sshCommand,
+            'key_file' => $config['ssh_private_key_file'],
+        ]);
+
+        return '';
     }
 }
