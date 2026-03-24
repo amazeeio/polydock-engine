@@ -4,6 +4,7 @@ namespace App\Services;
 
 use FreedomtechHosting\FtLagoonPhp\Client;
 use FreedomtechHosting\FtLagoonPhp\Ssh;
+use Symfony\Component\Process\Process;
 
 class LagoonClientService
 {
@@ -135,16 +136,18 @@ class LagoonClientService
         $ssh->addExtraOption('-o IdentitiesOnly=yes');
 
         $sshCommand = $ssh->getTokenCommand();
-        $result = $ssh->executeRawSshCommand($sshCommand);
+        $process = Process::fromShellCommandline($sshCommand);
+        $process->setTimeout(30);
+        $process->run();
 
-        if ($result['successful']) {
-            return ltrim(rtrim($result['output']));
+        if ($process->isSuccessful()) {
+            return ltrim(rtrim($process->getOutput()));
         }
 
         \Log::error('Lagoon SSH token fetch failed', [
-            'exit_code' => $result['result'],
-            'output' => $result['output'],
-            'error' => $result['error'],
+            'exit_code' => $process->getExitCode(),
+            'output' => $process->getOutput(),
+            'error' => $process->getErrorOutput(),
             'command' => $sshCommand,
             'key_file' => $config['ssh_private_key_file'],
         ]);
