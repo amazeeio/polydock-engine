@@ -825,14 +825,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this->hasOne(UserRemoteRegistration::class, 'polydock_app_instance_id');
     }
 
-    /**
-     * Get the remote registration associated with this instance (aliased for clarity in some contexts)
-     */
-    public function getRemoteRegistrationAttribute(): ?UserRemoteRegistration
-    {
-        return $this->remoteRegistration()->first();
-    }
-
     // Helper method to check if trial is active
     public function isTrialActive(): bool
     {
