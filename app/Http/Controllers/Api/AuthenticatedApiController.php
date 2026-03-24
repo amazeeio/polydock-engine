@@ -282,7 +282,7 @@ class AuthenticatedApiController extends Controller
      *      "name": "My App",
      *      "git_url": "git@github.com:example/repo.git"
      *    },
-     *    "created_at": "2025-01-01T00:00:00.000000Z"
+     *    "created_at": "2025-01-01T00:00:00.000000Z",
      *    "lagoon_claim_script": "/lagoon/polydock_claim.sh",
      *    "lagoon_project_name": "example-project"
      *  }
