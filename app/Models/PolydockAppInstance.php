@@ -341,8 +341,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             // If we're in the middle of a remote registration, link it
             if (app()->bound('current_user_remote_registration')) {
                 $registration = app('current_user_remote_registration');
-                $registration->polydock_app_instance_id = $appInstance->id;
-                $registration->save();
+                if ($registration instanceof UserRemoteRegistration && $registration->polydock_app_instance_id === null) {
+                    $registration->polydock_app_instance_id = $appInstance->id;
+                    $registration->save();
+                    app()->forgetInstance('current_user_remote_registration');
+                }
             }
 
             // Fire the NEW status event if applicable
