@@ -3,9 +3,11 @@
 namespace App\Models;
 
 use App\Enums\PolydockVariableScopeEnum;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 class PolydockVariable extends Model
 {
@@ -29,7 +31,17 @@ class PolydockVariable extends Model
             return null;
         }
 
-        return $this->is_encrypted ? Crypt::decryptString($this->value) : $this->value;
+        if ($this->is_encrypted) {
+            try {
+                return Crypt::decryptString($this->value);
+            } catch (DecryptException $e) {
+                Log::error('PolydockVariable decryption failed for variable name: '.($this->name ?? 'unknown').'. Error: '.$e->getMessage());
+
+                return null;
+            }
+        }
+
+        return $this->value;
     }
 
     /**

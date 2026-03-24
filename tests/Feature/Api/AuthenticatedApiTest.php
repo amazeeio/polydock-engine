@@ -188,8 +188,15 @@ class AuthenticatedApiTest extends TestCase
         $response = $this->getJson("/api/instance/{$instance->uuid}/status");
 
         $response->assertOk();
+        $this->assertEquals($instance->uuid, $response->json('data.uuid'));
+        $this->assertEquals($instance->name, $response->json('data.name'));
         $this->assertEquals($instance->status->value, $response->json('data.status'));
         $this->assertEquals('Creating...', $response->json('data.status_message'));
+        $this->assertNull($response->json('data.app_url'));
+        $this->assertEquals($this->storeApp->uuid, $response->json('data.store_app.uuid'));
+        $this->assertEquals($this->storeApp->name, $response->json('data.store_app.name'));
+        $this->assertEquals('git@github.com:example/repo.git', $response->json('data.store_app.git_url'));
+        $this->assertNotNull($response->json('data.created_at'));
         $this->assertEquals('/app/.lagoon/scripts/polydock_claim.sh', $response->json('data.lagoon_claim_script'));
         $this->assertEquals('test-lagoon-name', $response->json('data.lagoon_project_name'));
     }

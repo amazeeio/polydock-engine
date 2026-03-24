@@ -7,6 +7,20 @@ use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogUdpHandler;
 use Monolog\Processor\PsrLogMessageProcessor;
 
+$stackChannels = explode(',', (string) env('LOG_STACK', 'single'));
+
+$lagoonChannel = env('LAGOON_LOGS_CHANNEL');
+
+if (env('LAGOON_PROJECT') && $lagoonChannel) {
+    $stackChannels[] = $lagoonChannel;
+}
+
+if (env('LOG_SLACK_WEBHOOK_URL')) {
+    $stackChannels[] = 'slack';
+}
+
+$stackChannels = array_unique(array_filter($stackChannels));
+
 return [
 
     /*
@@ -56,7 +70,7 @@ return [
 
         'stack' => [
             'driver' => 'stack',
-            'channels' => explode(',', (string) env('LOG_STACK', 'single')),
+            'channels' => $stackChannels,
             'ignore_exceptions' => false,
         ],
 

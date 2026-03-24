@@ -267,7 +267,7 @@ class PolydockAppInstanceResource extends Resource
                         TextEntry::make('userGroup.name')
                             ->label('User Group')
                             ->visible(fn ($record) => $record->userGroup !== null)
-                            ->url(fn ($record) => UserGroupResource::getUrl('view', ['record' => $record->userGroup]))
+                            ->url(fn ($record) => $record->userGroup ? UserGroupResource::getUrl('view', ['record' => $record->userGroup]) : null)
                             ->openUrlInNewTab()
                             ->icon('heroicon-m-user-group')
                             ->iconColor('success'),

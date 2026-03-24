@@ -61,6 +61,13 @@ class ProcessPolydockAppInstanceStatusChange
                     );
                 }
 
+                if ($appInstance->getKeyValue('app-admin-api-key')) {
+                    $event->appInstance->remoteRegistration->setResultValue(
+                        'app_admin_api_key',
+                        $appInstance->getKeyValue('app-admin-api-key'),
+                    );
+                }
+
                 // Store user information in registration results
                 if ($appInstance->getKeyValue('user-first-name')) {
                     $event->appInstance->remoteRegistration->setResultValue(
