@@ -100,16 +100,26 @@ class UsersRelationManager extends RelationManager
                                 Forms\Components\Select::make('user_id')
                                     ->label('Select User')
                                     ->placeholder('Search by email...')
-                                    ->options(function (RelationManager $livewire) {
-                                        $alreadyInGroup = $livewire->getRelationship()->pluck('users.id')->toArray();
+                                    ->searchable()
+                                    ->getSearchResultsUsing(function (string $search): array {
+                                        $alreadyInGroup = $this->getRelationship()->pluck('users.id')->toArray();
 
                                         return User::query()
                                             ->whereNotIn('id', $alreadyInGroup)
-                                            ->get()
-                                            ->pluck('email', 'id');
+                                            ->where('email', 'like', '%' . $search . '%')
+                                            ->limit(50)
+                                            ->pluck('email', 'id')
+                                            ->toArray();
                                     })
-                                    ->searchable()
-                                    ->preload()
+                                    ->getOptionLabelUsing(function ($value): ?string {
+                                        if ($value === null) {
+                                            return null;
+                                        }
+
+                                        return User::query()
+                                            ->whereKey($value)
+                                            ->value('email');
+                                    })
                                     ->required(fn (Get $get) => $get('mode') === 'existing'),
                             ]),
 
