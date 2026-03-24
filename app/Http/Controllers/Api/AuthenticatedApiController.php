@@ -257,9 +257,12 @@ class AuthenticatedApiController extends Controller
         $instance = UserGroup::getNewAppInstanceForThisAppForThisGroup($storeApp, $primaryGroup, $name ? (string) $name : null);
 
         // Add user information to the app instance data - this enables claiming
-        $instance->storeKeyValue('user-email', $user->email);
-        $instance->storeKeyValue('user-first-name', $user->first_name);
-        $instance->storeKeyValue('user-last-name', $user->last_name);
+        $instance->data = array_merge($instance->data ?? [], [
+            'user-email' => $user->email,
+            'user-first-name' => $user->first_name,
+            'user-last-name' => $user->last_name,
+        ]);
+        $instance->save();
 
         // Handle top-level secret if provided
         if ($request->filled('secret')) {
