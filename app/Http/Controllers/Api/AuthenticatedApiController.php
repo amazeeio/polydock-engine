@@ -49,6 +49,7 @@ class AuthenticatedApiController extends Controller
             'author' => $app->author,
             'available_for_trials' => $app->available_for_trials,
             'app_status' => $app->status?->value,
+            'git_url' => $app->lagoon_deploy_git,
             'store' => [
                 'name' => $app->store->name,
                 'status' => $app->store->status?->value,
