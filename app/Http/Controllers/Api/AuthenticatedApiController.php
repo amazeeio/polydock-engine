@@ -170,6 +170,8 @@ class AuthenticatedApiController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
             'storeAppId' => 'required|string|exists:polydock_store_apps,uuid',
             'name' => 'nullable|string|max:255',
             'secret' => 'nullable|array',
@@ -208,11 +210,22 @@ class AuthenticatedApiController extends Controller
         $user = User::firstOrCreate(
             ['email' => $email],
             [
-                'first_name' => 'Auto', // Dummy default
-                'last_name' => 'User',
+                'first_name' => $request->input('first_name') ?? 'Auto', // Dummy default
+                'last_name' => $request->input('last_name') ?? 'User',
                 'password' => Hash::make(Str::random(32)),
             ]
         );
+
+        // Update user names if they were provided but user already existed
+        if ($request->filled('first_name')) {
+            $user->first_name = $request->input('first_name');
+        }
+        if ($request->filled('last_name')) {
+            $user->last_name = $request->input('last_name');
+        }
+        if ($user->isDirty()) {
+            $user->save();
+        }
 
         // Find or create a default primary user group for this user if they don't have one
         $primaryGroup = $user->primaryGroups()->first();
@@ -233,6 +246,11 @@ class AuthenticatedApiController extends Controller
 
         // Use the existing allocation mechanism or create a new instance
         $instance = UserGroup::getNewAppInstanceForThisAppForThisGroup($storeApp, $primaryGroup, $name ? (string) $name : null);
+
+        // Add user information to the app instance data - this enables claiming
+        $instance->storeKeyValue('user-email', $user->email);
+        $instance->storeKeyValue('user-first-name', $user->first_name);
+        $instance->storeKeyValue('user-last-name', $user->last_name);
 
         // Handle top-level secret if provided
         if ($request->filled('secret')) {
