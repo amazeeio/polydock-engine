@@ -216,12 +216,21 @@ class AuthenticatedApiController extends Controller
             ]
         );
 
-        // Update user names if they were provided but user already existed
-        if ($request->filled('first_name')) {
-            $user->first_name = $request->input('first_name');
-        }
-        if ($request->filled('last_name')) {
-            $user->last_name = $request->input('last_name');
+        // Update user names cautiously for existing users:
+        // Only replace placeholder/empty names, and do not arbitrarily overwrite real names.
+        if (! $user->wasRecentlyCreated) {
+            if (
+                $request->filled('first_name') &&
+                (\is_null($user->first_name) || $user->first_name === '' || $user->first_name === 'Auto')
+            ) {
+                $user->first_name = $request->input('first_name');
+            }
+            if (
+                $request->filled('last_name') &&
+                (\is_null($user->last_name) || $user->last_name === '' || $user->last_name === 'User')
+            ) {
+                $user->last_name = $request->input('last_name');
+            }
         }
         if ($user->isDirty()) {
             $user->save();
