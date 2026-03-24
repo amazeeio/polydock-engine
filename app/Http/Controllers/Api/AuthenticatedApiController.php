@@ -136,13 +136,15 @@ class AuthenticatedApiController extends Controller
     /**
      * Create/Provision a new instance
      *
-     * Deploy a new PolydockStoreApp instance. If the user associated with the email does not exist, a new user account will automatically be created.
+     * Deploy a new PolydockStoreApp instance. If the user associated with the email does not exist, a new user account will automatically be created using the provided first and last names. For existing users, names will be updated only if current values are placeholders or empty.
      *
      * @group External API
      *
      * @subgroup Instance Management
      *
      * @bodyParam email email required The email address of the user. Example: new.user@example.com
+     * @bodyParam first_name string optional The first name of the user. Example: Jane
+     * @bodyParam last_name string optional The last name of the user. Example: Doe
      * @bodyParam storeAppId string required The UUID of the store app to provision. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
      * @bodyParam name string optional The display name for this instance. Defaults to lagoon-project-name if not provided. Example: "My awesome instance"
      * @bodyParam secret object optional Sensitive AI and VectorDB credentials. Example: {"ai": {"llm_url": "https://llm", "api_key": "sk-123"}, "vector": {"db_host": "localhost", "db_port": 5432, "db_name": "db_d1234", "db_user": "admin", "db_pass": "pass"}}
