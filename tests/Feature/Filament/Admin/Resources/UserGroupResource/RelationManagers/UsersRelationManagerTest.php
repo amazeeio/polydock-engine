@@ -3,6 +3,7 @@
 namespace Tests\Feature\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 
 use App\Enums\UserGroupRoleEnum;
+use App\Filament\Admin\Resources\UserGroupResource\Pages\EditUserGroup;
 use App\Filament\Admin\Resources\UserGroupResource\RelationManagers\UsersRelationManager;
 use App\Models\User;
 use App\Models\UserGroup;
@@ -47,7 +48,7 @@ class UsersRelationManagerTest extends TestCase
 
         Livewire::test(UsersRelationManager::class, [
             'ownerRecord' => $this->userGroup,
-            'pageClass' => \App\Filament\Admin\Resources\UserGroupResource\Pages\EditUserGroup::class,
+            'pageClass' => EditUserGroup::class,
         ])
             ->callTableAction('add_user', data: [
                 'user_id' => $existingUser->id,
@@ -70,7 +71,7 @@ class UsersRelationManagerTest extends TestCase
 
         Livewire::test(UsersRelationManager::class, [
             'ownerRecord' => $this->userGroup,
-            'pageClass' => \App\Filament\Admin\Resources\UserGroupResource\Pages\EditUserGroup::class,
+            'pageClass' => EditUserGroup::class,
         ])
             ->callTableAction('add_user', data: [
                 'mode' => 'new',
@@ -102,7 +103,7 @@ class UsersRelationManagerTest extends TestCase
 
         Livewire::test(UsersRelationManager::class, [
             'ownerRecord' => $this->userGroup,
-            'pageClass' => \App\Filament\Admin\Resources\UserGroupResource\Pages\EditUserGroup::class,
+            'pageClass' => EditUserGroup::class,
         ])
             ->callTableAction('add_user', data: [
                 'mode' => 'new',
@@ -127,7 +128,7 @@ class UsersRelationManagerTest extends TestCase
 
         Livewire::test(UsersRelationManager::class, [
             'ownerRecord' => $this->userGroup,
-            'pageClass' => \App\Filament\Admin\Resources\UserGroupResource\Pages\EditUserGroup::class,
+            'pageClass' => EditUserGroup::class,
         ])
             ->callTableAction('add_user', data: [
                 'mode' => 'existing',
