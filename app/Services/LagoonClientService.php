@@ -99,8 +99,23 @@ class LagoonClientService
             }
 
             if (! file_exists($tempKeyFile) || file_get_contents($tempKeyFile) !== $keyContent) {
-                file_put_contents($tempKeyFile, $keyContent);
-                chmod($tempKeyFile, 0600);
+                $tmpFile = $tempKeyFile.'.tmp';
+
+                $bytesWritten = @file_put_contents($tmpFile, $keyContent, LOCK_EX);
+                if ($bytesWritten === false) {
+                    @unlink($tmpFile);
+                    throw new \RuntimeException('Failed to write SSH private key to temporary file: '.$tmpFile);
+                }
+
+                if (! @chmod($tmpFile, 0600)) {
+                    @unlink($tmpFile);
+                    throw new \RuntimeException('Failed to set permissions on SSH private key file: '.$tmpFile);
+                }
+
+                if (! @rename($tmpFile, $tempKeyFile)) {
+                    @unlink($tmpFile);
+                    throw new \RuntimeException('Failed to move SSH private key file into place: '.$tempKeyFile);
+                }
             }
             $keyFile = $tempKeyFile;
         }
