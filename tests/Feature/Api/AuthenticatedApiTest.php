@@ -112,6 +112,7 @@ class AuthenticatedApiTest extends TestCase
                         'name',
                         'description',
                         'author', // etc...
+                        'git_url',
                         'store' => [
                             'name',
                             'status',
@@ -124,6 +125,7 @@ class AuthenticatedApiTest extends TestCase
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals('Test App', $response->json('data.0.name'));
         $this->assertEquals('Test Store', $response->json('data.0.store.name'));
+        $this->assertEquals('git@github.com:example/repo.git', $response->json('data.0.git_url'));
     }
 
     public function test_get_instances_returns_user_instances(): void
@@ -170,6 +172,98 @@ class AuthenticatedApiTest extends TestCase
 
         $instanceCount = PolydockAppInstance::where('user_group_id', $newUser->primaryGroups()->first()->id)->count();
         $this->assertEquals(1, $instanceCount);
+    }
+
+    public function test_create_instance_provisions_instance_and_creates_user_with_names(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $newEmail = 'named.user@example.com';
+        $firstName = 'Jane';
+        $lastName = 'Doe';
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $newEmail,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'storeAppId' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertCreated();
+
+        $newUser = User::where('email', $newEmail)->first();
+        $this->assertNotNull($newUser);
+        $this->assertEquals($firstName, $newUser->first_name);
+        $this->assertEquals($lastName, $newUser->last_name);
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($newEmail, $instance->data['user-email']);
+        $this->assertEquals($firstName, $instance->data['user-first-name']);
+        $this->assertEquals($lastName, $instance->data['user-last-name']);
+    }
+
+    public function test_create_instance_updates_placeholder_names_for_existing_user(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $existingUser = User::factory()->create([
+            'email' => 'placeholder@example.com',
+            'first_name' => 'Auto',
+            'last_name' => 'User',
+        ]);
+
+        $firstName = 'Jane';
+        $lastName = 'Doe';
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $existingUser->email,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'storeAppId' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertCreated();
+
+        $existingUser->refresh();
+        $this->assertEquals($firstName, $existingUser->first_name);
+        $this->assertEquals($lastName, $existingUser->last_name);
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($firstName, $instance->data['user-first-name']);
+        $this->assertEquals($lastName, $instance->data['user-last-name']);
+    }
+
+    public function test_create_instance_does_not_overwrite_real_names_for_existing_user(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $originalFirstName = 'John';
+        $originalLastName = 'Smith';
+        $existingUser = User::factory()->create([
+            'email' => 'real.name@example.com',
+            'first_name' => $originalFirstName,
+            'last_name' => $originalLastName,
+        ]);
+
+        $newFirstName = 'Jane';
+        $newLastName = 'Doe';
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $existingUser->email,
+            'first_name' => $newFirstName,
+            'last_name' => $newLastName,
+            'storeAppId' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertCreated();
+
+        $existingUser->refresh();
+        $this->assertEquals($originalFirstName, $existingUser->first_name);
+        $this->assertEquals($originalLastName, $existingUser->last_name);
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($originalFirstName, $instance->data['user-first-name']);
+        $this->assertEquals($originalLastName, $instance->data['user-last-name']);
     }
 
     public function test_get_instance_status(): void

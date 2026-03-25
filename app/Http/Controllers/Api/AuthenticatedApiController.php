@@ -49,6 +49,7 @@ class AuthenticatedApiController extends Controller
             'author' => $app->author,
             'available_for_trials' => $app->available_for_trials,
             'app_status' => $app->status?->value,
+            'git_url' => $app->lagoon_deploy_git,
             'store' => [
                 'name' => $app->store->name,
                 'status' => $app->store->status?->value,
@@ -135,13 +136,15 @@ class AuthenticatedApiController extends Controller
     /**
      * Create/Provision a new instance
      *
-     * Deploy a new PolydockStoreApp instance. If the user associated with the email does not exist, a new user account will automatically be created.
+     * Deploy a new PolydockStoreApp instance. If the user associated with the email does not exist, a new user account will automatically be created using the provided first and last names. For existing users, names will be updated only if current values are placeholders or empty.
      *
      * @group External API
      *
      * @subgroup Instance Management
      *
      * @bodyParam email email required The email address of the user. Example: new.user@example.com
+     * @bodyParam first_name string optional The first name of the user. Example: Jane
+     * @bodyParam last_name string optional The last name of the user. Example: Doe
      * @bodyParam storeAppId string required The UUID of the store app to provision. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
      * @bodyParam name string optional The display name for this instance. Defaults to lagoon-project-name if not provided. Example: "My awesome instance"
      * @bodyParam secret object optional Sensitive AI and VectorDB credentials. Example: {"ai": {"llm_url": "https://llm", "api_key": "sk-123"}, "vector": {"db_host": "localhost", "db_port": 5432, "db_name": "db_d1234", "db_user": "admin", "db_pass": "pass"}}
@@ -169,6 +172,8 @@ class AuthenticatedApiController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
             'storeAppId' => 'required|string|exists:polydock_store_apps,uuid',
             'name' => 'nullable|string|max:255',
             'secret' => 'nullable|array',
@@ -207,11 +212,31 @@ class AuthenticatedApiController extends Controller
         $user = User::firstOrCreate(
             ['email' => $email],
             [
-                'first_name' => 'Auto', // Dummy default
-                'last_name' => 'User',
+                'first_name' => $request->filled('first_name') ? $request->input('first_name') : 'Auto', // Dummy default
+                'last_name' => $request->filled('last_name') ? $request->input('last_name') : 'User',
                 'password' => Hash::make(Str::random(32)),
             ]
         );
+
+        // Update user names cautiously for existing users:
+        // Only replace placeholder/empty names, and do not arbitrarily overwrite real names.
+        if (! $user->wasRecentlyCreated) {
+            if (
+                $request->filled('first_name') &&
+                (\is_null($user->first_name) || $user->first_name === '' || $user->first_name === 'Auto')
+            ) {
+                $user->first_name = $request->input('first_name');
+            }
+            if (
+                $request->filled('last_name') &&
+                (\is_null($user->last_name) || $user->last_name === '' || $user->last_name === 'User')
+            ) {
+                $user->last_name = $request->input('last_name');
+            }
+        }
+        if ($user->isDirty()) {
+            $user->save();
+        }
 
         // Find or create a default primary user group for this user if they don't have one
         $primaryGroup = $user->primaryGroups()->first();
@@ -232,6 +257,14 @@ class AuthenticatedApiController extends Controller
 
         // Use the existing allocation mechanism or create a new instance
         $instance = UserGroup::getNewAppInstanceForThisAppForThisGroup($storeApp, $primaryGroup, $name ? (string) $name : null);
+
+        // Add user information to the app instance data - this enables claiming
+        $instance->data = array_merge($instance->data ?? [], [
+            'user-email' => $user->email,
+            'user-first-name' => $user->first_name,
+            'user-last-name' => $user->last_name,
+        ]);
+        $instance->save();
 
         // Handle top-level secret if provided
         if ($request->filled('secret')) {
