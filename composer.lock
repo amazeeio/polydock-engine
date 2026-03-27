@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fbba65f5c99e0d3e84b588b6648fa373",
+    "content-hash": "d960e2e05c0f650a89e762f0cadb244d",
     "packages": [
         {
             "name": "amazeeio/lagoon-logs",
@@ -139,6 +139,50 @@
                 "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/v0.1.6"
             },
             "time": "2026-03-20T22:28:16+00:00"
+        },
+        {
+            "name": "amazeeio/polydock-app-anythingllm",
+            "version": "v0.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amazeeio/polydock-app-anythingllm.git",
+                "reference": "7e1f10cedf146ca17887b3de30109a8bd3cef102"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-anythingllm/zipball/7e1f10cedf146ca17887b3de30109a8bd3cef102",
+                "reference": "7e1f10cedf146ca17887b3de30109a8bd3cef102",
+                "shasum": ""
+            },
+            "require": {
+                "freedomtech-hosting/polydock-app": "^0.0.33",
+                "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.1"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.27.1",
+                "mockery/mockery": "^1.6.12",
+                "orchestra/testbench": "*",
+                "phpstan/extension-installer": "*",
+                "phpstan/phpstan": "^1.10",
+                "phpstan/phpstan-mockery": "^1.1",
+                "phpunit/phpunit": "^10.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Amazeeio\\PolydockAppAnythingLLM\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Polydock App - AnythingLLM",
+            "support": {
+                "issues": "https://github.com/amazeeio/polydock-app-anythingllm/issues",
+                "source": "https://github.com/amazeeio/polydock-app-anythingllm/tree/v0.1.1"
+            },
+            "time": "2026-03-27T00:48:37+00:00"
         },
         {
             "name": "anourvalar/eloquent-serialize",
