@@ -118,6 +118,7 @@ class AuthenticatedApiController extends Controller
         $formattedInstances = $instances->map(fn (PolydockAppInstance $instance) => [
             'uuid' => $instance->uuid,
             'name' => $instance->name,
+            'label' => $instance->getKeyValue('instance-label') ?: null,
             'status' => $instance->status?->value,
             'status_message' => $instance->status_message,
             'app_url' => $instance->app_url,
@@ -147,6 +148,7 @@ class AuthenticatedApiController extends Controller
      * @bodyParam last_name string optional The last name of the user. Example: Doe
      * @bodyParam storeAppId string required The UUID of the store app to provision. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
      * @bodyParam name string optional The display name for this instance. Defaults to lagoon-project-name if not provided. Example: "My awesome instance"
+     * @bodyParam label string optional A free-form human-readable label for this instance. Not used as an identifier; may contain spaces and special characters. Example: "Acme Corp trial"
      * @bodyParam secret object optional Sensitive AI and VectorDB credentials. Example: {"ai": {"llm_url": "https://llm", "api_key": "sk-123"}, "vector": {"db_host": "localhost", "db_port": 5432, "db_name": "db_d1234", "db_user": "admin", "db_pass": "pass"}}
      * @bodyParam secret.ai object optional AI LLM configuration.
      * @bodyParam secret.ai.llm_url string optional The LLM API base URL. Example: https://llm.local
@@ -164,6 +166,7 @@ class AuthenticatedApiController extends Controller
      *  "data": {
      *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
      *    "name": "My awesome instance",
+     *    "label": "Acme Corp trial",
      *    "status": "new"
      *  }
      * }
@@ -176,6 +179,7 @@ class AuthenticatedApiController extends Controller
             'last_name' => 'nullable|string|max:255',
             'storeAppId' => 'required|string|exists:polydock_store_apps,uuid',
             'name' => 'nullable|string|max:255',
+            'label' => 'nullable|string|max:255',
             'secret' => 'nullable|array',
             'secret.ai' => 'nullable|array',
             'secret.ai.llm_url' => 'nullable|string',
@@ -266,6 +270,11 @@ class AuthenticatedApiController extends Controller
         ]);
         $instance->save();
 
+        // Store the optional free-form label
+        if ($request->filled('label')) {
+            $instance->storeKeyValue('instance-label', $request->input('label'));
+        }
+
         // Handle top-level secret if provided
         if ($request->filled('secret')) {
             $instance->storeKeyValue('secret', $request->input('secret'));
@@ -287,6 +296,7 @@ class AuthenticatedApiController extends Controller
             'data' => [
                 'uuid' => $instance->uuid,
                 'name' => $instance->name,
+                'label' => $instance->getKeyValue('instance-label') ?: null,
                 'status' => $instance->status?->value,
             ],
         ], 201);

@@ -398,4 +398,81 @@ class AuthenticatedApiTest extends TestCase
         $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
         $this->assertEquals($secret, $instance->getKeyValue('secret'));
     }
+
+    public function test_create_instance_stores_and_returns_label(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $label = 'Acme Corp trial instance';
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+            'label' => $label,
+        ]);
+
+        $response->assertCreated();
+        $this->assertEquals($label, $response->json('data.label'));
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($label, $instance->getKeyValue('instance-label'));
+    }
+
+    public function test_create_instance_without_label_returns_null_label(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertCreated();
+        $this->assertNull($response->json('data.label'));
+    }
+
+    public function test_get_instances_returns_label(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $group = UserGroup::create(['name' => 'Label Test Group']);
+        $this->user->groups()->attach($group->id, ['role' => 'owner']);
+
+        $instance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $group->id,
+            'name' => 'labelled-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+        $instance->storeKeyValue('instance-label', 'My readable label');
+
+        $response = $this->getJson('/api/instances?email='.$this->user->email);
+
+        $response->assertOk();
+        $found = collect($response->json('data'))->firstWhere('uuid', $instance->uuid);
+        $this->assertNotNull($found);
+        $this->assertEquals('My readable label', $found['label']);
+    }
+
+    public function test_get_instances_returns_null_label_when_not_set(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $group = UserGroup::create(['name' => 'No Label Group']);
+        $this->user->groups()->attach($group->id, ['role' => 'owner']);
+
+        PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $group->id,
+            'name' => 'unlabelled-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $response = $this->getJson('/api/instances?email='.$this->user->email);
+
+        $response->assertOk();
+        $found = collect($response->json('data'))->firstWhere('name', 'unlabelled-instance');
+        $this->assertNotNull($found);
+        $this->assertNull($found['label']);
+    }
 }
