@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\UserGroupResource\Pages;
 use App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 use App\Models\UserGroup;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
@@ -32,7 +33,9 @@ class UserGroupResource extends Resource
     {
         return $form
             ->schema([
-                //
+                TextInput::make('name')
+                    ->required()
+                    ->maxLength(255),
             ]);
     }
 

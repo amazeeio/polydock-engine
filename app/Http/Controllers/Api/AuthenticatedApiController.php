@@ -6,7 +6,11 @@ namespace App\Http\Controllers\Api;
 
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
+use App\Enums\PolydockStoreWebhookCallStatusEnum;
+use App\Enums\PolydockVariableScopeEnum;
 use App\Enums\UserGroupRoleEnum;
+use App\Enums\UserRemoteRegistrationStatusEnum;
+use App\Enums\UserRemoteRegistrationType;
 use App\Http\Controllers\Controller;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
@@ -45,6 +49,7 @@ class AuthenticatedApiController extends Controller
             'author' => $app->author,
             'available_for_trials' => $app->available_for_trials,
             'app_status' => $app->status?->value,
+            'git_url' => $app->lagoon_deploy_git,
             'store' => [
                 'name' => $app->store->name,
                 'status' => $app->store->status?->value,
@@ -54,6 +59,31 @@ class AuthenticatedApiController extends Controller
 
         return response()->json([
             'data' => $formattedApps,
+        ]);
+    }
+
+    /**
+     * Get selected enums
+     *
+     * Retrieve a list of selected enums used in the Polydock API and their possible values/labels.
+     *
+     * @group External API
+     *
+     * @subgroup Meta
+     */
+    public function getEnums(): JsonResponse
+    {
+        return response()->json([
+            'data' => [
+                // 'PolydockAppInstanceStatus' => PolydockAppInstanceStatus::getEnumOptions(),
+                // 'PolydockStoreAppStatus' => PolydockStoreAppStatusEnum::getEnumOptions(),
+                // 'PolydockStoreStatus' => PolydockStoreStatusEnum::getEnumOptions(),
+                'PolydockStoreWebhookCallStatus' => PolydockStoreWebhookCallStatusEnum::getEnumOptions(),
+                'PolydockVariableScope' => PolydockVariableScopeEnum::getEnumOptions(),
+                'UserGroupRole' => UserGroupRoleEnum::getEnumOptions(),
+                'UserRemoteRegistrationStatus' => UserRemoteRegistrationStatusEnum::getEnumOptions(),
+                'UserRemoteRegistrationType' => UserRemoteRegistrationType::getEnumOptions(),
+            ],
         ]);
     }
 
@@ -88,6 +118,7 @@ class AuthenticatedApiController extends Controller
         $formattedInstances = $instances->map(fn (PolydockAppInstance $instance) => [
             'uuid' => $instance->uuid,
             'name' => $instance->name,
+            'label' => $instance->getKeyValue('instance-label') ?: null,
             'status' => $instance->status?->value,
             'status_message' => $instance->status_message,
             'app_url' => $instance->app_url,
@@ -106,20 +137,36 @@ class AuthenticatedApiController extends Controller
     /**
      * Create/Provision a new instance
      *
-     * Deploy a new PolydockStoreApp instance. If the user associated with the email does not exist, a new user account will automatically be created.
+     * Deploy a new PolydockStoreApp instance. If the user associated with the email does not exist, a new user account will automatically be created using the provided first and last names. For existing users, names will be updated only if current values are placeholders or empty.
      *
      * @group External API
      *
      * @subgroup Instance Management
      *
      * @bodyParam email email required The email address of the user. Example: new.user@example.com
+     * @bodyParam first_name string optional The first name of the user. Example: Jane
+     * @bodyParam last_name string optional The last name of the user. Example: Doe
      * @bodyParam storeAppId string required The UUID of the store app to provision. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
-     * @bodyParam config object optional Key-value overrides or configurations for this individual deployment. Example: {"lagoon_auto_idle": "1"}
+     * @bodyParam name string optional The display name for this instance. Defaults to lagoon-project-name if not provided. Example: "My awesome instance"
+     * @bodyParam label string optional A free-form human-readable label for this instance. Not used as an identifier; may contain spaces and special characters. Example: "Acme Corp trial"
+     * @bodyParam secret object optional Sensitive AI and VectorDB credentials. Example: {"ai": {"llm_url": "https://llm", "api_key": "sk-123"}, "vector": {"db_host": "localhost", "db_port": 5432, "db_name": "db_d1234", "db_user": "admin", "db_pass": "pass"}}
+     * @bodyParam secret.ai object optional AI LLM configuration.
+     * @bodyParam secret.ai.llm_url string optional The LLM API base URL. Example: https://llm.local
+     * @bodyParam secret.ai.api_key string optional The LLM API key. Example: sk-123...
+     * @bodyParam secret.vector object optional Vector Database configuration.
+     * @bodyParam secret.vector.db_host string optional The database host. Example: localhost
+     * @bodyParam secret.vector.db_port int optional The database port. Example: 5432
+     * @bodyParam secret.vector.db_name string optional The database name. Example: db_d1234
+     * @bodyParam secret.vector.db_user string optional The database username. Example: admin
+     * @bodyParam secret.vector.db_pass string optional The database password. Example: secret-pass
+     * @bodyParam config object optional Key-value overrides or configurations for this individual deployment. Example: {"lagoon-auto-idle": "1"}
      *
      * @response 201 {
      *  "message": "Instance provisioned",
      *  "data": {
      *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
+     *    "name": "My awesome instance",
+     *    "label": "Acme Corp trial",
      *    "status": "new"
      *  }
      * }
@@ -128,13 +175,36 @@ class AuthenticatedApiController extends Controller
     {
         $request->validate([
             'email' => 'required|email',
+            'first_name' => 'nullable|string|max:255',
+            'last_name' => 'nullable|string|max:255',
             'storeAppId' => 'required|string|exists:polydock_store_apps,uuid',
+            'name' => 'nullable|string|max:255',
+            'label' => 'nullable|string|max:255',
+            'secret' => 'nullable|array',
+            'secret.ai' => 'nullable|array',
+            'secret.ai.llm_url' => 'nullable|string',
+            'secret.ai.api_key' => 'nullable|string',
+            'secret.vector' => 'nullable|array',
+            'secret.vector.db_host' => 'nullable|string',
+            'secret.vector.db_port' => 'nullable|integer',
+            'secret.vector.db_name' => 'nullable|string',
+            'secret.vector.db_user' => 'nullable|string',
+            'secret.vector.db_pass' => 'nullable|string',
             'config' => 'nullable|array',
             'config.*' => [
                 'nullable',
                 function ($attribute, $value, $fail) {
-                    if (is_array($value) || is_object($value)) {
-                        $fail('The ' . $attribute . ' must be a scalar value.');
+                    // Allow 'secret' to be an array if passed within config (legacy support)
+                    if (str_ends_with($attribute, '.secret')) {
+                        if (! \is_array($value)) {
+                            $fail("The {$attribute} must be an array.");
+                        }
+
+                        return;
+                    }
+
+                    if (\is_array($value) || \is_object($value)) {
+                        $fail("The {$attribute} must be a scalar value.");
                     }
                 },
             ],
@@ -146,11 +216,31 @@ class AuthenticatedApiController extends Controller
         $user = User::firstOrCreate(
             ['email' => $email],
             [
-                'first_name' => 'Auto', // Dummy default
-                'last_name' => 'User',
+                'first_name' => $request->filled('first_name') ? $request->input('first_name') : 'Auto', // Dummy default
+                'last_name' => $request->filled('last_name') ? $request->input('last_name') : 'User',
                 'password' => Hash::make(Str::random(32)),
             ]
         );
+
+        // Update user names cautiously for existing users:
+        // Only replace placeholder/empty names, and do not arbitrarily overwrite real names.
+        if (! $user->wasRecentlyCreated) {
+            if (
+                $request->filled('first_name') &&
+                (\is_null($user->first_name) || $user->first_name === '' || $user->first_name === 'Auto')
+            ) {
+                $user->first_name = $request->input('first_name');
+            }
+            if (
+                $request->filled('last_name') &&
+                (\is_null($user->last_name) || $user->last_name === '' || $user->last_name === 'User')
+            ) {
+                $user->last_name = $request->input('last_name');
+            }
+        }
+        if ($user->isDirty()) {
+            $user->save();
+        }
 
         // Find or create a default primary user group for this user if they don't have one
         $primaryGroup = $user->primaryGroups()->first();
@@ -163,15 +253,41 @@ class AuthenticatedApiController extends Controller
 
         $storeApp = PolydockStoreApp::where('uuid', $request->input('storeAppId'))->firstOrFail();
 
-        // Use the existing allocation mechanism or create a new instance
-        $instance = UserGroup::getNewAppInstanceForThisAppForThisGroup($storeApp, $primaryGroup);
-
         // Apply config if provided
         $config = $request->input('config', []);
+
+        // Use name from request, or fallback to lagoon-project-name from config if provided
+        $name = $request->input('name') ?? $config['lagoon-project-name'] ?? null;
+
+        // Use the existing allocation mechanism or create a new instance
+        $instance = UserGroup::getNewAppInstanceForThisAppForThisGroup($storeApp, $primaryGroup, $name ? (string) $name : null);
+
+        // Add user information to the app instance data - this enables claiming
+        $instance->data = array_merge($instance->data ?? [], [
+            'user-email' => $user->email,
+            'user-first-name' => $user->first_name,
+            'user-last-name' => $user->last_name,
+        ]);
+        $instance->save();
+
+        // Store the optional free-form label
+        if ($request->filled('label')) {
+            $instance->storeKeyValue('instance-label', $request->input('label'));
+        }
+
+        // Handle top-level secret if provided
+        if ($request->filled('secret')) {
+            $instance->storeKeyValue('secret', $request->input('secret'));
+        }
+
         if (! empty($config)) {
             foreach ($config as $key => $value) {
                 // If it's a known root column we could update it, otherwise data blob key-value store
-                $instance->storeKeyValue((string) $key, (string) $value);
+                // Skip if we already stored it from top-level secret to avoid overwriting with potentially partial data
+                if ((string) $key === 'secret' && $request->filled('secret')) {
+                    continue;
+                }
+                $instance->storeKeyValue((string) $key, $value === null ? '' : $value);
             }
         }
 
@@ -179,6 +295,8 @@ class AuthenticatedApiController extends Controller
             'message' => 'Instance provisioned',
             'data' => [
                 'uuid' => $instance->uuid,
+                'name' => $instance->name,
+                'label' => $instance->getKeyValue('instance-label') ?: null,
                 'status' => $instance->status?->value,
             ],
         ], 201);
@@ -198,21 +316,50 @@ class AuthenticatedApiController extends Controller
      * @response {
      *  "data": {
      *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
+     *    "name": "my-instance",
      *    "status": "running-healthy-claimed",
-     *    "status_message": "Instance is running smoothly."
+     *    "status_message": "Instance is running smoothly.",
+     *    "app_url": "https://my-instance.example.com",
+     *    "store_app": {
+     *      "uuid": "7b206eb2-1d98-54db-0bd9-83898gd6f426",
+     *      "name": "My App",
+     *      "git_url": "git@github.com:example/repo.git"
+     *    },
+     *    "created_at": "2025-01-01T00:00:00.000000Z",
+     *    "lagoon_claim_script": "/lagoon/polydock_claim.sh",
+     *    "lagoon_project_name": "example-project"
      *  }
      * }
      */
     public function getInstanceStatus(string $uuid): JsonResponse
     {
-        $instance = PolydockAppInstance::where('uuid', $uuid)->firstOrFail();
+        $instance = PolydockAppInstance::where('uuid', $uuid)->with('storeApp')->firstOrFail();
+
+        $data = [
+            'uuid' => $instance->uuid,
+            'name' => $instance->name,
+            'status' => $instance->status?->value,
+            'status_message' => $instance->status_message,
+            'app_url' => $instance->app_url,
+            'store_app' => [
+                'uuid' => $instance->storeApp->uuid,
+                'name' => $instance->storeApp->name,
+                'git_url' => $instance->storeApp->lagoon_deploy_git,
+            ],
+            'created_at' => $instance->created_at,
+            'lagoon_claim_script' => $instance->getKeyValue(key: 'lagoon-claim-script'),
+            'lagoon_project_name' => $instance->getKeyValue(key: 'lagoon-project-name'),
+        ];
+
+        // Include credentials if they exist and instance is at least in claimed status
+        if ($instance->status === PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED) {
+            $data['app_admin_username'] = $instance->getGeneratedAppAdminUsername();
+            $data['app_admin_password'] = $instance->getGeneratedAppAdminPassword();
+            $data['app_admin_api_key'] = $instance->getKeyValue('app-admin-api-key');
+        }
 
         return response()->json([
-            'data' => [
-                'uuid' => $instance->uuid,
-                'status' => $instance->status?->value,
-                'status_message' => $instance->status_message,
-            ],
+            'data' => $data,
         ]);
     }
 

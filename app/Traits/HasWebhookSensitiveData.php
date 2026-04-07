@@ -20,14 +20,14 @@ trait HasWebhookSensitiveData
             'recaptcha',
 
             // Regex patterns (starting with /)
-            '/^.*_key.*$/',          // Anything containing _key
-            '/^.*private.*$/',       // Anything containing private
+            '/^.*_key.*$/',         // Anything containing _key
+            '/^.*private.*$/',      // Anything containing private
             '/^.*secret.*$/',       // Anything containing secret
-            '/^.*pass.*$/',          // Anything containing pass
-            '/^.*username.*$/',      // Anything containing username
-            '/^.*token.*$/',         // Anything containing token
-            '/^.*api.*$/',           // Anything containing api
-            '/^.*ssh.*$/',           // Anything containing ssh
+            '/^.*pass.*$/',         // Anything containing pass
+            '/^.*username.*$/',     // Anything containing username
+            '/^.*token.*$/',        // Anything containing token
+            '/^.*api.*$/',          // Anything containing api
+            '/^.*ssh.*$/',          // Anything containing ssh
         ];
     }
 
@@ -36,10 +36,11 @@ trait HasWebhookSensitiveData
      */
     public function registerSensitiveDataKeys(array|string $keys): self
     {
-        $keys = is_array($keys) ? $keys : [$keys];
-        $this->sensitiveDataKeys = array_unique(
-            array_merge($this->getSensitiveDataKeys(), $keys),
-        );
+        $keys = \is_array($keys) ? $keys : [$keys];
+        $this->sensitiveDataKeys = array_unique([
+            ...$this->getSensitiveDataKeys(),
+            ...$keys,
+        ]);
 
         return $this;
     }
@@ -54,7 +55,7 @@ trait HasWebhookSensitiveData
         foreach ($sensitiveKeys as $sensitiveKey) {
             // If it's a regex pattern
             if (str_starts_with((string) $sensitiveKey, '/')) {
-                if (preg_match($sensitiveKey, $key)) {
+                if (preg_match($sensitiveKey, $lowercaseKey)) {
                     return true;
                 }
 

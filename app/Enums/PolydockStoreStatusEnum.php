@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\Enums;
 
+use App\Traits\HasEnumOptions;
 use Filament\Support\Contracts\HasColor;
 use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 
 enum PolydockStoreStatusEnum: string implements HasColor, HasIcon, HasLabel
 {
+    use HasEnumOptions;
+
     case UNAVAILABLE = 'unavailable';
     case PUBLIC = 'public';
     case PRIVATE = 'private';

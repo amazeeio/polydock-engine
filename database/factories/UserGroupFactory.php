@@ -20,8 +20,7 @@ class UserGroupFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => fake()->text(),
-            'name' => fake()->name(),
+            'name' => fake()->company(),
             'created_at' => $this->faker->dateTime(),
             'updated_at' => $this->faker->dateTime(),
         ];

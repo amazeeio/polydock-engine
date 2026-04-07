@@ -11,6 +11,12 @@ Polydock Engine is a Laravel-based application management and deployment platfor
 
 For detailed documentation including features, technical details, setup instructions, and more, please see the [Documentation](docs/README.md).
 
+## Development Workflow
+
+- **Branching**: Always branch from the `dev` branch for new features, bug fixes, or improvements.
+- **Pull Requests**: Create Pull Requests (PRs) back into the `dev` branch for review and testing.
+- **Releases**: Releases are performed by merging the `dev` branch into the `prod` branch.
+
 ## Sponsoring Organizations
 
 - [Workshop Orange](https://www.workshoporange.co) - Project Delivery Professionals

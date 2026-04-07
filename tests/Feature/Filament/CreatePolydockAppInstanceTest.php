@@ -72,8 +72,9 @@ class CreatePolydockAppInstanceTest extends TestCase
             'email' => 'newuser@example.com',
         ]);
 
-        // Verify job was dispatched
+        // Verify job was dispatched exactly once
         Queue::assertPushed(ProcessUserRemoteRegistration::class);
+        Queue::assertPushedTimes(ProcessUserRemoteRegistration::class, 1);
     }
 
     public function test_create_form_validates_required_fields(): void

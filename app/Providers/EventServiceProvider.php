@@ -31,6 +31,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         PolydockAppInstanceCreatedWithNewStatus::class => [
             ProcessNewPolydockAppInstance::class,
+            CreateWebhookCallForAppInstanceStatusChanged::class,
         ],
         PolydockAppInstanceStatusChanged::class => [
             CreateWebhookCallForAppInstanceStatusChanged::class,

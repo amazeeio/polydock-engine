@@ -25,7 +25,6 @@ class RegionsController extends Controller
      *   "data": {
      *     "regions": [
      *       {
-     *         "uuid": null,
      *         "id": 1,
      *         "label": "Demo US East Region Store",
      *         "apps": [
@@ -61,7 +60,6 @@ class RegionsController extends Controller
                 }])
                 ->get()
                 ->map(fn ($store) => [
-                    'uuid' => null, // Stores don't have UUIDs, using ID as identifier
                     'id' => $store->id,
                     'label' => $store->name,
                     'apps' => $store->apps->map(fn ($app) => [

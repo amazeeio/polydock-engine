@@ -17,6 +17,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/store-apps', [AuthenticatedApiController::class, 'getStoreApps'])->name('api.store-apps');
         Route::get('/instances', [AuthenticatedApiController::class, 'getInstances'])->name('api.instances.get');
         Route::get('/instance/{uuid}/status', [AuthenticatedApiController::class, 'getInstanceStatus'])->name('api.instance.status');
+        Route::get('/enums', [AuthenticatedApiController::class, 'getEnums'])->name('api.enums');
     });
 
     // Routes consumed by MoaD - write operations

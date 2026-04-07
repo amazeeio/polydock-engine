@@ -67,6 +67,31 @@ class AuthenticatedApiTest extends TestCase
         // The storeApp needs valid app_class that exists, or we might hit PolydockEngineAppNotFoundException. Let's ensure a mock or valid class exists.
     }
 
+    public function test_get_enums_returns_all_enum_options(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $response = $this->getJson('/api/enums');
+
+        $response->assertOk()
+            ->assertJsonStructure([
+                'data' => [
+                    // 'PolydockAppInstanceStatus',
+                    // 'PolydockStoreAppStatus',
+                    // 'PolydockStoreStatus',
+                    'PolydockStoreWebhookCallStatus',
+                    'PolydockVariableScope',
+                    'UserGroupRole',
+                    'UserRemoteRegistrationStatus',
+                    'UserRemoteRegistrationType',
+                ],
+            ]);
+
+        // $this->assertIsArray($response->json('data.PolydockAppInstanceStatus'));
+        // $this->assertArrayHasKey('new', $response->json('data.PolydockAppInstanceStatus'));
+        // $this->assertEquals('New', $response->json('data.PolydockAppInstanceStatus.new'));
+    }
+
     public function test_unauthenticated_requests_are_rejected(): void
     {
         $response = $this->getJson('/api/store-apps');
@@ -87,6 +112,7 @@ class AuthenticatedApiTest extends TestCase
                         'name',
                         'description',
                         'author', // etc...
+                        'git_url',
                         'store' => [
                             'name',
                             'status',
@@ -99,6 +125,7 @@ class AuthenticatedApiTest extends TestCase
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals('Test App', $response->json('data.0.name'));
         $this->assertEquals('Test Store', $response->json('data.0.store.name'));
+        $this->assertEquals('git@github.com:example/repo.git', $response->json('data.0.git_url'));
     }
 
     public function test_get_instances_returns_user_instances(): void
@@ -147,6 +174,98 @@ class AuthenticatedApiTest extends TestCase
         $this->assertEquals(1, $instanceCount);
     }
 
+    public function test_create_instance_provisions_instance_and_creates_user_with_names(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $newEmail = 'named.user@example.com';
+        $firstName = 'Jane';
+        $lastName = 'Doe';
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $newEmail,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'storeAppId' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertCreated();
+
+        $newUser = User::where('email', $newEmail)->first();
+        $this->assertNotNull($newUser);
+        $this->assertEquals($firstName, $newUser->first_name);
+        $this->assertEquals($lastName, $newUser->last_name);
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($newEmail, $instance->data['user-email']);
+        $this->assertEquals($firstName, $instance->data['user-first-name']);
+        $this->assertEquals($lastName, $instance->data['user-last-name']);
+    }
+
+    public function test_create_instance_updates_placeholder_names_for_existing_user(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $existingUser = User::factory()->create([
+            'email' => 'placeholder@example.com',
+            'first_name' => 'Auto',
+            'last_name' => 'User',
+        ]);
+
+        $firstName = 'Jane';
+        $lastName = 'Doe';
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $existingUser->email,
+            'first_name' => $firstName,
+            'last_name' => $lastName,
+            'storeAppId' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertCreated();
+
+        $existingUser->refresh();
+        $this->assertEquals($firstName, $existingUser->first_name);
+        $this->assertEquals($lastName, $existingUser->last_name);
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($firstName, $instance->data['user-first-name']);
+        $this->assertEquals($lastName, $instance->data['user-last-name']);
+    }
+
+    public function test_create_instance_does_not_overwrite_real_names_for_existing_user(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $originalFirstName = 'John';
+        $originalLastName = 'Smith';
+        $existingUser = User::factory()->create([
+            'email' => 'real.name@example.com',
+            'first_name' => $originalFirstName,
+            'last_name' => $originalLastName,
+        ]);
+
+        $newFirstName = 'Jane';
+        $newLastName = 'Doe';
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $existingUser->email,
+            'first_name' => $newFirstName,
+            'last_name' => $newLastName,
+            'storeAppId' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertCreated();
+
+        $existingUser->refresh();
+        $this->assertEquals($originalFirstName, $existingUser->first_name);
+        $this->assertEquals($originalLastName, $existingUser->last_name);
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($originalFirstName, $instance->data['user-first-name']);
+        $this->assertEquals($originalLastName, $instance->data['user-last-name']);
+    }
+
     public function test_get_instance_status(): void
     {
         Sanctum::actingAs($this->user, ['instances.read']);
@@ -155,14 +274,25 @@ class AuthenticatedApiTest extends TestCase
             'polydock_store_app_id' => $this->storeApp->id,
         ]);
 
+        $instance->storeKeyValue('lagoon-project-name', 'test-lagoon-name');
+        $instance->storeKeyValue('lagoon-claim-script', '/app/.lagoon/scripts/polydock_claim.sh');
         $instance->setStatus(PolydockAppInstanceStatus::PRE_CREATE_RUNNING, 'Creating...');
         $instance->save();
 
         $response = $this->getJson("/api/instance/{$instance->uuid}/status");
 
         $response->assertOk();
+        $this->assertEquals($instance->uuid, $response->json('data.uuid'));
+        $this->assertEquals($instance->name, $response->json('data.name'));
         $this->assertEquals($instance->status->value, $response->json('data.status'));
         $this->assertEquals('Creating...', $response->json('data.status_message'));
+        $this->assertNull($response->json('data.app_url'));
+        $this->assertEquals($this->storeApp->uuid, $response->json('data.store_app.uuid'));
+        $this->assertEquals($this->storeApp->name, $response->json('data.store_app.name'));
+        $this->assertEquals('git@github.com:example/repo.git', $response->json('data.store_app.git_url'));
+        $this->assertNotNull($response->json('data.created_at'));
+        $this->assertEquals('/app/.lagoon/scripts/polydock_claim.sh', $response->json('data.lagoon_claim_script'));
+        $this->assertEquals('test-lagoon-name', $response->json('data.lagoon_project_name'));
     }
 
     public function test_delete_instance_sets_pre_remove_status(): void
@@ -183,5 +313,166 @@ class AuthenticatedApiTest extends TestCase
 
         $instance->refresh();
         $this->assertEquals(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, $instance->status);
+    }
+
+    public function test_create_instance_with_custom_name_and_secrets(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $customName = 'My Custom Instance';
+        $secret = [
+            'llm_key' => 'secret-api-key',
+            'llm_url' => 'https://llm.local',
+        ];
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+            'name' => $customName,
+            'config' => [
+                'secret' => $secret,
+            ],
+        ]);
+
+        $response->assertCreated();
+        $this->assertEquals($customName, $response->json('data.name'));
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($customName, $instance->name);
+        $this->assertEquals($secret, $instance->getKeyValue('secret'));
+    }
+
+    public function test_create_instance_ensures_unique_name(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $duplicateName = 'duplicate-name';
+
+        // Create first instance
+        PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'name' => $duplicateName,
+        ]);
+
+        // Create second instance with same name
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+            'name' => $duplicateName,
+        ]);
+
+        $response->assertCreated();
+        $newName = $response->json('data.name');
+
+        $this->assertNotEquals($duplicateName, $newName);
+        $this->assertStringContainsString($duplicateName, $newName);
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($newName, $instance->name);
+        $this->assertEquals($newName, $instance->getKeyValue('lagoon-project-name'));
+    }
+
+    public function test_create_instance_with_nested_secrets(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $secret = [
+            'ai' => [
+                'llm_url' => 'https://ai.example.com',
+                'api_key' => 'ai-secret-123',
+            ],
+            'vector' => [
+                'db_host' => 'vectordb.example.com',
+                'db_port' => 5432,
+            ],
+        ];
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+            'secret' => $secret,
+        ]);
+
+        $response->assertCreated();
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($secret, $instance->getKeyValue('secret'));
+    }
+
+    public function test_create_instance_stores_and_returns_label(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $label = 'Acme Corp trial instance';
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+            'label' => $label,
+        ]);
+
+        $response->assertCreated();
+        $this->assertEquals($label, $response->json('data.label'));
+
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+        $this->assertEquals($label, $instance->getKeyValue('instance-label'));
+    }
+
+    public function test_create_instance_without_label_returns_null_label(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertCreated();
+        $this->assertNull($response->json('data.label'));
+    }
+
+    public function test_get_instances_returns_label(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $group = UserGroup::create(['name' => 'Label Test Group']);
+        $this->user->groups()->attach($group->id, ['role' => 'owner']);
+
+        $instance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $group->id,
+            'name' => 'labelled-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+        $instance->storeKeyValue('instance-label', 'My readable label');
+
+        $response = $this->getJson('/api/instances?email='.$this->user->email);
+
+        $response->assertOk();
+        $found = collect($response->json('data'))->firstWhere('uuid', $instance->uuid);
+        $this->assertNotNull($found);
+        $this->assertEquals('My readable label', $found['label']);
+    }
+
+    public function test_get_instances_returns_null_label_when_not_set(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $group = UserGroup::create(['name' => 'No Label Group']);
+        $this->user->groups()->attach($group->id, ['role' => 'owner']);
+
+        PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $group->id,
+            'name' => 'unlabelled-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $response = $this->getJson('/api/instances?email='.$this->user->email);
+
+        $response->assertOk();
+        $found = collect($response->json('data'))->firstWhere('name', 'unlabelled-instance');
+        $this->assertNotNull($found);
+        $this->assertNull($found['label']);
     }
 }
