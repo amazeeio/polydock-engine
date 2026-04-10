@@ -22,13 +22,16 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
 
     protected function tearDown(): void
     {
-        if ($this->lagoonKeyDir !== null && is_dir($this->lagoonKeyDir)) {
-            $this->deleteDirectory($this->lagoonKeyDir);
-            $this->lagoonKeyDir = null;
-        }
+        try {
+            parent::tearDown();
+        } finally {
+            if ($this->lagoonKeyDir !== null && is_dir($this->lagoonKeyDir)) {
+                $this->deleteDirectory($this->lagoonKeyDir);
+                $this->lagoonKeyDir = null;
+            }
 
-        \Mockery::close();
-        parent::tearDown();
+            \Mockery::close();
+        }
     }
 
     /**
@@ -83,14 +86,13 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
-        $mock->shouldReceive('deployProjectEnvironmentByName')
-            ->with('project-1', 'main', [])
+        $mock->shouldReceive('bulkDeployEnvironments')
+            ->with([
+                ['project' => 'project-1', 'name' => 'main'],
+                ['project' => 'project-2', 'name' => 'develop'],
+            ], \Mockery::type('string'), [])
             ->once()
-            ->andReturn(['data' => 'success']);
-        $mock->shouldReceive('deployProjectEnvironmentByName')
-            ->with('project-2', 'develop', [])
-            ->once()
-            ->andReturn(['data' => 'success']);
+            ->andReturn(['bulkDeployEnvironmentLatest' => 'bulk-id-123']);
         $this->app->instance(Client::class, $mock);
 
         $store = PolydockStore::factory()->create([
@@ -135,12 +137,28 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
             '--force' => true,
         ])
             ->expectsOutput('Found 2 running instances.')
-            ->expectsOutput('Authenticating with Lagoon (Serial Mode)...')
+            ->expectsOutput('Authenticating with Lagoon...')
+            ->expectsOutput('Triggering bulk deployment for 2 instances...')
+            ->expectsOutput('Bulk deployment triggered successfully! Bulk ID: bulk-id-123')
             ->assertExitCode(0);
     }
 
     public function test_it_runs_concurrently(): void
     {
+        $this->setupLagoonKey();
+
+        $mock = \Mockery::mock(Client::class);
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
+        $mock->shouldReceive('initGraphqlClient')->once();
+        $mock->shouldReceive('bulkDeployEnvironments')
+            ->with([
+                ['project' => 'project-1', 'name' => 'main'],
+                ['project' => 'project-2', 'name' => 'main'],
+            ], \Mockery::type('string'), [])
+            ->once()
+            ->andReturn(['bulkDeployEnvironmentLatest' => 'bulk-id-456']);
+        $this->app->instance(Client::class, $mock);
+
         $store = PolydockStore::factory()->create([
             'lagoon_deploy_project_prefix' => 'test-prefix',
         ]);
@@ -182,26 +200,10 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
             '--force' => true,
             '--concurrency' => 2,
         ])
-            ->expectsOutput('Running deployments concurrently on 2 instances (concurrency: 2)...')
+            ->expectsOutput('Authenticating with Lagoon...')
+            ->expectsOutput('Triggering bulk deployment for 2 instances...')
+            ->expectsOutput('Bulk deployment triggered successfully! Bulk ID: bulk-id-456')
             ->assertExitCode(0);
-
-        Process::assertRan(function ($process) use ($instance1) {
-            $cmd = $process->command;
-            $hasId = is_array($cmd)
-                ? in_array("--instance-id={$instance1->id}", $cmd)
-                : str_contains($cmd, "--instance-id={$instance1->id}");
-
-            return $hasId;
-        });
-
-        Process::assertRan(function ($process) use ($instance2) {
-            $cmd = $process->command;
-            $hasId = is_array($cmd)
-                ? in_array("--instance-id={$instance2->id}", $cmd)
-                : str_contains($cmd, "--instance-id={$instance2->id}");
-
-            return $hasId;
-        });
     }
 
     public function test_it_deploys_variables_only(): void
@@ -211,10 +213,12 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
-        $mock->shouldReceive('deployProjectEnvironmentByName')
-            ->with('project-1', 'main', ['LAGOON_VARIABLES_ONLY' => 'true'])
+        $mock->shouldReceive('bulkDeployEnvironments')
+            ->with([
+                ['project' => 'project-1', 'name' => 'main'],
+            ], \Mockery::type('string'), ['LAGOON_VARIABLES_ONLY' => 'true'])
             ->once()
-            ->andReturn(['data' => 'success']);
+            ->andReturn(['bulkDeployEnvironmentLatest' => 'bulk-id-789']);
         $this->app->instance(Client::class, $mock);
 
         $store = PolydockStore::factory()->create();
@@ -251,7 +255,7 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
-        $mock->shouldNotReceive('deployProjectEnvironmentByName');
+        $mock->shouldNotReceive('bulkDeployEnvironments');
         $this->app->instance(Client::class, $mock);
 
         $store = PolydockStore::factory()->create();
@@ -274,7 +278,8 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
             'app_uuid' => $storeApp->uuid,
             '--force' => true,
         ])
-            ->assertExitCode(0);
+            ->expectsOutput('No valid environments found to deploy.')
+            ->assertExitCode(1);
     }
 
     public function test_it_returns_error_when_store_app_not_found(): void
