@@ -155,64 +155,11 @@ class TriggerLagoonDeployOnAppInstances extends Command
             $this->table(headers: $headers, rows: $rows);
         }
 
-        if ($concurrency > 1) {
-            $this->info(string: "Running deployments concurrently on {$count} instances (concurrency: {$concurrency})...");
-
-            $phpBinary = PHP_BINARY;
-            $artisan = base_path('artisan');
-            $commandBase = [
-                $phpBinary,
-                $artisan,
-                'polydock:app-instance:trigger-deploy',
-                $appUuid,
-                '--force',
-            ];
-
-            if ($envOverride) {
-                $commandBase[] = "--environment={$envOverride}";
-            }
-            if ($variablesOnly) {
-                $commandBase[] = '--variables-only';
-            }
-
-            $pool = Process::pool(function (Pool $pool) use ($instances, $commandBase) {
-                foreach ($instances as $instance) {
-                    $command = array_merge($commandBase, ["--instance-id={$instance->id}"]);
-                    $pool->as($instance->id)->command($command);
-                }
-            });
-
-            try {
-                $pool->concurrency($concurrency);
-            } catch (\Throwable) {
-                // Ignore if method doesn't exist
-            }
-
-            $poolResults = $pool->wait();
-
-            foreach ($poolResults as $instanceId => $result) {
-                $instance = $instances->find($instanceId);
-                if (! $instance) {
-                    continue;
-                }
-
-                $projectName = $instance->getKeyValue(key: 'lagoon-project-name');
-
-                if ($result->successful()) {
-                    // Output already contains "SUCCESS" or "FAILED" messages from child process
-                    $this->output->write(messages: $result->output());
-                } else {
-                    $this->error(string: "\n[FAILED] {$projectName} (Process Error): ".trim((string) $result->errorOutput()));
-                }
-            }
-
-            $this->info(string: 'Done.');
-
-            return 0;
+        if ($concurrency > 1 && ! $this->option('force')) {
+            $this->warn('Note: Concurrency option is ignored when using bulk deployment, as Lagoon handles parallelization natively.');
         }
 
-        // Serial Logic
-        $this->info(string: 'Authenticating with Lagoon (Serial Mode)...');
+        $this->info(string: 'Authenticating with Lagoon...');
         try {
             $client = app(LagoonClientService::class)->getAuthenticatedClient();
         } catch (\Exception $e) {
@@ -221,25 +168,59 @@ class TriggerLagoonDeployOnAppInstances extends Command
             return 1;
         }
 
-        $bar = $this->output->createProgressBar(max: $count);
-        $bar->start();
-
-        /** @var PolydockAppInstance $instance */
+        $environments = [];
         foreach ($instances as $instance) {
-            $this->deployToInstance(
-                instance: $instance,
-                client: $client,
-                envOverride: $envOverride,
-                variablesOnly: $variablesOnly
-            );
-            $bar->advance();
+            $projectName = $instance->getKeyValue('lagoon-project-name');
+            $branch = $envOverride ?: $instance->getKeyValue('lagoon-deploy-branch');
+            
+            if ($projectName && $branch) {
+                $environments[] = [
+                    'project' => $projectName,
+                    'name' => $branch,
+                ];
+            }
         }
 
-        $bar->finish();
-        $this->newLine();
-        $this->info(string: 'Done.');
+        if (empty($environments)) {
+            $this->error('No valid environments found to deploy.');
+            return 1;
+        }
 
-        return 0;
+        $buildVars = [];
+        if ($variablesOnly) {
+            $buildVars['LAGOON_VARIABLES_ONLY'] = 'true';
+        }
+
+        $bulkName = "Polydock Bulk Deploy: {$storeApp->name} (" . now()->toDateTimeString() . ")";
+
+        $this->info("Triggering bulk deployment for {$count} instances...");
+        
+        try {
+            $result = $client->bulkDeployEnvironments(
+                environments: $environments,
+                name: $bulkName,
+                buildVariables: $buildVars
+            );
+
+            if (isset($result['error'])) {
+                $errors = is_array($result['error']) ? json_encode(value: $result['error']) : $result['error'];
+                $this->error(string: "Bulk deployment failed: {$errors}");
+
+                return 1;
+            } else {
+                $bulkId = $result['bulkDeployEnvironmentLatest'] ?? 'unknown';
+                $this->info(string: "Bulk deployment triggered successfully! Bulk ID: {$bulkId}");
+                
+                $this->info("\nYou can track the progress using:");
+                $this->info("  https://dashboard.amazeeio.cloud/deployments?bulkId={$bulkId}");
+
+                return 0;
+            }
+        } catch (\Exception $e) {
+            $this->error(string: "Bulk deployment failed: {$e->getMessage()}");
+
+            return 1;
+        }
     }
 
     protected function deployToInstance(
