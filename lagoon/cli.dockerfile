@@ -1,5 +1,5 @@
 FROM uselagoon/lagoon-cli:latest as LAGOONCLI
-FROM uselagoon/php-8.3-cli
+FROM uselagoon/php-8.4-cli
 
 #######################################################
 # Install PHP extensions
