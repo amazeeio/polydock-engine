@@ -22,13 +22,16 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
 
     protected function tearDown(): void
     {
-        if ($this->lagoonKeyDir !== null && is_dir($this->lagoonKeyDir)) {
-            $this->deleteDirectory($this->lagoonKeyDir);
-            $this->lagoonKeyDir = null;
-        }
+        try {
+            parent::tearDown();
+        } finally {
+            if ($this->lagoonKeyDir !== null && is_dir($this->lagoonKeyDir)) {
+                $this->deleteDirectory($this->lagoonKeyDir);
+                $this->lagoonKeyDir = null;
+            }
 
-        \Mockery::close();
-        parent::tearDown();
+            \Mockery::close();
+        }
     }
 
     /**
