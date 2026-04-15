@@ -15,6 +15,7 @@
         "amazeeio/polydock-app-amazeeclaw": "^0.1",
         "amazeeio/polydock-app-amazeeio-privategpt": "^0.1",
         "amazeeio/polydock-app-anythingllm": "^0.1",
+        "amazeeio/polydock-app-dependency-track": "^0.1.0",
         "dedoc/scramble": "^0.13",
         "evanschleret/lara-mjml": "^0.3.0",
         "filament/filament": "^3.2",
