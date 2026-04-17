@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class MaintainPreWarmInstancesCommand extends Command
 {
     protected $signature = 'polydock:maintain-prewarm-instances
-                            {--app= : PolydockStoreApp ID to limit maintenance to}
+                            {--app= : PolydockStoreApp UUID to limit maintenance to}
                             {--refresh-all : Queue refresh for all removable pre-warm instances instead of only stale/excess}
                             {--force : Skip confirmation prompt}';
 
@@ -20,12 +20,12 @@ class MaintainPreWarmInstancesCommand extends Command
 
     public function handle(): int
     {
-        $appId = $this->option('app');
+        $appUuid = $this->option('app');
         $refreshAll = (bool) $this->option('refresh-all');
 
         $query = PolydockStoreApp::query();
-        if ($appId) {
-            $query->whereKey($appId);
+        if ($appUuid) {
+            $query->where('uuid', $appUuid);
         }
 
         $apps = $query->get();
@@ -39,7 +39,7 @@ class MaintainPreWarmInstancesCommand extends Command
         $rows = [];
         foreach ($apps as $app) {
             $rows[] = [
-                $app->id,
+                $app->uuid,
                 $app->name,
                 $app->unallocated_instances_count,
                 $app->target_unallocated_app_instances,
@@ -48,7 +48,7 @@ class MaintainPreWarmInstancesCommand extends Command
         }
 
         $this->table(
-            ['ID', 'App', 'Unallocated', 'Target', 'Stale'],
+            ['UUID', 'App', 'Unallocated', 'Target', 'Stale'],
             $rows,
         );
 
@@ -83,7 +83,7 @@ class MaintainPreWarmInstancesCommand extends Command
 
             $queuedCount += $queued;
 
-            $this->line("Queued {$queued} pre-warm instance(s) for app {$app->name} ({$app->id})");
+            $this->line("Queued {$queued} pre-warm instance(s) for app {$app->name} ({$app->uuid})");
         }
 
         EnsureUnallocatedAppInstancesJob::dispatch()->onQueue('unallocated-instance-creation');
@@ -91,7 +91,7 @@ class MaintainPreWarmInstancesCommand extends Command
         $this->info("Queued {$queuedCount} pre-warm instance(s) for maintenance.");
 
         Log::info('Queued pre-warm instance maintenance via command', [
-            'app_id' => $appId,
+            'app_uuid' => $appUuid,
             'refresh_all' => $refreshAll,
             'queued_count' => $queuedCount,
         ]);
