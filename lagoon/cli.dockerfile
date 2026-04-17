@@ -1,5 +1,5 @@
 FROM uselagoon/lagoon-cli:latest as LAGOONCLI
-FROM uselagoon/php-8.3-cli
+FROM uselagoon/php-8.4-cli
 
 #######################################################
 # Install PHP extensions
@@ -32,7 +32,6 @@ RUN DOWNLOAD_PATH=$(curl -sL "https://api.github.com/repos/uselagoon/lagoon-sync
 #######################################################
 COPY . /app
 RUN if [ -f "composer.json" ]; then \
-    COMPOSER_MEMORY_LIMIT=-1 composer update amazeeio/polydock-app-amazeeio-privategpt --ignore-platform-reqs; \
     COMPOSER_MEMORY_LIMIT=-1 composer install --no-interaction --prefer-dist --optimize-autoloader; \
     php artisan storage:link; \
   fi
