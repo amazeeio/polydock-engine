@@ -38,6 +38,8 @@ class EditPolydockStoreApp extends EditRecord
         }
         $data['lagoon_auto_idle'] = $appConfig['lagoon_auto_idle'] ?? 0;
         $data['lagoon_production_environment'] = $appConfig['lagoon_production_environment'] ?? 'main';
+        $data['refresh_unallocated_instances'] = $appConfig['refresh_unallocated_instances'] ?? false;
+        $data['refresh_unallocated_instances_after_days'] = $appConfig['refresh_unallocated_instances_after_days'] ?? 7;
 
         return $data;
     }
@@ -85,7 +87,25 @@ class EditPolydockStoreApp extends EditRecord
             ?? $existingAppConfig['lagoon_production_environment']
             ?? 'main'
         );
-        unset($data['lagoon_auto_idle'], $data['lagoon_production_environment']);
+        $appConfig['refresh_unallocated_instances'] = (bool) (
+            $data['refresh_unallocated_instances']
+            ?? $existingAppConfig['refresh_unallocated_instances']
+            ?? false
+        );
+        $appConfig['refresh_unallocated_instances_after_days'] = max(
+            1,
+            (int) (
+                $data['refresh_unallocated_instances_after_days']
+                ?? $existingAppConfig['refresh_unallocated_instances_after_days']
+                ?? 7
+            ),
+        );
+        unset(
+            $data['lagoon_auto_idle'],
+            $data['lagoon_production_environment'],
+            $data['refresh_unallocated_instances'],
+            $data['refresh_unallocated_instances_after_days'],
+        );
 
         // Store the app config as JSON
         $data['app_config'] = ! empty($appConfig) ? $appConfig : null;

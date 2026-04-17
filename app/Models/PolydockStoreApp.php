@@ -5,6 +5,9 @@ namespace App\Models;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Traits\HasPolydockVariables;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -74,6 +77,8 @@ use Illuminate\Support\Str;
  * @property string|null $lagoon_deploy_group_name
  * @property int|null $lagoon_auto_idle
  * @property string|null $lagoon_production_environment
+ * @property bool $refresh_unallocated_instances
+ * @property int $refresh_unallocated_instances_after_days
  * @property PolydockStore $store
  * @property Collection|PolydockAppInstance[] $instances
  * @property Collection|PolydockAppInstance[] $unallocatedInstances
@@ -161,6 +166,8 @@ class PolydockStoreApp extends Model
         'lagoon_deploy_group_name',
         'lagoon_auto_idle',
         'lagoon_production_environment',
+        'refresh_unallocated_instances',
+        'refresh_unallocated_instances_after_days',
     ];
 
     /**
@@ -258,12 +265,80 @@ class PolydockStoreApp extends Model
         return $this->unallocated_instances_count < $this->target_unallocated_app_instances;
     }
 
+    public function getRefreshUnallocatedInstancesAttribute(): bool
+    {
+        return (bool) data_get($this->app_config, 'refresh_unallocated_instances', false);
+    }
+
+    public function getRefreshUnallocatedInstancesAfterDaysAttribute(): int
+    {
+        return max(1, (int) data_get($this->app_config, 'refresh_unallocated_instances_after_days', 7));
+    }
+
+    public function getNeedsUnallocatedMaintenanceAttribute(): bool
+    {
+        if ($this->needs_more_unallocated_instances) {
+            return true;
+        }
+
+        if ($this->unallocated_instances_count > $this->target_unallocated_app_instances
+            && $this->removableUnallocatedInstancesQuery()->exists()) {
+            return true;
+        }
+
+        return $this->refresh_unallocated_instances
+            && $this->refreshableUnallocatedInstancesQuery()->exists();
+    }
+
     /**
      * Get all unallocated instances of this store app
      */
     public function unallocatedInstances(): HasMany
     {
         return $this->instances()->whereNull('user_group_id');
+    }
+
+    public function removableUnallocatedInstancesQuery(): Builder
+    {
+        return $this->instances()
+            ->whereNull('user_group_id')
+            ->whereNull('allocation_lock')
+            ->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
+            ->orderBy('created_at');
+    }
+
+    public function refreshableUnallocatedInstancesQuery(): Builder
+    {
+        return $this->removableUnallocatedInstancesQuery()
+            ->where('created_at', '<=', now()->subDays($this->refresh_unallocated_instances_after_days));
+    }
+
+    public function queueUnallocatedInstancesForRemoval(
+        int $limit,
+        string $statusMessage,
+        ?CarbonInterface $olderThan = null,
+    ): int {
+        if ($limit < 1) {
+            return 0;
+        }
+
+        $query = $this->removableUnallocatedInstancesQuery();
+
+        if ($olderThan) {
+            $query->where('created_at', '<=', $olderThan);
+        }
+
+        $instances = $query
+            ->limit($limit)
+            ->get();
+
+        foreach ($instances as $instance) {
+            $instance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, $statusMessage);
+            $instance->user_group_id = config('polydock.default_user_group_id_for_unallocated_instances', 1);
+            $instance->save();
+        }
+
+        return $instances->count();
     }
 
     /**

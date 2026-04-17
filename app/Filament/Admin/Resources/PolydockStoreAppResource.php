@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
+use App\Filament\Admin\Resources\PolydockStoreAppResource\RelationManagers;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Services\PolydockAppClassDiscovery;
@@ -90,11 +91,29 @@ class PolydockStoreAppResource extends Resource
                 Forms\Components\TextInput::make('target_unallocated_app_instances')
                     ->required()
                     ->numeric()
+                    ->minValue(0)
                     ->default(0),
                 Forms\Components\Toggle::make('available_for_trials')
                     ->label('Available for Trials')
                     ->required()
                     ->columnSpanFull(),
+                Section::make('Pre-warm Settings')
+                    ->description('Controls how unallocated pre-warm instances are refreshed over time.')
+                    ->schema([
+                        Forms\Components\Toggle::make('refresh_unallocated_instances')
+                            ->label('Refresh stale pre-warm instances')
+                            ->default(false)
+                            ->live(),
+                        Forms\Components\TextInput::make('refresh_unallocated_instances_after_days')
+                            ->label('Refresh After (Days)')
+                            ->numeric()
+                            ->minValue(1)
+                            ->default(7)
+                            ->required(fn (Get $get): bool => (bool) $get('refresh_unallocated_instances'))
+                            ->visible(fn (Get $get): bool => (bool) $get('refresh_unallocated_instances')),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
                 Section::make('Lagoon Runtime Settings')
                     ->description('Configuration used by app instance creation for Lagoon runtime behavior.')
                     ->schema([
@@ -391,7 +410,7 @@ class PolydockStoreAppResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\PreWarmInstancesRelationManager::class,
         ];
     }
 
@@ -457,6 +476,11 @@ class PolydockStoreAppResource extends Resource
                                     ->label('Target Unallocated Instances')
                                     ->icon('heroicon-m-queue-list')
                                     ->iconColor('warning'),
+                                IconEntry::make('refresh_unallocated_instances')
+                                    ->label('Refresh Stale Pre-warm')
+                                    ->boolean(),
+                                TextEntry::make('refresh_unallocated_instances_after_days')
+                                    ->label('Pre-warm Refresh After (Days)'),
                                 TextEntry::make('allocatedInstances')
                                     ->label('Allocated Instances')
                                     ->state(fn ($record) => $record->allocatedInstances()->count())

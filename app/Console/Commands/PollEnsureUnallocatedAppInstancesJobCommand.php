@@ -28,27 +28,25 @@ class PollEnsureUnallocatedAppInstancesJobCommand extends Command
         ]);
 
         while (now()->lt($endTime)) {
-            // Get all available apps that need more unallocated instances
             $apps = PolydockStoreApp::query()
                 ->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
                 ->get()
-                ->filter(fn ($app) => $app->needs_more_unallocated_instances);
+                ->filter(fn ($app) => $app->needs_unallocated_maintenance);
 
-            $neededTotal = 0;
+            $maintenanceCount = 0;
             foreach ($apps as $app) {
-                $needed = $app->target_unallocated_app_instances - $app->unallocated_instances_count;
-                $neededTotal += $needed;
+                $maintenanceCount++;
             }
 
-            if ($neededTotal > 0) {
-                Log::info('Found apps needing unallocated instances', [
-                    'needed_total' => $neededTotal,
+            if ($maintenanceCount > 0) {
+                Log::info('Found apps needing unallocated instance maintenance', [
+                    'app_count' => $maintenanceCount,
                 ]);
 
                 EnsureUnallocatedAppInstancesJob::dispatch()
                     ->onQueue('unallocated-instance-creation');
 
-                $this->info("Dispatched job for {$neededTotal} needed instances");
+                $this->info("Dispatched maintenance job for {$maintenanceCount} app(s)");
             }
 
             $this->info('Sleeping for '.self::SLEEP_DURATION.' seconds...');
