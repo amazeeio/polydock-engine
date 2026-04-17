@@ -37,11 +37,13 @@ class BulkDeployStatus extends Command
             if (isset($deployments['error'])) {
                 $errors = is_array($deployments['error']) ? json_encode($deployments['error']) : $deployments['error'];
                 $this->error("Failed to fetch bulk deployment status: {$errors}");
+
                 return 1;
             }
 
             if (empty($deployments)) {
                 $this->warn("No deployments found for bulk ID: {$bulkId}");
+
                 return 0;
             }
 
@@ -59,10 +61,10 @@ class BulkDeployStatus extends Command
             foreach ($deployments as $deploy) {
                 $status = $deploy['status'] ?? 'unknown';
                 $stats[$status] = ($stats[$status] ?? 0) + 1;
-                
+
                 $projectName = $deploy['environment']['project']['name'] ?? 'unknown';
                 $envName = $deploy['environment']['name'] ?? 'unknown';
-                
+
                 $rows[] = [
                     $deploy['id'] ?? 'unknown',
                     $projectName,
@@ -91,6 +93,7 @@ class BulkDeployStatus extends Command
             return 0;
         } catch (\Exception $e) {
             $this->error("Error checking bulk deployment status: {$e->getMessage()}");
+
             return 1;
         }
     }

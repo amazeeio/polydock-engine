@@ -7,7 +7,6 @@ use App\Traits\HasPolydockVariables;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -298,7 +297,7 @@ class PolydockStoreApp extends Model
         return $this->instances()->whereNull('user_group_id');
     }
 
-    public function removableUnallocatedInstancesQuery(): Builder
+    public function removableUnallocatedInstancesQuery(): HasMany
     {
         return $this->instances()
             ->whereNull('user_group_id')
@@ -307,7 +306,7 @@ class PolydockStoreApp extends Model
             ->orderBy('created_at');
     }
 
-    public function refreshableUnallocatedInstancesQuery(): Builder
+    public function refreshableUnallocatedInstancesQuery(): HasMany
     {
         return $this->removableUnallocatedInstancesQuery()
             ->where('created_at', '<=', now()->subDays($this->refresh_unallocated_instances_after_days));
