@@ -208,6 +208,23 @@ class ProcessPolydockAppInstanceStatusChange
                     ->onQueue('polydock-app-instance-processing-claim');
                 break;
             case PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED:
+                $manualHookRerun = data_get($event->appInstance->data, 'manual_hook_rerun');
+
+                if (($manualHookRerun['hook'] ?? null) === 'claim') {
+                    $data = $event->appInstance->data ?? [];
+                    unset($data['manual_hook_rerun']);
+                    $event->appInstance->data = $data;
+                    $event->appInstance->saveQuietly();
+
+                    if (($manualHookRerun['skip_ready_notification'] ?? false) === true) {
+                        Log::info('Skipping ready email flow after manual claim rerun', [
+                            'app_instance_id' => $event->appInstance->id,
+                        ]);
+
+                        break;
+                    }
+                }
+
                 if ($event->appInstance->remoteRegistration) {
                     $appInstance = $event->appInstance;
                     $remoteRegistration = $appInstance->remoteRegistration;
