@@ -7,6 +7,11 @@
 
 Polydock Engine is a Laravel-based application management and deployment platform that enables organizations to offer self-service trials and deployments of their applications on top of [Lagoon](https://www.lagoon.sh) platforms (such as [amazee.io](https://www.amazee.io)). While Lagoon empowers developers to use Kubernetes without deep technical knowledge, Polydock Engine focuses on enabling non-technical users to deploy and manage multiple instances of the same application through a user-friendly interface.
 
+## Documentation
+
+- **[API Documentation](API.md)** - Complete REST API endpoint reference
+- **[Architecture Documentation](ARCHITECTURE/README.md)** - System architecture and design details
+
 ## Implemented Features
 
 ### Application Management
