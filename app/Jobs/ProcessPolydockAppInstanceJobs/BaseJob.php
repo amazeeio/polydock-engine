@@ -3,6 +3,7 @@
 namespace App\Jobs\ProcessPolydockAppInstanceJobs;
 
 use App\Models\PolydockAppInstance;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -17,6 +18,8 @@ abstract class BaseJob implements ShouldQueue
     use InteractsWithQueue;
     use Queueable;
     use SerializesModels;
+
+    protected const OVERLAP_LOCK_SECONDS = 120;
 
     protected PolydockAppInstance $appInstance;
 
@@ -81,10 +84,87 @@ abstract class BaseJob implements ShouldQueue
 
         return [
             (new WithoutOverlapping($uniqueId))
-                ->expireAfter(5) // 5 seconds
+                ->expireAfter(self::OVERLAP_LOCK_SECONDS)
                 ->shared() // Use shared lock across different queues
                 ->dontRelease(),
         ];
+    }
+
+    protected function shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus $expectedStatus): bool
+    {
+        if (! isset($this->appInstance)) {
+            return false;
+        }
+
+        $currentStatus = $this->appInstance->status;
+
+        if ($currentStatus === $expectedStatus) {
+            return false;
+        }
+
+        if (! $this->isKnownStatusProgression($expectedStatus, $currentStatus)) {
+            return false;
+        }
+
+        Log::info('Skipping stale lifecycle job because app instance already advanced', [
+            'job_type' => class_basename(static::class),
+            'app_instance_id' => $this->appInstance->id,
+            'expected_status' => $expectedStatus->value,
+            'current_status' => $currentStatus->value,
+        ]);
+
+        return true;
+    }
+
+    private function isKnownStatusProgression(PolydockAppInstanceStatus $expectedStatus, PolydockAppInstanceStatus $currentStatus): bool
+    {
+        $statusOrder = [
+            PolydockAppInstanceStatus::NEW,
+            PolydockAppInstanceStatus::PENDING_PRE_CREATE,
+            PolydockAppInstanceStatus::PRE_CREATE_RUNNING,
+            PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
+            PolydockAppInstanceStatus::PENDING_CREATE,
+            PolydockAppInstanceStatus::CREATE_RUNNING,
+            PolydockAppInstanceStatus::CREATE_COMPLETED,
+            PolydockAppInstanceStatus::PENDING_POST_CREATE,
+            PolydockAppInstanceStatus::POST_CREATE_RUNNING,
+            PolydockAppInstanceStatus::POST_CREATE_COMPLETED,
+            PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
+            PolydockAppInstanceStatus::PRE_DEPLOY_RUNNING,
+            PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED,
+            PolydockAppInstanceStatus::PENDING_DEPLOY,
+            PolydockAppInstanceStatus::DEPLOY_RUNNING,
+            PolydockAppInstanceStatus::DEPLOY_COMPLETED,
+            PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
+            PolydockAppInstanceStatus::POST_DEPLOY_RUNNING,
+            PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
+            PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
+            PolydockAppInstanceStatus::POLYDOCK_CLAIM_RUNNING,
+            PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+            PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+            PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+            PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
+            PolydockAppInstanceStatus::PRE_REMOVE_RUNNING,
+            PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED,
+            PolydockAppInstanceStatus::PENDING_REMOVE,
+            PolydockAppInstanceStatus::REMOVE_RUNNING,
+            PolydockAppInstanceStatus::REMOVE_COMPLETED,
+            PolydockAppInstanceStatus::PENDING_POST_REMOVE,
+            PolydockAppInstanceStatus::POST_REMOVE_RUNNING,
+            PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
+            PolydockAppInstanceStatus::REMOVED,
+        ];
+
+        $expectedIndex = array_search($expectedStatus, $statusOrder, true);
+        $currentIndex = array_search($currentStatus, $statusOrder, true);
+
+        if ($expectedIndex === false || $currentIndex === false) {
+            return false;
+        }
+
+        return $currentIndex > $expectedIndex;
     }
 
     public function polydockJobStart()

@@ -28,6 +28,12 @@ class PostDeployJob extends BaseJob implements ShouldQueue
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_POST_DEPLOY) {
+            if ($this->shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus::PENDING_POST_DEPLOY)) {
+                $this->polydockJobDone();
+
+                return;
+            }
+
             throw new PolydockAppInstanceStatusFlowException(
                 'PostDeployJob must be in status PENDING_POST_DEPLOY',
             );

@@ -27,6 +27,12 @@ class PostRemoveJob extends BaseJob implements ShouldQueue
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_POST_REMOVE) {
+            if ($this->shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus::PENDING_POST_REMOVE)) {
+                $this->polydockJobDone();
+
+                return;
+            }
+
             throw new PolydockAppInstanceStatusFlowException(
                 'PostRemoveJob must be in status PENDING_POST_REMOVE',
             );
