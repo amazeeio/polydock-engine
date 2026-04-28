@@ -116,46 +116,90 @@ abstract class BaseJob implements ShouldQueue
         return true;
     }
 
-    private function isKnownStatusProgression(PolydockAppInstanceStatus $expectedStatus, PolydockAppInstanceStatus $currentStatus): bool
+    /**
+     * Canonical ordering of lifecycle statuses, used to detect when a queued
+     * job is stale because the instance has already advanced past the status
+     * the job was scheduled for.
+     *
+     * Keep this list in sync with the status flow handled by
+     * {@see \App\PolydockEngine\Engine}, the dispatch table in
+     * {@see \App\Listeners\ProcessPolydockAppInstanceStatusChange}, and the
+     * stage groupings on {@see \App\Models\PolydockAppInstance}.
+     *
+     * Upgrade statuses sit after the running/claimed states because an
+     * in-place upgrade is initiated against an already-claimed, running
+     * instance and returns to a running/claimed state when complete.
+     *
+     * @return list<PolydockAppInstanceStatus>
+     */
+    private static function lifecycleStatusOrder(): array
     {
-        $statusOrder = [
+        return [
+            // New / pre-create
             PolydockAppInstanceStatus::NEW,
             PolydockAppInstanceStatus::PENDING_PRE_CREATE,
             PolydockAppInstanceStatus::PRE_CREATE_RUNNING,
             PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
+            // Create
             PolydockAppInstanceStatus::PENDING_CREATE,
             PolydockAppInstanceStatus::CREATE_RUNNING,
             PolydockAppInstanceStatus::CREATE_COMPLETED,
+            // Post-create
             PolydockAppInstanceStatus::PENDING_POST_CREATE,
             PolydockAppInstanceStatus::POST_CREATE_RUNNING,
             PolydockAppInstanceStatus::POST_CREATE_COMPLETED,
+            // Pre-deploy
             PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
             PolydockAppInstanceStatus::PRE_DEPLOY_RUNNING,
             PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED,
+            // Deploy
             PolydockAppInstanceStatus::PENDING_DEPLOY,
             PolydockAppInstanceStatus::DEPLOY_RUNNING,
             PolydockAppInstanceStatus::DEPLOY_COMPLETED,
+            // Post-deploy
             PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
             PolydockAppInstanceStatus::POST_DEPLOY_RUNNING,
             PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
+            // Claim
             PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
             PolydockAppInstanceStatus::POLYDOCK_CLAIM_RUNNING,
             PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
+            // Running
             PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
             PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
             PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
             PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+            // Pre-upgrade (in-place upgrade against a running, claimed instance)
+            PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
+            PolydockAppInstanceStatus::PRE_UPGRADE_RUNNING,
+            PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED,
+            // Upgrade
+            PolydockAppInstanceStatus::PENDING_UPGRADE,
+            PolydockAppInstanceStatus::UPGRADE_RUNNING,
+            PolydockAppInstanceStatus::UPGRADE_COMPLETED,
+            // Post-upgrade
+            PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
+            PolydockAppInstanceStatus::POST_UPGRADE_RUNNING,
+            PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
+            // Pre-remove
             PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
             PolydockAppInstanceStatus::PRE_REMOVE_RUNNING,
             PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED,
+            // Remove
             PolydockAppInstanceStatus::PENDING_REMOVE,
             PolydockAppInstanceStatus::REMOVE_RUNNING,
             PolydockAppInstanceStatus::REMOVE_COMPLETED,
+            // Post-remove
             PolydockAppInstanceStatus::PENDING_POST_REMOVE,
             PolydockAppInstanceStatus::POST_REMOVE_RUNNING,
             PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
             PolydockAppInstanceStatus::REMOVED,
         ];
+    }
+
+    private function isKnownStatusProgression(PolydockAppInstanceStatus $expectedStatus, PolydockAppInstanceStatus $currentStatus): bool
+    {
+        $statusOrder = self::lifecycleStatusOrder();
 
         $expectedIndex = array_search($expectedStatus, $statusOrder, true);
         $currentIndex = array_search($currentStatus, $statusOrder, true);
