@@ -14,6 +14,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Routes consumed by MoaD - read operations
     Route::middleware('instances.read.ability')->group(function () {
+        Route::get('/groups', [AuthenticatedApiController::class, 'getGroups'])->name('api.groups.get');
         Route::get('/store-apps', [AuthenticatedApiController::class, 'getStoreApps'])->name('api.store-apps');
         Route::get('/instances', [AuthenticatedApiController::class, 'getInstances'])->name('api.instances.get');
         Route::get('/instance/{uuid}/status', [AuthenticatedApiController::class, 'getInstanceStatus'])->name('api.instance.status');
@@ -22,7 +23,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Routes consumed by MoaD - write operations
     Route::middleware('instances.write.ability')->group(function () {
+        Route::post('/groups', [AuthenticatedApiController::class, 'createGroup'])->name('api.groups.create');
         Route::post('/instance', [AuthenticatedApiController::class, 'createInstance'])->name('api.instance.create');
+        Route::patch('/instance/{uuid}/group', [AuthenticatedApiController::class, 'assignInstanceToGroup'])->name('api.instance.assign-group');
         Route::delete('/instance/{uuid}', [AuthenticatedApiController::class, 'deleteInstance'])->name('api.instance.delete');
     });
 });

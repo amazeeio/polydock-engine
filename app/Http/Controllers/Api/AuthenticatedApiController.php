@@ -21,9 +21,97 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class AuthenticatedApiController extends Controller
 {
+    /**
+     * Get groups by user email
+     *
+     * Retrieve all groups associated with a specific user's email address.
+     *
+     * @group External API
+     *
+     * @subgroup Group Management
+     *
+     * @queryParam email string required The email address of the user. Example: existing.user@example.com
+     */
+    public function getGroups(Request $request): JsonResponse
+    {
+        $request->validate([
+            'email' => 'required|email',
+        ]);
+
+        $user = User::where('email', $request->input('email'))->first();
+
+        if (! $user) {
+            return response()->json(['data' => []]);
+        }
+
+        $groups = $user->groups()
+            ->select('user_groups.*', 'user_user_group.role')
+            ->orderBy('user_groups.name')
+            ->get();
+
+        return response()->json([
+            'data' => $groups->map(fn (UserGroup $group) => [
+                'id' => $group->id,
+                'name' => $group->name,
+                'slug' => $group->slug,
+                'role' => $group->pivot?->role,
+            ]),
+        ]);
+    }
+
+    /**
+     * Create a new group
+     *
+     * Create a group and optionally attach an owner by email. This supports workspace creation in upstream systems.
+     *
+     * @group External API
+     *
+     * @subgroup Group Management
+     *
+     * @bodyParam name string required Human-readable group name. Example: Acme Workspace
+     * @bodyParam owner_email email optional Existing user email to attach as group owner. Example: owner@example.com
+     *
+     * @response 201 {
+     *  "message": "Group created",
+     *  "data": {
+     *    "id": 12,
+     *    "name": "Acme Workspace",
+     *    "slug": "acme-workspace"
+     *  }
+     * }
+     */
+    public function createGroup(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'owner_email' => 'nullable|email|exists:users,email',
+        ]);
+
+        $group = UserGroup::create([
+            'name' => $validated['name'],
+        ]);
+
+        if (! empty($validated['owner_email'])) {
+            $owner = User::where('email', $validated['owner_email'])->firstOrFail();
+            $owner->groups()->syncWithoutDetaching([
+                $group->id => ['role' => UserGroupRoleEnum::OWNER->value],
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Group created',
+            'data' => [
+                'id' => $group->id,
+                'name' => $group->name,
+                'slug' => $group->slug,
+            ],
+        ], 201);
+    }
+
     /**
      * Get all store apps
      *
@@ -96,24 +184,52 @@ class AuthenticatedApiController extends Controller
      *
      * @subgroup Instance Management
      *
-     * @queryParam email string required The email address of the user. Example: existing.user@example.com
+     * @queryParam email string optional Limit results to groups associated with this email address. Example: existing.user@example.com
+     * @queryParam group_id integer optional Limit results to a specific group id the user belongs to. Example: 12
+     * @queryParam group_slug string optional Limit results to a specific group slug the user belongs to. Example: acme-workspace
      */
     public function getInstances(Request $request): JsonResponse
     {
-        $request->validate([
-            'email' => 'required|email',
+        $validated = $request->validate([
+            'email' => 'nullable|email',
+            'group_id' => 'nullable|integer|exists:user_groups,id',
+            'group_slug' => 'nullable|string|exists:user_groups,slug',
         ]);
 
-        $user = User::where('email', $request->input('email'))->first();
-
-        if (! $user) {
-            return response()->json(['data' => []]);
+        if (! $request->filled('email') && ! $request->filled('group_id') && ! $request->filled('group_slug')) {
+            throw ValidationException::withMessages([
+                'email' => ['At least one of email, group_id, or group_slug is required.'],
+            ]);
         }
 
-        // Fetch instances for all groups this user is associated with
-        $instances = PolydockAppInstance::whereIn('user_group_id', $user->groups()->pluck('user_groups.id'))
-            ->with(['storeApp'])
-            ->get();
+        if ($request->filled('group_id') && $request->filled('group_slug')) {
+            throw ValidationException::withMessages([
+                'group_id' => ['Only one of group_id or group_slug may be provided.'],
+                'group_slug' => ['Only one of group_id or group_slug may be provided.'],
+            ]);
+        }
+
+        $instanceQuery = PolydockAppInstance::query()->with(['storeApp', 'userGroup']);
+
+        if ($request->filled('email')) {
+            $user = User::where('email', $validated['email'])->first();
+
+            if (! $user) {
+                return response()->json(['data' => []]);
+            }
+
+            $instanceQuery->whereIn('user_group_id', $user->groups()->pluck('user_groups.id'));
+        }
+
+        if (isset($validated['group_id'])) {
+            $instanceQuery->where('user_group_id', $validated['group_id']);
+        }
+
+        if (isset($validated['group_slug'])) {
+            $instanceQuery->whereHas('userGroup', fn ($groupQuery) => $groupQuery->where('slug', $validated['group_slug']));
+        }
+
+        $instances = $instanceQuery->get();
 
         $formattedInstances = $instances->map(fn (PolydockAppInstance $instance) => [
             'uuid' => $instance->uuid,
@@ -126,6 +242,11 @@ class AuthenticatedApiController extends Controller
                 'uuid' => $instance->storeApp->uuid,
                 'name' => $instance->storeApp->name,
             ],
+            'group' => $instance->userGroup ? [
+                'id' => $instance->userGroup->id,
+                'name' => $instance->userGroup->name,
+                'slug' => $instance->userGroup->slug,
+            ] : null,
             'created_at' => $instance->created_at,
         ]);
 
@@ -149,6 +270,9 @@ class AuthenticatedApiController extends Controller
      * @bodyParam storeAppId string required The UUID of the store app to provision. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
      * @bodyParam name string optional The display name for this instance. Defaults to lagoon-project-name if not provided. Example: "My awesome instance"
      * @bodyParam label string optional A free-form human-readable label for this instance. Not used as an identifier; may contain spaces and special characters. Example: "Acme Corp trial"
+     * @bodyParam group_id integer optional Existing group id to provision the instance into. If omitted, the user's primary group is used or created. Example: 12
+     * @bodyParam group_slug string optional Existing group slug to provision the instance into. If omitted, the user's primary group is used or created. Example: acme-workspace
+     * @bodyParam group_name string optional Create a new group with this name and provision the instance into it. Example: Acme Workspace
      * @bodyParam secret object optional Sensitive AI and VectorDB credentials. Example: {"ai": {"llm_url": "https://llm", "api_key": "sk-123"}, "vector": {"db_host": "localhost", "db_port": 5432, "db_name": "db_d1234", "db_user": "admin", "db_pass": "pass"}}
      * @bodyParam secret.ai object optional AI LLM configuration.
      * @bodyParam secret.ai.llm_url string optional The LLM API base URL. Example: https://llm.local
@@ -180,6 +304,9 @@ class AuthenticatedApiController extends Controller
             'storeAppId' => 'required|string|exists:polydock_store_apps,uuid',
             'name' => 'nullable|string|max:255',
             'label' => 'nullable|string|max:255',
+            'group_id' => 'nullable|integer|exists:user_groups,id',
+            'group_slug' => 'nullable|string|exists:user_groups,slug',
+            'group_name' => 'nullable|string|max:255',
             'secret' => 'nullable|array',
             'secret.ai' => 'nullable|array',
             'secret.ai.llm_url' => 'nullable|string',
@@ -209,6 +336,19 @@ class AuthenticatedApiController extends Controller
                 },
             ],
         ]);
+
+        if ($request->filled('group_id') && $request->filled('group_slug')) {
+            throw ValidationException::withMessages([
+                'group_id' => ['Only one of group_id or group_slug may be provided.'],
+                'group_slug' => ['Only one of group_id or group_slug may be provided.'],
+            ]);
+        }
+
+        if ($request->filled('group_name') && ($request->filled('group_id') || $request->filled('group_slug'))) {
+            throw ValidationException::withMessages([
+                'group_name' => ['group_name cannot be combined with group_id or group_slug.'],
+            ]);
+        }
 
         $email = $request->input('email');
 
@@ -242,14 +382,7 @@ class AuthenticatedApiController extends Controller
             $user->save();
         }
 
-        // Find or create a default primary user group for this user if they don't have one
-        $primaryGroup = $user->primaryGroups()->first();
-        if (! $primaryGroup) {
-            $primaryGroup = UserGroup::create([
-                'name' => "Personal Group - $user->email",
-            ]);
-            $user->groups()->attach($primaryGroup->id, ['role' => UserGroupRoleEnum::OWNER->value]);
-        }
+        $primaryGroup = $this->resolveTargetGroup($request, $user);
 
         $storeApp = PolydockStoreApp::where('uuid', $request->input('storeAppId'))->firstOrFail();
 
@@ -297,9 +430,69 @@ class AuthenticatedApiController extends Controller
                 'uuid' => $instance->uuid,
                 'name' => $instance->name,
                 'label' => $instance->getKeyValue('instance-label') ?: null,
+                'group' => [
+                    'id' => $primaryGroup->id,
+                    'name' => $primaryGroup->name,
+                    'slug' => $primaryGroup->slug,
+                ],
                 'status' => $instance->status?->value,
             ],
         ], 201);
+    }
+
+    /**
+     * Assign an instance to an existing group
+     *
+     * Reassign an existing app instance to another group. Intended for migration and backfill workflows.
+     *
+     * @group External API
+     *
+     * @subgroup Instance Management
+     *
+     * @urlParam uuid string required The UUID of the instance. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
+     * @bodyParam group_id integer optional Existing group id to assign the instance to. Example: 12
+     * @bodyParam group_slug string optional Existing group slug to assign the instance to. Example: acme-workspace
+     */
+    public function assignInstanceToGroup(Request $request, string $uuid): JsonResponse
+    {
+        $validated = $request->validate([
+            'group_id' => 'nullable|integer|exists:user_groups,id',
+            'group_slug' => 'nullable|string|exists:user_groups,slug',
+        ]);
+
+        if (! $request->filled('group_id') && ! $request->filled('group_slug')) {
+            throw ValidationException::withMessages([
+                'group_id' => ['Either group_id or group_slug is required.'],
+            ]);
+        }
+
+        if ($request->filled('group_id') && $request->filled('group_slug')) {
+            throw ValidationException::withMessages([
+                'group_id' => ['Only one of group_id or group_slug may be provided.'],
+                'group_slug' => ['Only one of group_id or group_slug may be provided.'],
+            ]);
+        }
+
+        $instance = PolydockAppInstance::where('uuid', $uuid)->firstOrFail();
+
+        $group = isset($validated['group_id'])
+            ? UserGroup::findOrFail($validated['group_id'])
+            : UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
+
+        $instance->user_group_id = $group->id;
+        $instance->save();
+
+        return response()->json([
+            'message' => 'Instance assigned to group',
+            'data' => [
+                'uuid' => $instance->uuid,
+                'group' => [
+                    'id' => $group->id,
+                    'name' => $group->name,
+                    'slug' => $group->slug,
+                ],
+            ],
+        ]);
     }
 
     /**
@@ -397,5 +590,40 @@ class AuthenticatedApiController extends Controller
                 'status' => $instance->status?->value,
             ],
         ]);
+    }
+
+    private function resolveTargetGroup(Request $request, User $user): UserGroup
+    {
+        if ($request->filled('group_id')) {
+            return UserGroup::findOrFail($request->integer('group_id'));
+        }
+
+        if ($request->filled('group_slug')) {
+            return UserGroup::where('slug', $request->string('group_slug'))->firstOrFail();
+        }
+
+        if ($request->filled('group_name')) {
+            $group = UserGroup::create([
+                'name' => $request->string('group_name')->toString(),
+            ]);
+
+            $user->groups()->syncWithoutDetaching([
+                $group->id => ['role' => UserGroupRoleEnum::OWNER->value],
+            ]);
+
+            return $group;
+        }
+
+        $primaryGroup = $user->primaryGroups()->first();
+        if ($primaryGroup) {
+            return $primaryGroup;
+        }
+
+        $primaryGroup = UserGroup::create([
+            'name' => "Personal Group - $user->email",
+        ]);
+        $user->groups()->attach($primaryGroup->id, ['role' => UserGroupRoleEnum::OWNER->value]);
+
+        return $primaryGroup;
     }
 }
