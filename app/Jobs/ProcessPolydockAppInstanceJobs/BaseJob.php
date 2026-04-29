@@ -197,18 +197,30 @@ abstract class BaseJob implements ShouldQueue
         ];
     }
 
+    private static function lifecycleStatusIndexMap(): array
+    {
+        static $statusIndexMap = null;
+
+        if ($statusIndexMap === null) {
+            $statusIndexMap = [];
+
+            foreach (self::lifecycleStatusOrder() as $index => $status) {
+                $statusIndexMap[$status->value] = $index;
+            }
+        }
+
+        return $statusIndexMap;
+    }
+
     private function isKnownStatusProgression(PolydockAppInstanceStatus $expectedStatus, PolydockAppInstanceStatus $currentStatus): bool
     {
-        $statusOrder = self::lifecycleStatusOrder();
+        $statusIndexMap = self::lifecycleStatusIndexMap();
 
-        $expectedIndex = array_search($expectedStatus, $statusOrder, true);
-        $currentIndex = array_search($currentStatus, $statusOrder, true);
-
-        if ($expectedIndex === false || $currentIndex === false) {
+        if (! array_key_exists($expectedStatus->value, $statusIndexMap) || ! array_key_exists($currentStatus->value, $statusIndexMap)) {
             return false;
         }
 
-        return $currentIndex > $expectedIndex;
+        return $statusIndexMap[$currentStatus->value] > $statusIndexMap[$expectedStatus->value];
     }
 
     public function polydockJobStart()
