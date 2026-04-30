@@ -256,6 +256,7 @@ class AuthenticatedApiTest extends TestCase
         Sanctum::actingAs($this->user, ['instances.write']);
 
         $group = UserGroup::create(['name' => 'Slug Workspace']);
+        $this->user->groups()->attach($group->id, ['role' => UserGroupRoleEnum::MEMBER->value]);
 
         $response = $this->postJson('/api/instance', [
             'email' => $this->user->email,
