@@ -479,6 +479,13 @@ class AuthenticatedApiController extends Controller
             ? UserGroup::findOrFail($validated['group_id'])
             : UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
 
+        /** @var \App\Models\User $user */
+        $user = $request->user();
+
+        if (! $user->groups()->whereKey($group->id)->exists()) {
+            abort(403, 'You do not have access to the selected group.');
+        }
+
         $instance->user_group_id = $group->id;
         $instance->save();
 

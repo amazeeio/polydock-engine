@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api;
 
+use App\Enums\UserGroupRoleEnum;
 use App\Events\PolydockAppInstanceCreatedWithNewStatus;
 use App\Events\PolydockAppInstanceStatusChanged;
 use App\Models\PolydockAppInstance;
@@ -588,6 +589,10 @@ class AuthenticatedApiTest extends TestCase
         $originalGroup = UserGroup::create(['name' => 'Original Group']);
         $targetGroup = UserGroup::create(['name' => 'Target Migration Group']);
 
+        $this->user->groups()->syncWithoutDetaching([
+            $targetGroup->id => ['role' => UserGroupRoleEnum::MEMBER->value],
+        ]);
+
         $instance = PolydockAppInstance::create([
             'polydock_store_app_id' => $this->storeApp->id,
             'user_group_id' => $originalGroup->id,
@@ -604,5 +609,28 @@ class AuthenticatedApiTest extends TestCase
 
         $this->assertEquals($targetGroup->id, $instance->user_group_id);
         $this->assertEquals($targetGroup->slug, $response->json('data.group.slug'));
+    }
+
+    public function test_assign_instance_to_group_forbidden_when_not_member(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $originalGroup = UserGroup::create(['name' => 'Original Group']);
+        $targetGroup = UserGroup::create(['name' => 'Inaccessible Group']);
+
+        $instance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $originalGroup->id,
+            'name' => 'migration-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $response = $this->patchJson('/api/instance/'.$instance->uuid.'/group', [
+            'group_id' => $targetGroup->id,
+        ]);
+
+        $response->assertForbidden();
+        $instance->refresh();
+        $this->assertEquals($originalGroup->id, $instance->user_group_id);
     }
 }
