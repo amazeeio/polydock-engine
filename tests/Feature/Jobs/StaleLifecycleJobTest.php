@@ -140,22 +140,19 @@ class StaleLifecycleJobTest extends TestCase
         (new CreateJob($appInstance->id))->handle();
     }
 
-    public function test_claim_job_does_not_skip_when_instance_is_in_a_sibling_running_state(): void
+    public function test_claim_job_skips_when_instance_is_in_a_sibling_running_state(): void
     {
-        // All RUNNING_* statuses share a single stage ordinal because they
-        // are alternative running states, not sequential ones. A stale
-        // ClaimJob landing on RUNNING_HEALTHY_UNCLAIMED is still relevant —
-        // the instance has not actually advanced past the claim stage into
-        // a later phase like upgrade or remove.
+        // ClaimJob's expected status is PENDING_POLYDOCK_CLAIM. All
+        // RUNNING_* statuses sit strictly after the claim stage in the
+        // lifecycle order, so a stale ClaimJob must be skipped even when
+        // the instance has only advanced to RUNNING_HEALTHY_UNCLAIMED
+        // rather than a later phase like upgrade or remove.
         $appInstance = $this->createAppInstance(
             'sibling-running-claim-job',
             PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
             'Running unclaimed, awaiting claim',
         );
 
-        // ClaimJob's expected status is PENDING_POLYDOCK_CLAIM (claim stage).
-        // RUNNING_HEALTHY_UNCLAIMED is in the running stage, which is
-        // strictly after claim, so this *should* skip.
         (new ClaimJob($appInstance->id))->handle();
 
         $appInstance->refresh();
