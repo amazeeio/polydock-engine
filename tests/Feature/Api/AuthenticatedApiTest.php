@@ -251,6 +251,25 @@ class AuthenticatedApiTest extends TestCase
         $this->assertEquals($group->id, $response->json('data.group.id'));
     }
 
+    public function test_create_instance_with_existing_group_slug_assigns_instance_to_group(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $group = UserGroup::create(['name' => 'Slug Workspace']);
+
+        $response = $this->postJson('/api/instance', [
+            'email' => $this->user->email,
+            'storeAppId' => $this->storeApp->uuid,
+            'group_slug' => $group->slug,
+        ]);
+
+        $response->assertCreated();
+        $instance = PolydockAppInstance::where('uuid', $response->json('data.uuid'))->first();
+
+        $this->assertEquals($group->id, $instance->user_group_id);
+        $this->assertEquals($group->slug, $response->json('data.group.slug'));
+    }
+
     public function test_create_instance_provisions_instance_and_creates_user_with_names(): void
     {
         Sanctum::actingAs($this->user, ['instances.write']);
@@ -560,6 +579,10 @@ class AuthenticatedApiTest extends TestCase
         $targetGroup = UserGroup::create(['name' => 'Target Group']);
         $otherGroup = UserGroup::create(['name' => 'Other Group']);
 
+        $this->user->groups()->syncWithoutDetaching([
+            $targetGroup->id => ['role' => UserGroupRoleEnum::MEMBER->value],
+        ]);
+
         $targetInstance = PolydockAppInstance::create([
             'polydock_store_app_id' => $this->storeApp->id,
             'user_group_id' => $targetGroup->id,
@@ -580,6 +603,50 @@ class AuthenticatedApiTest extends TestCase
         $this->assertCount(1, $response->json('data'));
         $this->assertEquals($targetInstance->uuid, $response->json('data.0.uuid'));
         $this->assertEquals($targetGroup->id, $response->json('data.0.group.id'));
+    }
+
+    public function test_get_instances_can_filter_by_group_slug_without_email(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $targetGroup = UserGroup::create(['name' => 'Slug Target Group']);
+        $otherGroup = UserGroup::create(['name' => 'Slug Other Group']);
+
+        $this->user->groups()->syncWithoutDetaching([
+            $targetGroup->id => ['role' => UserGroupRoleEnum::MEMBER->value],
+        ]);
+
+        $targetInstance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $targetGroup->id,
+            'name' => 'slug-target-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $otherGroup->id,
+            'name' => 'slug-other-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $response = $this->getJson('/api/instances?group_slug='.$targetGroup->slug);
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+        $this->assertEquals($targetInstance->uuid, $response->json('data.0.uuid'));
+        $this->assertEquals($targetGroup->slug, $response->json('data.0.group.slug'));
+    }
+
+    public function test_get_instances_forbidden_when_not_member_of_group(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $inaccessibleGroup = UserGroup::create(['name' => 'Inaccessible Group']);
+
+        $response = $this->getJson('/api/instances?group_id='.$inaccessibleGroup->id);
+
+        $response->assertForbidden();
     }
 
     public function test_assign_instance_to_group_reassigns_existing_instance(): void

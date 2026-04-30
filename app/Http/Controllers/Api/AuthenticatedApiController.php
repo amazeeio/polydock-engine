@@ -209,6 +209,21 @@ class AuthenticatedApiController extends Controller
             ]);
         }
 
+        $targetGroup = null;
+
+        if (isset($validated['group_id'])) {
+            $targetGroup = UserGroup::findOrFail($validated['group_id']);
+        } elseif (isset($validated['group_slug'])) {
+            $targetGroup = UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
+        }
+
+        /** @var \App\Models\User $tokenUser */
+        $tokenUser = $request->user();
+
+        if ($targetGroup !== null && ! $tokenUser->groups()->whereKey($targetGroup->id)->exists()) {
+            abort(403, 'You do not have access to the selected group.');
+        }
+
         $instanceQuery = PolydockAppInstance::query()->with(['storeApp', 'userGroup']);
 
         if ($request->filled('email')) {
@@ -221,12 +236,8 @@ class AuthenticatedApiController extends Controller
             $instanceQuery->whereIn('user_group_id', $user->groups()->pluck('user_groups.id'));
         }
 
-        if (isset($validated['group_id'])) {
-            $instanceQuery->where('user_group_id', $validated['group_id']);
-        }
-
-        if (isset($validated['group_slug'])) {
-            $instanceQuery->whereHas('userGroup', fn ($groupQuery) => $groupQuery->where('slug', $validated['group_slug']));
+        if ($targetGroup !== null) {
+            $instanceQuery->where('user_group_id', $targetGroup->id);
         }
 
         $instances = $instanceQuery->get();
