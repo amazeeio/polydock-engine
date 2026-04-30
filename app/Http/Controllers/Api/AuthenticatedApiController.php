@@ -599,7 +599,7 @@ class AuthenticatedApiController extends Controller
         }
 
         if ($request->filled('group_slug')) {
-            return UserGroup::where('slug', $request->string('group_slug'))->firstOrFail();
+            return UserGroup::where('slug', $request->string('group_slug')->toString())->firstOrFail();
         }
 
         if ($request->filled('group_name')) {
