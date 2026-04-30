@@ -25,6 +25,12 @@ class ProcessNewJob extends BaseJob implements ShouldQueue
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::NEW) {
+            if ($this->shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus::NEW)) {
+                $this->polydockJobDone();
+
+                return;
+            }
+
             throw new PolydockAppInstanceStatusFlowException(
                 'New PolydockAppInstance must be in status NEW',
             );

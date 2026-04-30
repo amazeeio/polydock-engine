@@ -27,6 +27,12 @@ class PreRemoveJob extends BaseJob implements ShouldQueue
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_PRE_REMOVE) {
+            if ($this->shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus::PENDING_PRE_REMOVE)) {
+                $this->polydockJobDone();
+
+                return;
+            }
+
             throw new PolydockAppInstanceStatusFlowException(
                 'PreRemoveJob must be in status PENDING_PRE_REMOVE',
             );

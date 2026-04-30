@@ -27,6 +27,12 @@ class PostCreateJob extends BaseJob implements ShouldQueue
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_POST_CREATE) {
+            if ($this->shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus::PENDING_POST_CREATE)) {
+                $this->polydockJobDone();
+
+                return;
+            }
+
             throw new PolydockAppInstanceStatusFlowException(
                 'PostCreateJob must be in status PENDING_POST_CREATE',
             );
