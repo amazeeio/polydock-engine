@@ -121,6 +121,65 @@ class StaleLifecycleJobTest extends TestCase
         (new CreateJob($appInstance->id))->handle();
     }
 
+    public function test_create_job_does_not_skip_when_instance_is_in_the_same_create_stage(): void
+    {
+        // Stages are per-phase: PENDING_CREATE, CREATE_RUNNING, and
+        // CREATE_COMPLETED all live in the "create" stage. A stale job whose
+        // expected status is PENDING_CREATE must NOT be silently skipped just
+        // because the instance has progressed to CREATE_RUNNING / COMPLETED
+        // within the same stage. (Dedup is the responsibility of
+        // WithoutOverlapping, not the skip logic.)
+        $appInstance = $this->createAppInstance(
+            'same-stage-create-job',
+            PolydockAppInstanceStatus::CREATE_COMPLETED,
+            'Already completed create',
+        );
+
+        $this->expectException(PolydockAppInstanceStatusFlowException::class);
+
+        (new CreateJob($appInstance->id))->handle();
+    }
+
+    public function test_claim_job_does_not_skip_when_instance_is_in_a_sibling_running_state(): void
+    {
+        // All RUNNING_* statuses share a single stage ordinal because they
+        // are alternative running states, not sequential ones. A stale
+        // ClaimJob landing on RUNNING_HEALTHY_UNCLAIMED is still relevant —
+        // the instance has not actually advanced past the claim stage into
+        // a later phase like upgrade or remove.
+        $appInstance = $this->createAppInstance(
+            'sibling-running-claim-job',
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+            'Running unclaimed, awaiting claim',
+        );
+
+        // ClaimJob's expected status is PENDING_POLYDOCK_CLAIM (claim stage).
+        // RUNNING_HEALTHY_UNCLAIMED is in the running stage, which is
+        // strictly after claim, so this *should* skip.
+        (new ClaimJob($appInstance->id))->handle();
+
+        $appInstance->refresh();
+
+        $this->assertSame(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED, $appInstance->status);
+        $this->assertSame('Running unclaimed, awaiting claim', $appInstance->status_message);
+    }
+
+    public function test_deploy_job_does_not_skip_when_instance_is_in_the_same_deploy_stage(): void
+    {
+        // PENDING_DEPLOY, DEPLOY_RUNNING, DEPLOY_COMPLETED all share the
+        // deploy stage. A stale DeployJob targeting PENDING_DEPLOY must not
+        // be silently skipped when the instance is at DEPLOY_RUNNING.
+        $appInstance = $this->createAppInstance(
+            'same-stage-deploy-job',
+            PolydockAppInstanceStatus::DEPLOY_RUNNING,
+            'Deploy in progress',
+        );
+
+        $this->expectException(PolydockAppInstanceStatusFlowException::class);
+
+        (new DeployJob($appInstance->id))->handle();
+    }
+
     private function createAppInstance(
         string $name,
         PolydockAppInstanceStatus $status,

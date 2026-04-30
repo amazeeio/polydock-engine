@@ -117,110 +117,107 @@ abstract class BaseJob implements ShouldQueue
     }
 
     /**
-     * Canonical ordering of lifecycle statuses, used to detect when a queued
-     * job is stale because the instance has already advanced past the status
-     * the job was scheduled for.
+     * Lifecycle stage ordinals, used to detect when a queued job is stale
+     * because the instance has already advanced past the *stage* the job was
+     * scheduled for.
      *
-     * Keep this list in sync with the status flow handled by
+     * Each logical stage of the lifecycle gets a single ordinal. All statuses
+     * within the same stage (e.g. `PENDING_CREATE`, `CREATE_RUNNING`,
+     * `CREATE_COMPLETED`) share that ordinal, so a stale job is only
+     * considered "advanced past" when the instance has moved into a strictly
+     * later stage. In-stage progression is left alone — `WithoutOverlapping`
+     * handles dedup of jobs targeting the same stage.
+     *
+     * The four `RUNNING_*` statuses share a single ordinal because they are
+     * alternative running states rather than sequential ones.
+     *
+     * Upgrade stages sit after the running stage because an in-place upgrade
+     * is initiated against an already-claimed, running instance and returns
+     * to a running/claimed state when complete.
+     *
+     * Keep this in sync with the status flow handled by
      * {@see \App\PolydockEngine\Engine}, the dispatch table in
      * {@see \App\Listeners\ProcessPolydockAppInstanceStatusChange}, and the
      * stage groupings on {@see \App\Models\PolydockAppInstance}.
-     *
-     * Upgrade statuses sit after the running/claimed states because an
-     * in-place upgrade is initiated against an already-claimed, running
-     * instance and returns to a running/claimed state when complete.
-     *
-     * @return list<PolydockAppInstanceStatus>
      */
-    private static function lifecycleStatusOrder(): array
+    private static function lifecycleStageOrdinal(PolydockAppInstanceStatus $status): ?int
     {
-        return [
-            // New / pre-create
-            PolydockAppInstanceStatus::NEW,
+        return match ($status) {
+            PolydockAppInstanceStatus::NEW => 0,
+
             PolydockAppInstanceStatus::PENDING_PRE_CREATE,
             PolydockAppInstanceStatus::PRE_CREATE_RUNNING,
-            PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
-            // Create
+            PolydockAppInstanceStatus::PRE_CREATE_COMPLETED => 10,
+
             PolydockAppInstanceStatus::PENDING_CREATE,
             PolydockAppInstanceStatus::CREATE_RUNNING,
-            PolydockAppInstanceStatus::CREATE_COMPLETED,
-            // Post-create
+            PolydockAppInstanceStatus::CREATE_COMPLETED => 20,
+
             PolydockAppInstanceStatus::PENDING_POST_CREATE,
             PolydockAppInstanceStatus::POST_CREATE_RUNNING,
-            PolydockAppInstanceStatus::POST_CREATE_COMPLETED,
-            // Pre-deploy
+            PolydockAppInstanceStatus::POST_CREATE_COMPLETED => 30,
+
             PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
             PolydockAppInstanceStatus::PRE_DEPLOY_RUNNING,
-            PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED,
-            // Deploy
+            PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED => 40,
+
             PolydockAppInstanceStatus::PENDING_DEPLOY,
             PolydockAppInstanceStatus::DEPLOY_RUNNING,
-            PolydockAppInstanceStatus::DEPLOY_COMPLETED,
-            // Post-deploy
+            PolydockAppInstanceStatus::DEPLOY_COMPLETED => 50,
+
             PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
             PolydockAppInstanceStatus::POST_DEPLOY_RUNNING,
-            PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
-            // Claim
+            PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED => 60,
+
             PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
             PolydockAppInstanceStatus::POLYDOCK_CLAIM_RUNNING,
-            PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
-            // Running
+            PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED => 70,
+
             PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
             PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
             PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
-            PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
-            // Pre-upgrade (in-place upgrade against a running, claimed instance)
+            PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE => 80,
+
             PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
             PolydockAppInstanceStatus::PRE_UPGRADE_RUNNING,
-            PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED,
-            // Upgrade
+            PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED => 90,
+
             PolydockAppInstanceStatus::PENDING_UPGRADE,
             PolydockAppInstanceStatus::UPGRADE_RUNNING,
-            PolydockAppInstanceStatus::UPGRADE_COMPLETED,
-            // Post-upgrade
+            PolydockAppInstanceStatus::UPGRADE_COMPLETED => 100,
+
             PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
             PolydockAppInstanceStatus::POST_UPGRADE_RUNNING,
-            PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
-            // Pre-remove
+            PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED => 110,
+
             PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
             PolydockAppInstanceStatus::PRE_REMOVE_RUNNING,
-            PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED,
-            // Remove
+            PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED => 120,
+
             PolydockAppInstanceStatus::PENDING_REMOVE,
             PolydockAppInstanceStatus::REMOVE_RUNNING,
-            PolydockAppInstanceStatus::REMOVE_COMPLETED,
-            // Post-remove
+            PolydockAppInstanceStatus::REMOVE_COMPLETED => 130,
+
             PolydockAppInstanceStatus::PENDING_POST_REMOVE,
             PolydockAppInstanceStatus::POST_REMOVE_RUNNING,
-            PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
-            PolydockAppInstanceStatus::REMOVED,
-        ];
-    }
+            PolydockAppInstanceStatus::POST_REMOVE_COMPLETED => 140,
 
-    private static function lifecycleStatusIndexMap(): array
-    {
-        static $statusIndexMap = null;
+            PolydockAppInstanceStatus::REMOVED => 150,
 
-        if ($statusIndexMap === null) {
-            $statusIndexMap = [];
-
-            foreach (self::lifecycleStatusOrder() as $index => $status) {
-                $statusIndexMap[$status->value] = $index;
-            }
-        }
-
-        return $statusIndexMap;
+            default => null,
+        };
     }
 
     private function isKnownStatusProgression(PolydockAppInstanceStatus $expectedStatus, PolydockAppInstanceStatus $currentStatus): bool
     {
-        $statusIndexMap = self::lifecycleStatusIndexMap();
+        $expectedOrdinal = self::lifecycleStageOrdinal($expectedStatus);
+        $currentOrdinal = self::lifecycleStageOrdinal($currentStatus);
 
-        if (! array_key_exists($expectedStatus->value, $statusIndexMap) || ! array_key_exists($currentStatus->value, $statusIndexMap)) {
+        if ($expectedOrdinal === null || $currentOrdinal === null) {
             return false;
         }
 
-        return $statusIndexMap[$currentStatus->value] > $statusIndexMap[$expectedStatus->value];
+        return $currentOrdinal > $expectedOrdinal;
     }
 
     public function polydockJobStart()
