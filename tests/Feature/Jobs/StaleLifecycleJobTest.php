@@ -139,7 +139,6 @@ class StaleLifecycleJobTest extends TestCase
             'app_type' => PolydockAiApp::class,
             'status' => $status,
             'status_message' => $statusMessage,
-            'data' => [],
         ]);
     }
 }
