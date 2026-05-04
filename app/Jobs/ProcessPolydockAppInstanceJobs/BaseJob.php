@@ -2,7 +2,9 @@
 
 namespace App\Jobs\ProcessPolydockAppInstanceJobs;
 
+use App\Listeners\ProcessPolydockAppInstanceStatusChange;
 use App\Models\PolydockAppInstance;
+use App\PolydockEngine\Engine;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -136,9 +138,9 @@ abstract class BaseJob implements ShouldQueue
      * to a running/claimed state when complete.
      *
      * Keep this in sync with the status flow handled by
-     * {@see \App\PolydockEngine\Engine}, the dispatch table in
-     * {@see \App\Listeners\ProcessPolydockAppInstanceStatusChange}, and the
-     * stage groupings on {@see \App\Models\PolydockAppInstance}.
+     * {@see Engine}, the dispatch table in
+     * {@see ProcessPolydockAppInstanceStatusChange}, and the
+     * stage groupings on {@see PolydockAppInstance}.
      */
     private static function lifecycleStageOrdinal(PolydockAppInstanceStatus $status): ?int
     {

@@ -7,6 +7,7 @@ namespace Tests\Feature\Jobs;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Claim\ClaimJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Create\CreateJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Deploy\DeployJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Deploy\PollDeploymentJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Remove\RemoveJob;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
@@ -175,6 +176,22 @@ class StaleLifecycleJobTest extends TestCase
         $this->expectException(PolydockAppInstanceStatusFlowException::class);
 
         (new DeployJob($appInstance->id))->handle();
+    }
+
+    public function test_poll_deployment_job_skips_when_instance_already_advanced_to_post_deploy(): void
+    {
+        $appInstance = $this->createAppInstance(
+            'stale-poll-deploy-job-test',
+            PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
+            'Post deploy completed',
+        );
+
+        (new PollDeploymentJob($appInstance->id))->handle();
+
+        $appInstance->refresh();
+
+        $this->assertSame(PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED, $appInstance->status);
+        $this->assertSame('Post deploy completed', $appInstance->status_message);
     }
 
     private function createAppInstance(

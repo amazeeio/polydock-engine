@@ -217,7 +217,7 @@ class AuthenticatedApiController extends Controller
             $targetGroup = UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
         }
 
-        /** @var \App\Models\User $tokenUser */
+        /** @var User $tokenUser */
         $tokenUser = $request->user();
 
         if ($targetGroup !== null && ! $tokenUser->groups()->whereKey($targetGroup->id)->exists()) {
@@ -461,6 +461,7 @@ class AuthenticatedApiController extends Controller
      * @subgroup Instance Management
      *
      * @urlParam uuid string required The UUID of the instance. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
+     *
      * @bodyParam group_id integer optional Existing group id to assign the instance to. Example: 12
      * @bodyParam group_slug string optional Existing group slug to assign the instance to. Example: acme-workspace
      */
@@ -490,7 +491,7 @@ class AuthenticatedApiController extends Controller
             ? UserGroup::findOrFail($validated['group_id'])
             : UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
 
-        /** @var \App\Models\User $user */
+        /** @var User $user */
         $user = $request->user();
 
         if (! $user->groups()->whereKey($group->id)->exists()) {
