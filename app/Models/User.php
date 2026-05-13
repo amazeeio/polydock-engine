@@ -30,6 +30,13 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     use Notifiable;
 
     /**
+     * Explicitly set the guard for spatie/laravel-permission.
+     * Without this, Sanctum API requests resolve as 'sanctum' guard
+     * which causes guard mismatch errors with roles created for 'web'.
+     */
+    protected string $guard_name = 'web';
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var list<string>

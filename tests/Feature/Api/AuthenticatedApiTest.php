@@ -653,6 +653,10 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_get_instances_allows_service_account_when_not_member_of_group(): void
     {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
         Sanctum::actingAs($this->user, ['instances.read']);
 
         $inaccessibleGroup = UserGroup::create(['name' => 'Service Account Group']);
@@ -662,9 +666,6 @@ class AuthenticatedApiTest extends TestCase
             'name' => 'service-account-instance',
             'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
         ]);
-
-        Role::findOrCreate('service-account', config('auth.defaults.guard'));
-        $this->user->assignRole('service-account');
 
         $response = $this->getJson('/api/instances?group_id='.$inaccessibleGroup->id);
 
@@ -727,6 +728,10 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_assign_instance_to_group_allows_service_account_when_not_member(): void
     {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
         Sanctum::actingAs($this->user, ['instances.write']);
 
         $originalGroup = UserGroup::create(['name' => 'Original Group']);
@@ -738,9 +743,6 @@ class AuthenticatedApiTest extends TestCase
             'name' => 'service-account-migration-instance',
             'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
         ]);
-
-        Role::findOrCreate('service-account', config('auth.defaults.guard'));
-        $this->user->assignRole('service-account');
 
         $response = $this->patchJson('/api/instance/'.$instance->uuid.'/group', [
             'group_id' => $targetGroup->id,
