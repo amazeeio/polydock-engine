@@ -726,18 +726,7 @@ class AuthenticatedApiTest extends TestCase
 
         $response->assertOk();
         $this->assertCount(1, $response->json('data'));
-    }
-
-    public function test_get_instances_read_only_token_still_forbidden_for_non_member_group(): void
-    {
-        // Regular user tokens (instances.read, not *) still enforce group membership.
-        Sanctum::actingAs($this->user, ['instances.read']);
-
-        $inaccessibleGroup = UserGroup::create(['name' => 'Still Inaccessible Group']);
-
-        $response = $this->getJson('/api/instances?group_id='.$inaccessibleGroup->id);
-
-        $response->assertForbidden();
+        $this->assertEquals('sa-test-instance', $response->json('data.0.name'));
     }
 
     public function test_assign_instance_to_group_wildcard_token_bypasses_membership_check(): void

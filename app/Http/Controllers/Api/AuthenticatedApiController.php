@@ -226,7 +226,7 @@ class AuthenticatedApiController extends Controller
         // This allows upstream orchestrators (e.g. moad) to list instances for any
         // workspace group using the group_id or group_slug query parameters without
         // needing the service-account user to be enrolled in every group.
-        $isServiceAccountToken = $request->user()->currentAccessToken()?->can('*');
+        $isServiceAccountToken = $tokenUser->currentAccessToken()?->can('*') ?? false;
 
         if ($targetGroup !== null && ! $isServiceAccountToken && ! $tokenUser->groups()->whereKey($targetGroup->id)->exists()) {
             abort(403, 'You do not have access to the selected group.');
@@ -505,7 +505,7 @@ class AuthenticatedApiController extends Controller
         // Tokens with wildcard (*) ability act as service accounts and are permitted
         // to assign instances to any group without being a member. Regular user
         // tokens (instances.write only) still require group membership.
-        $isServiceAccountToken = $request->user()->currentAccessToken()?->can('*');
+        $isServiceAccountToken = $user->currentAccessToken()?->can('*') ?? false;
 
         if (! $isServiceAccountToken && ! $user->groups()->whereKey($group->id)->exists()) {
             abort(403, 'You do not have access to the selected group.');
