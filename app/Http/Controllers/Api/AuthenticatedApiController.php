@@ -220,7 +220,15 @@ class AuthenticatedApiController extends Controller
         /** @var User $tokenUser */
         $tokenUser = $request->user();
 
-        if ($targetGroup !== null && ! $tokenUser->groups()->whereKey($targetGroup->id)->exists()) {
+        // Tokens with wildcard (*) ability act as service accounts and are permitted
+        // to query any group without being a member of it. Regular user tokens
+        // (instances.read only) still require group membership.
+        // This allows upstream orchestrators (e.g. moad) to list instances for any
+        // workspace group using the group_id or group_slug query parameters without
+        // needing the service-account user to be enrolled in every group.
+        $isServiceAccountToken = $request->user()->currentAccessToken()?->can('*');
+
+        if ($targetGroup !== null && ! $isServiceAccountToken && ! $tokenUser->groups()->whereKey($targetGroup->id)->exists()) {
             abort(403, 'You do not have access to the selected group.');
         }
 
@@ -494,7 +502,12 @@ class AuthenticatedApiController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        if (! $user->groups()->whereKey($group->id)->exists()) {
+        // Tokens with wildcard (*) ability act as service accounts and are permitted
+        // to assign instances to any group without being a member. Regular user
+        // tokens (instances.write only) still require group membership.
+        $isServiceAccountToken = $request->user()->currentAccessToken()?->can('*');
+
+        if (! $isServiceAccountToken && ! $user->groups()->whereKey($group->id)->exists()) {
             abort(403, 'You do not have access to the selected group.');
         }
 

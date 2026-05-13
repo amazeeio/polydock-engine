@@ -701,4 +701,67 @@ class AuthenticatedApiTest extends TestCase
         $instance->refresh();
         $this->assertEquals($originalGroup->id, $instance->user_group_id);
     }
+
+    public function test_get_instances_wildcard_token_can_query_any_group_without_membership(): void
+    {
+        // Tokens with '*' ability (service accounts) bypass group membership checks
+        // so orchestrators like moad can list instances for any workspace group.
+        Sanctum::actingAs($this->user, ['*']);
+
+        $otherUser = \App\Models\User::factory()->create();
+        $group = UserGroup::create(['name' => 'Service Account Test Group']);
+        $otherUser->groups()->syncWithoutDetaching([
+            $group->id => ['role' => UserGroupRoleEnum::MEMBER->value],
+        ]);
+        // $this->user is NOT a member of $group
+
+        PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $group->id,
+            'name' => 'sa-test-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $response = $this->getJson('/api/instances?group_id='.$group->id);
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+    }
+
+    public function test_get_instances_read_only_token_still_forbidden_for_non_member_group(): void
+    {
+        // Regular user tokens (instances.read, not *) still enforce group membership.
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $inaccessibleGroup = UserGroup::create(['name' => 'Still Inaccessible Group']);
+
+        $response = $this->getJson('/api/instances?group_id='.$inaccessibleGroup->id);
+
+        $response->assertForbidden();
+    }
+
+    public function test_assign_instance_to_group_wildcard_token_bypasses_membership_check(): void
+    {
+        // Tokens with '*' ability (service accounts) can assign instances to any group.
+        Sanctum::actingAs($this->user, ['*']);
+
+        $originalGroup = UserGroup::create(['name' => 'SA Original Group']);
+        $targetGroup = UserGroup::create(['name' => 'SA Target Group']);
+        // $this->user is NOT a member of either group
+
+        $instance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $originalGroup->id,
+            'name' => 'sa-assign-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $response = $this->patchJson('/api/instance/'.$instance->uuid.'/group', [
+            'group_id' => $targetGroup->id,
+        ]);
+
+        $response->assertOk();
+        $instance->refresh();
+        $this->assertEquals($targetGroup->id, $instance->user_group_id);
+    }
 }
