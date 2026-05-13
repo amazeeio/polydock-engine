@@ -12,6 +12,6 @@ class ServiceAccountRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::findOrCreate('service-account', 'web');
+        Role::findOrCreate('service-account', config('auth.defaults.guard'));
     }
 }
