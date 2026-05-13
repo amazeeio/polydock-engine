@@ -16,6 +16,7 @@
         "amazeeio/polydock-app-amazeeio-privategpt": "^0.1",
         "amazeeio/polydock-app-anythingllm": "^0.1",
         "amazeeio/polydock-app-dependency-track": "^0.1.0",
+        "bezhansalleh/filament-shield": "^3.9",
         "dedoc/scramble": "^0.13",
         "evanschleret/lara-mjml": "^0.3.0",
         "filament/filament": "^3.2",
@@ -29,6 +30,7 @@
         "laravel/slack-notification-channel": "^3.8",
         "laravel/tinker": "^2.9",
         "phpseclib/phpseclib": "^3.0",
+        "spatie/laravel-permission": "^6.25",
         "spatie/laravel-slack-alerts": "^1.9",
         "spatie/mjml-php": "^1.2"
     },

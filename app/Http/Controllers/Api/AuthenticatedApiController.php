@@ -220,7 +220,7 @@ class AuthenticatedApiController extends Controller
         /** @var User $tokenUser */
         $tokenUser = $request->user();
 
-        if ($targetGroup !== null && ! $tokenUser->groups()->whereKey($targetGroup->id)->exists()) {
+        if ($targetGroup !== null && ! $tokenUser->hasRole('service-account') && ! $tokenUser->groups()->whereKey($targetGroup->id)->exists()) {
             abort(403, 'You do not have access to the selected group.');
         }
 
@@ -494,7 +494,7 @@ class AuthenticatedApiController extends Controller
         /** @var User $user */
         $user = $request->user();
 
-        if (! $user->groups()->whereKey($group->id)->exists()) {
+        if (! $user->hasRole('service-account') && ! $user->groups()->whereKey($group->id)->exists()) {
             abort(403, 'You do not have access to the selected group.');
         }
 
