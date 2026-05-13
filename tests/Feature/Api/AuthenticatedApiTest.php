@@ -15,6 +15,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AuthenticatedApiTest extends TestCase
@@ -650,6 +651,29 @@ class AuthenticatedApiTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_get_instances_allows_service_account_when_not_member_of_group(): void
+    {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
+        Sanctum::actingAs($this->user, ['instances.read']);
+
+        $inaccessibleGroup = UserGroup::create(['name' => 'Service Account Group']);
+        $instance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $inaccessibleGroup->id,
+            'name' => 'service-account-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $response = $this->getJson('/api/instances?group_id='.$inaccessibleGroup->id);
+
+        $response->assertOk();
+        $this->assertCount(1, $response->json('data'));
+        $this->assertEquals($instance->uuid, $response->json('data.0.uuid'));
+    }
+
     public function test_assign_instance_to_group_reassigns_existing_instance(): void
     {
         Sanctum::actingAs($this->user, ['instances.write']);
@@ -700,5 +724,32 @@ class AuthenticatedApiTest extends TestCase
         $response->assertForbidden();
         $instance->refresh();
         $this->assertEquals($originalGroup->id, $instance->user_group_id);
+    }
+
+    public function test_assign_instance_to_group_allows_service_account_when_not_member(): void
+    {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $originalGroup = UserGroup::create(['name' => 'Original Group']);
+        $targetGroup = UserGroup::create(['name' => 'Service Account Target Group']);
+
+        $instance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $originalGroup->id,
+            'name' => 'service-account-migration-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $response = $this->patchJson('/api/instance/'.$instance->uuid.'/group', [
+            'group_id' => $targetGroup->id,
+        ]);
+
+        $response->assertOk();
+        $instance->refresh();
+        $this->assertEquals($targetGroup->id, $instance->user_group_id);
     }
 }
