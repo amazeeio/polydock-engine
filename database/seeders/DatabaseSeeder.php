@@ -23,6 +23,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            ServiceAccountRoleSeeder::class,
+        ]);
+
         // Create Fred and his team
         $fred = User::create([
             'first_name' => 'Fred',
