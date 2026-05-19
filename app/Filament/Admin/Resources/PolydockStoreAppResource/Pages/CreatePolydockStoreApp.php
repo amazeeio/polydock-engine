@@ -44,7 +44,17 @@ class CreatePolydockStoreApp extends CreateRecord
         // Always persist these runtime settings in app_config for app-instance defaults.
         $appConfig['lagoon_auto_idle'] = isset($data['lagoon_auto_idle']) ? (int) $data['lagoon_auto_idle'] : 0;
         $appConfig['lagoon_production_environment'] = (string) ($data['lagoon_production_environment'] ?? 'main');
-        unset($data['lagoon_auto_idle'], $data['lagoon_production_environment']);
+        $appConfig['refresh_unallocated_instances'] = (bool) ($data['refresh_unallocated_instances'] ?? false);
+        $appConfig['refresh_unallocated_instances_after_days'] = max(
+            1,
+            (int) ($data['refresh_unallocated_instances_after_days'] ?? 7),
+        );
+        unset(
+            $data['lagoon_auto_idle'],
+            $data['lagoon_production_environment'],
+            $data['refresh_unallocated_instances'],
+            $data['refresh_unallocated_instances_after_days'],
+        );
 
         // Store the app config as JSON
         $data['app_config'] = ! empty($appConfig) ? $appConfig : null;

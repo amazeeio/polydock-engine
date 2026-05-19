@@ -7,8 +7,6 @@ use App\Models\PolydockStoreApp;
 use App\Services\LagoonClientService;
 use FreedomtechHosting\FtLagoonPhp\Client;
 use Illuminate\Console\Command;
-use Illuminate\Process\Pool;
-use Illuminate\Support\Facades\Process;
 
 use function Laravel\Prompts\multiselect;
 
@@ -172,7 +170,7 @@ class TriggerLagoonDeployOnAppInstances extends Command
         foreach ($instances as $instance) {
             $projectName = $instance->getKeyValue('lagoon-project-name');
             $branch = $envOverride ?: $instance->getKeyValue('lagoon-deploy-branch');
-            
+
             if ($projectName && $branch) {
                 $environments[] = [
                     'project' => $projectName,
@@ -183,6 +181,7 @@ class TriggerLagoonDeployOnAppInstances extends Command
 
         if (empty($environments)) {
             $this->error('No valid environments found to deploy.');
+
             return 1;
         }
 
@@ -191,10 +190,10 @@ class TriggerLagoonDeployOnAppInstances extends Command
             $buildVars['LAGOON_VARIABLES_ONLY'] = 'true';
         }
 
-        $bulkName = "Polydock Bulk Deploy: {$storeApp->name} (" . now()->toDateTimeString() . ")";
+        $bulkName = "Polydock Bulk Deploy: {$storeApp->name} (".now()->toDateTimeString().')';
 
         $this->info("Triggering bulk deployment for {$count} instances...");
-        
+
         try {
             $result = $client->bulkDeployEnvironments(
                 environments: $environments,
@@ -210,7 +209,7 @@ class TriggerLagoonDeployOnAppInstances extends Command
             } else {
                 $bulkId = $result['bulkDeployEnvironmentLatest'] ?? 'unknown';
                 $this->info(string: "Bulk deployment triggered successfully! Bulk ID: {$bulkId}");
-                
+
                 $this->info("\nYou can track the progress using:");
                 $this->info("  https://dashboard.amazeeio.cloud/deployments?bulkId={$bulkId}");
 

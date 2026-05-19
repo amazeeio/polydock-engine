@@ -23,6 +23,56 @@ class ViewPolydockAppInstance extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+            Action::make('rerun_claim_hook')
+                ->label('Re-run Claim Hook')
+                ->icon('heroicon-o-arrow-path')
+                ->color('warning')
+                ->visible(function ($record): bool {
+                    if (blank($record->getKeyValue('lagoon-claim-script'))) {
+                        return false;
+                    }
+
+                    return in_array($record->status, [
+                        PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+                        PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+                        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+                        PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
+                    ], true);
+                })
+                ->requiresConfirmation()
+                ->modalDescription('Queues the configured claim hook again for this instance.')
+                ->action(function ($record): void {
+                    $skipReadyNotification = data_get($record->data, 'manual_hook_rerun.skip_ready_notification', false)
+                        || in_array($record->status, [
+                            PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+                            PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+                            PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                            PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+                        ], true);
+
+                    $data = $record->data ?? [];
+                    $data['manual_hook_rerun'] = [
+                        'hook' => 'claim',
+                        'skip_ready_notification' => $skipReadyNotification,
+                    ];
+
+                    $record->data = $data;
+                    $record->saveQuietly();
+
+                    $record->setStatus(
+                        PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
+                        'Manual claim hook rerun queued',
+                    )->save();
+
+                    Notification::make()
+                        ->title('Claim Hook Queued')
+                        ->success()
+                        ->body('The claim hook has been queued to run again.')
+                        ->send();
+
+                    $this->refreshFormData(['status', 'status_message']);
+                }),
             Action::make('trigger_deploy')
                 ->label('Trigger Deploy')
                 ->icon('heroicon-o-rocket-launch')

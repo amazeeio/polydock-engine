@@ -25,6 +25,12 @@ class ClaimJob extends BaseJob implements ShouldQueue
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM) {
+            if ($this->shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM)) {
+                $this->polydockJobDone();
+
+                return;
+            }
+
             throw new PolydockAppInstanceStatusFlowException(
                 'ClaimJob must be in status PENDING_POLYDOCK_CLAIM',
                 $appInstance->status,

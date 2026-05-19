@@ -17,6 +17,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser, HasTenants
 {
@@ -25,7 +26,15 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /** @use HasFactory<UserFactory> */
     use HasFactory;
 
+    use HasRoles;
     use Notifiable;
+
+    /**
+     * Explicitly set the guard for spatie/laravel-permission.
+     * Without this, Sanctum API requests resolve as 'sanctum' guard
+     * which causes guard mismatch errors with roles created for 'web'.
+     */
+    protected string $guard_name = 'web';
 
     /**
      * The attributes that are mass assignable.

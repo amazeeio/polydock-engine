@@ -349,7 +349,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         });
 
         static::updated(function ($appInstance) {
-            if ($appInstance->isDirty('status')) {
+            if ($appInstance->wasChanged('status')) {
                 $appInstance->info('MODEL: Status changed for app instance', [
                     'app_instance_id' => $appInstance->id,
                     'previous_status' => $appInstance->getOriginal('status'),

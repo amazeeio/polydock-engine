@@ -5,6 +5,7 @@ namespace App\Jobs\ProcessPolydockAppInstanceJobs\Deploy;
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
 use App\PolydockEngine\Engine;
 use App\PolydockEngine\PolydockLogger;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
@@ -22,6 +23,14 @@ class PollDeploymentJob extends BaseJob implements ShouldQueue
             throw new \Exception(
                 'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
             );
+        }
+
+        if ($appInstance->status != PolydockAppInstanceStatus::DEPLOY_RUNNING) {
+            if ($this->shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus::DEPLOY_RUNNING)) {
+                $this->polydockJobDone();
+
+                return;
+            }
         }
 
         try {
