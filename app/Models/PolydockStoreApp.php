@@ -7,6 +7,7 @@ use App\Traits\HasPolydockVariables;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Models\PolydockAppInstance;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -247,12 +248,20 @@ class PolydockStoreApp extends Model
     }
 
     /**
-     * Get the number of unallocated instances for this app
+     * Get the number of unallocated instances for this app.
+     *
+     * Only counts instances that are either claimable (RUNNING_HEALTHY_UNCLAIMED)
+     * or actively progressing through the create/deploy pipeline (non-failed, non-terminal).
+     * Stuck/failed instances are excluded so they don't block pool refill.
      */
     public function getUnallocatedInstancesCountAttribute(): int
     {
         return $this->instances()
             ->whereNull('user_group_id')
+            ->where(function ($query) {
+                $query->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
+                    ->orWhereIn('status', PolydockAppInstance::unallocatedInProgressStatuses());
+            })
             ->count();
     }
 

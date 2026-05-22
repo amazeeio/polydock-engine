@@ -48,3 +48,8 @@ Schedule::command('polydock:dispatch-trial-complete-stage-removal')
 // Schedule::command('polydock:remove-unclaimed-instances --force --limit=5')
 //     ->hourly()
 //     ->withoutOverlapping();
+
+// ///// Mark Stuck Instances as Failed ///////
+Schedule::command('polydock:mark-stuck-instances-failed --threshold=30')
+    ->everyFifteenMinutes()
+    ->withoutOverlapping();
