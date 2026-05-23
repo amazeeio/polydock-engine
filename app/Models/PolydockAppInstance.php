@@ -248,6 +248,29 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
     ];
 
+    public static array $stageClaimStatuses = [
+        PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
+        PolydockAppInstanceStatus::POLYDOCK_CLAIM_RUNNING,
+        PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
+    ];
+
+    /**
+     * Statuses indicating an unallocated instance is progressing through the
+     * create → deploy → claim pipeline. Used to count in-progress pool instances
+     * and to detect stuck instances.
+     *
+     * @return array<int, PolydockAppInstanceStatus>
+     */
+    public static function unallocatedInProgressStatuses(): array
+    {
+        return [
+            PolydockAppInstanceStatus::NEW,
+            ...self::$stageCreateStatuses,
+            ...self::$stageDeployStatuses,
+            ...self::$stageClaimStatuses,
+        ];
+    }
+
     /**
      * Get the route key for the model.
      *
