@@ -3,12 +3,14 @@
 namespace App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
+use App\Models\PolydockAppInstance;
 use App\Services\LagoonClientService;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
@@ -222,6 +224,54 @@ class ViewPolydockAppInstance extends ViewRecord
                             ->body($e->getMessage())
                             ->send();
                     }
+                }),
+            Action::make('delete_instance')
+                ->label('Delete Instance')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->visible(function ($record): bool {
+                    // Hide once the instance is already being torn down or gone.
+                    $alreadyTearingDown = array_merge(
+                        PolydockAppInstance::$stageRemoveStatuses,
+                        PolydockAppInstance::$stagePurgeStatuses,
+                    );
+
+                    return ! in_array($record->status, $alreadyTearingDown, true);
+                })
+                ->requiresConfirmation()
+                ->modalHeading('Delete this app instance?')
+                ->modalDescription('This will start the standard removal pipeline: the Lagoon environment will be deleted first, then the Lagoon project will be fully deleted after the grace period (or immediately if you tick "Skip grace period").')
+                ->modalSubmitActionLabel('Delete')
+                ->form([
+                    Toggle::make('skip_grace_period')
+                        ->label('Skip grace period and force-purge the Lagoon project as soon as the environment is gone')
+                        ->helperText('Equivalent to clicking "Force Full Delete" the moment the instance reaches REMOVED.')
+                        ->default(false),
+                ])
+                ->action(function (array $data, $record): void {
+                    $skipGrace = (bool) ($data['skip_grace_period'] ?? false);
+
+                    if ($skipGrace) {
+                        $record->force_purge_requested_at = now();
+                    }
+
+                    $record->setStatus(
+                        PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
+                        $skipGrace
+                            ? 'Deletion requested via admin UI (force-purge)'
+                            : 'Deletion requested via admin UI',
+                    );
+                    $record->save();
+
+                    Notification::make()
+                        ->title('Deletion Queued')
+                        ->success()
+                        ->body($skipGrace
+                            ? 'Removal pipeline started. The Lagoon project will be fully purged as soon as the environment is gone.'
+                            : 'Removal pipeline started. The Lagoon project will be fully purged after the grace period.')
+                        ->send();
+
+                    $this->refreshFormData(['status', 'status_message']);
                 }),
             Action::make('force_full_delete')
                 ->label('Force Full Delete (Lagoon)')
