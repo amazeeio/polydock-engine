@@ -139,6 +139,7 @@ class AuthenticatedApiController extends Controller
             'app_status' => $app->status?->value,
             'git_url' => $app->lagoon_deploy_git,
             'store' => [
+                'id' => $app->store->id,
                 'name' => $app->store->name,
                 'status' => $app->store->status?->value,
                 'listed_in_marketplace' => $app->store->listed_in_marketplace,
