@@ -55,6 +55,12 @@ return [
     'max_per_run_dispatch_one_day_left_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_ONE_DAY_LEFT_EMAILS', 25),
     'max_per_run_dispatch_trial_complete_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_EMAILS', 25),
     'max_per_run_dispatch_trial_complete_stage_removal' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_STAGE_REMOVAL', 5),
+    'cleanup' => [
+        'project_grace_period_days' => (int) env('POLYDOCK_PROJECT_GRACE_DAYS', 14),
+        'purge_poll_interval_minutes' => (int) env('POLYDOCK_PURGE_POLL_INTERVAL', 10),
+        'purge_max_poll_attempts' => (int) env('POLYDOCK_PURGE_MAX_POLLS', 144),
+        'purge_max_per_run' => (int) env('POLYDOCK_PURGE_MAX_PER_RUN', 25),
+    ],
     'redirect_landing_page_to' => env('POLYDOCK_REDIRECT_LANDING_PAGE_TO', 'https://freedomtech.hosting/'),
     'register_only_captures' => env('POLYDOCK_REGISTER_ONLY_CAPTURES', false),
     'register_simulate_round_robin' => env('POLYDOCK_REGISTER_SIMULATE_ROUND_ROBIN', false),

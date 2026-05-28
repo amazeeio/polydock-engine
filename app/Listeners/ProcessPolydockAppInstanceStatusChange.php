@@ -12,6 +12,7 @@ use App\Jobs\ProcessPolydockAppInstanceJobs\Deploy\DeployJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Deploy\PostDeployJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Deploy\PreDeployJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\ProgressToNextStageJob;
+use App\Jobs\ProcessPolydockAppInstanceJobs\Purge\ProcessProjectPurgeJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Remove\PostRemoveJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Remove\PreRemoveJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Remove\RemoveJob;
@@ -173,6 +174,14 @@ class ProcessPolydockAppInstanceStatusChange
                 ]);
 
                 PostRemoveJob::dispatch($event->appInstance->id)
+                    ->onQueue('polydock-app-instance-processing-remove');
+                break;
+            case PolydockAppInstanceStatus::PENDING_PURGE:
+                Log::info('Dispatching ProcessProjectPurgeJob', [
+                    'app_instance_id' => $event->appInstance->id,
+                ]);
+
+                ProcessProjectPurgeJob::dispatch($event->appInstance->id)
                     ->onQueue('polydock-app-instance-processing-remove');
                 break;
             case PolydockAppInstanceStatus::PENDING_PRE_UPGRADE:

@@ -223,6 +223,71 @@ class ViewPolydockAppInstance extends ViewRecord
                             ->send();
                     }
                 }),
+            Action::make('force_full_delete')
+                ->label('Force Full Delete (Lagoon)')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::REMOVED)
+                ->requiresConfirmation()
+                ->modalHeading('Force full Lagoon project deletion?')
+                ->modalDescription('This skips the grace period and immediately tries to delete the Lagoon project. If environments are still being torn down, this will keep retrying until they are gone or the polling cap is reached.')
+                ->action(function ($record): void {
+                    $now = now();
+                    $record->force_purge_requested_at = $now;
+                    $record->purge_eligible_at = $now;
+                    $record->purge_attempts = 0;
+                    $record->purge_failure_reason = null;
+                    $record->purge_last_attempted_at = null;
+                    $record->setStatus(PolydockAppInstanceStatus::PENDING_PURGE, 'Force purge requested via admin UI');
+                    $record->save();
+
+                    Notification::make()
+                        ->title('Force Purge Queued')
+                        ->success()
+                        ->body('A full Lagoon project deletion has been queued for this instance.')
+                        ->send();
+
+                    $this->refreshFormData(['status', 'status_message']);
+                }),
+            Action::make('retry_purge')
+                ->label('Retry Purge')
+                ->icon('heroicon-o-arrow-path')
+                ->color('warning')
+                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::PURGE_FAILED)
+                ->requiresConfirmation()
+                ->modalDescription('Resets the purge attempt counter and re-queues a Lagoon project deletion attempt.')
+                ->action(function ($record): void {
+                    $record->purge_attempts = 0;
+                    $record->purge_failure_reason = null;
+                    $record->purge_last_attempted_at = null;
+                    $record->setStatus(PolydockAppInstanceStatus::PENDING_PURGE, 'Purge retry requested via admin UI');
+                    $record->save();
+
+                    Notification::make()
+                        ->title('Purge Re-queued')
+                        ->success()
+                        ->body('The purge attempt counter has been reset and the job has been re-queued.')
+                        ->send();
+
+                    $this->refreshFormData(['status', 'status_message']);
+                }),
+            Action::make('cancel_force_purge')
+                ->label('Cancel Force Delete')
+                ->icon('heroicon-o-x-circle')
+                ->color('gray')
+                ->visible(fn ($record): bool => $record->force_purge_requested_at !== null
+                    && $record->status === PolydockAppInstanceStatus::REMOVED)
+                ->requiresConfirmation()
+                ->action(function ($record): void {
+                    $record->force_purge_requested_at = null;
+                    $record->save();
+
+                    Notification::make()
+                        ->title('Force Purge Cancelled')
+                        ->success()
+                        ->body('The instance will fall back to the standard grace period.')
+                        ->send();
+                }),
         ];
     }
 }

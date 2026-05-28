@@ -1,91 +1,96 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\PolydockServiceProviders\PolydockServiceProviderFTLagoon;
+use App\Services\LagoonProjectPurgeService;
+use App\Services\PurgeResult;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use Illuminate\Console\Command;
 
+/**
+ * Manual escape hatch for sweeping REMOVED instances and trying to fully
+ * delete their Lagoon projects. The same logic is invoked automatically by
+ * polydock:dispatch-project-purge, but this command is useful for one-off
+ * cleanups (e.g. legacy rows that pre-date the automated flow).
+ */
 class RemoveEmptyProjectsCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'polydock:remove-empty-projects
                           {--dry-run : Show what would be removed without actually doing it}
                           {--force : Skip confirmation prompt}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
     protected $description = 'Find all app instances in state REMOVED with no environments and remove their Lagoon project';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): int
     {
-        $isDryRun = $this->option('dry-run');
-        $force = $this->option('force');
+        $isDryRun = (bool) $this->option('dry-run');
+        $force = (bool) $this->option('force');
 
-        $this->info('Searching for app instances in REMOVED state with no environments...');
+        $this->info('Searching for app instances in REMOVED state...');
 
-        // Find all app instances in REMOVED state
         $removedInstances = PolydockAppInstance::where('status', PolydockAppInstanceStatus::REMOVED)->get();
 
         if ($removedInstances->isEmpty()) {
             $this->info('No app instances found in REMOVED state.');
 
-            return 0;
+            return self::SUCCESS;
         }
 
         $this->info("Found {$removedInstances->count()} app instance(s) in REMOVED state.");
         $this->newLine();
 
-        $lagoonServiceProvider = new PolydockServiceProviderFTLagoon(
-            config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon'),
-            $this->getLogger(),
-        );
+        $service = LagoonProjectPurgeService::makeWithDefaults($this->makeLogger());
 
-        $lagoonClient = $lagoonServiceProvider->getLagoonClient();
+        if ($isDryRun) {
+            $this->info('Dry-run: probing each project to find empty ones.');
+        } else {
+            $this->info('Probing each project to find empty ones.');
+        }
 
-        // Filter instances that have no environments (empty projects)
-        $emptyProjects = collect();
+        // First pass: find which are actually empty.
+        $candidates = collect();
         $apiErrorCount = 0;
 
         foreach ($removedInstances as $instance) {
-            try {
-                $projectName = $instance->data['project_name'] ?? $instance->name;
+            $projectName = $service->resolveProjectName($instance);
 
-                if (! $projectName) {
-                    $this->warn("Instance {$instance->id} has no project name, skipping.");
+            if ($projectName === null) {
+                $this->warn("Instance {$instance->id} has no project name, skipping.");
+
+                continue;
+            }
+
+            try {
+                // Re-use the service's getProjectByName via a non-deleting probe:
+                // attemptPurge in dry-run mode would actually delete on success,
+                // so we replicate the env-check via the service helper.
+                $client = $service::makeWithDefaults($this->makeLogger());
+                // We deliberately don't call attemptPurge here in dry-run mode.
+                // Instead, just check environments.
+                $projectData = $client->resolveProjectName($instance) === null
+                    ? null
+                    : $this->probeEnvironments($projectName);
+
+                if ($projectData === null) {
+                    $this->line("- Project '{$projectName}' could not be probed");
 
                     continue;
                 }
 
-                // Get project details from Lagoon API
-                $projectData = $lagoonClient->getProjectByName($projectName);
-
-                // Check if project has any environments
-                $environments = $projectData['environments'] ?? [];
-
-                if (empty($environments)) {
-                    $emptyProjects->push($instance);
-                    $this->line("✓ Project '{$projectName}' has no environments - marked for cleanup");
+                if ($projectData === []) {
+                    $candidates->push($instance);
+                    $this->line("✓ Project '{$projectName}' has no environments");
                 } else {
-                    $this->line("- Project '{$projectName}' has ".count($environments).' environment(s) - keeping');
+                    $this->line("- Project '{$projectName}' has ".count($projectData).' environment(s)');
                 }
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $this->error("✗ Failed to check project for instance {$instance->id}: {$e->getMessage()}");
                 $apiErrorCount++;
-
-                // Continue processing other instances even if one fails
             }
         }
 
@@ -93,26 +98,25 @@ class RemoveEmptyProjectsCommand extends Command
             $this->warn("Warning: {$apiErrorCount} API call(s) failed during environment checking.");
         }
 
-        if ($emptyProjects->isEmpty()) {
-            $this->info('All REMOVED instances still have environments. No empty projects to clean up.');
+        if ($candidates->isEmpty()) {
+            $this->info('No empty projects to clean up.');
 
-            return 0;
+            return self::SUCCESS;
         }
 
-        $this->info("Found {$emptyProjects->count()} empty project(s) ready for cleanup.");
+        $this->info("Found {$candidates->count()} empty project(s) ready for cleanup.");
         $this->newLine();
 
-        // Display the empty projects
         $headers = ['ID', 'Name', 'Project Name', 'Store App', 'Removed At'];
         $rows = [];
 
-        foreach ($emptyProjects as $instance) {
+        foreach ($candidates as $instance) {
             $rows[] = [
                 $instance->id,
                 $instance->name ?: 'N/A',
-                $instance->data['project_name'] ?? 'N/A',
+                $service->resolveProjectName($instance) ?? 'N/A',
                 $instance->storeApp->name ?? 'N/A',
-                $instance->updated_at->format('Y-m-d H:i:s'),
+                ($instance->removed_at ?? $instance->updated_at)?->format('Y-m-d H:i:s') ?? 'N/A',
             ];
         }
 
@@ -122,51 +126,56 @@ class RemoveEmptyProjectsCommand extends Command
         if ($isDryRun) {
             $this->info('DRY RUN: The projects listed above would be deleted.');
 
-            return 0;
+            return self::SUCCESS;
         }
 
-        // Confirm removal unless force flag is used
         if (! $force) {
             $confirmed = $this->confirm(
-                "Are you sure you want to remove these {$emptyProjects->count()} empty Lagoon project(s)?",
+                "Are you sure you want to remove these {$candidates->count()} empty Lagoon project(s)?",
                 false,
             );
 
             if (! $confirmed) {
                 $this->info('Operation cancelled.');
 
-                return 0;
+                return self::SUCCESS;
             }
         }
 
-        // Remove empty projects
         $successCount = 0;
         $errorCount = 0;
 
-        foreach ($emptyProjects as $instance) {
-            try {
-                $projectName = $instance->data['project_name'] ?? $instance->name;
+        foreach ($candidates as $instance) {
+            $result = $service->attemptPurge($instance);
 
-                // Remove the empty project from Lagoon
-                $deleteResponse = $lagoonClient->deleteProjectByName($projectName);
+            switch ($result) {
+                case PurgeResult::Purged:
+                case PurgeResult::AlreadyGone:
+                    $instance->setStatus(
+                        PolydockAppInstanceStatus::PURGED,
+                        $result === PurgeResult::AlreadyGone
+                            ? 'Lagoon project already deleted (manual sweep)'
+                            : 'Lagoon project deleted (manual sweep)',
+                    );
+                    $instance->save();
+                    $instance->delete();
+                    $this->info("✓ Purged instance {$instance->id} (".($service->resolveProjectName($instance) ?? 'n/a').')');
+                    $successCount++;
+                    break;
 
-                if (isset($deleteResponse['error'])) {
+                case PurgeResult::StillHasEnvironments:
+                    // Project picked up envs between probe and delete. Skip.
+                    $this->warn(
+                        "- Project for instance {$instance->id} now has environments again, skipping",
+                    );
+                    break;
+
+                default:
                     $this->error(
-                        "✗ Failed to delete Lagoon project '{$projectName}': ".json_encode($deleteResponse['error']),
+                        "✗ Failed to purge instance {$instance->id}: ".($service->lastFailureReason ?? 'unknown'),
                     );
                     $errorCount++;
-                } else {
-                    $this->info("✓ Successfully removed Lagoon project: {$projectName} (Instance ID: {$instance->id})");
-
-                    // TODO: I think we might want to introduce a soft-deleted kind of process here
-                    // ideally we'd want some record that the instance existed, surely, but not have it show up
-                    // anywhere.
-
-                    $successCount++;
-                }
-            } catch (\Exception $e) {
-                $this->error("✗ Failed to remove project for instance {$instance->id}: {$e->getMessage()}");
-                $errorCount++;
+                    break;
             }
         }
 
@@ -177,17 +186,37 @@ class RemoveEmptyProjectsCommand extends Command
             $this->warn("- Failed to process: {$errorCount}");
         }
 
-        return $errorCount > 0 ? 1 : 0;
+        return $errorCount > 0 ? self::FAILURE : self::SUCCESS;
     }
 
-    protected function getLogger(): PolydockAppLoggerInterface
+    /**
+     * Quick probe of the env list. Returns the env array on success, null on failure.
+     */
+    protected function probeEnvironments(string $projectName): ?array
     {
-        // Create logger that delegates to command output methods
-        $logger = new class($this) implements PolydockAppLoggerInterface
+        try {
+            $serviceProvider = new PolydockServiceProviderFTLagoon(
+                config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon'),
+                $this->makeLogger(),
+            );
+            $data = $serviceProvider->getLagoonClient()->getProjectByName($projectName);
+            if (empty($data)) {
+                return [];
+            }
+
+            return $data['environments'] ?? [];
+        } catch (\Throwable $e) {
+            $this->error("Probe failed for {$projectName}: {$e->getMessage()}");
+
+            return null;
+        }
+    }
+
+    protected function makeLogger(): PolydockAppLoggerInterface
+    {
+        return new class($this) implements PolydockAppLoggerInterface
         {
-            public function __construct(
-                private $command,
-            ) {}
+            public function __construct(private $command) {}
 
             public function info(string $message, array $context = []): void
             {
@@ -206,10 +235,8 @@ class RemoveEmptyProjectsCommand extends Command
 
             public function debug(string $message, array $context = []): void
             {
-                $this->command->info(sprintf('debug - %s', $message));
+                $this->command->info('debug - '.$message);
             }
         };
-
-        return $logger;
     }
 }
