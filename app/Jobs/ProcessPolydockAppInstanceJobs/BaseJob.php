@@ -206,6 +206,13 @@ abstract class BaseJob implements ShouldQueue
 
             PolydockAppInstanceStatus::REMOVED => 150,
 
+            PolydockAppInstanceStatus::PENDING_PURGE => 160,
+
+            PolydockAppInstanceStatus::PURGE_RUNNING => 170,
+
+            PolydockAppInstanceStatus::PURGE_FAILED,
+            PolydockAppInstanceStatus::PURGED => 180,
+
             default => null,
         };
     }

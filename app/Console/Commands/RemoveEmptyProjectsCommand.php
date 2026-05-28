@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
-use App\PolydockServiceProviders\PolydockServiceProviderFTLagoon;
 use App\Services\LagoonProjectPurgeService;
 use App\Services\PurgeResult;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
@@ -65,32 +64,24 @@ class RemoveEmptyProjectsCommand extends Command
                 continue;
             }
 
-            try {
-                // Re-use the service's getProjectByName via a non-deleting probe:
-                // attemptPurge in dry-run mode would actually delete on success,
-                // so we replicate the env-check via the service helper.
-                $client = $service::makeWithDefaults($this->makeLogger());
-                // We deliberately don't call attemptPurge here in dry-run mode.
-                // Instead, just check environments.
-                $projectData = $client->resolveProjectName($instance) === null
-                    ? null
-                    : $this->probeEnvironments($projectName);
-
-                if ($projectData === null) {
-                    $this->line("- Project '{$projectName}' could not be probed");
-
-                    continue;
-                }
-
-                if ($projectData === []) {
-                    $candidates->push($instance);
-                    $this->line("✓ Project '{$projectName}' has no environments");
-                } else {
-                    $this->line("- Project '{$projectName}' has ".count($projectData).' environment(s)');
-                }
-            } catch (\Throwable $e) {
-                $this->error("✗ Failed to check project for instance {$instance->id}: {$e->getMessage()}");
+            $projectProbe = $this->probeEnvironments($service, $projectName);
+            if ($projectProbe === null) {
                 $apiErrorCount++;
+
+                continue;
+            }
+
+            if ($projectProbe['status'] === 'missing') {
+                $this->line("- Project '{$projectName}' no longer exists in Lagoon");
+
+                continue;
+            }
+
+            if ($projectProbe['status'] === 'empty') {
+                $candidates->push($instance);
+                $this->line("✓ Project '{$projectName}' has no environments");
+            } else {
+                $this->line("- Project '{$projectName}' has {$projectProbe['environment_count']} environment(s)");
             }
         }
 
@@ -190,21 +181,47 @@ class RemoveEmptyProjectsCommand extends Command
     }
 
     /**
-     * Quick probe of the env list. Returns the env array on success, null on failure.
+     * Quick probe of the env list.
+     *
+     * Returns:
+     *  - ['status' => 'missing'] when Lagoon no longer has this project
+     *  - ['status' => 'empty', 'environment_count' => 0] for existing empty projects
+     *  - ['status' => 'has_environments', 'environment_count' => N]
+     *  - null on probe failure
      */
-    protected function probeEnvironments(string $projectName): ?array
+    protected function probeEnvironments(LagoonProjectPurgeService $service, string $projectName): ?array
     {
         try {
-            $serviceProvider = new PolydockServiceProviderFTLagoon(
-                config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon'),
-                $this->makeLogger(),
-            );
-            $data = $serviceProvider->getLagoonClient()->getProjectByName($projectName);
+            $data = $service->getProjectByName($projectName);
             if (empty($data)) {
-                return [];
+                return ['status' => 'missing'];
             }
 
-            return $data['environments'] ?? [];
+            if (! is_array($data)) {
+                $this->error("Probe failed for {$projectName}: unexpected payload type");
+
+                return null;
+            }
+
+            if (isset($data['error']) && $data['error']) {
+                $this->error("Probe failed for {$projectName}: ".json_encode($data['error']));
+
+                return null;
+            }
+
+            if (! array_key_exists('environments', $data) || ! is_array($data['environments'])) {
+                $this->error("Probe failed for {$projectName}: missing environments in Lagoon response");
+
+                return null;
+            }
+
+            $environmentCount = count($data['environments']);
+
+            if ($environmentCount === 0) {
+                return ['status' => 'empty', 'environment_count' => 0];
+            }
+
+            return ['status' => 'has_environments', 'environment_count' => $environmentCount];
         } catch (\Throwable $e) {
             $this->error("Probe failed for {$projectName}: {$e->getMessage()}");
 

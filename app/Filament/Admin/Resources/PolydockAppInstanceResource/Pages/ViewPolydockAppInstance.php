@@ -255,21 +255,24 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->color('warning')
                 ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::PURGE_FAILED)
                 ->requiresConfirmation()
-                ->modalDescription('Resets the purge attempt counter and re-queues a Lagoon project deletion attempt.')
+                ->modalDescription('Resets purge attempts and returns the instance to REMOVED with a fresh grace period before purge dispatch.')
                 ->action(function ($record): void {
+                    $graceDays = (int) config('polydock.cleanup.purge_grace_days', 14);
                     $record->purge_attempts = 0;
                     $record->purge_failure_reason = null;
                     $record->purge_last_attempted_at = null;
-                    $record->setStatus(PolydockAppInstanceStatus::PENDING_PURGE, 'Purge retry requested via admin UI');
+                    $record->force_purge_requested_at = null;
+                    $record->purge_eligible_at = now()->addDays($graceDays);
+                    $record->setStatus(PolydockAppInstanceStatus::REMOVED, 'Purge retry requested via admin UI; grace period restarted');
                     $record->save();
 
                     Notification::make()
-                        ->title('Purge Re-queued')
+                        ->title('Purge Retry Scheduled')
                         ->success()
-                        ->body('The purge attempt counter has been reset and the job has been re-queued.')
+                        ->body("The purge counters were reset and the grace period was restarted ({$graceDays} day(s)).")
                         ->send();
 
-                    $this->refreshFormData(['status', 'status_message']);
+                    $this->refreshFormData(['status', 'status_message', 'purge_eligible_at', 'force_purge_requested_at']);
                 }),
             Action::make('cancel_force_purge')
                 ->label('Cancel Force Delete')

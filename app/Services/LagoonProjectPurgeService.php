@@ -68,6 +68,14 @@ class LagoonProjectPurgeService
     }
 
     /**
+     * Fetch the raw Lagoon project payload by name.
+     */
+    public function getProjectByName(string $projectName): mixed
+    {
+        return $this->client()->getProjectByName($projectName);
+    }
+
+    /**
      * Resolve the Lagoon project name for an instance the same way the rest of
      * the engine does (matches RemoveEmptyProjectsCommand).
      */
@@ -103,7 +111,7 @@ class LagoonProjectPurgeService
         }
 
         try {
-            $projectData = $this->client()->getProjectByName($projectName);
+            $projectData = $this->getProjectByName($projectName);
         } catch (Throwable $e) {
             $this->lastFailureReason = 'getProjectByName threw: '.$e->getMessage();
             $this->logger->error('Failed to fetch Lagoon project for purge', [
@@ -135,8 +143,30 @@ class LagoonProjectPurgeService
             return PurgeResult::AlreadyGone;
         }
 
-        $environments = $projectData['environments'] ?? [];
-        $this->lastEnvironmentCount = is_array($environments) ? count($environments) : 0;
+        if (! is_array($projectData)) {
+            $this->lastFailureReason = 'Lagoon project payload had unexpected type';
+            $this->logger->error('Unexpected Lagoon project payload type while purging', [
+                'app_instance_id' => $instance->id,
+                'project_name' => $projectName,
+                'payload_type' => gettype($projectData),
+            ]);
+
+            return PurgeResult::Failed;
+        }
+
+        if (! array_key_exists('environments', $projectData) || ! is_array($projectData['environments'])) {
+            $this->lastFailureReason = 'Lagoon project payload missing environments list';
+            $this->logger->error('Unexpected Lagoon project payload shape while purging', [
+                'app_instance_id' => $instance->id,
+                'project_name' => $projectName,
+                'response_keys' => is_array($projectData) ? array_keys($projectData) : null,
+            ]);
+
+            return PurgeResult::Failed;
+        }
+
+        $environments = $projectData['environments'];
+        $this->lastEnvironmentCount = count($environments);
 
         if ($this->lastEnvironmentCount > 0) {
             $this->lastFailureReason = sprintf(
