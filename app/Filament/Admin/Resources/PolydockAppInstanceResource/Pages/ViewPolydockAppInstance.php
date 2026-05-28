@@ -241,25 +241,6 @@ class ViewPolydockAppInstance extends ViewRecord
                         // Step 2: Check if the environment exists
                         $environmentExists = $client->projectEnvironmentExistsByName($projectName, $environment);
 
-                        // Step 3: Deploy (creates env if missing, or redeploys if existing)
-                        $deployResult = $client->deployProjectEnvironmentByName(
-                            projectName: $projectName,
-                            deployBranch: $environment,
-                        );
-
-                        if (isset($deployResult['error'])) {
-                            $errors = is_array($deployResult['error'])
-                                ? (json_encode($deployResult['error']) ?: implode(', ', $deployResult['error']))
-                                : (string) $deployResult['error'];
-                            Notification::make()
-                                ->title('Deployment Failed')
-                                ->danger()
-                                ->body($errors)
-                                ->send();
-
-                            return;
-                        }
-
                         $action = $environmentExists ? 'Re-deployment' : 'Initial deployment';
 
                         // Step 4: Queue the claim process
@@ -282,14 +263,14 @@ class ViewPolydockAppInstance extends ViewRecord
                         $record->saveQuietly();
 
                         $record->setStatus(
-                            PolydockAppInstanceStatus::DEPLOY_RUNNING,
-                            "Retry: {$action} triggered for branch {$environment}, awaiting deployment completion",
+                            PolydockAppInstanceStatus::PENDING_DEPLOY,
+                            "Retry: {$action} queued for branch {$environment}",
                         )->save();
 
                         Notification::make()
                             ->title('Retry Initiated')
                             ->success()
-                            ->body("{$action} triggered for '{$environment}'. Instance will progress through deployment polling before claim runs.")
+                            ->body("{$action} queued for '{$environment}'. Instance will progress through the normal deployment flow before claim runs.")
                             ->send();
 
                         $this->refreshFormData(['status', 'status_message']);
