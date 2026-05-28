@@ -194,6 +194,96 @@ class ViewPolydockAppInstance extends ViewRecord
                             ->send();
                     }
                 }),
+            Action::make('retry_failed_instance')
+                ->label('Retry Failed Instance')
+                ->icon('heroicon-o-arrow-path-rounded-square')
+                ->color('danger')
+                ->visible(function ($record): bool {
+                    return in_array($record->status, [
+                        PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
+                        PolydockAppInstanceStatus::DEPLOY_FAILED,
+                        PolydockAppInstanceStatus::POST_DEPLOY_FAILED,
+                        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+                    ], true);
+                })
+                ->requiresConfirmation()
+                ->modalHeading('Retry Failed Instance')
+                ->modalDescription('This will check the Lagoon project/environment state and take corrective action: deploy the environment if missing, trigger a new deployment if it exists, then re-queue the claim process.')
+                ->action(function ($record): void {
+                    $projectName = $record->getKeyValue('lagoon-project-name');
+                    $environment = $record->getKeyValue('lagoon-deploy-branch') ?: 'main';
+
+                    if (empty($projectName)) {
+                        Notification::make()
+                            ->title('Retry Failed')
+                            ->danger()
+                            ->body('Missing Lagoon project name on this instance.')
+                            ->send();
+
+                        return;
+                    }
+
+                    try {
+                        $client = app(LagoonClientService::class)->getAuthenticatedClient();
+
+                        // Step 1: Check if the project exists
+                        $projectExists = $client->projectExistsByName($projectName);
+
+                        if (! $projectExists) {
+                            Notification::make()
+                                ->title('Retry Failed')
+                                ->danger()
+                                ->body("Lagoon project '{$projectName}' does not exist. The instance needs to be re-created from scratch.")
+                                ->send();
+
+                            return;
+                        }
+
+                        // Step 2: Check if the environment exists
+                        $environmentExists = $client->projectEnvironmentExistsByName($projectName, $environment);
+
+                        $action = $environmentExists ? 'Re-deployment' : 'Initial deployment';
+
+                        // Step 4: Queue the claim process
+                        $skipReadyNotification = in_array($record->status, [
+                            PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                            PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+                        ], true);
+
+                        $data = $record->data ?? [];
+                        $data['manual_hook_rerun'] = [
+                            'hook' => 'claim',
+                            'skip_ready_notification' => $skipReadyNotification,
+                            'retry_context' => [
+                                'environment_existed' => $environmentExists,
+                                'triggered_at' => now()->toIso8601String(),
+                            ],
+                        ];
+
+                        $record->data = $data;
+                        $record->saveQuietly();
+
+                        $record->setStatus(
+                            PolydockAppInstanceStatus::PENDING_DEPLOY,
+                            "Retry: {$action} queued for branch {$environment}",
+                        )->save();
+
+                        Notification::make()
+                            ->title('Retry Initiated')
+                            ->success()
+                            ->body("{$action} queued for '{$environment}'. Instance will progress through the normal deployment flow before claim runs.")
+                            ->send();
+
+                        $this->refreshFormData(['status', 'status_message']);
+                    } catch (\Throwable $e) {
+                        Notification::make()
+                            ->title('Retry Failed')
+                            ->danger()
+                            ->body($e->getMessage())
+                            ->send();
+                    }
+                }),
             Action::make('extend_trial')
                 ->label('Extend Trial')
                 ->icon('heroicon-o-calendar')
