@@ -53,3 +53,8 @@ Schedule::command('polydock:dispatch-trial-complete-stage-removal')
 Schedule::command('polydock:mark-stuck-instances-failed --threshold=30')
     ->everyFifteenMinutes()
     ->withoutOverlapping();
+
+// ///// Project Purge (full Lagoon project deletion after grace period) ///////
+Schedule::command('polydock:dispatch-project-purge')
+    ->everyTenMinutes()
+    ->withoutOverlapping();

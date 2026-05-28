@@ -21,9 +21,12 @@ use Filament\Tables;
 use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class PolydockAppInstanceResource extends Resource
 {
@@ -102,6 +105,25 @@ class PolydockAppInstanceResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('removed_at')
+                    ->dateTime()
+                    ->label('Removed At')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('purge_eligible_at')
+                    ->dateTime()
+                    ->label('Purge Eligible')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('purge_attempts')
+                    ->label('Purge Attempts')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('force_purge_requested_at')
+                    ->dateTime()
+                    ->label('Force Purge Requested')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('status')
@@ -146,6 +168,7 @@ class PolydockAppInstanceResource extends Resource
                         'remove' => 'Remove Stage',
                         'upgrade' => 'Upgrade Stage',
                         'running' => 'Running Stage',
+                        'purge' => 'Purge Stage',
                     ])
                     ->query(function ($query, array $data) {
                         if (! $data['value']) {
@@ -159,6 +182,7 @@ class PolydockAppInstanceResource extends Resource
                                 'remove' => $query->whereIn('status', PolydockAppInstance::$stageRemoveStatuses),
                                 'upgrade' => $query->whereIn('status', PolydockAppInstance::$stageUpgradeStatuses),
                                 'running' => $query->whereIn('status', PolydockAppInstance::$stageRunningStatuses),
+                                'purge' => $query->whereIn('status', PolydockAppInstance::$stagePurgeStatuses),
                                 default => null,
                             };
                         });
@@ -187,6 +211,9 @@ class PolydockAppInstanceResource extends Resource
                     ->searchable()
                     ->preload()
                     ->indicator('Store App'),
+
+                TrashedFilter::make()
+                    ->label('Include Purged'),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -426,5 +453,14 @@ class PolydockAppInstanceResource extends Resource
             'view' => Pages\ViewPolydockAppInstance::route('/{record}'),
             'edit' => Pages\EditPolydockAppInstance::route('/{record}/edit'),
         ];
+    }
+
+    #[\Override]
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withoutGlobalScopes([
+                SoftDeletingScope::class,
+            ]);
     }
 }
