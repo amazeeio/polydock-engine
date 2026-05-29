@@ -367,7 +367,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->label('Force Full Delete (Lagoon)')
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::REMOVED)
+                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::REMOVED && ! $record->trashed())
                 ->requiresConfirmation()
                 ->modalHeading('Force full Lagoon project deletion?')
                 ->modalDescription('This skips the grace period and immediately tries to delete the Lagoon project. If environments are still being torn down, this will keep retrying until they are gone or the polling cap is reached.')
@@ -393,7 +393,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->label('Retry Purge')
                 ->icon('heroicon-o-arrow-path')
                 ->color('warning')
-                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::PURGE_FAILED)
+                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::PURGE_FAILED && ! $record->trashed())
                 ->requiresConfirmation()
                 ->modalDescription('Resets purge attempts and returns the instance to REMOVED with a fresh grace period before purge dispatch.')
                 ->action(function ($record): void {
@@ -419,7 +419,8 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->icon('heroicon-o-x-circle')
                 ->color('gray')
                 ->visible(fn ($record): bool => $record->force_purge_requested_at !== null
-                    && $record->status === PolydockAppInstanceStatus::REMOVED)
+                    && $record->status === PolydockAppInstanceStatus::REMOVED
+                    && ! $record->trashed())
                 ->requiresConfirmation()
                 ->action(function ($record): void {
                     $record->force_purge_requested_at = null;

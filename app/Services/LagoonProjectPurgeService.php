@@ -169,15 +169,42 @@ class LagoonProjectPurgeService
         $this->lastEnvironmentCount = count($environments);
 
         if ($this->lastEnvironmentCount > 0) {
-            $this->lastFailureReason = sprintf(
-                'Project still has %d environment(s)',
-                $this->lastEnvironmentCount,
-            );
-            $this->logger->info('Lagoon project still has environments, deferring purge', [
+            // Actively delete each lingering environment.
+            $this->logger->info('Deleting lingering environments before project purge', [
                 'app_instance_id' => $instance->id,
                 'project_name' => $projectName,
                 'environment_count' => $this->lastEnvironmentCount,
             ]);
+
+            foreach ($environments as $env) {
+                $envName = $env['name'] ?? null;
+                if ($envName === null) {
+                    continue;
+                }
+
+                try {
+                    $this->client()->deleteProjectEnvironmentByName($projectName, $envName);
+                    $this->logger->info('Deleted lingering environment', [
+                        'app_instance_id' => $instance->id,
+                        'project_name' => $projectName,
+                        'environment' => $envName,
+                    ]);
+                } catch (Throwable $e) {
+                    $this->logger->warning('Failed to delete lingering environment', [
+                        'app_instance_id' => $instance->id,
+                        'project_name' => $projectName,
+                        'environment' => $envName,
+                        'error' => $e->getMessage(),
+                    ]);
+                }
+            }
+
+            // After issuing deletes, the environments won't be gone instantly.
+            // Return StillHasEnvironments so the caller retries on the next tick.
+            $this->lastFailureReason = sprintf(
+                'Issued delete for %d environment(s); waiting for removal',
+                $this->lastEnvironmentCount,
+            );
 
             return PurgeResult::StillHasEnvironments;
         }

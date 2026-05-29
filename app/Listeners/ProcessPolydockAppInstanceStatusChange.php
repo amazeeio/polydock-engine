@@ -264,6 +264,21 @@ class ProcessPolydockAppInstanceStatusChange
                     }
                 }
                 break;
+            case PolydockAppInstanceStatus::REMOVED:
+                // If force-purge was requested, immediately transition to PENDING_PURGE.
+                if ($event->appInstance->force_purge_requested_at !== null) {
+                    Log::info('Force purge requested, immediately dispatching PENDING_PURGE', [
+                        'app_instance_id' => $event->appInstance->id,
+                    ]);
+
+                    $event->appInstance->purge_eligible_at = now();
+                    $event->appInstance->setStatus(
+                        PolydockAppInstanceStatus::PENDING_PURGE,
+                        'Force purge: skipping grace period',
+                    );
+                    $event->appInstance->save();
+                }
+                break;
             default:
                 Log::warning('No job to dispatch for status '.$event->appInstance->status->value);
         }

@@ -184,7 +184,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::UPGRADE_COMPLETED,
         PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
         PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
-        PolydockAppInstanceStatus::PURGED,
     ];
 
     public static array $failedStatuses = [
@@ -255,7 +254,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PENDING_PURGE,
         PolydockAppInstanceStatus::PURGE_RUNNING,
         PolydockAppInstanceStatus::PURGE_FAILED,
-        PolydockAppInstanceStatus::PURGED,
     ];
 
     public static array $stageUpgradeStatuses = [

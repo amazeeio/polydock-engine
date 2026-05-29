@@ -143,7 +143,7 @@ class RemoveEmptyProjectsCommand extends Command
                 case PurgeResult::Purged:
                 case PurgeResult::AlreadyGone:
                     $instance->setStatus(
-                        PolydockAppInstanceStatus::PURGED,
+                        PolydockAppInstanceStatus::REMOVED,
                         $result === PurgeResult::AlreadyGone
                             ? 'Lagoon project already deleted (manual sweep)'
                             : 'Lagoon project deleted (manual sweep)',

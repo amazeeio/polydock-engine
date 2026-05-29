@@ -63,7 +63,7 @@ class ProcessProjectPurgeJob extends BaseJob implements ShouldQueue
             case PurgeResult::Purged:
             case PurgeResult::AlreadyGone:
                 $appInstance->setStatus(
-                    PolydockAppInstanceStatus::PURGED,
+                    PolydockAppInstanceStatus::REMOVED,
                     $result === PurgeResult::AlreadyGone
                         ? 'Lagoon project already deleted'
                         : 'Lagoon project deleted',

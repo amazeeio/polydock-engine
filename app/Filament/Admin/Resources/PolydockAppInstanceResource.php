@@ -68,9 +68,9 @@ class PolydockAppInstanceResource extends Resource
                     ->searchable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
-                    ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
-                    ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel())
+                    ->color(fn ($state, $record) => $record->trashed() ? 'gray' : PolydockAppInstanceStatus::from($state->value)->getColor())
+                    ->icon(fn ($state, $record) => $record->trashed() ? 'heroicon-o-archive-box-x-mark' : PolydockAppInstanceStatus::from($state->value)->getIcon())
+                    ->formatStateUsing(fn ($state, $record) => $record->trashed() ? 'Purged' : PolydockAppInstanceStatus::from($state->value)->getLabel())
                     ->sortable(),
                 TextColumn::make('is_trial')
                     ->state(fn ($record) => $record->is_trial ? 'Yes' : 'No')
@@ -247,10 +247,10 @@ class PolydockAppInstanceResource extends Resource
                             ->schema([
                                 TextEntry::make('status')
                                     ->badge()
-                                    ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
-                                    ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
+                                    ->color(fn ($state, $record) => $record->trashed() ? 'gray' : PolydockAppInstanceStatus::from($state->value)->getColor())
+                                    ->icon(fn ($state, $record) => $record->trashed() ? 'heroicon-o-archive-box-x-mark' : PolydockAppInstanceStatus::from($state->value)->getIcon())
                                     ->formatStateUsing(
-                                        fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel(),
+                                        fn ($state, $record) => $record->trashed() ? 'Purged' : PolydockAppInstanceStatus::from($state->value)->getLabel(),
                                     ),
                                 TextEntry::make('status_message')
                                     ->label('Status Message'),
