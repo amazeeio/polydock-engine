@@ -89,16 +89,16 @@
         },
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
-            "version": "v0.1.8",
+            "version": "v0.1.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt.git",
-                "reference": "b7239f74f47d9413483c52ca27a588c654d57f2d"
+                "reference": "7146d86c4ffd35195268641afd4d6a65e429cbd9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/b7239f74f47d9413483c52ca27a588c654d57f2d",
-                "reference": "b7239f74f47d9413483c52ca27a588c654d57f2d",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/7146d86c4ffd35195268641afd4d6a65e429cbd9",
+                "reference": "7146d86c4ffd35195268641afd4d6a65e429cbd9",
                 "shasum": ""
             },
             "require": {
@@ -136,9 +136,9 @@
             "description": "Polydock App - amazee.io PrivateGPT with Direct API Integration",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/v0.1.8"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/v0.1.9"
             },
-            "time": "2026-05-28T09:34:14+00:00"
+            "time": "2026-05-29T11:54:15+00:00"
         },
         {
             "name": "amazeeio/polydock-app-anythingllm",
@@ -2072,16 +2072,16 @@
         },
         {
             "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "v0.1.13",
+            "version": "v0.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeio-generic.git",
-                "reference": "6b872c8fd848bdbc5400f621108d40c10c0543df"
+                "reference": "3a637cd3f32cd0ed7724f9c351d791a9203687c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-generic/zipball/6b872c8fd848bdbc5400f621108d40c10c0543df",
-                "reference": "6b872c8fd848bdbc5400f621108d40c10c0543df",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-generic/zipball/3a637cd3f32cd0ed7724f9c351d791a9203687c6",
+                "reference": "3a637cd3f32cd0ed7724f9c351d791a9203687c6",
                 "shasum": ""
             },
             "require": {
@@ -2112,9 +2112,9 @@
             "description": "Polydock App - amazee.io Generic",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeio-generic/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeio-generic/tree/v0.1.13"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeio-generic/tree/v0.1.14"
             },
-            "time": "2026-05-28T09:30:21+00:00"
+            "time": "2026-05-29T11:52:08+00:00"
         },
         {
             "name": "fruitcake/php-cors",
