@@ -109,7 +109,16 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     public function primaryGroups()
     {
         return $this->belongsToMany(UserGroup::class, 'user_user_group', 'user_id', 'user_group_id')
-            ->wherePivot('role', UserGroupRoleEnum::OWNER);
+            ->wherePivot('role', UserGroupRoleEnum::OWNER->value);
+    }
+
+    /**
+     * Get all admin groups this user belongs to.
+     */
+    public function adminGroups()
+    {
+        return $this->belongsToMany(UserGroup::class, 'user_user_group', 'user_id', 'user_group_id')
+            ->wherePivot('role', UserGroupRoleEnum::ADMIN->value);
     }
 
     /**
@@ -120,7 +129,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     public function memberGroups()
     {
         return $this->belongsToMany(UserGroup::class, 'user_user_group', 'user_id', 'user_group_id')
-            ->wherePivot('role', UserGroupRoleEnum::MEMBER);
+            ->wherePivot('role', UserGroupRoleEnum::MEMBER->value);
     }
 
     /**
@@ -131,7 +140,25 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     public function viewerGroups()
     {
         return $this->belongsToMany(UserGroup::class, 'user_user_group', 'user_id', 'user_group_id')
-            ->wherePivot('role', UserGroupRoleEnum::VIEWER);
+            ->wherePivot('role', UserGroupRoleEnum::VIEWER->value);
+    }
+
+    public function groupRole(UserGroup $group): ?UserGroupRoleEnum
+    {
+        $role = $this->groups()
+            ->whereKey($group->getKey())
+            ->first()
+            ?->pivot
+            ?->role;
+
+        return is_string($role) && $role !== '' ? UserGroupRoleEnum::tryFrom($role) : null;
+    }
+
+    public function hasGroupRoleAtLeast(UserGroup $group, UserGroupRoleEnum $required): bool
+    {
+        $role = $this->groupRole($group);
+
+        return $role !== null && $role->atLeast($required);
     }
 
     /**
@@ -155,6 +182,10 @@ class User extends Authenticatable implements FilamentUser, HasTenants
      */
     public function canAccessPanel(Panel $panel): bool
     {
+        if ($panel->getId() === 'admin') {
+            return $this->hasRole('super_admin') || $this->can('access_admin_panel');
+        }
+
         return true;
     }
 

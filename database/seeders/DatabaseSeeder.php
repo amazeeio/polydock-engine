@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ServiceAccountRoleSeeder::class,
+            SuperAdminRoleSeeder::class,
         ]);
 
         // Create Fred and his team
