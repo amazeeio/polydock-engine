@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -42,6 +43,13 @@ use Illuminate\Support\Str;
  * @property Carbon|null $app_one_time_login_valid_until
  * @property array|null $data
  * @property string $uuid
+ * @property Carbon|null $removed_at
+ * @property Carbon|null $purge_eligible_at
+ * @property Carbon|null $force_purge_requested_at
+ * @property int $purge_attempts
+ * @property Carbon|null $purge_last_attempted_at
+ * @property string|null $purge_failure_reason
+ * @property Carbon|null $deleted_at
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  * @property PolydockStoreApp $storeApp
@@ -51,6 +59,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
     use HasPolydockVariables;
     use HasWebhookSensitiveData;
+    use SoftDeletes;
 
     /**
      * The fillable attributes for the model
@@ -75,6 +84,12 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'app_url',
         'app_one_time_login_url',
         'app_one_time_login_valid_until',
+        'removed_at',
+        'purge_eligible_at',
+        'force_purge_requested_at',
+        'purge_attempts',
+        'purge_last_attempted_at',
+        'purge_failure_reason',
     ];
 
     /**
@@ -94,6 +109,11 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'one_day_left_email_sent' => 'boolean',
         'trial_complete_email_sent' => 'boolean',
         'app_one_time_login_valid_until' => 'datetime',
+        'removed_at' => 'datetime',
+        'purge_eligible_at' => 'datetime',
+        'force_purge_requested_at' => 'datetime',
+        'purge_last_attempted_at' => 'datetime',
+        'purge_attempts' => 'integer',
     ];
 
     /**
@@ -147,6 +167,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
         PolydockAppInstanceStatus::PENDING_UPGRADE,
         PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
+        PolydockAppInstanceStatus::PENDING_PURGE,
     ];
 
     public static array $completedStatuses = [
@@ -179,6 +200,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::UPGRADE_FAILED,
         PolydockAppInstanceStatus::POST_UPGRADE_FAILED,
         PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
+        PolydockAppInstanceStatus::PURGE_FAILED,
     ];
 
     public static array $pollingStatuses = [
@@ -228,6 +250,12 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::REMOVED,
     ];
 
+    public static array $stagePurgeStatuses = [
+        PolydockAppInstanceStatus::PENDING_PURGE,
+        PolydockAppInstanceStatus::PURGE_RUNNING,
+        PolydockAppInstanceStatus::PURGE_FAILED,
+    ];
+
     public static array $stageUpgradeStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
         PolydockAppInstanceStatus::PENDING_UPGRADE,
@@ -247,6 +275,29 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
     ];
+
+    public static array $stageClaimStatuses = [
+        PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
+        PolydockAppInstanceStatus::POLYDOCK_CLAIM_RUNNING,
+        PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
+    ];
+
+    /**
+     * Statuses indicating an unallocated instance is progressing through the
+     * create → deploy → claim pipeline. Used to count in-progress pool instances
+     * and to detect stuck instances.
+     *
+     * @return array<int, PolydockAppInstanceStatus>
+     */
+    public static function unallocatedInProgressStatuses(): array
+    {
+        return [
+            PolydockAppInstanceStatus::NEW,
+            ...self::$stageCreateStatuses,
+            ...self::$stageDeployStatuses,
+            ...self::$stageClaimStatuses,
+        ];
+    }
 
     /**
      * Get the route key for the model.
@@ -489,6 +540,14 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 'previous_status' => $previousStatus,
                 'new_status' => $status,
             ]);
+
+            // Stamp the grace clock the first time we land on REMOVED.
+            if ($status === PolydockAppInstanceStatus::REMOVED && $this->removed_at === null) {
+                $now = now();
+                $graceDays = (int) config('polydock.cleanup.project_grace_period_days', 14);
+                $this->removed_at = $now;
+                $this->purge_eligible_at = $now->copy()->addDays($graceDays);
+            }
 
             if (! empty($statusMessage)) {
                 $this->setStatusMessage($statusMessage);

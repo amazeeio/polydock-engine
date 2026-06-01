@@ -3,12 +3,14 @@
 namespace App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
+use App\Models\PolydockAppInstance;
 use App\Services\LagoonClientService;
 use Carbon\Carbon;
 use Filament\Actions;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
@@ -192,6 +194,96 @@ class ViewPolydockAppInstance extends ViewRecord
                             ->send();
                     }
                 }),
+            Action::make('retry_failed_instance')
+                ->label('Retry Failed Instance')
+                ->icon('heroicon-o-arrow-path-rounded-square')
+                ->color('danger')
+                ->visible(function ($record): bool {
+                    return in_array($record->status, [
+                        PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
+                        PolydockAppInstanceStatus::DEPLOY_FAILED,
+                        PolydockAppInstanceStatus::POST_DEPLOY_FAILED,
+                        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+                    ], true);
+                })
+                ->requiresConfirmation()
+                ->modalHeading('Retry Failed Instance')
+                ->modalDescription('This will check the Lagoon project/environment state and take corrective action: deploy the environment if missing, trigger a new deployment if it exists, then re-queue the claim process.')
+                ->action(function ($record): void {
+                    $projectName = $record->getKeyValue('lagoon-project-name');
+                    $environment = $record->getKeyValue('lagoon-deploy-branch') ?: 'main';
+
+                    if (empty($projectName)) {
+                        Notification::make()
+                            ->title('Retry Failed')
+                            ->danger()
+                            ->body('Missing Lagoon project name on this instance.')
+                            ->send();
+
+                        return;
+                    }
+
+                    try {
+                        $client = app(LagoonClientService::class)->getAuthenticatedClient();
+
+                        // Step 1: Check if the project exists
+                        $projectExists = $client->projectExistsByName($projectName);
+
+                        if (! $projectExists) {
+                            Notification::make()
+                                ->title('Retry Failed')
+                                ->danger()
+                                ->body("Lagoon project '{$projectName}' does not exist. The instance needs to be re-created from scratch.")
+                                ->send();
+
+                            return;
+                        }
+
+                        // Step 2: Check if the environment exists
+                        $environmentExists = $client->projectEnvironmentExistsByName($projectName, $environment);
+
+                        $action = $environmentExists ? 'Re-deployment' : 'Initial deployment';
+
+                        // Step 4: Queue the claim process
+                        $skipReadyNotification = in_array($record->status, [
+                            PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                            PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+                        ], true);
+
+                        $data = $record->data ?? [];
+                        $data['manual_hook_rerun'] = [
+                            'hook' => 'claim',
+                            'skip_ready_notification' => $skipReadyNotification,
+                            'retry_context' => [
+                                'environment_existed' => $environmentExists,
+                                'triggered_at' => now()->toIso8601String(),
+                            ],
+                        ];
+
+                        $record->data = $data;
+                        $record->saveQuietly();
+
+                        $record->setStatus(
+                            PolydockAppInstanceStatus::PENDING_DEPLOY,
+                            "Retry: {$action} queued for branch {$environment}",
+                        )->save();
+
+                        Notification::make()
+                            ->title('Retry Initiated')
+                            ->success()
+                            ->body("{$action} queued for '{$environment}'. Instance will progress through the normal deployment flow before claim runs.")
+                            ->send();
+
+                        $this->refreshFormData(['status', 'status_message']);
+                    } catch (\Throwable $e) {
+                        Notification::make()
+                            ->title('Retry Failed')
+                            ->danger()
+                            ->body($e->getMessage())
+                            ->send();
+                    }
+                }),
             Action::make('extend_trial')
                 ->label('Extend Trial')
                 ->icon('heroicon-o-calendar')
@@ -222,6 +314,123 @@ class ViewPolydockAppInstance extends ViewRecord
                             ->body($e->getMessage())
                             ->send();
                     }
+                }),
+            Action::make('delete_instance')
+                ->label('Delete Instance')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->visible(function ($record): bool {
+                    // Hide once the instance is already being torn down or gone.
+                    $alreadyTearingDown = array_merge(
+                        PolydockAppInstance::$stageRemoveStatuses,
+                        PolydockAppInstance::$stagePurgeStatuses,
+                    );
+
+                    return ! in_array($record->status, $alreadyTearingDown, true);
+                })
+                ->requiresConfirmation()
+                ->modalHeading('Delete this app instance?')
+                ->modalDescription('This will start the standard removal pipeline: the Lagoon environment will be deleted first, then the Lagoon project will be fully deleted after the grace period (or immediately if you tick "Skip grace period").')
+                ->modalSubmitActionLabel('Delete')
+                ->form([
+                    Toggle::make('skip_grace_period')
+                        ->label('Skip grace period and force-purge the Lagoon project as soon as the environment is gone')
+                        ->helperText('Equivalent to clicking "Force Full Delete" the moment the instance reaches REMOVED.')
+                        ->default(false),
+                ])
+                ->action(function (array $data, $record): void {
+                    $skipGrace = (bool) ($data['skip_grace_period'] ?? false);
+
+                    if ($skipGrace) {
+                        $record->force_purge_requested_at = now();
+                    }
+
+                    $record->setStatus(
+                        PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
+                        $skipGrace
+                            ? 'Deletion requested via admin UI (force-purge)'
+                            : 'Deletion requested via admin UI',
+                    );
+                    $record->save();
+
+                    Notification::make()
+                        ->title('Deletion Queued')
+                        ->success()
+                        ->body($skipGrace
+                            ? 'Removal pipeline started. The Lagoon project will be fully purged as soon as the environment is gone.'
+                            : 'Removal pipeline started. The Lagoon project will be fully purged after the grace period.')
+                        ->send();
+
+                    $this->refreshFormData(['status', 'status_message']);
+                }),
+            Action::make('force_full_delete')
+                ->label('Force Full Delete (Lagoon)')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::REMOVED && ! $record->trashed())
+                ->requiresConfirmation()
+                ->modalHeading('Force full Lagoon project deletion?')
+                ->modalDescription('This skips the grace period and immediately tries to delete the Lagoon project. If environments are still being torn down, this will keep retrying until they are gone or the polling cap is reached.')
+                ->action(function ($record): void {
+                    $now = now();
+                    $record->force_purge_requested_at = $now;
+                    $record->purge_eligible_at = $now;
+                    $record->purge_attempts = 0;
+                    $record->purge_failure_reason = null;
+                    $record->purge_last_attempted_at = null;
+                    $record->setStatus(PolydockAppInstanceStatus::PENDING_PURGE, 'Force purge requested via admin UI');
+                    $record->save();
+
+                    Notification::make()
+                        ->title('Force Purge Queued')
+                        ->success()
+                        ->body('A full Lagoon project deletion has been queued for this instance.')
+                        ->send();
+
+                    $this->refreshFormData(['status', 'status_message']);
+                }),
+            Action::make('retry_purge')
+                ->label('Retry Purge')
+                ->icon('heroicon-o-arrow-path')
+                ->color('warning')
+                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::PURGE_FAILED && ! $record->trashed())
+                ->requiresConfirmation()
+                ->modalDescription('Resets purge attempts and returns the instance to REMOVED with a fresh grace period before purge dispatch.')
+                ->action(function ($record): void {
+                    $graceDays = (int) config('polydock.cleanup.purge_grace_days', 14);
+                    $record->purge_attempts = 0;
+                    $record->purge_failure_reason = null;
+                    $record->purge_last_attempted_at = null;
+                    $record->force_purge_requested_at = null;
+                    $record->purge_eligible_at = now()->addDays($graceDays);
+                    $record->setStatus(PolydockAppInstanceStatus::REMOVED, 'Purge retry requested via admin UI; grace period restarted');
+                    $record->save();
+
+                    Notification::make()
+                        ->title('Purge Retry Scheduled')
+                        ->success()
+                        ->body("The purge counters were reset and the grace period was restarted ({$graceDays} day(s)).")
+                        ->send();
+
+                    $this->refreshFormData(['status', 'status_message', 'purge_eligible_at', 'force_purge_requested_at']);
+                }),
+            Action::make('cancel_force_purge')
+                ->label('Cancel Force Delete')
+                ->icon('heroicon-o-x-circle')
+                ->color('gray')
+                ->visible(fn ($record): bool => $record->force_purge_requested_at !== null
+                    && $record->status === PolydockAppInstanceStatus::REMOVED
+                    && ! $record->trashed())
+                ->requiresConfirmation()
+                ->action(function ($record): void {
+                    $record->force_purge_requested_at = null;
+                    $record->save();
+
+                    Notification::make()
+                        ->title('Force Purge Cancelled')
+                        ->success()
+                        ->body('The instance will fall back to the standard grace period.')
+                        ->send();
                 }),
         ];
     }
