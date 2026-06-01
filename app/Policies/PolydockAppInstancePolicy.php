@@ -13,11 +13,8 @@ class PolydockAppInstancePolicy
 {
     public function viewAny(User $user): bool
     {
-        if ($user->hasRole('service-account')) {
-            return true;
-        }
-
-        return $user->can('view_any_polydock_app_instance') || $user->groups()->exists();
+        // Any authenticated user may list instances; the controller scopes results to their own data.
+        return true;
     }
 
     public function view(User $user, PolydockAppInstance $instance): bool

@@ -12,11 +12,8 @@ class UserGroupPolicy
 {
     public function viewAny(User $user): bool
     {
-        if ($user->hasRole('service-account')) {
-            return true;
-        }
-
-        return $user->can('view_any_user_group') || $user->groups()->exists();
+        // Any authenticated user may list groups; the controller scopes results to their own data.
+        return true;
     }
 
     public function view(User $user, UserGroup $group): bool
