@@ -265,8 +265,12 @@ class ProcessPolydockAppInstanceStatusChange
                 }
                 break;
             case PolydockAppInstanceStatus::REMOVED:
-                // If force-purge was requested, immediately transition to PENDING_PURGE.
-                if ($event->appInstance->force_purge_requested_at !== null) {
+                // If force-purge was requested and this is not a retry coming back
+                // from the purge job (which sets purge_last_attempted_at), immediately
+                // transition to PENDING_PURGE. Retries are handled by the scheduled
+                // DispatchProjectPurgeJobsCommand which enforces backoff.
+                if ($event->appInstance->force_purge_requested_at !== null
+                    && $event->appInstance->purge_last_attempted_at === null) {
                     Log::info('Force purge requested, immediately dispatching PENDING_PURGE', [
                         'app_instance_id' => $event->appInstance->id,
                     ]);
