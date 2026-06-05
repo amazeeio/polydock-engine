@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages\Tenancy;
 
+use App\Enums\UserGroupRoleEnum;
 use App\Models\UserGroup;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -30,7 +31,9 @@ class RegisterUserGroup extends RegisterTenant
     {
         $userGroup = UserGroup::create($data);
 
-        $userGroup->members()->attach(auth()->user());
+        $userGroup->users()->syncWithoutDetaching([
+            auth()->id() => ['role' => UserGroupRoleEnum::OWNER->value],
+        ]);
 
         return $userGroup;
     }

@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
@@ -25,6 +26,24 @@ class UserResource extends Resource
     protected static ?string $navigationGroup = 'Users';
 
     protected static ?int $navigationSort = 1;
+
+    #[\Override]
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        /** @var User|null $user */
+        $user = auth()->user();
+        if ($user === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->hasRole('super_admin') || $user->can('view_any_user')) {
+            return $query;
+        }
+
+        return $query->whereKey($user->getKey());
+    }
 
     #[\Override]
     public static function form(Form $form): Form

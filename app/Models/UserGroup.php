@@ -47,6 +47,14 @@ class UserGroup extends Model
     }
 
     /**
+     * Get the users who are admins of the group.
+     */
+    public function admins(): BelongsToMany
+    {
+        return $this->users()->wherePivot('role', UserGroupRoleEnum::ADMIN->value);
+    }
+
+    /**
      * Get the users who are viewers of the group.
      */
     public function viewers(): BelongsToMany

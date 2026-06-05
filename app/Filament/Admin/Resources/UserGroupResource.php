@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\UserGroupResource\Pages;
 use App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
+use App\Models\User;
 use App\Models\UserGroup;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
@@ -15,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserGroupResource extends Resource
 {
@@ -37,6 +39,24 @@ class UserGroupResource extends Resource
                     ->required()
                     ->maxLength(255),
             ]);
+    }
+
+    #[\Override]
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        /** @var User|null $user */
+        $user = auth()->user();
+        if ($user === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->hasRole('super_admin') || $user->can('view_any_user_group')) {
+            return $query;
+        }
+
+        return $query->whereIn('id', $user->groups()->select('user_groups.id'));
     }
 
     #[\Override]
