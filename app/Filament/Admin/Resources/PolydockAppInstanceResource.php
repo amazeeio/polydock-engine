@@ -10,6 +10,7 @@ use App\Models\User;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
 use App\Services\PolydockAppClassDiscovery;
+use App\Support\SensitiveDataRedactor;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Grid;
@@ -339,8 +340,8 @@ class PolydockAppInstanceResource extends Resource
                                     $value = $newValue;
                                 }
 
-                                if ($record->shouldFilterKey($key, $sensitiveKeys)) {
-                                    $value = 'REDACTED';
+                                if (SensitiveDataRedactor::shouldRedactKey((string) $key, $sensitiveKeys)) {
+                                    $value = SensitiveDataRedactor::REDACTED_VALUE;
                                 }
 
                                 if ($value === null) {
