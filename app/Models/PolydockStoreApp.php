@@ -14,6 +14,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property int $id
@@ -88,6 +90,7 @@ class PolydockStoreApp extends Model
 {
     use HasFactory;
     use HasPolydockVariables;
+    use LogsActivity;
 
     protected $fillable = [
         'polydock_store_id',
@@ -148,6 +151,24 @@ class PolydockStoreApp extends Model
         'send_one_day_left_email' => 'boolean',
         'send_trial_complete_email' => 'boolean',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'name',
+                'description',
+                'status',
+                'polydock_app_class',
+                'lagoon_deploy_git',
+                'lagoon_deploy_branch',
+                'available_for_trials',
+                'target_unallocated_app_instances',
+                'trial_duration_days',
+            ])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     /**
      * The accessors to append to the model's array form.

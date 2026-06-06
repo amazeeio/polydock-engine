@@ -72,6 +72,17 @@ class ListApiTokens extends ListRecords
                         expiresAt: $expiresAt,
                     );
 
+                    activity('audit')
+                        ->performedOn($user)
+                        ->causedBy(auth()->user())
+                        ->withProperties([
+                            'action' => 'filament.create_token',
+                            'token_owner_email' => $user->email,
+                            'abilities' => array_values($data['abilities']),
+                            'expires_at' => $expiresAt?->toDateTimeString(),
+                        ])
+                        ->log('API token created (admin UI)');
+
                     Notification::make()
                         ->title('API token created')
                         ->body("Copy this token now. It will not be shown again:\n{$token->plainTextToken}")

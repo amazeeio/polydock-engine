@@ -6,6 +6,7 @@ namespace App\Providers;
 
 use App\Support\SensitiveDataRedactor;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\PersonalAccessToken;
 use Spatie\Activitylog\Models\Activity;
 
 class ActivityLogServiceProvider extends ServiceProvider
@@ -56,7 +57,7 @@ class ActivityLogServiceProvider extends ServiceProvider
         $user = $activity->causer;
         if ($user !== null && method_exists($user, 'currentAccessToken')) {
             $token = $user->currentAccessToken();
-            if ($token instanceof \Laravel\Sanctum\PersonalAccessToken) {
+            if ($token instanceof PersonalAccessToken) {
                 $properties['token_id'] = $token->id;
                 $properties['token_name'] = $token->name;
             }
