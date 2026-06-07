@@ -6,6 +6,9 @@ on:
   push:
     branches: [ main, dev, staging, edition-atlanta ]
 
+permissions:
+  contents: read
+
 jobs:
   tests:
     runs-on: ubuntu-latest
