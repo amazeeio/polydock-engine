@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Filament\Admin\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 use App\Filament\Admin\Resources\PolydockAppInstanceResource\RelationManagers;
 use App\Filament\Exports\UserRemoteRegistrationExporter;
@@ -437,6 +438,7 @@ class PolydockAppInstanceResource extends Resource
     {
         return [
             RelationManagers\LogsRelationManager::class,
+            ActivitiesRelationManager::class,
         ];
     }
 

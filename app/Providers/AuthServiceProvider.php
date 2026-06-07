@@ -8,6 +8,7 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\User;
 use App\Models\UserGroup;
+use App\Policies\ActivityPolicy;
 use App\Policies\PolydockAppInstancePolicy;
 use App\Policies\PolydockStorePolicy;
 use App\Policies\RolePolicy;
@@ -15,6 +16,7 @@ use App\Policies\UserGroupPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 
 class AuthServiceProvider extends ServiceProvider
@@ -25,6 +27,7 @@ class AuthServiceProvider extends ServiceProvider
         PolydockAppInstance::class => PolydockAppInstancePolicy::class,
         User::class => UserPolicy::class,
         Role::class => RolePolicy::class,
+        Activity::class => ActivityPolicy::class,
     ];
 
     public function boot(): void
