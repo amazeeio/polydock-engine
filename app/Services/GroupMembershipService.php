@@ -62,6 +62,8 @@ class GroupMembershipService
 
     /**
      * Remove a user from a group, logging the action.
+     *
+     * No-ops if the user is not a member of the group.
      */
     public function removeUserFromGroup(User $user, UserGroup $group, ?User $actor = null): void
     {
@@ -69,8 +71,12 @@ class GroupMembershipService
             ->wherePivot('user_id', $user->id)
             ->first();
 
-        /** @var string|null $previousRole */
-        $previousRole = $existingUser?->pivot?->getAttribute('role');
+        if ($existingUser === null) {
+            return;
+        }
+
+        /** @var string $previousRole */
+        $previousRole = $existingUser->pivot->getAttribute('role');
 
         $group->users()->detach($user->id);
 
@@ -88,6 +94,8 @@ class GroupMembershipService
 
     /**
      * Change a user's role within a group, logging the action.
+     *
+     * No-ops if the user is not a member of the group or already has the target role.
      */
     public function changeUserRole(User $user, UserGroup $group, UserGroupRoleEnum $newRole, ?User $actor = null): void
     {
@@ -95,8 +103,16 @@ class GroupMembershipService
             ->wherePivot('user_id', $user->id)
             ->first();
 
-        /** @var string|null $previousRole */
-        $previousRole = $existingUser?->pivot?->getAttribute('role');
+        if ($existingUser === null) {
+            return;
+        }
+
+        /** @var string $previousRole */
+        $previousRole = $existingUser->pivot->getAttribute('role');
+
+        if ($previousRole === $newRole->value) {
+            return;
+        }
 
         $group->users()->updateExistingPivot($user->id, ['role' => $newRole->value]);
 

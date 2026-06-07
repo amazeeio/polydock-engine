@@ -77,7 +77,7 @@ class ListApiTokens extends ListRecords
                         ->causedBy(auth()->user())
                         ->withProperties([
                             'action' => 'filament.create_token',
-                            'token_owner_email' => $user->email,
+                            'owner_email' => $user->email,
                             'abilities' => array_values($data['abilities']),
                             'expires_at' => $expiresAt?->toDateTimeString(),
                         ])

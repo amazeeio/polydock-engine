@@ -95,4 +95,45 @@ class GroupMembershipAuditTest extends TestCase
         $pivot = $group->users()->whereKey($user->id)->first()->pivot;
         $this->assertEquals(UserGroupRoleEnum::ADMIN->value, $pivot->getAttribute('role'));
     }
+
+    public function test_remove_non_member_does_not_log_activity(): void
+    {
+        $user = User::factory()->create();
+        $group = UserGroup::create(['name' => 'Non-member Remove Group']);
+        $actor = User::factory()->create();
+
+        Activity::query()->delete();
+
+        $this->service->removeUserFromGroup($user, $group, $actor);
+
+        $this->assertCount(0, Activity::all());
+    }
+
+    public function test_change_role_for_non_member_does_not_log_activity(): void
+    {
+        $user = User::factory()->create();
+        $group = UserGroup::create(['name' => 'Non-member Role Group']);
+        $actor = User::factory()->create();
+
+        Activity::query()->delete();
+
+        $this->service->changeUserRole($user, $group, UserGroupRoleEnum::ADMIN, $actor);
+
+        $this->assertCount(0, Activity::all());
+    }
+
+    public function test_change_role_to_same_role_does_not_log_activity(): void
+    {
+        $user = User::factory()->create();
+        $group = UserGroup::create(['name' => 'Same Role Group']);
+        $actor = User::factory()->create();
+
+        $group->users()->attach($user->id, ['role' => UserGroupRoleEnum::MEMBER->value]);
+
+        Activity::query()->delete();
+
+        $this->service->changeUserRole($user, $group, UserGroupRoleEnum::MEMBER, $actor);
+
+        $this->assertCount(0, Activity::all());
+    }
 }

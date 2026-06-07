@@ -226,14 +226,16 @@ class UsersRelationManager extends RelationManager
                         $group = $livewire->getOwnerRecord();
 
                         activity('audit')
-                            ->performedOn($group)
+                            ->performedOn($record)
                             ->causedBy(auth()->user())
                             ->withProperties([
-                                'action' => 'group.member_deleted',
+                                'action' => 'user.account_deleted',
                                 'user_id' => $record->id,
                                 'user_email' => $record->email,
+                                'group_id' => $group->id,
+                                'group_name' => $group->name,
                             ])
-                            ->log("User '{$record->email}' deleted from group");
+                            ->log("User account '{$record->email}' deleted");
                     }),
             ])
             ->bulkActions([
