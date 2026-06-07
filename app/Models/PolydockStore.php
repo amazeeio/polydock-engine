@@ -8,11 +8,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class PolydockStore extends Model
 {
     use HasFactory;
     use HasPolydockVariables;
+    use LogsActivity;
 
     protected $fillable = [
         'name',
@@ -29,6 +32,14 @@ class PolydockStore extends Model
         'status' => PolydockStoreStatusEnum::class,
         'listed_in_marketplace' => 'boolean',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'status', 'listed_in_marketplace'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     public function getLagoonDeployPrivateKeyAttribute(): ?string
     {

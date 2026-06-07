@@ -121,6 +121,15 @@ class AuthenticatedApiController extends Controller
             $group->id => ['role' => UserGroupRoleEnum::OWNER->value],
         ]);
 
+        activity('audit')
+            ->performedOn($group)
+            ->causedBy($actor)
+            ->withProperties([
+                'action' => 'api.group.create',
+                'owner_email' => $owner->email,
+            ])
+            ->log('Group created via API');
+
         return response()->json([
             'message' => 'Group created',
             'data' => [
@@ -470,6 +479,18 @@ class AuthenticatedApiController extends Controller
             }
         }
 
+        activity('audit')
+            ->performedOn($instance)
+            ->causedBy($actor)
+            ->withProperties([
+                'action' => 'api.instance.create',
+                'on_behalf_of' => $email,
+                'store_app' => $storeApp->name,
+                'group' => $primaryGroup->slug,
+                'instance_uuid' => $instance->uuid,
+            ])
+            ->log('Instance provisioned via API');
+
         return response()->json([
             'message' => 'Instance provisioned',
             'data' => [
@@ -528,8 +549,24 @@ class AuthenticatedApiController extends Controller
 
         $this->authorize('assignToGroup', [$instance, $group]);
 
+        $oldGroupId = $instance->user_group_id;
         $instance->user_group_id = $group->id;
         $instance->save();
+
+        $oldGroup = UserGroup::find($oldGroupId);
+
+        activity('audit')
+            ->performedOn($instance)
+            ->causedBy($request->user())
+            ->withProperties([
+                'action' => 'api.instance.reassign_group',
+                'instance_uuid' => $instance->uuid,
+                'old_group_id' => $oldGroupId,
+                'old_group_slug' => $oldGroup?->slug,
+                'new_group_id' => $group->id,
+                'new_group_slug' => $group->slug,
+            ])
+            ->log('Instance reassigned to group via API');
 
         return response()->json([
             'message' => 'Instance assigned to group',
@@ -635,6 +672,16 @@ class AuthenticatedApiController extends Controller
         // Initiate the deletion process by setting the status
         $instance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, 'Deletion requested via API');
         $instance->save();
+
+        activity('audit')
+            ->performedOn($instance)
+            ->causedBy(request()->user())
+            ->withProperties([
+                'action' => 'api.instance.delete',
+                'instance_uuid' => $instance->uuid,
+                'instance_name' => $instance->name,
+            ])
+            ->log('Instance deletion initiated via API');
 
         return response()->json([
             'message' => 'Instance removal initiated',
