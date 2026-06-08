@@ -57,6 +57,15 @@ class ViewPolydockStoreApp extends ViewRecord
                         'Manual pre-warm downscale requested',
                     );
 
+                    activity('audit')
+                        ->performedOn($this->record)
+                        ->causedBy(auth()->user())
+                        ->withProperties([
+                            'action' => 'filament.downscale_unallocated',
+                            'count' => $removedCount,
+                        ])
+                        ->log('Downscaled pre-warm pool (admin UI)');
+
                     Notification::make()
                         ->title('Pre-warm Downscale Queued')
                         ->success()
@@ -84,6 +93,15 @@ class ViewPolydockStoreApp extends ViewRecord
 
                     EnsureUnallocatedAppInstancesJob::dispatch()->onQueue('unallocated-instance-creation');
 
+                    activity('audit')
+                        ->performedOn($this->record)
+                        ->causedBy(auth()->user())
+                        ->withProperties([
+                            'action' => 'filament.refresh_stale_unallocated',
+                            'queued_count' => $queuedCount,
+                        ])
+                        ->log('Refreshed stale pre-warm instances (admin UI)');
+
                     Notification::make()
                         ->title('Pre-warm Refresh Queued')
                         ->success()
@@ -109,6 +127,15 @@ class ViewPolydockStoreApp extends ViewRecord
                     );
 
                     EnsureUnallocatedAppInstancesJob::dispatch()->onQueue('unallocated-instance-creation');
+
+                    activity('audit')
+                        ->performedOn($this->record)
+                        ->causedBy(auth()->user())
+                        ->withProperties([
+                            'action' => 'filament.refresh_all_unallocated',
+                            'queued_count' => $queuedCount,
+                        ])
+                        ->log('Refreshed all pre-warm instances (admin UI)');
 
                     Notification::make()
                         ->title('Full Pre-warm Refresh Queued')

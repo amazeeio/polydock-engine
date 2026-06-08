@@ -21,6 +21,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 /**
  * @property int $id
@@ -59,6 +62,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
     use HasPolydockVariables;
     use HasWebhookSensitiveData;
+    use LogsActivity;
     use SoftDeletes;
 
     /**
@@ -153,6 +157,32 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         '/^.*ssh[_-]?key.*$/i',    // Any variation of ssh key
         '/^.*private[_-]?key.*$/i', // Any variation of private key
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'name',
+                'user_group_id',
+                'is_trial',
+                'trial_ends_at',
+                'app_url',
+                'removed_at',
+                'force_purge_requested_at',
+            ])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
+
+    public function tapActivity(Activity $activity, string $eventName): void
+    {
+        if ($eventName === 'created') {
+            $activity->properties = $activity->properties->merge([
+                'instance_uuid' => $this->uuid,
+                'store_app' => $this->storeApp?->name,
+            ]);
+        }
+    }
 
     public static array $pendingStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_CREATE,

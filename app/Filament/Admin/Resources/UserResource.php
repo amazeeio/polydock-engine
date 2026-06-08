@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Filament\Admin\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Admin\Resources\UserResource\Pages;
 use App\Filament\Admin\Resources\UserResource\RelationManagers;
 use App\Models\User;
@@ -125,6 +126,7 @@ class UserResource extends Resource
     {
         return [
             RelationManagers\GroupsRelationManager::class,
+            ActivitiesRelationManager::class,
         ];
     }
 

@@ -7,6 +7,8 @@ namespace App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 use App\Enums\UserGroupRoleEnum;
 use App\Filament\Admin\Resources\UserResource;
 use App\Models\User;
+use App\Models\UserGroup;
+use App\Services\GroupMembershipService;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -169,14 +171,72 @@ class UsersRelationManager extends RelationManager
                         }
 
                         if ($userId) {
-                            $livewire->getRelationship()->attach($userId, ['role' => $data['role']]);
+                            $user = $user ?? User::findOrFail($userId);
+                            /** @var UserGroup $group */
+                            $group = $livewire->getOwnerRecord();
+                            $role = $data['role'] instanceof UserGroupRoleEnum
+                                ? $data['role']
+                                : UserGroupRoleEnum::from($data['role']);
+                            app(GroupMembershipService::class)->addUserToGroup($user, $group, $role);
                         }
                     }),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DetachAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->before(function ($record, RelationManager $livewire, array $data): void {
+                        /** @var UserGroup $group */
+                        $group = $livewire->getOwnerRecord();
+                        $previousRole = $record->pivot->getAttribute('role');
+                        $newRole = $data['role'] instanceof UserGroupRoleEnum
+                            ? $data['role']->value
+                            : $data['role'];
+
+                        activity('audit')
+                            ->performedOn($group)
+                            ->causedBy(auth()->user())
+                            ->withProperties([
+                                'action' => 'group.member_role_changed',
+                                'user_id' => $record->id,
+                                'user_email' => $record->email,
+                                'previous_role' => $previousRole,
+                                'new_role' => $newRole,
+                            ])
+                            ->log("User '{$record->email}' role changed from '{$previousRole}' to '{$newRole}'");
+                    }),
+                Tables\Actions\DetachAction::make()
+                    ->before(function ($record, RelationManager $livewire): void {
+                        /** @var UserGroup $group */
+                        $group = $livewire->getOwnerRecord();
+                        $previousRole = $record->pivot->getAttribute('role');
+
+                        activity('audit')
+                            ->performedOn($group)
+                            ->causedBy(auth()->user())
+                            ->withProperties([
+                                'action' => 'group.member_removed',
+                                'user_id' => $record->id,
+                                'user_email' => $record->email,
+                                'previous_role' => $previousRole,
+                            ])
+                            ->log("User '{$record->email}' removed from group");
+                    }),
+                Tables\Actions\DeleteAction::make()
+                    ->before(function ($record, RelationManager $livewire): void {
+                        /** @var UserGroup $group */
+                        $group = $livewire->getOwnerRecord();
+
+                        activity('audit')
+                            ->performedOn($record)
+                            ->causedBy(auth()->user())
+                            ->withProperties([
+                                'action' => 'user.account_deleted',
+                                'user_id' => $record->id,
+                                'user_email' => $record->email,
+                                'group_id' => $group->id,
+                                'group_name' => $group->name,
+                            ])
+                            ->log("User account '{$record->email}' deleted");
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

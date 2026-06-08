@@ -58,3 +58,9 @@ Schedule::command('polydock:mark-stuck-instances-failed --threshold=30')
 Schedule::command('polydock:dispatch-project-purge')
     ->everyTenMinutes()
     ->withoutOverlapping();
+
+// ///// Audit Log Retention ///////
+Schedule::command('activitylog:clean')
+    ->daily()
+    ->withoutOverlapping()
+    ->onOneServer();
