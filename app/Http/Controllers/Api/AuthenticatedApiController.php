@@ -675,7 +675,7 @@ class AuthenticatedApiController extends Controller
 
         activity('audit')
             ->performedOn($instance)
-            ->causedBy(request()->user())
+            ->causedBy($request->user())
             ->withProperties([
                 'action' => 'api.instance.delete',
                 'instance_uuid' => $instance->uuid,
