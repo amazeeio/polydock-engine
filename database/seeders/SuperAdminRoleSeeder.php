@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 class SuperAdminRoleSeeder extends Seeder
 {
@@ -14,7 +14,14 @@ class SuperAdminRoleSeeder extends Seeder
 
         $accessAdminPanel = Permission::findOrCreate('access_admin_panel', $guard);
 
+        /** @var Role $superAdmin */
         $superAdmin = Role::findOrCreate('super_admin', $guard);
+
+        if ($superAdmin->label !== 'Super Admin') {
+            $superAdmin->label = 'Super Admin';
+            $superAdmin->saveQuietly();
+        }
+
         $superAdmin->givePermissionTo($accessAdminPanel);
     }
 }

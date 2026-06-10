@@ -36,6 +36,8 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
+        $fred->assignRole('super_admin');
+
         $fredsTeam = UserGroup::create([
             'name' => 'Fracme Inc.',
         ]);
