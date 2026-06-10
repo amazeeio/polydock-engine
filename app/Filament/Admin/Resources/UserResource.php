@@ -73,6 +73,13 @@ class UserResource extends Resource
                     ->label(fn (string $operation): string => $operation === 'create'
                         ? 'Password'
                         : 'New Password (leave blank to keep current)'),
+
+                Forms\Components\CheckboxList::make('roles')
+                    ->relationship('roles', 'name')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
+                    ->label('Roles')
+                    ->helperText('Assign platform-level roles to this user.')
+                    ->columns(2),
             ]);
     }
 
@@ -95,6 +102,12 @@ class UserResource extends Resource
                     ->counts('groups')
                     ->label('Groups')
                     ->sortable(),
+                TextColumn::make('roles.name')
+                    ->label('Roles')
+                    ->badge()
+                    ->color('success')
+                    ->separator(',')
+                    ->formatStateUsing(fn ($state, $record) => $record->roles->firstWhere('name', $state)?->display_name ?? $state),
                 TextColumn::make('created_at')->dateTime()
                     ->sortable(),
             ])
@@ -167,6 +180,11 @@ class UserResource extends Resource
                                     ->icon('heroicon-m-calendar')
                                     ->iconColor('gray'),
                             ]),
+                        TextEntry::make('roles.name')
+                            ->label('Roles')
+                            ->badge()
+                            ->color('success')
+                            ->separator(','),
                     ])
                     ->columnSpan(2),
 
