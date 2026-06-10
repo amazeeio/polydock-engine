@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Filament\Admin\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Admin\Resources\UserResource\Pages;
 use App\Filament\Admin\Resources\UserResource\RelationManagers;
 use App\Models\User;
@@ -15,6 +16,7 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
@@ -25,6 +27,24 @@ class UserResource extends Resource
     protected static ?string $navigationGroup = 'Users';
 
     protected static ?int $navigationSort = 1;
+
+    #[\Override]
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+
+        /** @var User|null $user */
+        $user = auth()->user();
+        if ($user === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->hasRole('super_admin') || $user->can('view_any_user')) {
+            return $query;
+        }
+
+        return $query->whereKey($user->getKey());
+    }
 
     #[\Override]
     public static function form(Form $form): Form
@@ -53,6 +73,13 @@ class UserResource extends Resource
                     ->label(fn (string $operation): string => $operation === 'create'
                         ? 'Password'
                         : 'New Password (leave blank to keep current)'),
+
+                Forms\Components\CheckboxList::make('roles')
+                    ->relationship('roles', 'name')
+                    ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
+                    ->label('Roles')
+                    ->helperText('Assign platform-level roles to this user.')
+                    ->columns(2),
             ]);
     }
 
@@ -75,6 +102,12 @@ class UserResource extends Resource
                     ->counts('groups')
                     ->label('Groups')
                     ->sortable(),
+                TextColumn::make('roles.name')
+                    ->label('Roles')
+                    ->badge()
+                    ->color('success')
+                    ->separator(',')
+                    ->formatStateUsing(fn ($state, $record) => $record->roles->firstWhere('name', $state)?->display_name ?? $state),
                 TextColumn::make('created_at')->dateTime()
                     ->sortable(),
             ])
@@ -106,6 +139,7 @@ class UserResource extends Resource
     {
         return [
             RelationManagers\GroupsRelationManager::class,
+            ActivitiesRelationManager::class,
         ];
     }
 
@@ -146,6 +180,11 @@ class UserResource extends Resource
                                     ->icon('heroicon-m-calendar')
                                     ->iconColor('gray'),
                             ]),
+                        TextEntry::make('roles.name')
+                            ->label('Roles')
+                            ->badge()
+                            ->color('success')
+                            ->separator(','),
                     ])
                     ->columnSpan(2),
 

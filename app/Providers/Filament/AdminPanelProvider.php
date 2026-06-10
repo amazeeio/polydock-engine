@@ -54,6 +54,7 @@ class AdminPanelProvider extends PanelProvider
             ->navigationGroups([
                 'Users',
                 'Apps',
+                'System',
             ])
             ->topNavigation()
             ->middleware([

@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages;
 
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource;
 use App\Models\UserRemoteRegistration;
+use App\Support\SensitiveDataRedactor;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
@@ -105,8 +106,8 @@ class ViewUserRemoteRegistration extends ViewRecord
 
         $renderedArray = [];
         foreach ($safeData as $key => $value) {
-            if ($record->shouldFilterKey($key, $sensitiveKeys)) {
-                $value = 'REDACTED';
+            if (SensitiveDataRedactor::shouldRedactKey((string) $key, $sensitiveKeys)) {
+                $value = SensitiveDataRedactor::REDACTED_VALUE;
             }
 
             if ($value === null) {

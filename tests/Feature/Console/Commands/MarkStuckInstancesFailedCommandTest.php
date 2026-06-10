@@ -8,6 +8,7 @@ use App\Models\PolydockStoreApp;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class MarkStuckInstancesFailedCommandTest extends TestCase
@@ -122,9 +123,7 @@ class MarkStuckInstancesFailedCommandTest extends TestCase
         $this->assertEquals(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, $instance->status);
     }
 
-    /**
-     * @dataProvider statusTransitionProvider
-     */
+    #[DataProvider('statusTransitionProvider')]
     public function test_correct_status_transitions(
         PolydockAppInstanceStatus $from,
         PolydockAppInstanceStatus $expectedTo,

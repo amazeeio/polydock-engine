@@ -42,6 +42,15 @@ class AuthenticatedApiController extends Controller
             'email' => 'required|email',
         ]);
 
+        /** @var User $actor */
+        $actor = $request->user();
+
+        if (! $actor->hasRole('service-account') && $request->input('email') !== $actor->email) {
+            abort(403, 'You may only request your own groups.');
+        }
+
+        $this->authorize('viewAny', UserGroup::class);
+
         $user = User::where('email', $request->input('email'))->first();
 
         if (! $user) {
@@ -91,16 +100,35 @@ class AuthenticatedApiController extends Controller
             'owner_email' => 'nullable|email|exists:users,email',
         ]);
 
+        /** @var User $actor */
+        $actor = $request->user();
+
+        $this->authorize('create', UserGroup::class);
+
+        if (! empty($validated['owner_email']) && ! $actor->hasRole('service-account') && $validated['owner_email'] !== $actor->email) {
+            abort(403, 'You may only assign yourself as owner.');
+        }
+
         $group = UserGroup::create([
             'name' => $validated['name'],
         ]);
 
-        if (! empty($validated['owner_email'])) {
-            $owner = User::where('email', $validated['owner_email'])->firstOrFail();
-            $owner->groups()->syncWithoutDetaching([
-                $group->id => ['role' => UserGroupRoleEnum::OWNER->value],
-            ]);
-        }
+        $owner = ! empty($validated['owner_email'])
+            ? User::where('email', $validated['owner_email'])->firstOrFail()
+            : $actor;
+
+        $owner->groups()->syncWithoutDetaching([
+            $group->id => ['role' => UserGroupRoleEnum::OWNER->value],
+        ]);
+
+        activity('audit')
+            ->performedOn($group)
+            ->causedBy($actor)
+            ->withProperties([
+                'action' => 'api.group.create',
+                'owner_email' => $owner->email,
+            ])
+            ->log('Group created via API');
 
         return response()->json([
             'message' => 'Group created',
@@ -218,11 +246,17 @@ class AuthenticatedApiController extends Controller
             $targetGroup = UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
         }
 
-        /** @var User $tokenUser */
-        $tokenUser = $request->user();
+        /** @var User $actor */
+        $actor = $request->user();
 
-        if ($targetGroup !== null && ! $tokenUser->hasRole('service-account') && ! $tokenUser->groups()->whereKey($targetGroup->id)->exists()) {
-            abort(403, 'You do not have access to the selected group.');
+        $this->authorize('viewAny', PolydockAppInstance::class);
+
+        if ($request->filled('email') && ! $actor->hasRole('service-account') && $validated['email'] !== $actor->email) {
+            abort(403, 'You may only request your own instances.');
+        }
+
+        if ($targetGroup !== null) {
+            $this->authorize('view', $targetGroup);
         }
 
         $instanceQuery = PolydockAppInstance::query()->with(['storeApp', 'userGroup']);
@@ -364,6 +398,13 @@ class AuthenticatedApiController extends Controller
 
         $email = $request->input('email');
 
+        /** @var User $actor */
+        $actor = $request->user();
+
+        if (! $actor->hasRole('service-account') && $email !== $actor->email) {
+            abort(403, 'You may only provision instances for yourself.');
+        }
+
         // @todo Track migration strategy for when a user's static email changes in the future, transitioning to UUIDs.
         $user = User::firstOrCreate(
             ['email' => $email],
@@ -395,6 +436,8 @@ class AuthenticatedApiController extends Controller
         }
 
         $primaryGroup = $this->resolveTargetGroup($request, $user);
+
+        $this->authorize('createForGroup', [PolydockAppInstance::class, $primaryGroup]);
 
         $storeApp = PolydockStoreApp::where('uuid', $request->input('storeAppId'))->firstOrFail();
 
@@ -435,6 +478,18 @@ class AuthenticatedApiController extends Controller
                 $instance->storeKeyValue((string) $key, $value === null ? '' : $value);
             }
         }
+
+        activity('audit')
+            ->performedOn($instance)
+            ->causedBy($actor)
+            ->withProperties([
+                'action' => 'api.instance.create',
+                'on_behalf_of' => $email,
+                'store_app' => $storeApp->name,
+                'group' => $primaryGroup->slug,
+                'instance_uuid' => $instance->uuid,
+            ])
+            ->log('Instance provisioned via API');
 
         return response()->json([
             'message' => 'Instance provisioned',
@@ -492,15 +547,26 @@ class AuthenticatedApiController extends Controller
             ? UserGroup::findOrFail($validated['group_id'])
             : UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
 
-        /** @var User $user */
-        $user = $request->user();
+        $this->authorize('assignToGroup', [$instance, $group]);
 
-        if (! $user->hasRole('service-account') && ! $user->groups()->whereKey($group->id)->exists()) {
-            abort(403, 'You do not have access to the selected group.');
-        }
-
+        $oldGroupId = $instance->user_group_id;
         $instance->user_group_id = $group->id;
         $instance->save();
+
+        $oldGroup = UserGroup::find($oldGroupId);
+
+        activity('audit')
+            ->performedOn($instance)
+            ->causedBy($request->user())
+            ->withProperties([
+                'action' => 'api.instance.reassign_group',
+                'instance_uuid' => $instance->uuid,
+                'old_group_id' => $oldGroupId,
+                'old_group_slug' => $oldGroup?->slug,
+                'new_group_id' => $group->id,
+                'new_group_slug' => $group->slug,
+            ])
+            ->log('Instance reassigned to group via API');
 
         return response()->json([
             'message' => 'Instance assigned to group',
@@ -547,6 +613,8 @@ class AuthenticatedApiController extends Controller
     public function getInstanceStatus(string $uuid): JsonResponse
     {
         $instance = PolydockAppInstance::where('uuid', $uuid)->with('storeApp')->firstOrFail();
+
+        $this->authorize('view', $instance);
 
         $data = [
             'uuid' => $instance->uuid,
@@ -595,13 +663,25 @@ class AuthenticatedApiController extends Controller
      *  }
      * }
      */
-    public function deleteInstance(string $uuid): JsonResponse
+    public function deleteInstance(Request $request, string $uuid): JsonResponse
     {
         $instance = PolydockAppInstance::where('uuid', $uuid)->firstOrFail();
+
+        $this->authorize('delete', $instance);
 
         // Initiate the deletion process by setting the status
         $instance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, 'Deletion requested via API');
         $instance->save();
+
+        activity('audit')
+            ->performedOn($instance)
+            ->causedBy($request->user())
+            ->withProperties([
+                'action' => 'api.instance.delete',
+                'instance_uuid' => $instance->uuid,
+                'instance_name' => $instance->name,
+            ])
+            ->log('Instance deletion initiated via API');
 
         return response()->json([
             'message' => 'Instance removal initiated',

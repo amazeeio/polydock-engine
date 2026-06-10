@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
 
 class AuthenticatedApiTest extends TestCase
@@ -191,6 +192,10 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_create_instance_provisions_instance_and_creates_user(): void
     {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
         Sanctum::actingAs($this->user, ['instances.write']);
 
         $newEmail = 'new.user@example.com';
@@ -240,6 +245,7 @@ class AuthenticatedApiTest extends TestCase
         Sanctum::actingAs($this->user, ['instances.write']);
 
         $group = UserGroup::create(['name' => 'Shared Workspace']);
+        $this->user->groups()->attach($group->id, ['role' => UserGroupRoleEnum::MEMBER->value]);
 
         $response = $this->postJson('/api/instance', [
             'email' => $this->user->email,
@@ -276,6 +282,10 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_create_instance_provisions_instance_and_creates_user_with_names(): void
     {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
         Sanctum::actingAs($this->user, ['instances.write']);
 
         $newEmail = 'named.user@example.com';
@@ -304,6 +314,10 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_create_instance_updates_placeholder_names_for_existing_user(): void
     {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
         Sanctum::actingAs($this->user, ['instances.write']);
 
         $existingUser = User::factory()->create([
@@ -335,6 +349,10 @@ class AuthenticatedApiTest extends TestCase
 
     public function test_create_instance_does_not_overwrite_real_names_for_existing_user(): void
     {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
         Sanctum::actingAs($this->user, ['instances.write']);
 
         $originalFirstName = 'John';
@@ -370,8 +388,12 @@ class AuthenticatedApiTest extends TestCase
     {
         Sanctum::actingAs($this->user, ['instances.read']);
 
+        $group = UserGroup::create(['name' => 'Status Group']);
+        $this->user->groups()->attach($group->id, ['role' => UserGroupRoleEnum::MEMBER->value]);
+
         $instance = PolydockAppInstance::create([
             'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $group->id,
         ]);
 
         $instance->storeKeyValue('lagoon-project-name', 'test-lagoon-name');
@@ -399,8 +421,12 @@ class AuthenticatedApiTest extends TestCase
     {
         Sanctum::actingAs($this->user, ['instances.write']);
 
+        $group = UserGroup::create(['name' => 'Delete Group']);
+        $this->user->groups()->attach($group->id, ['role' => UserGroupRoleEnum::MEMBER->value]);
+
         $instance = PolydockAppInstance::create([
             'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $group->id,
         ]);
 
         $instance->setStatus(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED);
@@ -656,7 +682,7 @@ class AuthenticatedApiTest extends TestCase
     public function test_get_instances_allows_service_account_when_not_member_of_group(): void
     {
         $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
-        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
         $this->user->assignRole($role);
 
         Sanctum::actingAs($this->user, ['instances.read']);
@@ -684,6 +710,7 @@ class AuthenticatedApiTest extends TestCase
         $targetGroup = UserGroup::create(['name' => 'Target Migration Group']);
 
         $this->user->groups()->syncWithoutDetaching([
+            $originalGroup->id => ['role' => UserGroupRoleEnum::ADMIN->value],
             $targetGroup->id => ['role' => UserGroupRoleEnum::MEMBER->value],
         ]);
 
@@ -731,7 +758,7 @@ class AuthenticatedApiTest extends TestCase
     public function test_assign_instance_to_group_allows_service_account_when_not_member(): void
     {
         $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
-        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
         $this->user->assignRole($role);
 
         Sanctum::actingAs($this->user, ['instances.write']);
@@ -753,5 +780,31 @@ class AuthenticatedApiTest extends TestCase
         $response->assertOk();
         $instance->refresh();
         $this->assertEquals($targetGroup->id, $instance->user_group_id);
+    }
+
+    public function test_delete_instance_allows_service_account_when_not_member_of_group(): void
+    {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $inaccessibleGroup = UserGroup::create(['name' => 'Service Account Delete Group']);
+
+        $instance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $inaccessibleGroup->id,
+            'name' => 'service-account-delete-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $response = $this->deleteJson("/api/instance/{$instance->uuid}");
+
+        $response->assertOk();
+        $this->assertEquals('Instance removal initiated', $response->json('message'));
+
+        $instance->refresh();
+        $this->assertEquals(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, $instance->status);
     }
 }

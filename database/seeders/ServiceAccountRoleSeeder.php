@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
 
 class ServiceAccountRoleSeeder extends Seeder
 {
@@ -12,6 +12,12 @@ class ServiceAccountRoleSeeder extends Seeder
      */
     public function run(): void
     {
-        Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        /** @var Role $role */
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+
+        if ($role->label !== 'Service Account') {
+            $role->label = 'Service Account';
+            $role->saveQuietly();
+        }
     }
 }

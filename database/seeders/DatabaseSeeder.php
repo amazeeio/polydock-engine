@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             ServiceAccountRoleSeeder::class,
+            SuperAdminRoleSeeder::class,
         ]);
 
         // Create Fred and his team
@@ -34,6 +35,8 @@ class DatabaseSeeder extends Seeder
             'email' => 'fred@example.com',
             'password' => Hash::make('password'),
         ]);
+
+        $fred->assignRole('super_admin');
 
         $fredsTeam = UserGroup::create([
             'name' => 'Fracme Inc.',

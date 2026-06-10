@@ -67,6 +67,15 @@ class ViewPolydockAppInstance extends ViewRecord
                         'Manual claim hook rerun queued',
                     )->save();
 
+                    activity('audit')
+                        ->performedOn($record)
+                        ->causedBy(auth()->user())
+                        ->withProperties([
+                            'action' => 'filament.rerun_claim_hook',
+                            'skip_ready_notification' => $skipReadyNotification,
+                        ])
+                        ->log('Re-ran claim hook (admin UI)');
+
                     Notification::make()
                         ->title('Claim Hook Queued')
                         ->success()
@@ -185,6 +194,16 @@ class ViewPolydockAppInstance extends ViewRecord
                                 ->success()
                                 ->body("Deployment triggered for branch {$environment}")
                                 ->send();
+
+                            activity('audit')
+                                ->performedOn($record)
+                                ->causedBy(auth()->user())
+                                ->withProperties([
+                                    'action' => 'filament.trigger_deploy',
+                                    'project_name' => $projectName,
+                                    'environment' => $environment,
+                                ])
+                                ->log('Triggered Lagoon redeploy (admin UI)');
                         }
                     } catch (\Throwable $e) {
                         Notification::make()
@@ -269,6 +288,16 @@ class ViewPolydockAppInstance extends ViewRecord
                             "Retry: {$action} queued for branch {$environment}",
                         )->save();
 
+                        activity('audit')
+                            ->performedOn($record)
+                            ->causedBy(auth()->user())
+                            ->withProperties([
+                                'action' => 'filament.retry_failed_instance',
+                                'environment_existed' => $environmentExists,
+                                'action_taken' => $action,
+                            ])
+                            ->log('Retried failed instance (admin UI)');
+
                         Notification::make()
                             ->title('Retry Initiated')
                             ->success()
@@ -299,6 +328,15 @@ class ViewPolydockAppInstance extends ViewRecord
 
                     try {
                         $record->calculateAndSetTrialDatesFromEndDate($newEndDate, true);
+
+                        activity('audit')
+                            ->performedOn($record)
+                            ->causedBy(auth()->user())
+                            ->withProperties([
+                                'action' => 'filament.extend_trial',
+                                'new_end_date' => $newEndDate->toDateTimeString(),
+                            ])
+                            ->log('Extended trial (admin UI)');
 
                         Notification::make()
                             ->title('Trial Extended')
@@ -353,6 +391,15 @@ class ViewPolydockAppInstance extends ViewRecord
                     );
                     $record->save();
 
+                    activity('audit')
+                        ->performedOn($record)
+                        ->causedBy(auth()->user())
+                        ->withProperties([
+                            'action' => 'filament.delete_instance',
+                            'skip_grace_period' => $skipGrace,
+                        ])
+                        ->log('Initiated instance delete (admin UI)');
+
                     Notification::make()
                         ->title('Deletion Queued')
                         ->success()
@@ -381,6 +428,14 @@ class ViewPolydockAppInstance extends ViewRecord
                     $record->setStatus(PolydockAppInstanceStatus::PENDING_PURGE, 'Force purge requested via admin UI');
                     $record->save();
 
+                    activity('audit')
+                        ->performedOn($record)
+                        ->causedBy(auth()->user())
+                        ->withProperties([
+                            'action' => 'filament.force_full_delete',
+                        ])
+                        ->log('Force purge triggered (admin UI)');
+
                     Notification::make()
                         ->title('Force Purge Queued')
                         ->success()
@@ -406,6 +461,15 @@ class ViewPolydockAppInstance extends ViewRecord
                     $record->setStatus(PolydockAppInstanceStatus::REMOVED, 'Purge retry requested via admin UI; grace period restarted');
                     $record->save();
 
+                    activity('audit')
+                        ->performedOn($record)
+                        ->causedBy(auth()->user())
+                        ->withProperties([
+                            'action' => 'filament.retry_purge',
+                            'grace_days' => $graceDays,
+                        ])
+                        ->log('Purge retry requested (admin UI)');
+
                     Notification::make()
                         ->title('Purge Retry Scheduled')
                         ->success()
@@ -425,6 +489,14 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->action(function ($record): void {
                     $record->force_purge_requested_at = null;
                     $record->save();
+
+                    activity('audit')
+                        ->performedOn($record)
+                        ->causedBy(auth()->user())
+                        ->withProperties([
+                            'action' => 'filament.cancel_force_purge',
+                        ])
+                        ->log('Force purge cancelled (admin UI)');
 
                     Notification::make()
                         ->title('Force Purge Cancelled')

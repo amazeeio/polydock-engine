@@ -10,15 +10,26 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Spatie\Activitylog\LogOptions;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class UserGroup extends Model
 {
     use HasFactory;
+    use LogsActivity;
 
     protected $fillable = [
         'name',
         'slug',
     ];
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly(['name', 'slug'])
+            ->logOnlyDirty()
+            ->dontSubmitEmptyLogs();
+    }
 
     /**
      * Get the users associated with the group.
@@ -44,6 +55,14 @@ class UserGroup extends Model
     public function members(): BelongsToMany
     {
         return $this->users()->wherePivot('role', UserGroupRoleEnum::MEMBER->value);
+    }
+
+    /**
+     * Get the users who are admins of the group.
+     */
+    public function admins(): BelongsToMany
+    {
+        return $this->users()->wherePivot('role', UserGroupRoleEnum::ADMIN->value);
     }
 
     /**

@@ -2,13 +2,16 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Filament\Admin\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 use App\Filament\Admin\Resources\PolydockAppInstanceResource\RelationManagers;
 use App\Filament\Exports\UserRemoteRegistrationExporter;
 use App\Models\PolydockAppInstance;
+use App\Models\User;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
 use App\Services\PolydockAppClassDiscovery;
+use App\Support\SensitiveDataRedactor;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Grid;
@@ -338,8 +341,8 @@ class PolydockAppInstanceResource extends Resource
                                     $value = $newValue;
                                 }
 
-                                if ($record->shouldFilterKey($key, $sensitiveKeys)) {
-                                    $value = 'REDACTED';
+                                if (SensitiveDataRedactor::shouldRedactKey((string) $key, $sensitiveKeys)) {
+                                    $value = SensitiveDataRedactor::REDACTED_VALUE;
                                 }
 
                                 if ($value === null) {
@@ -435,13 +438,17 @@ class PolydockAppInstanceResource extends Resource
     {
         return [
             RelationManagers\LogsRelationManager::class,
+            ActivitiesRelationManager::class,
         ];
     }
 
     #[\Override]
     public static function canCreate(): bool
     {
-        return true;
+        /** @var User|null $user */
+        $user = auth()->user();
+
+        return $user?->can('create', PolydockAppInstance::class) ?? false;
     }
 
     #[\Override]
@@ -458,9 +465,21 @@ class PolydockAppInstanceResource extends Resource
     #[\Override]
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()
+        $query = parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+
+        /** @var User|null $user */
+        $user = auth()->user();
+        if ($user === null) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if ($user->hasRole('super_admin') || $user->can('view_any_polydock_app_instance')) {
+            return $query;
+        }
+
+        return $query->whereIn('user_group_id', $user->groups()->select('user_groups.id'));
     }
 }

@@ -13,6 +13,7 @@ use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class CreatePolydockAppInstanceTest extends TestCase
@@ -31,6 +32,9 @@ class CreatePolydockAppInstanceTest extends TestCase
         $this->admin = User::factory()->create([
             'email' => 'admin@example.com',
         ]);
+
+        Role::findOrCreate('super_admin', config('auth.defaults.guard'));
+        $this->admin->assignRole('super_admin');
 
         // Create a store and store app available for trials
         $store = PolydockStore::factory()->create();

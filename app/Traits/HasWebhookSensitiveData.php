@@ -2,6 +2,8 @@
 
 namespace App\Traits;
 
+use App\Support\SensitiveDataRedactor;
+
 trait HasWebhookSensitiveData
 {
     /**
@@ -9,26 +11,7 @@ trait HasWebhookSensitiveData
      */
     public function getSensitiveDataKeys(): array
     {
-        return $this->sensitiveDataKeys ?? [
-            // Exact matches
-            'private_key',
-            'secret',
-            'password',
-            'token',
-            'api_key',
-            'ssh_key',
-            'recaptcha',
-
-            // Regex patterns (starting with /)
-            '/^.*_key.*$/',         // Anything containing _key
-            '/^.*private.*$/',      // Anything containing private
-            '/^.*secret.*$/',       // Anything containing secret
-            '/^.*pass.*$/',         // Anything containing pass
-            '/^.*username.*$/',     // Anything containing username
-            '/^.*token.*$/',        // Anything containing token
-            '/^.*api.*$/',          // Anything containing api
-            '/^.*ssh.*$/',          // Anything containing ssh
-        ];
+        return $this->sensitiveDataKeys ?? SensitiveDataRedactor::defaultSensitiveKeys();
     }
 
     /**
@@ -50,30 +33,7 @@ trait HasWebhookSensitiveData
      */
     public function shouldFilterKey(string $key, array $sensitiveKeys): bool
     {
-        $lowercaseKey = strtolower($key);
-
-        foreach ($sensitiveKeys as $sensitiveKey) {
-            // If it's a regex pattern
-            if (str_starts_with((string) $sensitiveKey, '/')) {
-                if (preg_match($sensitiveKey, $lowercaseKey)) {
-                    return true;
-                }
-
-                continue;
-            }
-
-            // Exact match (case-insensitive)
-            if (strtolower((string) $sensitiveKey) === $lowercaseKey) {
-                return true;
-            }
-
-            // Contains sensitive word
-            if (str_contains($lowercaseKey, strtolower((string) $sensitiveKey))) {
-                return true;
-            }
-        }
-
-        return false;
+        return SensitiveDataRedactor::shouldRedactKey($key, $sensitiveKeys);
     }
 
     /**
