@@ -191,6 +191,10 @@ class UsersRelationManager extends RelationManager
                             ? $data['role']->value
                             : $data['role'];
 
+                        if ($previousRole === $newRole) {
+                            return;
+                        }
+
                         activity('audit')
                             ->performedOn($group)
                             ->causedBy(auth()->user())

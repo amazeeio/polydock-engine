@@ -663,7 +663,7 @@ class AuthenticatedApiController extends Controller
      *  }
      * }
      */
-    public function deleteInstance(string $uuid): JsonResponse
+    public function deleteInstance(Request $request, string $uuid): JsonResponse
     {
         $instance = PolydockAppInstance::where('uuid', $uuid)->firstOrFail();
 
