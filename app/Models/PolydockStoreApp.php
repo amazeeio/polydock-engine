@@ -152,6 +152,15 @@ class PolydockStoreApp extends Model
         'send_trial_complete_email' => 'boolean',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'lagoon_deploy_private_key',
+    ];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
