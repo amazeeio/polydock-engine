@@ -77,9 +77,26 @@ class GeneralApplicationTest extends TestCase
         $instance->status_message = $longMessage;
         $instance->saveQuietly();
 
-        // Refresh and assert truncation to 65000 chars plus trailing '...'
+        // Refresh and assert truncation to 2000 bytes plus trailing '...'
         $instance->refresh();
-        $this->assertEquals(65000, strlen($instance->status_message));
+        $this->assertEquals(2000, strlen($instance->status_message));
         $this->assertTrue(str_ends_with($instance->status_message, '...'));
+
+        // Test multibyte string (e.g. 4-byte characters like emojis)
+        // Each emoji is 4 bytes. We will create a string of 20,000 emojis (80,000 bytes).
+        $multibyteMessage = str_repeat('🚀', 20000);
+        $instance->status_message = $multibyteMessage;
+        $instance->saveQuietly();
+
+        $instance->refresh();
+        // The total bytes must be exactly 2000 or slightly less (since we cut on character boundary).
+        // 2000 - 3 bytes (for '...') = 1997 bytes.
+        // Since each emoji is 4 bytes, 1997 / 4 = 499.25, so we can fit exactly 499 emojis.
+        // 499 * 4 = 1996 bytes.
+        // Plus 3 bytes of '...' is 1999 bytes.
+        $this->assertEquals(1999, strlen($instance->status_message));
+        $this->assertTrue(str_ends_with($instance->status_message, '...'));
+        // Verify we didn't break multibyte character encoding
+        $this->assertTrue(mb_check_encoding($instance->status_message, 'UTF-8'));
     }
 }
