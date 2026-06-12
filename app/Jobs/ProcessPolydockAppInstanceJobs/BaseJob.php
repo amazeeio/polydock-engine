@@ -5,7 +5,9 @@ namespace App\Jobs\ProcessPolydockAppInstanceJobs;
 use App\Listeners\ProcessPolydockAppInstanceStatusChange;
 use App\Models\PolydockAppInstance;
 use App\PolydockEngine\Engine;
+use App\PolydockEngine\PolydockLogger;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -271,5 +273,37 @@ abstract class BaseJob implements ShouldQueue
             'store_app_name' => $this->appInstance->storeApp->name,
             'status' => $this->appInstance->status->value,
         ]);
+    }
+
+    /**
+     * Execute the standard lifecycle stage transition logic.
+     */
+    protected function executeTransition(PolydockAppInstanceStatus $expectedStatus): void
+    {
+        $this->polydockJobStart();
+
+        $appInstance = $this->appInstance;
+        if (! $appInstance) {
+            throw new \Exception(
+                'Failed to process PolydockAppInstance in '.class_basename(static::class).' - not found',
+            );
+        }
+
+        if ($appInstance->status !== $expectedStatus) {
+            if ($this->shouldSkipBecauseStatusAdvanced($expectedStatus)) {
+                $this->polydockJobDone();
+
+                return;
+            }
+
+            throw new PolydockAppInstanceStatusFlowException(
+                class_basename(static::class).' must be in status '.$expectedStatus->name
+            );
+        }
+
+        $polydockEngine = new Engine(new PolydockLogger);
+        $polydockEngine->processPolydockAppInstance($appInstance);
+
+        $this->polydockJobDone();
     }
 }
