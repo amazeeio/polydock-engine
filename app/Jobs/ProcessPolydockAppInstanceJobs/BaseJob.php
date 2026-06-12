@@ -36,7 +36,7 @@ abstract class BaseJob implements ShouldQueue
 
     public function getPolydockJobId()
     {
-        $appInstance = PolydockAppInstance::find($this->appInstanceId)->refresh();
+        $appInstance = PolydockAppInstance::find($this->appInstanceId);
 
         if (! $appInstance) {
             Log::error('Failed to process PolydockAppInstance - not found', [
@@ -46,6 +46,8 @@ abstract class BaseJob implements ShouldQueue
 
             throw new \Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
         }
+
+        $appInstance->refresh();
 
         $uniqueId = "app-instance-{$appInstance->id}-job-".class_basename(static::class);
 
@@ -232,8 +234,8 @@ abstract class BaseJob implements ShouldQueue
 
     public function polydockJobStart()
     {
-        $this->appInstance = PolydockAppInstance::find($this->appInstanceId)->refresh();
-        if (! $this->appInstance) {
+        $appInstance = PolydockAppInstance::find($this->appInstanceId);
+        if (! $appInstance) {
             Log::error('Failed to process PolydockAppInstance - not found', [
                 'app_instance_id' => $this->appInstanceId,
                 'job_type' => class_basename(static::class),
@@ -241,6 +243,9 @@ abstract class BaseJob implements ShouldQueue
 
             throw new \Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
         }
+
+        $appInstance->refresh();
+        $this->appInstance = $appInstance;
 
         $uniqueId = $this->getPolydockJobId();
 

@@ -188,7 +188,6 @@ class PolydockStoreApp extends Model
         'lagoon_deploy_region_id_ext',
         'lagoon_deploy_project_prefix',
         'lagoon_deploy_organization_id_ext',
-        'lagoon_deploy_private_key',
         'amazee_ai_backend_region_id_ext',
         'unallocated_instances_count',
         'needs_more_unallocated_instances',
