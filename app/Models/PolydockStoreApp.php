@@ -285,6 +285,10 @@ class PolydockStoreApp extends Model
      */
     public function getUnallocatedInstancesCountAttribute(): int
     {
+        if (array_key_exists('unallocated_instances_count', $this->attributes)) {
+            return (int) $this->attributes['unallocated_instances_count'];
+        }
+
         return $this->instances()
             ->whereNull('user_group_id')
             ->where(function ($query) {

@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
 use App\Filament\Admin\Resources\PolydockStoreAppResource\RelationManagers;
+use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Services\PolydockAppClassDiscovery;
@@ -20,6 +21,8 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use Illuminate\Database\Eloquent\Builder;
 
 class PolydockStoreAppResource extends Resource
 {
@@ -382,9 +385,9 @@ class PolydockStoreAppResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('unallocated_instances_count')
                     ->label('Unallocated')
+                    ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('allocatedInstances')
-                    ->state(fn ($record) => $record->allocatedInstances()->count())
+                Tables\Columns\TextColumn::make('allocated_instances_count')
                     ->label('Allocated')
                     ->numeric()
                     ->sortable(),
@@ -671,5 +674,21 @@ class PolydockStoreAppResource extends Resource
                     ->columnSpan(3),
             ])
             ->columns(3);
+    }
+
+    #[\Override]
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->withCount([
+                'allocatedInstances',
+                'instances as unallocated_instances_count' => function ($query) {
+                    $query->whereNull('user_group_id')
+                        ->where(function ($q) {
+                            $q->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
+                                ->orWhereIn('status', PolydockAppInstance::unallocatedInProgressStatuses());
+                        });
+                },
+            ]);
     }
 }
