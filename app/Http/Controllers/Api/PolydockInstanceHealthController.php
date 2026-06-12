@@ -13,13 +13,18 @@ class PolydockInstanceHealthController extends Controller
     public function __invoke(Request $request, string $uuid, string $status)
     {
         $expectedToken = config('polydock.health_token');
+        $suppliedToken = $request->query('token');
 
-        // If a health token is configured, enforce it
-        if ($expectedToken && $request->query('token') !== $expectedToken) {
-            return response()->json([
-                'error' => 'Unauthorized: Invalid or missing health token',
-                'status_code' => 401,
-            ], 401);
+        if ($expectedToken) {
+            // Timing-safe comparison to prevent timing-based enumeration
+            if (! is_string($suppliedToken) || ! hash_equals((string) $expectedToken, $suppliedToken)) {
+                return response()->json([
+                    'error' => 'Unauthorized: Invalid or missing health token',
+                    'status_code' => 401,
+                ], 401);
+            }
+        } else {
+            Log::warning('POLYDOCK_HEALTH_TOKEN is not configured. Health endpoint is currently running without authentication.');
         }
 
         $query = $request->query();
@@ -100,16 +105,7 @@ class PolydockInstanceHealthController extends Controller
             ], 400);
         }
 
-        $debugData = [];
-        if ($request->isMethod('post')) {
-            $debugData = $request->all();
-        } else {
-            $debugData = $request->query();
-        }
-
-        if (array_key_exists('token', $debugData)) {
-            $debugData['token'] = '[REDACTED]';
-        }
+        $debugData = $request->isMethod('post') ? $data : $query;
 
         $logContext['debug_data'] = $debugData;
         $logContext['status_code'] = 200;
