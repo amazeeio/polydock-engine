@@ -391,6 +391,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'polydock-app-instance-health-webhook-url' => str_replace(':status:', '', route('api.instance.health', [
                         'uuid' => $model->uuid,
                         'status' => ':status:',
+                        'token' => config('polydock.health_token'),
                     ], true)),
                 ];
 
