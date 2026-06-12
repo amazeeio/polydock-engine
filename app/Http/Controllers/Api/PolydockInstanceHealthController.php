@@ -22,13 +22,23 @@ class PolydockInstanceHealthController extends Controller
             ], 401);
         }
 
+        $query = $request->query();
+        if (array_key_exists('token', $query)) {
+            $query['token'] = '[REDACTED]';
+        }
+
+        $data = $request->all();
+        if (array_key_exists('token', $data)) {
+            $data['token'] = '[REDACTED]';
+        }
+
         $logContext = [
             'uuid' => $uuid,
             'status' => $status,
             'location' => 'PolydockInstanceHealthController',
             'method' => 'invoke',
-            'query' => $request->query(),
-            'data' => $request->all(),
+            'query' => $query,
+            'data' => $data,
         ];
 
         // Find the instance
@@ -90,12 +100,15 @@ class PolydockInstanceHealthController extends Controller
             ], 400);
         }
 
-        // Get debug data based on request type
         $debugData = [];
         if ($request->isMethod('post')) {
             $debugData = $request->all();
         } else {
             $debugData = $request->query();
+        }
+
+        if (array_key_exists('token', $debugData)) {
+            $debugData['token'] = '[REDACTED]';
         }
 
         $logContext['debug_data'] = $debugData;

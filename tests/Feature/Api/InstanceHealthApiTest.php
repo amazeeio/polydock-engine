@@ -10,6 +10,7 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -103,5 +104,24 @@ class InstanceHealthApiTest extends TestCase
             'error' => 'Unauthorized: Invalid or missing health token',
             'status_code' => 401,
         ]);
+    }
+
+    public function test_health_check_does_not_log_plaintext_token_on_error(): void
+    {
+        // GIVEN a token is configured
+        Config::set('polydock.health_token', 'secure-test-token');
+
+        // AND we expect Log::error to be called with redacted token
+        Log::shouldReceive('error')
+            ->once()
+            ->with('Invalid status value', \Mockery::on(function ($context) {
+                return isset($context['query']['token']) && $context['query']['token'] === '[REDACTED]';
+            }));
+
+        // WHEN we hit the endpoint with an invalid status and correct token
+        $response = $this->getJson("/api/instance/{$this->uuid}/health/invalid-status?token=secure-test-token");
+
+        // THEN it should return 400
+        $response->assertStatus(400);
     }
 }
