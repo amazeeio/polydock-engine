@@ -621,6 +621,14 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
+     * Eloquent mutator to safely truncate status messages before writing to DB.
+     */
+    public function setStatusMessageAttribute($value): void
+    {
+        $this->attributes['status_message'] = $value !== null ? mb_strimwidth((string) $value, 0, 65000, '...') : null;
+    }
+
+    /**
      * Get the status message of the app instance
      *
      * @return string The status message
