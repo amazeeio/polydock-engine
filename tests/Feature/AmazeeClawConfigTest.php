@@ -72,7 +72,7 @@ class AmazeeClawConfigTest extends TestCase
         }
 
         $this->assertTrue($hasKeyModeInStore, 'Store App form schema should contain amazeeai_key_mode');
-        $this->assertTrue($hasKeyModeInInstance, 'App Instance form schema should contain amazeeai_key_mode');
+        $this->assertFalse($hasKeyModeInInstance, 'App Instance form schema should NOT contain amazeeai_key_mode');
     }
 
     public function test_key_mode_resolution()

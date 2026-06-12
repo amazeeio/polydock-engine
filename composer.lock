@@ -55,16 +55,16 @@
         },
         {
             "name": "amazeeio/polydock-app-amazeeclaw",
-            "version": "v0.1.13",
+            "version": "v0.1.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-app-amazeeclaw.git",
-                "reference": "27d349b38040691db6ae987835ac9e8391549193"
+                "reference": "efc24fa2556592698555e55863c1c85bb43722ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeclaw/zipball/27d349b38040691db6ae987835ac9e8391549193",
-                "reference": "27d349b38040691db6ae987835ac9e8391549193",
+                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeclaw/zipball/efc24fa2556592698555e55863c1c85bb43722ba",
+                "reference": "efc24fa2556592698555e55863c1c85bb43722ba",
                 "shasum": ""
             },
             "require": {
@@ -83,9 +83,9 @@
             "description": "Polydock App - AmazeeClaw AI",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-app-amazeeclaw/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeclaw/tree/v0.1.13"
+                "source": "https://github.com/amazeeio/polydock-app-amazeeclaw/tree/v0.1.14"
             },
-            "time": "2026-06-12T20:06:03+00:00"
+            "time": "2026-06-12T20:43:37+00:00"
         },
         {
             "name": "amazeeio/polydock-app-amazeeio-privategpt",
