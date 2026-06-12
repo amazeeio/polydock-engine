@@ -468,7 +468,8 @@ class PolydockAppInstanceResource extends Resource
         $query = parent::getEloquentQuery()
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
-            ]);
+            ])
+            ->with(['storeApp.store', 'userGroup']);
 
         /** @var User|null $user */
         $user = auth()->user();
