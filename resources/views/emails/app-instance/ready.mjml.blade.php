@@ -18,7 +18,7 @@
     <mj-section>
       <mj-column>
         @if($appInstance->getKeyValue('hide-login-email-info') != 'true')
-          <mj-button href="{{ route('app-instances.show', $appInstance) }}" color="#000" background-color="#00b6ed">
+          <mj-button href="{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}" color="#000" background-color="#00b6ed">
             Access Your Experience
           </mj-button>
         @else
@@ -45,7 +45,7 @@
           @endif
           <strong>Access URL:</strong> 
           @if($appInstance->getKeyValue('hide-login-email-info') != 'true')
-            <a href="{{ route('app-instances.show', $appInstance) }}">{{ route('app-instances.show', $appInstance) }}</a>
+            <a href="{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}">{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}</a>
           @else
             <a href="{{ $appInstance->app_url }}">{{ $appInstance->app_url }}</a>
           @endif
