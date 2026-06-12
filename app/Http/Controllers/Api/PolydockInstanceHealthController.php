@@ -12,6 +12,16 @@ class PolydockInstanceHealthController extends Controller
 {
     public function __invoke(Request $request, string $uuid, string $status)
     {
+        $expectedToken = config('polydock.health_token');
+
+        // If a health token is configured, enforce it
+        if ($expectedToken && $request->query('token') !== $expectedToken) {
+            return response()->json([
+                'error' => 'Unauthorized: Invalid or missing health token',
+                'status_code' => 401,
+            ], 401);
+        }
+
         $logContext = [
             'uuid' => $uuid,
             'status' => $status,
