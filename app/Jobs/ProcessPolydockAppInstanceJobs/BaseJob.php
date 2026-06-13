@@ -5,7 +5,9 @@ namespace App\Jobs\ProcessPolydockAppInstanceJobs;
 use App\Listeners\ProcessPolydockAppInstanceStatusChange;
 use App\Models\PolydockAppInstance;
 use App\PolydockEngine\Engine;
+use App\PolydockEngine\PolydockLogger;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -41,7 +43,7 @@ abstract class BaseJob implements ShouldQueue
 
     public function getPolydockJobId()
     {
-        $appInstance = PolydockAppInstance::find($this->appInstanceId)->refresh();
+        $appInstance = PolydockAppInstance::find($this->appInstanceId);
 
         if (! $appInstance) {
             Log::error('Failed to process PolydockAppInstance - not found', [
@@ -51,6 +53,8 @@ abstract class BaseJob implements ShouldQueue
 
             throw new \Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
         }
+
+        $appInstance->refresh();
 
         $uniqueId = "app-instance-{$appInstance->id}-job-".class_basename(static::class);
 
@@ -237,8 +241,8 @@ abstract class BaseJob implements ShouldQueue
 
     public function polydockJobStart()
     {
-        $this->appInstance = PolydockAppInstance::find($this->appInstanceId)->refresh();
-        if (! $this->appInstance) {
+        $appInstance = PolydockAppInstance::find($this->appInstanceId);
+        if (! $appInstance) {
             Log::error('Failed to process PolydockAppInstance - not found', [
                 'app_instance_id' => $this->appInstanceId,
                 'job_type' => class_basename(static::class),
@@ -246,6 +250,9 @@ abstract class BaseJob implements ShouldQueue
 
             throw new \Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
         }
+
+        $appInstance->refresh();
+        $this->appInstance = $appInstance;
 
         $uniqueId = $this->getPolydockJobId();
 
@@ -278,5 +285,37 @@ abstract class BaseJob implements ShouldQueue
             'store_app_name' => $this->appInstance->storeApp->name,
             'status' => $this->appInstance->status->value,
         ]);
+    }
+
+    /**
+     * Execute the standard lifecycle stage transition logic.
+     */
+    protected function executeTransition(PolydockAppInstanceStatus $expectedStatus): void
+    {
+        $this->polydockJobStart();
+
+        $appInstance = $this->appInstance;
+        if (! $appInstance) {
+            throw new \Exception(
+                'Failed to process PolydockAppInstance in '.class_basename(static::class).' - not found',
+            );
+        }
+
+        if ($appInstance->status !== $expectedStatus) {
+            if ($this->shouldSkipBecauseStatusAdvanced($expectedStatus)) {
+                $this->polydockJobDone();
+
+                return;
+            }
+
+            throw new PolydockAppInstanceStatusFlowException(
+                class_basename(static::class).' must be in status '.$expectedStatus->name
+            );
+        }
+
+        $polydockEngine = new Engine(new PolydockLogger);
+        $polydockEngine->processPolydockAppInstance($appInstance);
+
+        $this->polydockJobDone();
     }
 }

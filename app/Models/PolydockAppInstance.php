@@ -660,6 +660,22 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function storeKeyValue(string $key, $value): PolydockAppInstanceInterface
     {
+        if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
+            $parsedUrl = parse_url((string) $value);
+            if (isset($parsedUrl['query'])) {
+                parse_str($parsedUrl['query'], $queryParams);
+                if (isset($queryParams['token'])) {
+                    unset($queryParams['token']);
+                    $queryString = http_build_query($queryParams);
+                    $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '';
+                    $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+                    $port = isset($parsedUrl['port']) ? ':'.$parsedUrl['port'] : '';
+                    $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
+                    $value = $scheme.$host.$port.$path.($queryString !== '' ? '?'.$queryString : '');
+                }
+            }
+        }
+
         $resultData = $this->data ?? [];
         data_set($resultData, $key, $value);
         $this->data = $resultData;
@@ -668,15 +684,34 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this;
     }
 
-    /**
-     * Get a stored value by key
-     *
-     * @param  string  $key  The key to retrieve
-     * @return mixed The stored value, or empty string if not found
-     */
     public function getKeyValue(string $key): mixed
     {
-        return data_get($this->data, $key, '');
+        $value = data_get($this->data, $key, '');
+
+        if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
+            $token = config('polydock.health_token');
+            if (! empty($token)) {
+                $parsedUrl = parse_url((string) $value);
+                if (isset($parsedUrl['query'])) {
+                    parse_str($parsedUrl['query'], $queryParams);
+                    if (isset($queryParams['token'])) {
+                        unset($queryParams['token']);
+                        $queryString = http_build_query($queryParams);
+                        $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '';
+                        $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+                        $port = isset($parsedUrl['port']) ? ':'.$parsedUrl['port'] : '';
+                        $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
+                        $value = $scheme.$host.$port.$path.($queryString !== '' ? '?'.$queryString : '');
+                    }
+                }
+
+                $separator = str_contains((string) $value, '?') ? '&' : '?';
+
+                return $value.$separator.'token='.urlencode($token);
+            }
+        }
+
+        return $value;
     }
 
     /**

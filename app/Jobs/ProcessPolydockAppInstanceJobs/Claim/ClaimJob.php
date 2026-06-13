@@ -3,10 +3,7 @@
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Claim;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
-use App\PolydockEngine\Engine;
-use App\PolydockEngine\PolydockLogger;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ClaimJob extends BaseJob implements ShouldQueue
@@ -16,30 +13,6 @@ class ClaimJob extends BaseJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->polydockJobStart();
-        $appInstance = $this->appInstance;
-        if (! $appInstance) {
-            throw new \Exception(
-                'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
-            );
-        }
-
-        if ($appInstance->status != PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM) {
-            if ($this->shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM)) {
-                $this->polydockJobDone();
-
-                return;
-            }
-
-            throw new PolydockAppInstanceStatusFlowException(
-                'ClaimJob must be in status PENDING_POLYDOCK_CLAIM',
-                $appInstance->status,
-            );
-        }
-
-        $polydockEngine = new Engine(new PolydockLogger);
-        $polydockEngine->processPolydockAppInstance($appInstance);
-
-        $this->polydockJobDone();
+        $this->executeTransition(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM);
     }
 }

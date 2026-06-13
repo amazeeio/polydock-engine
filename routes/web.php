@@ -21,4 +21,4 @@ Route::get('/app-instances/{appInstance}', function (PolydockAppInstance $appIns
     }
 
     abort(404, 'No URL available for this app instance');
-})->name('app-instances.show');
+})->name('app-instances.show')->middleware('signed');

@@ -152,6 +152,15 @@ class PolydockStoreApp extends Model
         'send_trial_complete_email' => 'boolean',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'lagoon_deploy_private_key',
+    ];
+
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -179,7 +188,6 @@ class PolydockStoreApp extends Model
         'lagoon_deploy_region_id_ext',
         'lagoon_deploy_project_prefix',
         'lagoon_deploy_organization_id_ext',
-        'lagoon_deploy_private_key',
         'amazee_ai_backend_region_id_ext',
         'unallocated_instances_count',
         'needs_more_unallocated_instances',
@@ -276,6 +284,10 @@ class PolydockStoreApp extends Model
      */
     public function getUnallocatedInstancesCountAttribute(): int
     {
+        if (array_key_exists('unallocated_instances_count', $this->attributes)) {
+            return (int) $this->attributes['unallocated_instances_count'];
+        }
+
         return $this->instances()
             ->whereNull('user_group_id')
             ->where(function ($query) {
