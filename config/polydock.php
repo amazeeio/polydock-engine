@@ -15,7 +15,7 @@ $serviceProviderSingletons = [
         'ssh_port' => env('FTLAGOON_SSH_PORT', '32222'),
         'endpoint' => env('FTLAGOON_ENDPOINT', 'https://api.lagoon.amazeeio.cloud/graphql'),
         'connect_timeout' => (float) env('FTLAGOON_CONNECT_TIMEOUT', 5.0),
-        'timeout' => (float) env('FTLAGOON_TIMEOUT', 10.0),
+        'timeout' => (float) env('FTLAGOON_TIMEOUT', 60.0),
     ],
 ];
 
