@@ -215,13 +215,16 @@ class RemoveEmptyProjectsCommand extends Command
                 return null;
             }
 
-            $environmentCount = count($data['environments']);
+            $environments = $data['environments'];
+            $activeEnvironments = array_filter($environments, [LagoonProjectPurgeService::class, 'isActiveEnvironment']);
 
-            if ($environmentCount === 0) {
+            $activeEnvironmentCount = count($activeEnvironments);
+
+            if ($activeEnvironmentCount === 0) {
                 return ['status' => 'empty', 'environment_count' => 0];
             }
 
-            return ['status' => 'has_environments', 'environment_count' => $environmentCount];
+            return ['status' => 'has_environments', 'environment_count' => $activeEnvironmentCount];
         } catch (\Throwable $e) {
             $this->error("Probe failed for {$projectName}: {$e->getMessage()}");
 
