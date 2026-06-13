@@ -122,6 +122,10 @@ class LagoonProjectPurgeService
 
         try {
             $projectData = $this->getProjectByName($projectName);
+
+            if (is_array($projectData) && array_key_exists('projectByName', $projectData)) {
+                $projectData = $projectData['projectByName'];
+            }
         } catch (Throwable $e) {
             $this->lastFailureReason = 'getProjectByName threw: '.$e->getMessage();
             $this->logger->error('Failed to fetch Lagoon project for purge', [
