@@ -21,7 +21,14 @@ abstract class BaseJob implements ShouldQueue
     use Queueable;
     use SerializesModels;
 
-    protected const OVERLAP_LOCK_SECONDS = 120;
+    /**
+     * The number of seconds the job can run before timing out.
+     *
+     * @var int
+     */
+    public $timeout = 180;
+
+    protected const OVERLAP_LOCK_SECONDS = 200;
 
     protected PolydockAppInstance $appInstance;
 

@@ -196,7 +196,7 @@ $config = [
             ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 1,
+            'maxProcesses' => env('HORIZON_SUPERVISOR_1_MAX_PROCESSES', 5),
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 256,
@@ -209,7 +209,7 @@ $config = [
             'queue' => ['webhooks'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 1,
+            'maxProcesses' => env('HORIZON_SUPERVISOR_2_MAX_PROCESSES', 5),
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 256,
@@ -231,7 +231,7 @@ $config = [
             ],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 1,
+            'maxProcesses' => env('HORIZON_SUPERVISOR_3_MAX_PROCESSES', 5),
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 256,
@@ -243,32 +243,67 @@ $config = [
     'environments' => [
         'production' => [
             'supervisor-1' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-            ],
-        ],
-
-        'main' => [
-            'supervisor-1' => [
-                'maxProcesses' => 10,
+                'maxProcesses' => 15,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
                 'tries' => 3,
             ],
             'supervisor-2' => [
-                'maxProcesses' => 10,
+                'maxProcesses' => 15,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
                 'tries' => 3,
             ],
             'supervisor-3' => [
-                'maxProcesses' => 1,
+                'maxProcesses' => 15,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
                 'tries' => 3,
             ],
         ],
+
+        'main' => [
+            'supervisor-1' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-2' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-3' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+        ],
+
+        'dev' => [
+            'supervisor-1' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-2' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+            'supervisor-3' => [
+                'maxProcesses' => 15,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+                'tries' => 3,
+            ],
+        ],
+
         'edition-atlanta' => [
             'supervisor-1' => [
                 'maxProcesses' => 15,
@@ -292,7 +327,13 @@ $config = [
 
         'local' => [
             'supervisor-1' => [
-                'maxProcesses' => 3,
+                'maxProcesses' => 5,
+            ],
+            'supervisor-2' => [
+                'maxProcesses' => 5,
+            ],
+            'supervisor-3' => [
+                'maxProcesses' => 5,
             ],
         ],
     ],
