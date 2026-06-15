@@ -80,7 +80,9 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property string|null $lagoon_production_environment
  * @property bool $refresh_unallocated_instances
  * @property int $refresh_unallocated_instances_after_days
+ * @property int|null $polydock_product_type_id
  * @property PolydockStore $store
+ * @property PolydockProductType|null $productType
  * @property Collection|PolydockAppInstance[] $instances
  * @property Collection|PolydockAppInstance[] $unallocatedInstances
  * @property Collection|PolydockAppInstance[] $allocatedInstances
@@ -140,6 +142,7 @@ class PolydockStoreApp extends Model
         'lagoon_pre_remove_container',
         'lagoon_remove_service',
         'lagoon_remove_container',
+        'polydock_product_type_id',
     ];
 
     protected $casts = [
@@ -225,6 +228,11 @@ class PolydockStoreApp extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(PolydockStore::class, 'polydock_store_id');
+    }
+
+    public function productType(): BelongsTo
+    {
+        return $this->belongsTo(PolydockProductType::class, 'polydock_product_type_id');
     }
 
     /**

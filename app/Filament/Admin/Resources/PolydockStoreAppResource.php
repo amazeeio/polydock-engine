@@ -68,6 +68,16 @@ class PolydockStoreAppResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\Select::make('polydock_product_type_id')
+                    ->label('Product Type')
+                    ->relationship('productType', 'name')
+                    ->searchable()
+                    ->preload()
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->required()
+                            ->unique('polydock_product_types', 'name'),
+                    ]),
                 Forms\Components\Textarea::make('description')
                     ->required()
                     ->columnSpanFull(),
@@ -368,6 +378,10 @@ class PolydockStoreAppResource extends Resource
                     ->label('Store')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('productType.name')
+                    ->label('Product Type')
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\IconColumn::make('available_for_trials')
                     ->label('Trials')
@@ -435,7 +449,7 @@ class PolydockStoreAppResource extends Resource
             ->schema([
                 \Filament\Infolists\Components\Section::make('App Details')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(3)
+                        \Filament\Infolists\Components\Grid::make(4)
                             ->schema([
                                 TextEntry::make('name')
                                     ->label('App Name'),
@@ -443,6 +457,9 @@ class PolydockStoreAppResource extends Resource
                                     ->label('Store')
                                     ->icon('heroicon-m-building-storefront')
                                     ->iconColor('primary'),
+                                TextEntry::make('productType.name')
+                                    ->label('Product Type')
+                                    ->placeholder('None'),
                                 TextEntry::make('status')
                                     ->badge(),
                             ]),
