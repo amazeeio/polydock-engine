@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\BlockHorizonMutations;
 use Illuminate\Support\Str;
 
 $config = [
@@ -70,7 +71,7 @@ $config = [
     |
     */
 
-    'middleware' => ['web'],
+    'middleware' => ['web', BlockHorizonMutations::class],
 
     /*
     |--------------------------------------------------------------------------

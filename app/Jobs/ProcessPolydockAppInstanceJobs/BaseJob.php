@@ -43,7 +43,7 @@ abstract class BaseJob implements ShouldQueue
 
     public function getPolydockJobId()
     {
-        $appInstance = PolydockAppInstance::find($this->appInstanceId);
+        $appInstance = PolydockAppInstance::withTrashed()->find($this->appInstanceId);
 
         if (! $appInstance) {
             Log::error('Failed to process PolydockAppInstance - not found', [
@@ -70,7 +70,7 @@ abstract class BaseJob implements ShouldQueue
         ]);
 
         try {
-            $appInstance = $this->appInstance ?? PolydockAppInstance::find($this->appInstanceId);
+            $appInstance = $this->appInstance ?? PolydockAppInstance::withTrashed()->find($this->appInstanceId);
             if ($appInstance) {
                 $message = 'Failed processing with the following - '.$exception->getMessage();
                 $appInstance->logLine('error', $message);
@@ -241,7 +241,7 @@ abstract class BaseJob implements ShouldQueue
 
     public function polydockJobStart()
     {
-        $appInstance = PolydockAppInstance::find($this->appInstanceId);
+        $appInstance = PolydockAppInstance::withTrashed()->find($this->appInstanceId);
         if (! $appInstance) {
             Log::error('Failed to process PolydockAppInstance - not found', [
                 'app_instance_id' => $this->appInstanceId,
