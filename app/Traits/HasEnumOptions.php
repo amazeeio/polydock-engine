@@ -4,21 +4,13 @@ declare(strict_types=1);
 
 namespace App\Traits;
 
-use Filament\Support\Contracts\HasLabel;
+use App\Support\EnumHelper;
 
 trait HasEnumOptions
 {
     public static function getEnumOptions(): array
     {
-        return collect(static::cases())
-            ->mapWithKeys(function ($case) {
-                // Fallback to title-cased value if the Enum doesn't implement HasLabel
-                $label = ($case instanceof HasLabel)
-                    ? $case->getLabel()
-                    : str($case->value)->title()->toString();
-
-                return [$case->value => $label];
-            })->all();
+        return EnumHelper::getEnumOptions(static::class);
     }
 
     public static function getValues(): array

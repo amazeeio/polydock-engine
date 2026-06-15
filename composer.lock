@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "95e4c4a6936f08b13b029c7eb08711d9",
+    "content-hash": "a496dd3cbf82b68970a656bceb52b236",
     "packages": [
         {
             "name": "amazeeio/lagoon-logs",
@@ -843,16 +843,16 @@
         },
         {
             "name": "dedoc/scramble",
-            "version": "v0.13.27",
+            "version": "v0.13.28",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dedoc/scramble.git",
-                "reference": "5b067b1168b4092ee10b320469a09823610f48b1"
+                "reference": "e50927c732a341bb743671066892eec6bd2e958b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dedoc/scramble/zipball/5b067b1168b4092ee10b320469a09823610f48b1",
-                "reference": "5b067b1168b4092ee10b320469a09823610f48b1",
+                "url": "https://api.github.com/repos/dedoc/scramble/zipball/e50927c732a341bb743671066892eec6bd2e958b",
+                "reference": "e50927c732a341bb743671066892eec6bd2e958b",
                 "shasum": ""
             },
             "require": {
@@ -911,7 +911,7 @@
             ],
             "support": {
                 "issues": "https://github.com/dedoc/scramble/issues",
-                "source": "https://github.com/dedoc/scramble/tree/v0.13.27"
+                "source": "https://github.com/dedoc/scramble/tree/v0.13.28"
             },
             "funding": [
                 {
@@ -919,7 +919,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-06-12T12:41:44+00:00"
+            "time": "2026-06-14T18:21:12+00:00"
         },
         {
             "name": "dflydev/dot-access-data",
@@ -4424,16 +4424,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "3.11.4",
+            "version": "3.12.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/CarbonPHP/carbon.git",
-                "reference": "e890471a3494740f7d9326d72ce6a8c559ffee60"
+                "reference": "6e7853a668c3107294aff38d42bf760ec02126b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/e890471a3494740f7d9326d72ce6a8c559ffee60",
-                "reference": "e890471a3494740f7d9326d72ce6a8c559ffee60",
+                "url": "https://api.github.com/repos/CarbonPHP/carbon/zipball/6e7853a668c3107294aff38d42bf760ec02126b6",
+                "reference": "6e7853a668c3107294aff38d42bf760ec02126b6",
                 "shasum": ""
             },
             "require": {
@@ -4525,7 +4525,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-04-07T09:57:54+00:00"
+            "time": "2026-06-14T20:41:42+00:00"
         },
         {
             "name": "nette/schema",
