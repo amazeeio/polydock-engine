@@ -661,19 +661,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function storeKeyValue(string $key, $value): PolydockAppInstanceInterface
     {
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
-            $parsedUrl = parse_url((string) $value);
-            if (isset($parsedUrl['query'])) {
-                parse_str($parsedUrl['query'], $queryParams);
-                if (isset($queryParams['token'])) {
-                    unset($queryParams['token']);
-                    $queryString = http_build_query($queryParams);
-                    $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '';
-                    $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
-                    $port = isset($parsedUrl['port']) ? ':'.$parsedUrl['port'] : '';
-                    $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
-                    $value = $scheme.$host.$port.$path.($queryString !== '' ? '?'.$queryString : '');
-                }
-            }
+            $value = $this->stripTokenFromUrl((string) $value);
         }
 
         $resultData = $this->data ?? [];
@@ -691,20 +679,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
             $token = config('polydock.health_token');
             if (! empty($token)) {
-                $parsedUrl = parse_url((string) $value);
-                if (isset($parsedUrl['query'])) {
-                    parse_str($parsedUrl['query'], $queryParams);
-                    if (isset($queryParams['token'])) {
-                        unset($queryParams['token']);
-                        $queryString = http_build_query($queryParams);
-                        $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '';
-                        $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
-                        $port = isset($parsedUrl['port']) ? ':'.$parsedUrl['port'] : '';
-                        $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
-                        $value = $scheme.$host.$port.$path.($queryString !== '' ? '?'.$queryString : '');
-                    }
-                }
-
+                $value = $this->stripTokenFromUrl((string) $value);
                 $separator = str_contains((string) $value, '?') ? '&' : '?';
 
                 return $value.$separator.'token='.urlencode($token);
@@ -712,6 +687,29 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         }
 
         return $value;
+    }
+
+    /**
+     * Reconstructs the URL with the 'token' query parameter removed if present.
+     */
+    private function stripTokenFromUrl(string $url): string
+    {
+        $parsedUrl = parse_url($url);
+        if (isset($parsedUrl['query'])) {
+            parse_str($parsedUrl['query'], $queryParams);
+            if (isset($queryParams['token'])) {
+                unset($queryParams['token']);
+                $queryString = http_build_query($queryParams);
+                $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '';
+                $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+                $port = isset($parsedUrl['port']) ? ':'.$parsedUrl['port'] : '';
+                $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
+
+                return $scheme.$host.$port.$path.($queryString !== '' ? '?'.$queryString : '');
+            }
+        }
+
+        return $url;
     }
 
     /**

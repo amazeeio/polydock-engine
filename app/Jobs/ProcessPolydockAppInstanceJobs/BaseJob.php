@@ -295,11 +295,6 @@ abstract class BaseJob implements ShouldQueue
         $this->polydockJobStart();
 
         $appInstance = $this->appInstance;
-        if (! $appInstance) {
-            throw new \Exception(
-                'Failed to process PolydockAppInstance in '.class_basename(static::class).' - not found',
-            );
-        }
 
         if ($appInstance->status !== $expectedStatus) {
             if ($this->shouldSkipBecauseStatusAdvanced($expectedStatus)) {
