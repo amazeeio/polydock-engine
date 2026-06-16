@@ -6,6 +6,7 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockProductType;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
+use App\Services\LagoonClientService;
 use FreedomtechHosting\FtLagoonPhp\Client;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -99,6 +100,15 @@ class SyncLagoonMetadataTest extends TestCase
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
 
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-1')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'metadata' => [],
+                ],
+            ]);
+
         // Expect metadata syncs
         $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
             ->with('project-1', 'email', 'test@example.com')
@@ -173,6 +183,15 @@ class SyncLagoonMetadataTest extends TestCase
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
 
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-2')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'metadata' => [],
+                ],
+            ]);
+
         $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
             ->with('project-2', 'email', 'two@example.com')
             ->once()
@@ -226,6 +245,15 @@ class SyncLagoonMetadataTest extends TestCase
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
+
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-prod')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'metadata' => [],
+                ],
+            ]);
 
         $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
             ->with('project-prod', 'email', 'prod@example.com')
@@ -295,6 +323,15 @@ class SyncLagoonMetadataTest extends TestCase
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
 
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-app-2')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'metadata' => [],
+                ],
+            ]);
+
         $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
             ->with('project-app-2', 'email', 'app2@example.com')
             ->once()
@@ -358,6 +395,15 @@ class SyncLagoonMetadataTest extends TestCase
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
+
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-email-1')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'metadata' => [],
+                ],
+            ]);
 
         $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
             ->with('project-email-1', 'email', 'target@example.com')
@@ -423,6 +469,15 @@ class SyncLagoonMetadataTest extends TestCase
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
         $mock->shouldReceive('initGraphqlClient')->once();
 
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-lim-1')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'metadata' => [],
+                ],
+            ]);
+
         $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
             ->with('project-lim-1', 'email', 'lim1@example.com')
             ->once()
@@ -447,5 +502,162 @@ class SyncLagoonMetadataTest extends TestCase
             ->expectsOutput('Found 1 active app instance(s) to sync.')
             ->expectsOutput('Syncing metadata for instance-lim-1 (Project: project-lim-1)...')
             ->assertExitCode(0);
+    }
+
+    public function test_it_skips_writing_when_metadata_already_matches(): void
+    {
+        $this->setupLagoonKey();
+
+        $store = PolydockStore::factory()->create();
+        $storeApp = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $store->id,
+        ]);
+
+        $instance = new PolydockAppInstance;
+        $instance->uuid = 'test-instance-skip-uuid';
+        $instance->polydock_store_app_id = $storeApp->id;
+        $instance->name = 'test-instance-skip';
+        $instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance->app_type = 'test_app_type';
+        $instance->data = [
+            'lagoon-project-name' => 'project-skip',
+            'user-email' => 'skip@example.com',
+        ];
+        $instance->saveQuietly();
+
+        $mock = \Mockery::mock(Client::class);
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
+        $mock->shouldReceive('initGraphqlClient')->once();
+
+        // getProjectByName returns exactly what we are about to set
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-skip')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'metadata' => [
+                        'email' => 'skip@example.com',
+                        'product-type' => 'generic',
+                        'polydock-env' => 'dev',
+                    ],
+                ],
+            ]);
+
+        // addOrUpdateProjectMetadataByKey should NOT be called at all!
+        $mock->shouldNotReceive('addOrUpdateProjectMetadataByKey');
+
+        $this->app->instance(Client::class, $mock);
+
+        $this->artisan('polydock:sync-metadata', [
+            '--uuid' => 'test-instance-skip-uuid',
+            '--force' => true,
+        ])
+            ->expectsOutput('Found 1 active app instance(s) to sync.')
+            ->expectsOutput('Syncing metadata for test-instance-skip (Project: project-skip)...')
+            ->expectsOutput('  - All metadata already in sync.')
+            ->assertExitCode(0);
+    }
+
+    public function test_it_handles_get_project_by_name_failure_leniently_and_proceeds_with_writes(): void
+    {
+        $this->setupLagoonKey();
+
+        $store = PolydockStore::factory()->create();
+        $storeApp = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $store->id,
+        ]);
+
+        $instance = new PolydockAppInstance;
+        $instance->uuid = 'test-instance-lenient-uuid';
+        $instance->polydock_store_app_id = $storeApp->id;
+        $instance->name = 'test-instance-lenient';
+        $instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance->app_type = 'test_app_type';
+        $instance->data = [
+            'lagoon-project-name' => 'project-lenient',
+            'user-email' => 'lenient@example.com',
+        ];
+        $instance->saveQuietly();
+
+        $mock = \Mockery::mock(Client::class);
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
+        $mock->shouldReceive('initGraphqlClient')->once();
+
+        // getProjectByName throws an exception (e.g. transient API failure)
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-lenient')
+            ->once()
+            ->andThrow(new \Exception('Connection timeout to GraphQL API'));
+
+        // It should proceed with safety writes because of our lenient handling!
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-lenient', 'email', 'lenient@example.com')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-lenient', 'product-type', 'generic')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-lenient', 'polydock-env', 'dev')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $this->app->instance(Client::class, $mock);
+
+        $this->artisan('polydock:sync-metadata', [
+            '--uuid' => 'test-instance-lenient-uuid',
+            '--force' => true,
+        ])
+            ->expectsOutput('Found 1 active app instance(s) to sync.')
+            ->expectsOutput('Syncing metadata for test-instance-lenient (Project: project-lenient)...')
+            ->expectsOutput('  - Failed to fetch existing project metadata: Connection timeout to GraphQL API. Proceeding with safety writes.')
+            ->expectsOutput('  - Set metadata: email => lenient@example.com')
+            ->expectsOutput('  - Set metadata: product-type => generic')
+            ->expectsOutput('  - Set metadata: polydock-env => dev')
+            ->assertExitCode(0);
+    }
+
+    public function test_it_restricts_get_authenticated_client_overrides(): void
+    {
+        $this->setupLagoonKey();
+
+        /** @var LagoonClientService $service */
+        $service = app(LagoonClientService::class);
+
+        // Call with allowed and non-allowed override keys
+        $client = $service->getAuthenticatedClient([
+            'timeout' => 99.0,
+            'connect_timeout' => 88.0,
+            'ssh_user' => 'malicious-user-hack', // Should be ignored/filtered out!
+            'endpoint' => 'https://malicious-endpoint.hack/graphql', // Should be ignored/filtered out!
+        ]);
+
+        // Use reflection to assert protected fields on Client
+        $refClient = new \ReflectionClass($client);
+
+        $propUser = $refClient->getProperty('lagoonSshUser');
+        $propUser->setAccessible(true);
+        // Should remain default 'lagoon' rather than 'malicious-user-hack'
+        $this->assertEquals('lagoon', $propUser->getValue($client));
+
+        $propEndpoint = $refClient->getProperty('lagoonApiEndpoint');
+        $propEndpoint->setAccessible(true);
+        // Should remain default value 'https://api.lagoon.amazeeio.cloud/graphql' rather than 'https://malicious-endpoint.hack/graphql'
+        $this->assertEquals('https://api.lagoon.amazeeio.cloud/graphql', $propEndpoint->getValue($client));
+
+        $propConfig = $refClient->getProperty('config');
+        $propConfig->setAccessible(true);
+        $config = $propConfig->getValue($client);
+
+        // Assert that the allowlisted overrides are preserved
+        $this->assertEquals(99.0, $config['timeout']);
+        $this->assertEquals(88.0, $config['connect_timeout']);
+
+        // Assert that the non-allowlisted override values were ignored/filtered out
+        $this->assertEquals('lagoon', $config['ssh_user'] ?? null);
+        $this->assertEquals('https://api.lagoon.amazeeio.cloud/graphql', $config['endpoint'] ?? null);
     }
 }

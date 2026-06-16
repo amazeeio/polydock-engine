@@ -515,7 +515,10 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $this->info(sprintf('Pushing Lagoon project metadata for project: %s', $projectName));
 
         try {
-            $client = app(LagoonClientService::class)->getAuthenticatedClient();
+            $client = app(LagoonClientService::class)->getAuthenticatedClient([
+                'timeout' => 30.0,
+                'connect_timeout' => 5.0,
+            ]);
         } catch (\Exception $e) {
             $this->warning('Failed to authenticate Lagoon client for metadata push: '.$e->getMessage());
 
@@ -545,7 +548,32 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
             'polydock-env' => $polydockEnv,
         ]);
 
+        $existingMetadata = [];
+        try {
+            $projectResponse = $client->getProjectByName($projectName);
+            $projectData = $projectResponse['projectByName'] ?? null;
+            if ($projectData === null) {
+                $this->warning('Project not found on Lagoon. Skipping metadata push.');
+
+                return;
+            }
+            if (! empty($projectData['metadata'])) {
+                if (is_array($projectData['metadata'])) {
+                    $existingMetadata = $projectData['metadata'];
+                } elseif (is_string($projectData['metadata'])) {
+                    $existingMetadata = json_decode($projectData['metadata'], true) ?: [];
+                }
+            }
+        } catch (\Exception $e) {
+            $this->warning(sprintf('Failed to fetch existing project metadata from Lagoon: %s. Proceeding with safety writes.', $e->getMessage()));
+        }
+
         foreach ($metadataPayload as $key => $value) {
+            $existingValue = $existingMetadata[$key] ?? null;
+            if ($existingValue !== null && (string) $existingValue === (string) $value) {
+                continue; // Skip writing if already in sync
+            }
+
             try {
                 $result = $client->addOrUpdateProjectMetadataByKey($projectName, $key, (string) $value);
                 if (isset($result['error'])) {

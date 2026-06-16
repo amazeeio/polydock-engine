@@ -13,9 +13,12 @@ class LagoonClientService
      *
      * @throws \Exception
      */
-    public function getAuthenticatedClient(): Client
+    public function getAuthenticatedClient(array $overrides = []): Client
     {
-        $clientConfig = $this->getClientConfig();
+        $allowedOverrideKeys = ['timeout', 'connect_timeout'];
+        $filteredOverrides = array_intersect_key($overrides, array_flip($allowedOverrideKeys));
+
+        $clientConfig = array_merge($this->getClientConfig(), $filteredOverrides);
 
         if (! $clientConfig['ssh_private_key_file'] || ! file_exists($clientConfig['ssh_private_key_file'])) {
             $msg = 'Global SSH private key not found at: '.($clientConfig['ssh_private_key_file'] ?: 'not set');
