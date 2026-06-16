@@ -30,6 +30,13 @@ abstract class BaseJob implements ShouldQueue
      */
     public $timeout = 180;
 
+    /**
+     * Indicate if the job should fail when the timeout is exceeded.
+     *
+     * @var bool
+     */
+    public $failOnTimeout = true;
+
     protected const OVERLAP_LOCK_SECONDS = 200;
 
     protected PolydockAppInstance $appInstance;

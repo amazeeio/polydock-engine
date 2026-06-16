@@ -660,4 +660,171 @@ class SyncLagoonMetadataTest extends TestCase
         $this->assertEquals('lagoon', $config['ssh_user'] ?? null);
         $this->assertEquals('https://api.lagoon.amazeeio.cloud/graphql', $config['endpoint'] ?? null);
     }
+
+    public function test_it_falls_back_to_update_project_metadata_on_schema_exceptions(): void
+    {
+        $this->setupLagoonKey();
+
+        $store = PolydockStore::factory()->create();
+        $storeApp = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $store->id,
+        ]);
+
+        $instance = new PolydockAppInstance;
+        $instance->uuid = 'test-instance-fallback-exception';
+        $instance->polydock_store_app_id = $storeApp->id;
+        $instance->name = 'test-instance-fallback-exception';
+        $instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance->app_type = 'test_app_type';
+        $instance->data = [
+            'lagoon-project-name' => 'project-fallback-exc',
+            'user-email' => 'fallback-exc@example.com',
+        ];
+        $instance->saveQuietly();
+
+        $mock = \Mockery::mock(Client::class);
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
+        $mock->shouldReceive('initGraphqlClient')->once();
+
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-fallback-exc')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'metadata' => [],
+                ],
+            ]);
+
+        // Mock addOrUpdateProjectMetadataByKey to throw schema unknown type exception for 'email'
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-fallback-exc', 'email', 'fallback-exc@example.com')
+            ->once()
+            ->andThrow(new \Exception('Unknown type "AddOrUpdateProjectMetadataByKeyInput".'));
+
+        // It should catch that exception and try updateProjectMetadata instead
+        $mock->shouldReceive('updateProjectMetadata')
+            ->with('project-fallback-exc', 'email', 'fallback-exc@example.com')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        // For other fields, let's also mock exceptions to verify all fields fallback properly
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-fallback-exc', 'product-type', 'generic')
+            ->once()
+            ->andThrow(new \Exception('Unknown type "AddOrUpdateProjectMetadataByKeyInput".'));
+
+        $mock->shouldReceive('updateProjectMetadata')
+            ->with('project-fallback-exc', 'product-type', 'generic')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-fallback-exc', 'polydock-env', 'dev')
+            ->once()
+            ->andThrow(new \Exception('Unknown type "AddOrUpdateProjectMetadataByKeyInput".'));
+
+        $mock->shouldReceive('updateProjectMetadata')
+            ->with('project-fallback-exc', 'polydock-env', 'dev')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $this->app->instance(Client::class, $mock);
+
+        $this->artisan('polydock:sync-metadata', [
+            '--uuid' => 'test-instance-fallback-exception',
+            '--force' => true,
+        ])
+            ->expectsOutput('Found 1 active app instance(s) to sync.')
+            ->expectsOutput('Syncing metadata for test-instance-fallback-exception (Project: project-fallback-exc)...')
+            ->expectsOutput('  - Set metadata: email => fallback-exc@example.com')
+            ->expectsOutput('  - Set metadata: product-type => generic')
+            ->expectsOutput('  - Set metadata: polydock-env => dev')
+            ->assertExitCode(0);
+    }
+
+    public function test_it_falls_back_to_update_project_metadata_on_graphql_error_response(): void
+    {
+        $this->setupLagoonKey();
+
+        $store = PolydockStore::factory()->create();
+        $storeApp = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $store->id,
+        ]);
+
+        $instance = new PolydockAppInstance;
+        $instance->uuid = 'test-instance-fallback-graphql';
+        $instance->polydock_store_app_id = $storeApp->id;
+        $instance->name = 'test-instance-fallback-graphql';
+        $instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance->app_type = 'test_app_type';
+        $instance->data = [
+            'lagoon-project-name' => 'project-fallback-gql',
+            'user-email' => 'fallback-gql@example.com',
+        ];
+        $instance->saveQuietly();
+
+        $mock = \Mockery::mock(Client::class);
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
+        $mock->shouldReceive('initGraphqlClient')->once();
+
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-fallback-gql')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'metadata' => [],
+                ],
+            ]);
+
+        // Mock addOrUpdateProjectMetadataByKey to return an error array with "AddOrUpdateProjectMetadataByKey"
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-fallback-gql', 'email', 'fallback-gql@example.com')
+            ->once()
+            ->andReturn([
+                'error' => 'Unknown mutation "AddOrUpdateProjectMetadataByKey"',
+            ]);
+
+        // It should try updateProjectMetadata
+        $mock->shouldReceive('updateProjectMetadata')
+            ->with('project-fallback-gql', 'email', 'fallback-gql@example.com')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-fallback-gql', 'product-type', 'generic')
+            ->once()
+            ->andReturn([
+                'error' => 'Unknown mutation "AddOrUpdateProjectMetadataByKey"',
+            ]);
+
+        $mock->shouldReceive('updateProjectMetadata')
+            ->with('project-fallback-gql', 'product-type', 'generic')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-fallback-gql', 'polydock-env', 'dev')
+            ->once()
+            ->andReturn([
+                'error' => 'Unknown mutation "AddOrUpdateProjectMetadataByKey"',
+            ]);
+
+        $mock->shouldReceive('updateProjectMetadata')
+            ->with('project-fallback-gql', 'polydock-env', 'dev')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $this->app->instance(Client::class, $mock);
+
+        $this->artisan('polydock:sync-metadata', [
+            '--uuid' => 'test-instance-fallback-graphql',
+            '--force' => true,
+        ])
+            ->expectsOutput('Found 1 active app instance(s) to sync.')
+            ->expectsOutput('Syncing metadata for test-instance-fallback-graphql (Project: project-fallback-gql)...')
+            ->expectsOutput('  - Set metadata: email => fallback-gql@example.com')
+            ->expectsOutput('  - Set metadata: product-type => generic')
+            ->expectsOutput('  - Set metadata: polydock-env => dev')
+            ->assertExitCode(0);
+    }
 }

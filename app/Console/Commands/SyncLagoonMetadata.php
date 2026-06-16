@@ -151,7 +151,25 @@ class SyncLagoonMetadata extends Command
                 }
 
                 try {
-                    $result = $client->addOrUpdateProjectMetadataByKey($projectName, $key, (string) $value);
+                    $result = null;
+                    try {
+                        $result = $client->addOrUpdateProjectMetadataByKey($projectName, $key, (string) $value);
+                        if (isset($result['error'])) {
+                            $errorStr = is_array($result['error']) ? json_encode($result['error']) : (string) $result['error'];
+                            if (str_contains($errorStr, 'AddOrUpdateProjectMetadataByKey') || str_contains($errorStr, 'addOrUpdateProjectMetadataByKey')) {
+                                $result = $client->updateProjectMetadata($projectName, $key, (string) $value);
+                            }
+                        }
+                    } catch (\Exception $e) {
+                        $errMsg = $e->getMessage();
+                        if (str_contains($errMsg, 'AddOrUpdateProjectMetadataByKey') || str_contains($errMsg, 'addOrUpdateProjectMetadataByKey')) {
+                            // Schema unknown error - try the standard updateProjectMetadata fallback
+                            $result = $client->updateProjectMetadata($projectName, $key, (string) $value);
+                        } else {
+                            throw $e;
+                        }
+                    }
+
                     if (isset($result['error'])) {
                         $errorMsg = is_array($result['error']) ? json_encode($result['error']) : $result['error'];
                         $this->error(sprintf('  - Failed to write metadata "%s": %s', $key, $errorMsg));
