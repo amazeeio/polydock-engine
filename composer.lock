@@ -1949,16 +1949,16 @@
         },
         {
             "name": "freedomtech-hosting/ft-lagoon-php",
-            "version": "v0.1.20",
+            "version": "v0.1.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/amazeeio/polydock-lagoon-php-lib.git",
-                "reference": "8d1fa1854e3b1ea72ce9c9c5defc9ab7afd9ff1c"
+                "reference": "2df4228ddecc515241252ca13fe21559dae84bc1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-lagoon-php-lib/zipball/8d1fa1854e3b1ea72ce9c9c5defc9ab7afd9ff1c",
-                "reference": "8d1fa1854e3b1ea72ce9c9c5defc9ab7afd9ff1c",
+                "url": "https://api.github.com/repos/amazeeio/polydock-lagoon-php-lib/zipball/2df4228ddecc515241252ca13fe21559dae84bc1",
+                "reference": "2df4228ddecc515241252ca13fe21559dae84bc1",
                 "shasum": ""
             },
             "require": {
@@ -1985,9 +1985,9 @@
             "description": "The Freedom Tech Lagoon PHP library",
             "support": {
                 "issues": "https://github.com/amazeeio/polydock-lagoon-php-lib/issues",
-                "source": "https://github.com/amazeeio/polydock-lagoon-php-lib/tree/v0.1.20"
+                "source": "https://github.com/amazeeio/polydock-lagoon-php-lib/tree/v0.1.21"
             },
-            "time": "2026-06-13T08:03:23+00:00"
+            "time": "2026-06-16T10:17:53+00:00"
         },
         {
             "name": "freedomtech-hosting/polydock-amazeeai-backend-client-php",
