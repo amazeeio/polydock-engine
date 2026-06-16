@@ -73,7 +73,10 @@ class SyncLagoonMetadata extends Command
 
         $client = null;
         try {
-            $client = app(LagoonClientService::class)->getAuthenticatedClient();
+            $client = app(LagoonClientService::class)->getAuthenticatedClient([
+                'timeout' => 60.0,
+                'connect_timeout' => 10.0,
+            ]);
         } catch (\Exception $e) {
             $this->error('Failed to authenticate Lagoon client: '.$e->getMessage());
 
@@ -117,8 +120,36 @@ class SyncLagoonMetadata extends Command
                 'polydock-env' => $polydockEnv,
             ]);
 
+            // Query Lagoon for current project details and metadata to check if changes exist
+            $existingMetadata = [];
+            try {
+                $projectResponse = $client->getProjectByName($projectName);
+                $projectData = $projectResponse['projectByName'] ?? null;
+                if ($projectData === null) {
+                    $this->error('  - Project not found on Lagoon.');
+                    $failedCount++;
+
+                    continue;
+                }
+                if (! empty($projectData['metadata'])) {
+                    if (is_array($projectData['metadata'])) {
+                        $existingMetadata = $projectData['metadata'];
+                    } elseif (is_string($projectData['metadata'])) {
+                        $existingMetadata = json_decode($projectData['metadata'], true) ?: [];
+                    }
+                }
+            } catch (\Exception $e) {
+                $this->warn(sprintf('  - Failed to fetch existing project metadata: %s. Proceeding with safety writes.', $e->getMessage()));
+            }
+
             $hasError = false;
+            $keysWritten = 0;
             foreach ($metadataPayload as $key => $value) {
+                $existingValue = $existingMetadata[$key] ?? null;
+                if ($existingValue !== null && (string) $existingValue === (string) $value) {
+                    continue; // Skip if already matches!
+                }
+
                 try {
                     $result = $client->addOrUpdateProjectMetadataByKey($projectName, $key, (string) $value);
                     if (isset($result['error'])) {
@@ -127,6 +158,7 @@ class SyncLagoonMetadata extends Command
                         $hasError = true;
                     } else {
                         $this->line(sprintf('  - Set metadata: %s => %s', $key, $value));
+                        $keysWritten++;
                     }
                 } catch (\Exception $e) {
                     $this->error(sprintf('  - Exception writing metadata "%s": %s', $key, $e->getMessage()));
@@ -138,6 +170,9 @@ class SyncLagoonMetadata extends Command
                 $failedCount++;
             } else {
                 $successCount++;
+                if ($keysWritten === 0) {
+                    $this->line('  - All metadata already in sync.');
+                }
             }
         }
 
