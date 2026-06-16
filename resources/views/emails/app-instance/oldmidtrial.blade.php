@@ -14,12 +14,12 @@ Thanks,<br>
 
 ---
 
-<x-mail::button :url="route('app-instances.show', $appInstance)">
+<x-mail::button :url="URL::signedRoute('app-instances.show', ['appInstance' => $appInstance])">
 Access Your {{ $appInstance->storeApp->name }} Instance
 </x-mail::button>
 
 **Access Details:**
-- Access URL: <a href="{{ route('app-instances.show', $appInstance) }}">{{ route('app-instances.show', $appInstance) }}</a>
+- Access URL: <a href="{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}">{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}</a>
 
 Login Credentials: 
 - Username: @if($appInstance->getGeneratedAppAdminUsername()) {{ $appInstance->getGeneratedAppAdminUsername() }} @else **missing - please contact support** @endif 

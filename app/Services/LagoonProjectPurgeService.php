@@ -87,6 +87,16 @@ class LagoonProjectPurgeService
     }
 
     /**
+     * Check if a Lagoon environment is considered active (not deleted).
+     */
+    public static function isActiveEnvironment(array $env): bool
+    {
+        $deleted = $env['deleted'] ?? null;
+
+        return $deleted === null || $deleted === '' || $deleted === '0000-00-00 00:00:00';
+    }
+
+    /**
      * Make one attempt to fully delete the Lagoon project.
      *
      * Behavior:
@@ -112,6 +122,10 @@ class LagoonProjectPurgeService
 
         try {
             $projectData = $this->getProjectByName($projectName);
+
+            if (is_array($projectData) && array_key_exists('projectByName', $projectData)) {
+                $projectData = $projectData['projectByName'];
+            }
         } catch (Throwable $e) {
             $this->lastFailureReason = 'getProjectByName threw: '.$e->getMessage();
             $this->logger->error('Failed to fetch Lagoon project for purge', [
@@ -166,7 +180,13 @@ class LagoonProjectPurgeService
         }
 
         $environments = $projectData['environments'];
-        $this->lastEnvironmentCount = count($environments);
+
+        // Filter out environments that are already deleted in Lagoon.
+        // Lagoon GraphQL returns both active and deleted environments in the list.
+        // Deleted environments have a non-null, non-empty, and non-zero 'deleted' timestamp.
+        $activeEnvironments = array_filter($environments, [self::class, 'isActiveEnvironment']);
+
+        $this->lastEnvironmentCount = count($activeEnvironments);
 
         if ($this->lastEnvironmentCount > 0) {
             // Actively delete each lingering environment.
@@ -176,19 +196,28 @@ class LagoonProjectPurgeService
                 'environment_count' => $this->lastEnvironmentCount,
             ]);
 
-            foreach ($environments as $env) {
+            foreach ($activeEnvironments as $env) {
                 $envName = $env['name'] ?? null;
                 if ($envName === null) {
                     continue;
                 }
 
                 try {
-                    $this->client()->deleteProjectEnvironmentByName($projectName, $envName);
-                    $this->logger->info('Deleted lingering environment', [
-                        'app_instance_id' => $instance->id,
-                        'project_name' => $projectName,
-                        'environment' => $envName,
-                    ]);
+                    $deleteResponse = $this->client()->deleteProjectEnvironmentByName($projectName, $envName);
+                    if (isset($deleteResponse['error'])) {
+                        $this->logger->warning('Failed to delete lingering environment', [
+                            'app_instance_id' => $instance->id,
+                            'project_name' => $projectName,
+                            'environment' => $envName,
+                            'error' => json_encode($deleteResponse['error']),
+                        ]);
+                    } else {
+                        $this->logger->info('Deleted lingering environment', [
+                            'app_instance_id' => $instance->id,
+                            'project_name' => $projectName,
+                            'environment' => $envName,
+                        ]);
+                    }
                 } catch (Throwable $e) {
                     $this->logger->warning('Failed to delete lingering environment', [
                         'app_instance_id' => $instance->id,

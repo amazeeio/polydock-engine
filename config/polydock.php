@@ -14,6 +14,8 @@ $serviceProviderSingletons = [
         'ssh_server' => env('FTLAGOON_SSH_SERVER', 'ssh.lagoon.amazeeio.cloud'),
         'ssh_port' => env('FTLAGOON_SSH_PORT', '32222'),
         'endpoint' => env('FTLAGOON_ENDPOINT', 'https://api.lagoon.amazeeio.cloud/graphql'),
+        'connect_timeout' => (float) env('FTLAGOON_CONNECT_TIMEOUT', 5.0),
+        'timeout' => (float) env('FTLAGOON_TIMEOUT', 60.0),
     ],
 ];
 
@@ -49,6 +51,8 @@ $aisettings = [
 ];
 
 return [
+    'health_token' => env('POLYDOCK_HEALTH_TOKEN'),
+    'lagoon_environment_type' => env('LAGOON_ENVIRONMENT_TYPE', 'development'),
     'default_user_group_id_for_unallocated_instances' => env('POLYDOCK_DEFAULT_USER_GROUP_ID_FOR_UNALLOCATED_INSTANCES', 1),
     'amazee_ai_backend_private_gpt_settings' => $aisettings,
     'max_per_run_dispatch_midtrial_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_MIDTRIAL_EMAILS', 25),

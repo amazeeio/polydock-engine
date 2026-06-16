@@ -123,8 +123,12 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         $this->LagoonClient->initGraphqlClient();
 
         if ($debug) {
-            $whoAmIData = $this->LagoonClient->whoAmI();
-            $this->debug('Logged into lagoon: '.json_encode($whoAmIData));
+            try {
+                $whoAmIData = $this->LagoonClient->whoAmI();
+                $this->debug('Logged into lagoon: '.json_encode($whoAmIData));
+            } catch (Throwable $e) {
+                $this->warning('Debug login check (whoAmI) failed or timed out: '.$e->getMessage());
+            }
         }
     }
 

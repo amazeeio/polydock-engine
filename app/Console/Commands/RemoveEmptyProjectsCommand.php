@@ -72,7 +72,8 @@ class RemoveEmptyProjectsCommand extends Command
             }
 
             if ($projectProbe['status'] === 'missing') {
-                $this->line("- Project '{$projectName}' no longer exists in Lagoon");
+                $candidates->push($instance);
+                $this->line("✓ Project '{$projectName}' no longer exists in Lagoon (will remove locally)");
 
                 continue;
             }
@@ -193,6 +194,10 @@ class RemoveEmptyProjectsCommand extends Command
     {
         try {
             $data = $service->getProjectByName($projectName);
+
+            if (is_array($data) && array_key_exists('projectByName', $data)) {
+                $data = $data['projectByName'];
+            }
             if (empty($data)) {
                 return ['status' => 'missing'];
             }
@@ -215,13 +220,16 @@ class RemoveEmptyProjectsCommand extends Command
                 return null;
             }
 
-            $environmentCount = count($data['environments']);
+            $environments = $data['environments'];
+            $activeEnvironments = array_filter($environments, [LagoonProjectPurgeService::class, 'isActiveEnvironment']);
 
-            if ($environmentCount === 0) {
+            $activeEnvironmentCount = count($activeEnvironments);
+
+            if ($activeEnvironmentCount === 0) {
                 return ['status' => 'empty', 'environment_count' => 0];
             }
 
-            return ['status' => 'has_environments', 'environment_count' => $environmentCount];
+            return ['status' => 'has_environments', 'environment_count' => $activeEnvironmentCount];
         } catch (\Throwable $e) {
             $this->error("Probe failed for {$projectName}: {$e->getMessage()}");
 

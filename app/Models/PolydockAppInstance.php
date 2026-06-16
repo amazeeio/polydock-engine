@@ -621,6 +621,27 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
+     * Eloquent mutator to safely truncate status messages before writing to DB.
+     */
+    public function setStatusMessageAttribute($value): void
+    {
+        if ($value === null) {
+            $this->attributes['status_message'] = null;
+
+            return;
+        }
+
+        $string = (string) $value;
+        $maxBytes = 2000; // Safe limit for status messages (approx 500-2000 chars)
+
+        if (strlen($string) > $maxBytes) {
+            $this->attributes['status_message'] = mb_strcut($string, 0, $maxBytes - 3, 'UTF-8').'...';
+        } else {
+            $this->attributes['status_message'] = $string;
+        }
+    }
+
+    /**
      * Get the status message of the app instance
      *
      * @return string The status message
@@ -639,6 +660,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function storeKeyValue(string $key, $value): PolydockAppInstanceInterface
     {
+        if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
+            $value = $this->stripTokenFromUrl((string) $value);
+        }
+
         $resultData = $this->data ?? [];
         data_set($resultData, $key, $value);
         $this->data = $resultData;
@@ -647,15 +672,44 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this;
     }
 
-    /**
-     * Get a stored value by key
-     *
-     * @param  string  $key  The key to retrieve
-     * @return mixed The stored value, or empty string if not found
-     */
     public function getKeyValue(string $key): mixed
     {
-        return data_get($this->data, $key, '');
+        $value = data_get($this->data, $key, '');
+
+        if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
+            $token = config('polydock.health_token');
+            if (! empty($token)) {
+                $value = $this->stripTokenFromUrl((string) $value);
+                $separator = str_contains((string) $value, '?') ? '&' : '?';
+
+                return $value.$separator.'token='.urlencode($token);
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * Reconstructs the URL with the 'token' query parameter removed if present.
+     */
+    private function stripTokenFromUrl(string $url): string
+    {
+        $parsedUrl = parse_url($url);
+        if (isset($parsedUrl['query'])) {
+            parse_str($parsedUrl['query'], $queryParams);
+            if (isset($queryParams['token'])) {
+                unset($queryParams['token']);
+                $queryString = http_build_query($queryParams);
+                $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '';
+                $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+                $port = isset($parsedUrl['port']) ? ':'.$parsedUrl['port'] : '';
+                $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
+
+                return $scheme.$host.$port.$path.($queryString !== '' ? '?'.$queryString : '');
+            }
+        }
+
+        return $url;
     }
 
     /**

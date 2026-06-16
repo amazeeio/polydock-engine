@@ -17,7 +17,7 @@
         "amazeeio/polydock-app-anythingllm": "^0.1.6",
         "amazeeio/polydock-app-dependency-track": "^0.1.1",
         "bezhansalleh/filament-shield": "^3.9",
-        "dedoc/scramble": "^0.13",
+        "dedoc/scramble": "^0.13.28",
         "evanschleret/lara-mjml": "^0.3.0",
         "filament/filament": "^3.2",
         "freedomtech-hosting/ft-lagoon-php": "^0.1",

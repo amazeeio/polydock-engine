@@ -4,7 +4,7 @@ Hi {{ e($toUser->name) }},
 <h2 style="margin-bottom: 16px;">Your <em>"{{ $appInstance->storeApp->name }}"</em> Experience is now ready to use.</h2>
 
 @if($appInstance->getKeyValue('hide-login-email-info') != 'true')
-<x-mail::button :url="route('app-instances.show', $appInstance)">
+<x-mail::button :url="URL::signedRoute('app-instances.show', ['appInstance' => $appInstance])">
     Access Your Experience
 </x-mail::button>
 @else
@@ -19,7 +19,7 @@ Hi {{ e($toUser->name) }},
     <li>Duration: {{ $appInstance->storeApp->trial_duration_days }} days</li>
 @endif
 @if($appInstance->getKeyValue('hide-login-email-info') != 'true')
-    <li>Access URL: <a href="{{ route('app-instances.show', $appInstance) }}">{{ route('app-instances.show', $appInstance) }}</a></li>
+    <li>Access URL: <a href="{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}">{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}</a></li>
 @else
     <li>Access URL: <a href="{{ $appInstance->app_url }}">{{ $appInstance->app_url }}</a></li>
 @endif

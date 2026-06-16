@@ -80,7 +80,9 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property string|null $lagoon_production_environment
  * @property bool $refresh_unallocated_instances
  * @property int $refresh_unallocated_instances_after_days
+ * @property int|null $polydock_product_type_id
  * @property PolydockStore $store
+ * @property PolydockProductType|null $productType
  * @property Collection|PolydockAppInstance[] $instances
  * @property Collection|PolydockAppInstance[] $unallocatedInstances
  * @property Collection|PolydockAppInstance[] $allocatedInstances
@@ -140,6 +142,7 @@ class PolydockStoreApp extends Model
         'lagoon_pre_remove_container',
         'lagoon_remove_service',
         'lagoon_remove_container',
+        'polydock_product_type_id',
     ];
 
     protected $casts = [
@@ -150,6 +153,15 @@ class PolydockStoreApp extends Model
         'send_midtrial_email' => 'boolean',
         'send_one_day_left_email' => 'boolean',
         'send_trial_complete_email' => 'boolean',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
+    protected $hidden = [
+        'lagoon_deploy_private_key',
     ];
 
     public function getActivitylogOptions(): LogOptions
@@ -179,7 +191,6 @@ class PolydockStoreApp extends Model
         'lagoon_deploy_region_id_ext',
         'lagoon_deploy_project_prefix',
         'lagoon_deploy_organization_id_ext',
-        'lagoon_deploy_private_key',
         'amazee_ai_backend_region_id_ext',
         'unallocated_instances_count',
         'needs_more_unallocated_instances',
@@ -217,6 +228,11 @@ class PolydockStoreApp extends Model
     public function store(): BelongsTo
     {
         return $this->belongsTo(PolydockStore::class, 'polydock_store_id');
+    }
+
+    public function productType(): BelongsTo
+    {
+        return $this->belongsTo(PolydockProductType::class, 'polydock_product_type_id');
     }
 
     /**
@@ -276,6 +292,10 @@ class PolydockStoreApp extends Model
      */
     public function getUnallocatedInstancesCountAttribute(): int
     {
+        if (array_key_exists('unallocated_instances_count', $this->attributes)) {
+            return (int) $this->attributes['unallocated_instances_count'];
+        }
+
         return $this->instances()
             ->whereNull('user_group_id')
             ->where(function ($query) {

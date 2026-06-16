@@ -1,6 +1,6 @@
 <mj-section padding="0">
   <mj-column>
-    <mj-button href="{{ route('app-instances.show', $appInstance) }}" color="#000" background-color="#00b6ed">
+    <mj-button href="{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}" color="#000" background-color="#00b6ed">
       Access Your {{ $appInstance->storeApp->name }} Instance
     </mj-button>
   </mj-column>
@@ -17,7 +17,7 @@
 <mj-section>
   <mj-column>
     <mj-text margin-bottom="8px" color="#1a202c">
-      <strong>Access URL:</strong> <a href="{{ route('app-instances.show', $appInstance) }}" style="color: #0891b2; text-decoration: none;">{{ route('app-instances.show', $appInstance) }}</a>
+      <strong>Access URL:</strong> <a href="{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}" style="color: #0891b2; text-decoration: none;">{{ URL::signedRoute('app-instances.show', ['appInstance' => $appInstance]) }}</a>
     </mj-text>
   </mj-column>
 </mj-section>
