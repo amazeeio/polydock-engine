@@ -110,27 +110,27 @@ class SyncLagoonMetadataTest extends TestCase
             ]);
 
         // Expect metadata syncs
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-1', 'email', 'test@example.com')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-1', 'product-type', 'amazee-claw')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-1', 'firstname', 'John')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-1', 'lastname', 'Doe')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-1', 'polydock-env', 'dev')
             ->once()
             ->andReturn(['id' => 1]);
@@ -192,17 +192,17 @@ class SyncLagoonMetadataTest extends TestCase
                 ],
             ]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-2', 'email', 'two@example.com')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-2', 'product-type', 'generic')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-2', 'polydock-env', 'dev')
             ->once()
             ->andReturn(['id' => 1]);
@@ -255,18 +255,18 @@ class SyncLagoonMetadataTest extends TestCase
                 ],
             ]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-prod', 'email', 'prod@example.com')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-prod', 'product-type', 'generic')
             ->once()
             ->andReturn(['id' => 1]);
 
         // Expect polydock-env to be prod
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-prod', 'polydock-env', 'prod')
             ->once()
             ->andReturn(['id' => 1]);
@@ -332,17 +332,17 @@ class SyncLagoonMetadataTest extends TestCase
                 ],
             ]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-app-2', 'email', 'app2@example.com')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-app-2', 'product-type', 'generic')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-app-2', 'polydock-env', 'dev')
             ->once()
             ->andReturn(['id' => 1]);
@@ -405,17 +405,17 @@ class SyncLagoonMetadataTest extends TestCase
                 ],
             ]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-email-1', 'email', 'target@example.com')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-email-1', 'product-type', 'generic')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-email-1', 'polydock-env', 'dev')
             ->once()
             ->andReturn(['id' => 1]);
@@ -478,17 +478,17 @@ class SyncLagoonMetadataTest extends TestCase
                 ],
             ]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-lim-1', 'email', 'lim1@example.com')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-lim-1', 'product-type', 'generic')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-lim-1', 'polydock-env', 'dev')
             ->once()
             ->andReturn(['id' => 1]);
@@ -543,8 +543,8 @@ class SyncLagoonMetadataTest extends TestCase
                 ],
             ]);
 
-        // addOrUpdateProjectMetadataByKey should NOT be called at all!
-        $mock->shouldNotReceive('addOrUpdateProjectMetadataByKey');
+        // updateProjectMetadata should NOT be called at all!
+        $mock->shouldNotReceive('updateProjectMetadata');
 
         $this->app->instance(Client::class, $mock);
 
@@ -590,17 +590,17 @@ class SyncLagoonMetadataTest extends TestCase
             ->andThrow(new \Exception('Connection timeout to GraphQL API'));
 
         // It should proceed with safety writes because of our lenient handling!
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-lenient', 'email', 'lenient@example.com')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-lenient', 'product-type', 'generic')
             ->once()
             ->andReturn(['id' => 1]);
 
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+        $mock->shouldReceive('updateProjectMetadata')
             ->with('project-lenient', 'polydock-env', 'dev')
             ->once()
             ->andReturn(['id' => 1]);
@@ -659,172 +659,5 @@ class SyncLagoonMetadataTest extends TestCase
         // Assert that the non-allowlisted override values were ignored/filtered out
         $this->assertEquals('lagoon', $config['ssh_user'] ?? null);
         $this->assertEquals('https://api.lagoon.amazeeio.cloud/graphql', $config['endpoint'] ?? null);
-    }
-
-    public function test_it_falls_back_to_update_project_metadata_on_schema_exceptions(): void
-    {
-        $this->setupLagoonKey();
-
-        $store = PolydockStore::factory()->create();
-        $storeApp = PolydockStoreApp::factory()->create([
-            'polydock_store_id' => $store->id,
-        ]);
-
-        $instance = new PolydockAppInstance;
-        $instance->uuid = 'test-instance-fallback-exception';
-        $instance->polydock_store_app_id = $storeApp->id;
-        $instance->name = 'test-instance-fallback-exception';
-        $instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
-        $instance->app_type = 'test_app_type';
-        $instance->data = [
-            'lagoon-project-name' => 'project-fallback-exc',
-            'user-email' => 'fallback-exc@example.com',
-        ];
-        $instance->saveQuietly();
-
-        $mock = \Mockery::mock(Client::class);
-        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
-        $mock->shouldReceive('initGraphqlClient')->once();
-
-        $mock->shouldReceive('getProjectByName')
-            ->with('project-fallback-exc')
-            ->once()
-            ->andReturn([
-                'projectByName' => [
-                    'metadata' => [],
-                ],
-            ]);
-
-        // Mock addOrUpdateProjectMetadataByKey to throw schema unknown type exception for 'email'
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
-            ->with('project-fallback-exc', 'email', 'fallback-exc@example.com')
-            ->once()
-            ->andThrow(new \Exception('Unknown type "AddOrUpdateProjectMetadataByKeyInput".'));
-
-        // It should catch that exception and try updateProjectMetadata instead
-        $mock->shouldReceive('updateProjectMetadata')
-            ->with('project-fallback-exc', 'email', 'fallback-exc@example.com')
-            ->once()
-            ->andReturn(['id' => 1]);
-
-        // For other fields, let's also mock exceptions to verify all fields fallback properly
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
-            ->with('project-fallback-exc', 'product-type', 'generic')
-            ->once()
-            ->andThrow(new \Exception('Unknown type "AddOrUpdateProjectMetadataByKeyInput".'));
-
-        $mock->shouldReceive('updateProjectMetadata')
-            ->with('project-fallback-exc', 'product-type', 'generic')
-            ->once()
-            ->andReturn(['id' => 1]);
-
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
-            ->with('project-fallback-exc', 'polydock-env', 'dev')
-            ->once()
-            ->andThrow(new \Exception('Unknown type "AddOrUpdateProjectMetadataByKeyInput".'));
-
-        $mock->shouldReceive('updateProjectMetadata')
-            ->with('project-fallback-exc', 'polydock-env', 'dev')
-            ->once()
-            ->andReturn(['id' => 1]);
-
-        $this->app->instance(Client::class, $mock);
-
-        $this->artisan('polydock:sync-metadata', [
-            '--uuid' => 'test-instance-fallback-exception',
-            '--force' => true,
-        ])
-            ->expectsOutput('Found 1 active app instance(s) to sync.')
-            ->expectsOutput('Syncing metadata for test-instance-fallback-exception (Project: project-fallback-exc)...')
-            ->expectsOutput('  - Set metadata: email => fallback-exc@example.com')
-            ->expectsOutput('  - Set metadata: product-type => generic')
-            ->expectsOutput('  - Set metadata: polydock-env => dev')
-            ->assertExitCode(0);
-    }
-
-    public function test_it_falls_back_to_update_project_metadata_on_graphql_error_response(): void
-    {
-        $this->setupLagoonKey();
-
-        $store = PolydockStore::factory()->create();
-        $storeApp = PolydockStoreApp::factory()->create([
-            'polydock_store_id' => $store->id,
-        ]);
-
-        $instance = new PolydockAppInstance;
-        $instance->uuid = 'test-instance-fallback-graphql';
-        $instance->polydock_store_app_id = $storeApp->id;
-        $instance->name = 'test-instance-fallback-graphql';
-        $instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
-        $instance->app_type = 'test_app_type';
-        $instance->data = [
-            'lagoon-project-name' => 'project-fallback-gql',
-            'user-email' => 'fallback-gql@example.com',
-        ];
-        $instance->saveQuietly();
-
-        $mock = \Mockery::mock(Client::class);
-        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
-        $mock->shouldReceive('initGraphqlClient')->once();
-
-        $mock->shouldReceive('getProjectByName')
-            ->with('project-fallback-gql')
-            ->once()
-            ->andReturn([
-                'projectByName' => [
-                    'metadata' => [],
-                ],
-            ]);
-
-        // Mock addOrUpdateProjectMetadataByKey to return an error array with "AddOrUpdateProjectMetadataByKey"
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
-            ->with('project-fallback-gql', 'email', 'fallback-gql@example.com')
-            ->once()
-            ->andReturn([
-                'error' => 'Unknown mutation "AddOrUpdateProjectMetadataByKey"',
-            ]);
-
-        // It should try updateProjectMetadata
-        $mock->shouldReceive('updateProjectMetadata')
-            ->with('project-fallback-gql', 'email', 'fallback-gql@example.com')
-            ->once()
-            ->andReturn(['id' => 1]);
-
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
-            ->with('project-fallback-gql', 'product-type', 'generic')
-            ->once()
-            ->andReturn([
-                'error' => 'Unknown mutation "AddOrUpdateProjectMetadataByKey"',
-            ]);
-
-        $mock->shouldReceive('updateProjectMetadata')
-            ->with('project-fallback-gql', 'product-type', 'generic')
-            ->once()
-            ->andReturn(['id' => 1]);
-
-        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
-            ->with('project-fallback-gql', 'polydock-env', 'dev')
-            ->once()
-            ->andReturn([
-                'error' => 'Unknown mutation "AddOrUpdateProjectMetadataByKey"',
-            ]);
-
-        $mock->shouldReceive('updateProjectMetadata')
-            ->with('project-fallback-gql', 'polydock-env', 'dev')
-            ->once()
-            ->andReturn(['id' => 1]);
-
-        $this->app->instance(Client::class, $mock);
-
-        $this->artisan('polydock:sync-metadata', [
-            '--uuid' => 'test-instance-fallback-graphql',
-            '--force' => true,
-        ])
-            ->expectsOutput('Found 1 active app instance(s) to sync.')
-            ->expectsOutput('Syncing metadata for test-instance-fallback-graphql (Project: project-fallback-gql)...')
-            ->expectsOutput('  - Set metadata: email => fallback-gql@example.com')
-            ->expectsOutput('  - Set metadata: product-type => generic')
-            ->expectsOutput('  - Set metadata: polydock-env => dev')
-            ->assertExitCode(0);
     }
 }
