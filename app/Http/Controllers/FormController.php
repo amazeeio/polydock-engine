@@ -73,13 +73,13 @@ class FormController extends Controller
             'form' => $form,
             'regions' => $regions,
             'regionsData' => $regionsData,
-            'recaptchaSiteKey' => config('services.recaptcha.sitekey') ?? env('NOCAPTCHA_SITEKEY'),
+            'recaptchaSiteKey' => config('services.recaptcha.sitekey'),
         ]);
 
-        // Inject secure framing headers based on allowed domains
-        $domains = implode(' ', $form->getAllowedEmbedDomains());
+        // Inject secure framing headers based on allowed origins
+        $origins = implode(' ', $form->getAllowedEmbedOrigins());
         $response->headers->remove('X-Frame-Options');
-        $response->headers->set('Content-Security-Policy', "frame-ancestors 'self' {$domains}");
+        $response->headers->set('Content-Security-Policy', "frame-ancestors 'self' {$origins}");
 
         return $response;
     }
@@ -120,7 +120,7 @@ class FormController extends Controller
                 ], Response::HTTP_UNPROCESSABLE_ENTITY);
             }
 
-            $secretKey = config('services.recaptcha.secret') ?? env('NOCAPTCHA_SECRET');
+            $secretKey = config('services.recaptcha.secret');
 
             try {
                 $recaptchaResponse = Http::asForm()->post('https://www.google.com/recaptcha/api/siteverify', [

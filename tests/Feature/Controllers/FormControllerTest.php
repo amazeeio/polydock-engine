@@ -18,6 +18,9 @@ class FormControllerTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected PolydockStoreApp $storeApp;
+
+    #[\Override]
     protected function setUp(): void
     {
         parent::setUp();
@@ -35,6 +38,29 @@ class FormControllerTest extends TestCase
                 return Http::response(['success' => true]);
             },
         ]);
+
+        // Create sample public store and available trial app in the database
+        $store = PolydockStore::create([
+            'name' => 'Europe Store',
+            'status' => PolydockStoreStatusEnum::PUBLIC,
+            'listed_in_marketplace' => true,
+            'lagoon_deploy_region_id_ext' => '1',
+            'lagoon_deploy_project_prefix' => 'ft-eu',
+            'lagoon_deploy_organization_id_ext' => '123',
+        ]);
+
+        $this->storeApp = PolydockStoreApp::create([
+            'polydock_store_id' => $store->id,
+            'name' => 'CKEditor Demo',
+            'polydock_app_class' => 'App\\PolydockApp',
+            'lagoon_deploy_git' => 'git@github.com:example/app.git',
+            'lagoon_deploy_branch' => 'main',
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
+            'available_for_trials' => true,
+            'support_email' => 'support@example.com',
+            'author' => 'Test Author',
+            'description' => 'Test Description',
+        ]);
     }
 
     /** @test */
@@ -48,29 +74,6 @@ class FormControllerTest extends TestCase
     /** @test */
     public function it_renders_the_hosted_form_correctly_with_security_headers()
     {
-        // Create sample store and app
-        $store = PolydockStore::create([
-            'name' => 'Europe Store',
-            'status' => PolydockStoreStatusEnum::PUBLIC,
-            'listed_in_marketplace' => true,
-            'lagoon_deploy_region_id_ext' => '1',
-            'lagoon_deploy_project_prefix' => 'ft-eu',
-            'lagoon_deploy_organization_id_ext' => '123',
-        ]);
-
-        $app = PolydockStoreApp::create([
-            'polydock_store_id' => $store->id,
-            'name' => 'CKEditor Demo',
-            'polydock_app_class' => 'App\\PolydockApp',
-            'lagoon_deploy_git' => 'git@github.com:example/app.git',
-            'lagoon_deploy_branch' => 'main',
-            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
-            'available_for_trials' => true,
-            'support_email' => 'support@example.com',
-            'author' => 'Test Author',
-            'description' => 'Test Description',
-        ]);
-
         $response = $this->get('/f/drupal-ai-demo');
 
         $response->assertStatus(200);
@@ -80,7 +83,7 @@ class FormControllerTest extends TestCase
 
         // Check framing security headers are set properly
         $response->assertHeaderMissing('X-Frame-Options');
-        $response->assertHeader('Content-Security-Policy', "frame-ancestors 'self' amazee.ai www.amazee.ai localhost");
+        $response->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai http://localhost");
     }
 
     /** @test */
@@ -108,7 +111,7 @@ class FormControllerTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
-            'trial_app' => '3aba2790-b1e9-47d4-b86d-06ffa4790895',
+            'trial_app' => $this->storeApp->uuid,
             'recaptcha' => 'invalid-token',
         ]);
 
@@ -131,7 +134,7 @@ class FormControllerTest extends TestCase
             'country' => 'United States',
             'stage_in_ai_adoption' => 'just-curious',
             'interest_in_drupal_ai' => 'General testing',
-            'trial_app' => '3aba2790-b1e9-47d4-b86d-06ffa4790895',
+            'trial_app' => $this->storeApp->uuid,
             'recaptcha' => 'valid-mock-token',
         ]);
 
@@ -156,9 +159,24 @@ class FormControllerTest extends TestCase
         $this->assertEquals('Doe', $registration->getRequestValue('last_name'));
         $this->assertEquals('Acme Corp', $registration->getRequestValue('company_name'));
         $this->assertEquals('just-curious', $registration->getRequestValue('instance_config_stage_in_ai_adoption'));
-        $this->assertEquals('3aba2790-b1e9-47d4-b86d-06ffa4790895', $registration->getRequestValue('trial_app'));
+        $this->assertEquals($this->storeApp->uuid, $registration->getRequestValue('trial_app'));
 
         // Verify registration background job was pushed
         Queue::assertPushed(ProcessUserRemoteRegistration::class);
+    }
+
+    /** @test */
+    public function it_rejects_submitting_form_with_invalid_trial_app_uuid()
+    {
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'trial_app' => '00000000-0000-0000-0000-000000000000', // Valid UUID structure but non-existent app
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertStringContainsString('selected trial app is invalid', $response->json('message'));
     }
 }

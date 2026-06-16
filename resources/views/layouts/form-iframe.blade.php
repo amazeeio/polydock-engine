@@ -22,12 +22,16 @@
     <!-- Auto-resizing script for seamless parent-iframe integration -->
     <script>
         (function() {
+            const allowedOrigins = @json($form->getAllowedEmbedOrigins());
+
             function sendHeight() {
                 const height = document.documentElement.offsetHeight || document.body.offsetHeight;
-                window.parent.postMessage({
-                    type: 'polydock-iframe-resize',
-                    height: height
-                }, '*');
+                allowedOrigins.forEach(function(origin) {
+                    window.parent.postMessage({
+                        type: 'polydock-iframe-resize',
+                        height: height
+                    }, origin);
+                });
             }
 
             window.addEventListener('load', sendHeight);
@@ -45,8 +49,12 @@
                 });
             }
 
-            // Periodically check just in case
-            setInterval(sendHeight, 1000);
+            // Periodically check just in case — fire a few times then stop
+            let heartbeatCount = 0;
+            const heartbeat = setInterval(function() {
+                sendHeight();
+                if (++heartbeatCount >= 10) clearInterval(heartbeat);
+            }, 1000);
         })();
     </script>
     @yield('scripts')

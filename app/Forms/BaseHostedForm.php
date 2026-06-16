@@ -19,17 +19,34 @@ abstract class BaseHostedForm implements HostedFormInterface
     #[\Override]
     public function getAllowedEmbedDomains(): array
     {
-        return [
+        $domains = [
             'amazee.ai',
             'www.amazee.ai',
-            'localhost',
         ];
+
+        if (! app()->isProduction()) {
+            $domains[] = 'localhost';
+        }
+
+        return $domains;
     }
 
     #[\Override]
     public function getRecaptchaEnabled(): bool
     {
         return true;
+    }
+
+    #[\Override]
+    public function getAllowedEmbedOrigins(): array
+    {
+        return array_map(function ($domain) {
+            if ($domain === 'localhost') {
+                return 'http://localhost';
+            }
+
+            return "https://{$domain}";
+        }, $this->getAllowedEmbedDomains());
     }
 
     /**

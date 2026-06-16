@@ -678,8 +678,12 @@
                 })
                 .catch(err => {
                     console.error('Polling error:', err);
-                    // Continue polling despite minor network hiccups
-                    setTimeout(checkStatus, pollInterval);
+                    // Continue polling despite minor network hiccups, but still respect the timeout
+                    if (Date.now() - startTime < timeout) {
+                        setTimeout(checkStatus, pollInterval);
+                    } else {
+                        renderDelayScreen();
+                    }
                 });
             }
 

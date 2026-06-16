@@ -25,4 +25,6 @@ Route::get('/app-instances/{appInstance}', function (PolydockAppInstance $appIns
 })->name('app-instances.show')->middleware('signed');
 
 Route::get('/f/{formSlug}', [FormController::class, 'show'])->name('forms.show');
-Route::post('/f/{formSlug}', [FormController::class, 'submit'])->name('forms.submit');
+Route::post('/f/{formSlug}', [FormController::class, 'submit'])
+    ->name('forms.submit')
+    ->middleware('throttle:10,1');

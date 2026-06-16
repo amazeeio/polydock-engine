@@ -45,6 +45,11 @@ interface HostedFormInterface
     public function getViewName(): string;
 
     /**
+     * Get whitelisted parent origins allowed to iframe this form (including protocol).
+     */
+    public function getAllowedEmbedOrigins(): array;
+
+    /**
      * Map the form submission input array to the structure required by UserRemoteRegistration.
      */
     public function transformPayload(array $validatedData): array;
