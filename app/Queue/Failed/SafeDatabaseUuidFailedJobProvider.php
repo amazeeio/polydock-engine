@@ -29,7 +29,7 @@ class SafeDatabaseUuidFailedJobProvider extends DatabaseUuidFailedJobProvider
             // 3. SQLite specific unique constraint failure message
             // 4. PostgreSQL / Generic unique constraint failure message
             if ($code == 23000 ||
-                str_contains($message, '1062') ||
+                str_contains($message, '1062 Duplicate entry') ||
                 str_contains($message, 'Duplicate entry') ||
                 str_contains($message, 'UNIQUE constraint failed') ||
                 str_contains(strtolower($message), 'unique constraint')) {

@@ -48,7 +48,12 @@ class SyncLagoonMetadata extends Command
         }
 
         if ($email) {
-            $query->where('data->user-email', 'like', $email);
+            $driver = $query->getConnection()->getDriverName();
+            if ($driver === 'sqlite') {
+                $query->whereRaw('LOWER(json_extract(data, \'$."user-email"\')) = ?', [strtolower($email)]);
+            } else {
+                $query->whereRaw('LOWER(json_unquote(json_extract(data, \'$."user-email"\'))) = ?', [strtolower($email)]);
+            }
         }
 
         if ($limit) {
