@@ -81,7 +81,10 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
-            $deployKey = file_get_contents(config('polydock.lagoon_deploy_private_key_file'));
+            $deployKeyFile = config('polydock.lagoon_deploy_private_key_file');
+            $deployKey = (is_string($deployKeyFile) && file_exists($deployKeyFile))
+                ? file_get_contents($deployKeyFile)
+                : 'mock-deploy-private-key-for-testing';
 
             // Create the stores
             $usaStore = PolydockStore::create([
