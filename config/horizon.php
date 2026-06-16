@@ -202,7 +202,7 @@ $config = [
             'maxJobs' => 0,
             'memory' => 256,
             'tries' => 1,
-            'timeout' => 180,
+            'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 600),
             'nice' => 0,
         ],
         'supervisor-2' => [
@@ -215,7 +215,7 @@ $config = [
             'maxJobs' => 0,
             'memory' => 256,
             'tries' => 1,
-            'timeout' => 180,
+            'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 600),
             'nice' => 0,
         ],
         'supervisor-3' => [
@@ -237,7 +237,7 @@ $config = [
             'maxJobs' => 0,
             'memory' => 256,
             'tries' => 1,
-            'timeout' => 180,
+            'timeout' => env('HORIZON_SUPERVISOR_TIMEOUT', 600),
         ],
     ],
 
