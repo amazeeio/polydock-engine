@@ -3,6 +3,7 @@
 namespace App\PolydockEngine;
 
 use App\PolydockEngine\Traits\PolydockEngineFunctionCallerTrait;
+use App\Services\LagoonClientService;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineProcessPolydockAppInstanceStatusException;
 use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineValidationException;
@@ -13,6 +14,7 @@ use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use FreedomtechHosting\PolydockApp\PolydockEngineBase;
 use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
 use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
+use Illuminate\Database\Eloquent\Model;
 
 class Engine extends PolydockEngineBase implements PolydockEngineInterface
 {
@@ -237,6 +239,9 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     PolydockAppInstanceStatus::POST_CREATE_COMPLETED,
                     PolydockAppInstanceStatus::POST_CREATE_FAILED,
                 );
+                if ($stepReturn) {
+                    $this->pushProjectMetadata($appInstance);
+                }
                 break;
             case PolydockAppInstanceStatus::PENDING_PRE_DEPLOY:
                 $stepReturn = $this->processPolydockAppUsingFunction(
@@ -493,5 +498,65 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $this->logger->debug($message, $context);
 
         return $this;
+    }
+
+    /**
+     * Push all metadata for an app instance to Lagoon.
+     */
+    protected function pushProjectMetadata(PolydockAppInstanceInterface $appInstance): void
+    {
+        $projectName = $appInstance->getKeyValue('lagoon-project-name');
+        if (empty($projectName)) {
+            $this->warning('Skipping project metadata push: no lagoon-project-name found.');
+
+            return;
+        }
+
+        $this->info(sprintf('Pushing Lagoon project metadata for project: %s', $projectName));
+
+        try {
+            $client = app(LagoonClientService::class)->getAuthenticatedClient();
+        } catch (\Exception $e) {
+            $this->warning('Failed to authenticate Lagoon client for metadata push: '.$e->getMessage());
+
+            return;
+        }
+
+        $email = $appInstance->getKeyValue('user-email');
+        $firstName = $appInstance->getKeyValue('user-first-name');
+        $lastName = $appInstance->getKeyValue('user-last-name');
+
+        $productType = $appInstance->getKeyValue('product-type') ?: 'generic';
+        if ($productType === 'generic' && $appInstance instanceof Model && method_exists($appInstance, 'storeApp')) {
+            $appInstance->loadMissing('storeApp.productType');
+            if ($appInstance->storeApp && $appInstance->storeApp->productType) {
+                $productType = $appInstance->storeApp->productType->slug;
+            }
+        }
+
+        $lagoonEnv = config('polydock.lagoon_environment_type', 'development');
+        $polydockEnv = ($lagoonEnv === 'production' || config('app.env') === 'production') ? 'prod' : 'dev';
+
+        $metadataPayload = array_filter([
+            'email' => $email,
+            'product-type' => $productType,
+            'firstname' => $firstName,
+            'lastname' => $lastName,
+            'polydock-env' => $polydockEnv,
+        ]);
+
+        foreach ($metadataPayload as $key => $value) {
+            try {
+                $result = $client->addOrUpdateProjectMetadataByKey($projectName, $key, (string) $value);
+                if (isset($result['error'])) {
+                    $errorMsg = is_array($result['error']) ? json_encode($result['error']) : $result['error'];
+                    $this->warning(sprintf('Failed to write metadata "%s": %s', $key, $errorMsg));
+                } else {
+                    $this->info(sprintf('Set metadata: %s => %s', $key, $value));
+                }
+            } catch (\Exception $e) {
+                $this->warning(sprintf('Exception writing metadata "%s": %s', $key, $e->getMessage()));
+            }
+        }
     }
 }

@@ -253,4 +253,199 @@ class SyncLagoonMetadataTest extends TestCase
             ->expectsOutput('Syncing metadata for test-instance-prod (Project: project-prod)...')
             ->assertExitCode(0);
     }
+
+    public function test_it_respects_app_id_filter(): void
+    {
+        $this->setupLagoonKey();
+
+        $store = PolydockStore::factory()->create();
+        $storeApp1 = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $store->id,
+        ]);
+        $storeApp2 = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $store->id,
+        ]);
+
+        $instance1 = new PolydockAppInstance;
+        $instance1->uuid = 'uuid-app-1';
+        $instance1->polydock_store_app_id = $storeApp1->id;
+        $instance1->name = 'instance-app-1';
+        $instance1->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance1->app_type = 'test_app_type';
+        $instance1->data = [
+            'lagoon-project-name' => 'project-app-1',
+            'user-email' => 'app1@example.com',
+        ];
+        $instance1->saveQuietly();
+
+        $instance2 = new PolydockAppInstance;
+        $instance2->uuid = 'uuid-app-2';
+        $instance2->polydock_store_app_id = $storeApp2->id;
+        $instance2->name = 'instance-app-2';
+        $instance2->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance2->app_type = 'test_app_type';
+        $instance2->data = [
+            'lagoon-project-name' => 'project-app-2',
+            'user-email' => 'app2@example.com',
+        ];
+        $instance2->saveQuietly();
+
+        // Only expect instance2 because we filter by storeApp2->id
+        $mock = \Mockery::mock(Client::class);
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
+        $mock->shouldReceive('initGraphqlClient')->once();
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-app-2', 'email', 'app2@example.com')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-app-2', 'product-type', 'generic')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-app-2', 'polydock-env', 'dev')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $this->app->instance(Client::class, $mock);
+
+        $this->artisan('polydock:sync-metadata', [
+            '--app-id' => $storeApp2->id,
+            '--force' => true,
+        ])
+            ->expectsOutput('Found 1 active app instance(s) to sync.')
+            ->expectsOutput('Syncing metadata for instance-app-2 (Project: project-app-2)...')
+            ->assertExitCode(0);
+    }
+
+    public function test_it_respects_email_filter(): void
+    {
+        $this->setupLagoonKey();
+
+        $store = PolydockStore::factory()->create();
+        $storeApp = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $store->id,
+        ]);
+
+        $instance1 = new PolydockAppInstance;
+        $instance1->uuid = 'uuid-email-1';
+        $instance1->polydock_store_app_id = $storeApp->id;
+        $instance1->name = 'instance-email-1';
+        $instance1->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance1->app_type = 'test_app_type';
+        $instance1->data = [
+            'lagoon-project-name' => 'project-email-1',
+            'user-email' => 'target@example.com',
+        ];
+        $instance1->saveQuietly();
+
+        $instance2 = new PolydockAppInstance;
+        $instance2->uuid = 'uuid-email-2';
+        $instance2->polydock_store_app_id = $storeApp->id;
+        $instance2->name = 'instance-email-2';
+        $instance2->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance2->app_type = 'test_app_type';
+        $instance2->data = [
+            'lagoon-project-name' => 'project-email-2',
+            'user-email' => 'other@example.com',
+        ];
+        $instance2->saveQuietly();
+
+        // Only expect instance1 because we filter by email case-insensitively
+        $mock = \Mockery::mock(Client::class);
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
+        $mock->shouldReceive('initGraphqlClient')->once();
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-email-1', 'email', 'target@example.com')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-email-1', 'product-type', 'generic')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-email-1', 'polydock-env', 'dev')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $this->app->instance(Client::class, $mock);
+
+        $this->artisan('polydock:sync-metadata', [
+            '--email' => 'TARGET@example.com',
+            '--force' => true,
+        ])
+            ->expectsOutput('Found 1 active app instance(s) to sync.')
+            ->expectsOutput('Syncing metadata for instance-email-1 (Project: project-email-1)...')
+            ->assertExitCode(0);
+    }
+
+    public function test_it_respects_limit_option(): void
+    {
+        $this->setupLagoonKey();
+
+        $store = PolydockStore::factory()->create();
+        $storeApp = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $store->id,
+        ]);
+
+        $instance1 = new PolydockAppInstance;
+        $instance1->uuid = 'uuid-lim-1';
+        $instance1->polydock_store_app_id = $storeApp->id;
+        $instance1->name = 'instance-lim-1';
+        $instance1->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance1->app_type = 'test_app_type';
+        $instance1->data = [
+            'lagoon-project-name' => 'project-lim-1',
+            'user-email' => 'lim1@example.com',
+        ];
+        $instance1->saveQuietly();
+
+        $instance2 = new PolydockAppInstance;
+        $instance2->uuid = 'uuid-lim-2';
+        $instance2->polydock_store_app_id = $storeApp->id;
+        $instance2->name = 'instance-lim-2';
+        $instance2->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance2->app_type = 'test_app_type';
+        $instance2->data = [
+            'lagoon-project-name' => 'project-lim-2',
+            'user-email' => 'lim2@example.com',
+        ];
+        $instance2->saveQuietly();
+
+        // Only expect first instance since we limit to 1
+        $mock = \Mockery::mock(Client::class);
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
+        $mock->shouldReceive('initGraphqlClient')->once();
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-lim-1', 'email', 'lim1@example.com')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-lim-1', 'product-type', 'generic')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('addOrUpdateProjectMetadataByKey')
+            ->with('project-lim-1', 'polydock-env', 'dev')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $this->app->instance(Client::class, $mock);
+
+        $this->artisan('polydock:sync-metadata', [
+            '--limit' => 1,
+            '--force' => true,
+        ])
+            ->expectsOutput('Found 1 active app instance(s) to sync.')
+            ->expectsOutput('Syncing metadata for instance-lim-1 (Project: project-lim-1)...')
+            ->assertExitCode(0);
+    }
 }
