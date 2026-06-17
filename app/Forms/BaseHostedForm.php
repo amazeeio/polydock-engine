@@ -68,7 +68,7 @@ abstract class BaseHostedForm implements HostedFormInterface
             'register_type' => 'REQUEST_TRIAL',
             'aup_and_privacy_acceptance' => 1,
             'opt_in_to_product_updates' => 1,
-            'trial_app' => $validatedData['trial_app'],
+            'trial_app' => $validatedData['trial_app'] ?? null,
         ];
     }
 }
