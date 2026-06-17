@@ -59,17 +59,17 @@ class EmailBlockerService
     public function updateDisposableDomains(): int
     {
         try {
-            $url = 'https://raw.githubusercontent.com/disposable/disposable-email-domains/master/index.json';
+            $url = 'https://raw.githubusercontent.com/disposable/disposable-email-domains/refs/heads/master/domains.json';
             $response = Http::timeout(10)->get($url);
 
             if ($response->successful()) {
                 $domains = $response->json();
 
-                if (is_array($domains) && ! empty($domains)) {
+                if (\is_array($domains) && ! empty($domains)) {
                     $this->saveDisposableDomains($domains);
-                    Log::info('Successfully updated disposable email domains list', ['count' => count($domains)]);
+                    Log::info('Successfully updated disposable email domains list', ['count' => \count($domains)]);
 
-                    return count($domains);
+                    return \count($domains);
                 }
             }
 
@@ -109,7 +109,7 @@ class EmailBlockerService
 
         $domains = json_decode($content, true);
 
-        if (! is_array($domains)) {
+        if (! \is_array($domains)) {
             Log::error('Failed to load disposable domains from storage: malformed JSON.', ['path' => $path]);
             $this->disposableDomainsCache = [];
 
@@ -153,7 +153,7 @@ class EmailBlockerService
         $parts = explode('.', strtolower($domain));
         $hierarchy = [];
 
-        while (count($parts) >= 2) {
+        while (\count($parts) >= 2) {
             $hierarchy[] = implode('.', $parts);
             array_shift($parts);
         }
