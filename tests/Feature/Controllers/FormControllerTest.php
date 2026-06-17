@@ -1,0 +1,289 @@
+<?php
+
+namespace Tests\Feature\Controllers;
+
+use App\Enums\PolydockStoreAppStatusEnum;
+use App\Enums\PolydockStoreStatusEnum;
+use App\Enums\UserRemoteRegistrationStatusEnum;
+use App\Jobs\ProcessUserRemoteRegistration;
+use App\Models\PolydockStore;
+use App\Models\PolydockStoreApp;
+use App\Models\UserRemoteRegistration;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Queue;
+use Tests\TestCase;
+
+class FormControllerTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected PolydockStoreApp $storeApp;
+
+    #[\Override]
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        Queue::fake();
+
+        // Prevent external reCAPTCHA API hits by default in tests
+        Http::fake([
+            'https://www.google.com/recaptcha/api/siteverify' => function ($request) {
+                $responseToken = $request['response'] ?? '';
+                if ($responseToken === 'invalid-token') {
+                    return Http::response(['success' => false]);
+                }
+
+                return Http::response(['success' => true]);
+            },
+        ]);
+
+        // Create sample public store and available trial app in the database
+        $store = PolydockStore::create([
+            'name' => 'Europe Store',
+            'status' => PolydockStoreStatusEnum::PUBLIC,
+            'listed_in_marketplace' => true,
+            'lagoon_deploy_region_id_ext' => '1',
+            'lagoon_deploy_project_prefix' => 'ft-eu',
+            'lagoon_deploy_organization_id_ext' => '123',
+        ]);
+
+        $this->storeApp = PolydockStoreApp::create([
+            'polydock_store_id' => $store->id,
+            'name' => 'CKEditor Demo',
+            'polydock_app_class' => 'App\\PolydockApp',
+            'lagoon_deploy_git' => 'git@github.com:example/app.git',
+            'lagoon_deploy_branch' => 'main',
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
+            'available_for_trials' => true,
+            'support_email' => 'support@example.com',
+            'author' => 'Test Author',
+            'description' => 'Test Description',
+        ]);
+    }
+
+    /** @test */
+    public function it_aborts_with_404_for_unknown_form_slugs()
+    {
+        $response = $this->get('/f/unknown-form-slug');
+
+        $response->assertStatus(404);
+    }
+
+    /** @test */
+    public function it_renders_the_hosted_form_correctly_with_security_headers()
+    {
+        $response = $this->get('/f/drupal-ai-demo');
+
+        $response->assertStatus(200);
+        $response->assertViewIs('forms.drupal-ai-demo');
+        $response->assertViewHas('form');
+        $response->assertViewHas('regions');
+
+        // Check framing security headers are set properly
+        $response->assertHeaderMissing('X-Frame-Options');
+        $response->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai http://localhost http://localhost:*");
+    }
+
+    /** @test */
+    public function it_fails_submitting_form_with_missing_fields()
+    {
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => '',
+            'last_name' => 'Doe',
+            'email' => 'invalid-email',
+            'trial_app' => '',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'errors',
+        ]);
+    }
+
+    /** @test */
+    public function it_fails_submitting_form_with_invalid_country()
+    {
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'country' => 'Invalidistan',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'errors',
+        ]);
+        $this->assertStringContainsString('The selected country is invalid', $response->json('message'));
+    }
+
+    /** @test */
+    public function it_fails_if_recaptcha_verification_fails()
+    {
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'invalid-token',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => 'reCAPTCHA verification failed. Please try again.',
+        ]);
+    }
+
+    /** @test */
+    public function it_successfully_submits_and_registers_user_trial()
+    {
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'organization' => 'Acme Corp',
+            'job_title' => 'Web Developer',
+            'country' => 'United States',
+            'stage_in_ai_adoption' => 'just-curious',
+            'interest_in_drupal_ai' => 'General testing',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        $response->assertStatus(202);
+        $response->assertJson([
+            'status' => 'pending',
+            'message' => 'Registration pending',
+        ]);
+        $response->assertJsonStructure(['id']);
+
+        // Assert UserRemoteRegistration model was created
+        $this->assertDatabaseHas('user_remote_registrations', [
+            'email' => 'john.doe@example.com',
+            'status' => UserRemoteRegistrationStatusEnum::PENDING->value,
+        ]);
+
+        $registration = UserRemoteRegistration::first();
+        $this->assertNotNull($registration->uuid);
+
+        // Verify request payload mappings
+        $this->assertEquals('John', $registration->getRequestValue('first_name'));
+        $this->assertEquals('Doe', $registration->getRequestValue('last_name'));
+        $this->assertEquals('Acme Corp', $registration->getRequestValue('company_name'));
+        $this->assertEquals('just-curious', $registration->getRequestValue('instance_config_stage_in_ai_adoption'));
+        $this->assertEquals($this->storeApp->uuid, $registration->getRequestValue('trial_app'));
+
+        // Verify registration background job was pushed
+        Queue::assertPushed(ProcessUserRemoteRegistration::class);
+    }
+
+    /** @test */
+    public function it_rejects_submitting_form_with_invalid_trial_app_uuid()
+    {
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'trial_app' => '00000000-0000-0000-0000-000000000000', // Valid UUID structure but non-existent app
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertStringContainsString('selected trial app is invalid', $response->json('message'));
+    }
+
+    /** @test */
+    public function it_allows_recaptcha_bypass_on_testing_environment_during_network_failure()
+    {
+        Http::fake([
+            'https://www.google.com/recaptcha/api/siteverify' => function () {
+                throw new \Exception('Network connection timeout');
+            },
+        ]);
+
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'organization' => 'Acme Corp',
+            'job_title' => 'Web Developer',
+            'country' => 'United States',
+            'stage_in_ai_adoption' => 'just-curious',
+            'interest_in_drupal_ai' => 'General testing',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        // In testing environment, network exception is gracefully bypassed and the form is submitted
+        $response->assertStatus(202);
+        $response->assertJson([
+            'status' => 'pending',
+        ]);
+    }
+
+    /** @test */
+    public function it_blocks_recaptcha_bypass_on_staging_environment_during_network_failure()
+    {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->app->detectEnvironment(fn () => 'staging');
+
+        Http::fake([
+            'https://www.google.com/recaptcha/api/siteverify' => function () {
+                throw new \Exception('Network connection timeout');
+            },
+        ]);
+
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'organization' => 'Acme Corp',
+            'job_title' => 'Web Developer',
+            'country' => 'United States',
+            'stage_in_ai_adoption' => 'just-curious',
+            'interest_in_drupal_ai' => 'General testing',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        // In staging/production environments, a network exception blocks submission and returns 500
+        $response->assertStatus(500);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => 'Unable to verify reCAPTCHA. Please try again later.',
+        ]);
+    }
+
+    /** @test */
+    public function it_allows_submitting_without_recaptcha_when_recaptcha_is_disabled()
+    {
+        config(['services.recaptcha.enabled' => false]);
+
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'organization' => 'Acme Corp',
+            'job_title' => 'Web Developer',
+            'country' => 'United States',
+            'stage_in_ai_adoption' => 'just-curious',
+            'interest_in_drupal_ai' => 'General testing',
+            'trial_app' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertStatus(202);
+        $response->assertJson([
+            'status' => 'pending',
+        ]);
+    }
+}
