@@ -613,7 +613,9 @@
             .catch(err => {
                 showError(err.message || 'An error occurred. Please try again.');
                 btnSubmit.disabled = false;
-                grecaptcha.reset();
+                if (recaptchaEnabled && typeof grecaptcha !== 'undefined') {
+                    grecaptcha.reset();
+                }
             });
         });
 

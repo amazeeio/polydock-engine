@@ -27,10 +27,11 @@
             function sendHeight() {
                 const height = document.documentElement.offsetHeight || document.body.offsetHeight;
                 allowedOrigins.forEach(function(origin) {
+                    const targetOrigin = origin.indexOf(':*') !== -1 ? '*' : origin;
                     window.parent.postMessage({
                         type: 'polydock-iframe-resize',
                         height: height
-                    }, origin);
+                    }, targetOrigin);
                 });
             }
 
