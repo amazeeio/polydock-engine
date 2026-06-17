@@ -29,6 +29,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/slack-notification-channel": "^3.8",
         "laravel/tinker": "^2.9",
+        "parfaitementweb/filament-country-field": "^2.5",
         "phpseclib/phpseclib": "^3.0",
         "spatie/laravel-activitylog": "^4.10",
         "spatie/laravel-permission": "^6.25",

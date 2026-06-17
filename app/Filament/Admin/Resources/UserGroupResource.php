@@ -65,6 +65,7 @@ class UserGroupResource extends Resource
     {
         return $table
             ->searchable()
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('name')
                     ->searchable()

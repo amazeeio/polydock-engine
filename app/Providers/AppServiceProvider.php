@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Queue\Failed\SafeDatabaseUuidFailedJobProvider;
+use App\Services\EmailBlockerService;
 use App\Services\PolydockAppClassDiscovery;
 use Aws\DynamoDb\DynamoDbClient;
 use Dedoc\Scramble\Scramble;
@@ -30,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(PolydockAppClassDiscovery::class);
+        $this->app->singleton(EmailBlockerService::class);
 
         Scramble::ignoreDefaultRoutes();
 

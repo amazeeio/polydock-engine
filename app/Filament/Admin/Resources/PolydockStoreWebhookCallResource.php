@@ -26,6 +26,7 @@ class PolydockStoreWebhookCallResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('webhook.store.name')
                     ->description(fn (PolydockStoreWebhookCall $record) => $record->webhook->url)

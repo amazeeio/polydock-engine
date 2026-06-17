@@ -61,6 +61,7 @@ class PolydockAppInstanceResource extends Resource
     {
         return $table
             ->searchable()
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('name')
                     ->description(fn ($record) => $record->storeApp->store->name.' - '.$record->storeApp->name)

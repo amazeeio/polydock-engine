@@ -660,4 +660,67 @@ class SyncLagoonMetadataTest extends TestCase
         $this->assertEquals('lagoon', $config['ssh_user'] ?? null);
         $this->assertEquals('https://api.lagoon.amazeeio.cloud/graphql', $config['endpoint'] ?? null);
     }
+
+    public function test_it_passes_project_id_instead_of_name_when_id_is_returned_by_api(): void
+    {
+        $this->setupLagoonKey();
+
+        $store = PolydockStore::factory()->create();
+        $storeApp = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $store->id,
+        ]);
+
+        $instance = new PolydockAppInstance;
+        $instance->uuid = 'test-instance-id-override-uuid';
+        $instance->polydock_store_app_id = $storeApp->id;
+        $instance->name = 'test-instance-id-override';
+        $instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $instance->app_type = 'test_app_type';
+        $instance->data = [
+            'lagoon-project-name' => 'project-override',
+            'user-email' => 'id-override@example.com',
+        ];
+        $instance->saveQuietly();
+
+        $mock = \Mockery::mock(Client::class);
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
+        $mock->shouldReceive('initGraphqlClient')->once();
+
+        // getProjectByName returns 'id' => 12345
+        $mock->shouldReceive('getProjectByName')
+            ->with('project-override')
+            ->once()
+            ->andReturn([
+                'projectByName' => [
+                    'id' => 12345,
+                    'metadata' => [],
+                ],
+            ]);
+
+        // It should update metadata using the project ID (12345) instead of the project name ('project-override')
+        $mock->shouldReceive('updateProjectMetadata')
+            ->with(12345, 'email', 'id-override@example.com')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('updateProjectMetadata')
+            ->with(12345, 'product-type', 'generic')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $mock->shouldReceive('updateProjectMetadata')
+            ->with(12345, 'polydock-env', 'dev')
+            ->once()
+            ->andReturn(['id' => 1]);
+
+        $this->app->instance(Client::class, $mock);
+
+        $this->artisan('polydock:sync-metadata', [
+            '--uuid' => 'test-instance-id-override-uuid',
+            '--force' => true,
+        ])
+            ->expectsOutput('Found 1 active app instance(s) to sync.')
+            ->expectsOutput('Syncing metadata for test-instance-id-override (Project: project-override)...')
+            ->assertExitCode(0);
+    }
 }

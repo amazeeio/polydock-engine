@@ -29,6 +29,7 @@ class AppInstancesRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('name')
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable()

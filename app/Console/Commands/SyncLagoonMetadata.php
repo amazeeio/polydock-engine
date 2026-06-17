@@ -126,6 +126,7 @@ class SyncLagoonMetadata extends Command
             ]);
 
             // Query Lagoon for current project details and metadata to check if changes exist
+            $projectId = null;
             $existingMetadata = [];
             try {
                 $projectResponse = $client->getProjectByName($projectName);
@@ -135,6 +136,9 @@ class SyncLagoonMetadata extends Command
                     $failedCount++;
 
                     continue;
+                }
+                if (isset($projectData['id'])) {
+                    $projectId = (int) $projectData['id'];
                 }
                 if (! empty($projectData['metadata'])) {
                     if (is_array($projectData['metadata'])) {
@@ -156,7 +160,7 @@ class SyncLagoonMetadata extends Command
                 }
 
                 try {
-                    $result = $client->updateProjectMetadata($projectName, $key, (string) $value);
+                    $result = $client->updateProjectMetadata($projectId ?? $projectName, $key, (string) $value);
 
                     if (isset($result['error'])) {
                         $errorMsg = is_array($result['error']) ? json_encode($result['error']) : $result['error'];

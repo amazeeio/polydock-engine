@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FormController;
 use App\Models\PolydockAppInstance;
 use Illuminate\Support\Facades\Route;
 
@@ -22,3 +23,10 @@ Route::get('/app-instances/{appInstance}', function (PolydockAppInstance $appIns
 
     abort(404, 'No URL available for this app instance');
 })->name('app-instances.show')->middleware('signed');
+
+Route::get('/f/{formSlug}', [FormController::class, 'show'])
+    ->name('forms.show')
+    ->middleware('throttle:30,1');
+Route::post('/f/{formSlug}', [FormController::class, 'submit'])
+    ->name('forms.submit')
+    ->middleware('throttle:10,1');
