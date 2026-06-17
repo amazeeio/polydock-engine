@@ -74,6 +74,7 @@ class FormController extends Controller
             'regions' => $regions,
             'regionsData' => $regionsData,
             'recaptchaSiteKey' => config('services.recaptcha.sitekey'),
+            'countries' => __('filament-country-field::country', [], 'en'),
         ]);
 
         // Inject secure framing headers based on allowed origins
@@ -147,8 +148,8 @@ class FormController extends Controller
                     'error' => $e->getMessage(),
                 ]);
 
-                // Fallback graceful check in dev environment to allow offline testing
-                if (app()->environment('production', 'prod')) {
+                // Fallback graceful check in local/testing environments to allow offline testing
+                if (! app()->environment('local', 'testing')) {
                     return response()->json([
                         'status' => 'error',
                         'message' => 'Unable to verify reCAPTCHA. Please try again later.',

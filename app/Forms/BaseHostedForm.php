@@ -34,19 +34,23 @@ abstract class BaseHostedForm implements HostedFormInterface
     #[\Override]
     public function getRecaptchaEnabled(): bool
     {
-        return true;
+        return (bool) config('services.recaptcha.enabled', true);
     }
 
     #[\Override]
     public function getAllowedEmbedOrigins(): array
     {
-        return array_map(function ($domain) {
+        $origins = [];
+        foreach ($this->getAllowedEmbedDomains() as $domain) {
             if ($domain === 'localhost') {
-                return 'http://localhost';
+                $origins[] = 'http://localhost';
+                $origins[] = 'http://localhost:*';
+            } else {
+                $origins[] = "https://{$domain}";
             }
+        }
 
-            return "https://{$domain}";
-        }, $this->getAllowedEmbedDomains());
+        return $origins;
     }
 
     /**

@@ -332,7 +332,9 @@
         display: none;
     }
 </style>
+@if($form->getRecaptchaEnabled())
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+@endif
 @endsection
 
 @section('content')
@@ -379,24 +381,9 @@
             <label class="form-label" for="country">Country</label>
             <select id="country" name="country" class="form-control">
                 <option value="" selected>Select</option>
-                <option value="Australia">Australia</option>
-                <option value="Austria">Austria</option>
-                <option value="Belgium">Belgium</option>
-                <option value="Canada">Canada</option>
-                <option value="Denmark">Denmark</option>
-                <option value="Finland">Finland</option>
-                <option value="France">France</option>
-                <option value="Germany">Germany</option>
-                <option value="Ireland">Ireland</option>
-                <option value="New Zealand">New Zealand</option>
-                <option value="Norway">Norway</option>
-                <option value="Singapore">Singapore</option>
-                <option value="Spain">Spain</option>
-                <option value="Sweden">Sweden</option>
-                <option value="Switzerland">Switzerland</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="United States">United States</option>
-                <!-- Include extra standard ones or let JavaScript render them if needed -->
+                @foreach ($countries as $code => $name)
+                    <option value="{{ $name }}">{{ $name }}</option>
+                @endforeach
             </select>
         </div>
 
@@ -452,10 +439,12 @@
             </p>
         </div>
 
+        @if($form->getRecaptchaEnabled())
         <!-- Google reCAPTCHA Block -->
         <div class="recaptcha-container">
             <div class="g-recaptcha" data-sitekey="{{ $recaptchaSiteKey }}"></div>
         </div>
+        @endif
 
         <button type="submit" id="btnSubmit" class="btn-submit">Sign Up Now</button>
     </form>
@@ -537,6 +526,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const regionsData = @json($regionsData);
+        const recaptchaEnabled = @json($form->getRecaptchaEnabled());
 
         const regionSelect = document.getElementById('dataRegion');
         const appSelect = document.getElementById('selectedApp');
@@ -578,17 +568,18 @@
             errorBox.style.display = 'none';
             errorBox.textContent = '';
 
-            const recaptchaResponse = grecaptcha.getResponse();
-            if (!recaptchaResponse) {
-                showError('Please verify that you are not a robot.');
-                return;
+            const formData = new FormData(signupForm);
+
+            if (recaptchaEnabled) {
+                const recaptchaResponse = grecaptcha.getResponse();
+                if (!recaptchaResponse) {
+                    showError('Please verify that you are not a robot.');
+                    return;
+                }
+                formData.append('recaptcha', recaptchaResponse);
             }
 
             btnSubmit.disabled = true;
-
-            const formData = new FormData(signupForm);
-            // Append recaptcha token manually
-            formData.append('recaptcha', recaptchaResponse);
 
             // POST to local FormController submit endpoint
             fetch('{{ route("forms.submit", $form->getSlug()) }}', {

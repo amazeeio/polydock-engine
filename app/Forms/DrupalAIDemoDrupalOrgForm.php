@@ -47,7 +47,11 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
             'email' => ['required', 'email', new BannedEmail],
             'organization' => ['nullable', 'string', 'max:150'],
             'job_title' => ['nullable', 'string', 'max:150'],
-            'country' => ['nullable', 'string'],
+            'country' => [
+                'nullable',
+                'string',
+                Rule::in(array_values(__('filament-country-field::country', [], 'en'))),
+            ],
             'stage_in_ai_adoption' => ['nullable', 'string', 'in:just-curious,specific-need,already-using'],
             'interest_in_drupal_ai' => ['nullable', 'string', 'max:255'],
             'trial_app' => [

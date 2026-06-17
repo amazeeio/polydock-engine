@@ -9,6 +9,7 @@ use App\Jobs\ProcessUserRemoteRegistration;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
+use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -83,7 +84,7 @@ class FormControllerTest extends TestCase
 
         // Check framing security headers are set properly
         $response->assertHeaderMissing('X-Frame-Options');
-        $response->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai http://localhost");
+        $response->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai http://localhost http://localhost:*");
     }
 
     /** @test */
@@ -102,6 +103,27 @@ class FormControllerTest extends TestCase
             'message',
             'errors',
         ]);
+    }
+
+    /** @test */
+    public function it_fails_submitting_form_with_invalid_country()
+    {
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'country' => 'Invalidistan',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonStructure([
+            'status',
+            'message',
+            'errors',
+        ]);
+        $this->assertStringContainsString('The selected country is invalid', $response->json('message'));
     }
 
     /** @test */
@@ -178,5 +200,90 @@ class FormControllerTest extends TestCase
 
         $response->assertStatus(422);
         $this->assertStringContainsString('selected trial app is invalid', $response->json('message'));
+    }
+
+    /** @test */
+    public function it_allows_recaptcha_bypass_on_testing_environment_during_network_failure()
+    {
+        Http::fake([
+            'https://www.google.com/recaptcha/api/siteverify' => function () {
+                throw new \Exception('Network connection timeout');
+            },
+        ]);
+
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'organization' => 'Acme Corp',
+            'job_title' => 'Web Developer',
+            'country' => 'United States',
+            'stage_in_ai_adoption' => 'just-curious',
+            'interest_in_drupal_ai' => 'General testing',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        // In testing environment, network exception is gracefully bypassed and the form is submitted
+        $response->assertStatus(202);
+        $response->assertJson([
+            'status' => 'pending',
+        ]);
+    }
+
+    /** @test */
+    public function it_blocks_recaptcha_bypass_on_staging_environment_during_network_failure()
+    {
+        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->app->detectEnvironment(fn () => 'staging');
+
+        Http::fake([
+            'https://www.google.com/recaptcha/api/siteverify' => function () {
+                throw new \Exception('Network connection timeout');
+            },
+        ]);
+
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'organization' => 'Acme Corp',
+            'job_title' => 'Web Developer',
+            'country' => 'United States',
+            'stage_in_ai_adoption' => 'just-curious',
+            'interest_in_drupal_ai' => 'General testing',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        // In staging/production environments, a network exception blocks submission and returns 500
+        $response->assertStatus(500);
+        $response->assertJson([
+            'status' => 'error',
+            'message' => 'Unable to verify reCAPTCHA. Please try again later.',
+        ]);
+    }
+
+    /** @test */
+    public function it_allows_submitting_without_recaptcha_when_recaptcha_is_disabled()
+    {
+        config(['services.recaptcha.enabled' => false]);
+
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'organization' => 'Acme Corp',
+            'job_title' => 'Web Developer',
+            'country' => 'United States',
+            'stage_in_ai_adoption' => 'just-curious',
+            'interest_in_drupal_ai' => 'General testing',
+            'trial_app' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertStatus(202);
+        $response->assertJson([
+            'status' => 'pending',
+        ]);
     }
 }
