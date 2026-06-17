@@ -6,11 +6,13 @@ use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\PolydockAppInstance;
 use App\Models\UserRemoteRegistration;
+use App\Rules\BannedEmail;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class RegisterController extends Controller
 {
@@ -38,6 +40,23 @@ class RegisterController extends Controller
     public function processRegister(Request $request): JsonResponse
     {
         Log::info('Processing register request', ['request' => $request->all()]);
+
+        $validator = Validator::make($request->all(), [
+            'email' => ['required', 'email', new BannedEmail],
+        ]);
+
+        if ($validator->fails()) {
+            Log::warning('Registration request blocked by validation', [
+                'email' => $request->input('email'),
+                'errors' => $validator->errors()->toArray(),
+            ]);
+
+            return response()->json([
+                'status' => UserRemoteRegistrationStatusEnum::FAILED->value,
+                'message' => $validator->errors()->first('email'),
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         try {
             $registration = UserRemoteRegistration::create([
                 'email' => $request->input('email'),

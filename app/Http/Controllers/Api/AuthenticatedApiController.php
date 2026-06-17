@@ -16,6 +16,7 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
+use App\Rules\BannedEmail;
 use App\Support\EnumHelper;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Http\JsonResponse;
@@ -448,7 +449,7 @@ class AuthenticatedApiController extends Controller
     public function createInstance(Request $request): JsonResponse
     {
         $request->validate([
-            'email' => 'required|email',
+            'email' => ['required', 'email', new BannedEmail(detailed: true)],
             'first_name' => 'nullable|string|max:255',
             'last_name' => 'nullable|string|max:255',
             'storeAppId' => 'required|string|exists:polydock_store_apps,uuid',
