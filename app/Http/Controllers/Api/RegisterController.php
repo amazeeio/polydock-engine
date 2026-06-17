@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\PolydockAppInstance;
 use App\Models\UserRemoteRegistration;
 use App\Rules\BannedEmail;
+use App\Support\SensitiveDataRedactor;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -39,7 +40,7 @@ class RegisterController extends Controller
      */
     public function processRegister(Request $request): JsonResponse
     {
-        Log::info('Processing register request', ['request' => $request->all()]);
+        Log::info('Processing register request', ['request' => SensitiveDataRedactor::redact($request->all())]);
 
         $validator = Validator::make($request->all(), [
             'email' => ['required', 'email', new BannedEmail],
@@ -72,7 +73,7 @@ class RegisterController extends Controller
             ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
-        Log::info('User remote registration created', ['registration' => $registration->toArray()]);
+        Log::info('User remote registration created', ['registration' => SensitiveDataRedactor::redact($registration->toArray())]);
 
         return response()->json([
             'status' => UserRemoteRegistrationStatusEnum::PENDING->value,
@@ -108,7 +109,7 @@ class RegisterController extends Controller
     {
         try {
             $registration = UserRemoteRegistration::where('uuid', $uuid)->firstOrFail();
-            Log::info('Showing user remote registration', ['registration' => $registration->toArray()]);
+            Log::info('Showing user remote registration', ['registration' => SensitiveDataRedactor::redact($registration->toArray())]);
             $responseResultData = $registration->result_data ?? [];
 
             if ($registration->appInstance) {

@@ -3,6 +3,7 @@
 namespace App\Forms;
 
 use App\Enums\PolydockStoreAppStatusEnum;
+use App\Enums\PolydockStoreStatusEnum;
 use App\Rules\BannedEmail;
 use Illuminate\Validation\Rule;
 
@@ -59,7 +60,15 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
                 'uuid',
                 Rule::exists('polydock_store_apps', 'uuid')
                     ->where('status', PolydockStoreAppStatusEnum::AVAILABLE->value)
-                    ->where('available_for_trials', true),
+                    ->where('available_for_trials', true)
+                    ->where(function ($query) {
+                        $query->whereExists(function ($subQuery) {
+                            $subQuery->selectRaw(1)
+                                ->from('polydock_stores')
+                                ->whereColumn('polydock_stores.id', 'polydock_store_apps.polydock_store_id')
+                                ->where('polydock_stores.status', PolydockStoreStatusEnum::PUBLIC->value);
+                        });
+                    }),
             ],
         ];
     }

@@ -625,6 +625,21 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function getSafeUrl(urlStr) {
+            try {
+                const parsed = new URL(urlStr);
+                if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+                    return parsed.href;
+                }
+            } catch (e) {
+                // If it fails parsing as absolute, check if it is relative
+                if (urlStr.startsWith('/') && !urlStr.startsWith('//')) {
+                    return urlStr;
+                }
+            }
+            return '#';
+        }
+
         // Poll registration status until successful provisioning
         function startPolling(registrationId) {
             const pollUrl = `/api/register/${registrationId}`;
@@ -649,12 +664,14 @@
                             document.getElementById('credUsername').textContent = data.result_data.app_admin_username || 'admin';
                             document.getElementById('credPassword').textContent = data.result_data.app_admin_password || '********';
                             
+                            const safeAppUrl = getSafeUrl(data.result_data.app_url);
+
                             const credUrlLink = document.getElementById('credUrl');
-                            credUrlLink.href = data.result_data.app_url;
+                            credUrlLink.href = safeAppUrl;
                             credUrlLink.textContent = data.result_data.app_url;
 
                             const loginBtn = document.getElementById('appLoginButton');
-                            loginBtn.href = data.result_data.app_url;
+                            loginBtn.href = safeAppUrl;
 
                             // Show success screen
                             loadingScreen.style.display = 'none';

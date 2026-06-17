@@ -6,6 +6,7 @@ use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Enums\UserRemoteRegistrationType;
 use App\Events\UserRemoteRegistrationCreated;
 use App\Events\UserRemoteRegistrationStatusChanged;
+use App\Support\SensitiveDataRedactor;
 use App\Traits\HasWebhookSensitiveData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -70,7 +71,7 @@ class UserRemoteRegistration extends Model
         });
 
         static::created(function ($model) {
-            Log::info('User remote registration created', ['registration' => $model->toArray()]);
+            Log::info('User remote registration created', ['registration' => SensitiveDataRedactor::redact($model->toArray())]);
             UserRemoteRegistrationCreated::dispatch($model);
         });
 

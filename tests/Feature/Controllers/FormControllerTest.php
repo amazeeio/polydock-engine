@@ -286,4 +286,46 @@ class FormControllerTest extends TestCase
             'status' => 'pending',
         ]);
     }
+
+    /** @test */
+    public function it_rejects_submitting_form_with_app_uuid_from_a_private_store()
+    {
+        $privateStore = PolydockStore::create([
+            'name' => 'USA Private Store',
+            'status' => PolydockStoreStatusEnum::PRIVATE,
+            'listed_in_marketplace' => false,
+            'lagoon_deploy_region_id_ext' => '2',
+            'lagoon_deploy_project_prefix' => 'ft-us-private',
+            'lagoon_deploy_organization_id_ext' => '456',
+        ]);
+
+        $privateApp = PolydockStoreApp::create([
+            'polydock_store_id' => $privateStore->id,
+            'name' => 'Internal Private Tool',
+            'polydock_app_class' => 'App\\PolydockApp',
+            'lagoon_deploy_git' => 'git@github.com:example/private-app.git',
+            'lagoon_deploy_branch' => 'main',
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
+            'available_for_trials' => true,
+            'support_email' => 'private-support@example.com',
+            'author' => 'Internal Devs',
+            'description' => 'Private app description',
+        ]);
+
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'organization' => 'Acme Corp',
+            'job_title' => 'Web Developer',
+            'country' => 'United States',
+            'stage_in_ai_adoption' => 'just-curious',
+            'interest_in_drupal_ai' => 'General testing',
+            'trial_app' => $privateApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertStringContainsString('selected trial app is invalid', $response->json('message'));
+    }
 }
