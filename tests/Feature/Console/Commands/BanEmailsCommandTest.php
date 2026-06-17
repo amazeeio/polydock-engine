@@ -11,6 +11,7 @@ use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Models\UserRemoteRegistration;
+use App\Rules\BannedEmail;
 use App\Services\EmailBlockerService;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -370,5 +371,37 @@ class BanEmailsCommandTest extends TestCase
                 @unlink($path);
             }
         }
+    }
+
+    public function test_email_blocker_service_is_registered_as_a_singleton(): void
+    {
+        $instance1 = app(EmailBlockerService::class);
+        $instance2 = app(EmailBlockerService::class);
+
+        $this->assertSame($instance1, $instance2);
+    }
+
+    public function test_banned_email_rule_skips_validation_on_format_invalid_emails(): void
+    {
+        $rule = new BannedEmail;
+
+        $called = false;
+        $fail = function ($message) use (&$called) {
+            $called = true;
+        };
+
+        // Standard invalid email - should be skipped and not call $fail
+        $rule->validate('email', 'not-an-email', $fail);
+        $this->assertFalse($called, 'Validation failed callback should not be called for invalid email format.');
+
+        // Verify that a valid, banned email does trigger the $fail callback
+        PolydockBannedPattern::create([
+            'pattern' => 'spammer@gmail.com',
+            'reason' => 'Exact user',
+        ]);
+
+        $called = false;
+        $rule->validate('email', 'spammer@gmail.com', $fail);
+        $this->assertTrue($called, 'Validation failed callback should be called for blocked email.');
     }
 }

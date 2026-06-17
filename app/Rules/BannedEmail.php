@@ -19,7 +19,7 @@ class BannedEmail implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, \Closure $fail): void
     {
-        if (empty($value) || ! is_string($value)) {
+        if (empty($value) || ! is_string($value) || ! filter_var($value, FILTER_VALIDATE_EMAIL)) {
             return;
         }
 
