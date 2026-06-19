@@ -133,6 +133,7 @@ class AppServiceProvider extends ServiceProvider
                         if (! str_starts_with($arg, '-')) {
                             $redactedArgv[] = '[REDACTED]';
                             $redactNext = false;
+
                             continue;
                         }
                         $redactNext = false;
@@ -155,7 +156,7 @@ class AppServiceProvider extends ServiceProvider
                             }
 
                             if ($isSensitive) {
-                                $redactedArgv[] = $key . '=[REDACTED]';
+                                $redactedArgv[] = $key.'=[REDACTED]';
                             } else {
                                 $redactedArgv[] = $arg;
                             }

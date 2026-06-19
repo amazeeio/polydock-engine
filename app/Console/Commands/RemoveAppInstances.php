@@ -10,6 +10,7 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class RemoveAppInstances extends Command
 {
@@ -19,10 +20,11 @@ class RemoveAppInstances extends Command
      * @var string
      */
     protected $signature = 'polydock:remove-instances
-                            {--app= : The PolydockStoreApp ID or Name to search for}
+                            {--app= : The PolydockStoreApp UUID to search for}
                             {--email= : The user email address or pattern to search for (supports % wildcards)}
                             {--name= : The exact app instance name to search for}
                             {--uuid= : The exact app instance UUID to search for}
+                            {--limit= : Limit the number of instances to fetch and remove in one go}
                             {--force-purge : Sets immediate force-purge fields to bypass grace period}
                             {--dry-run : Show what would be removed without actually doing it}
                             {--force : Skip confirmation prompt}';
@@ -43,6 +45,7 @@ class RemoveAppInstances extends Command
         $email = $this->option('email');
         $name = $this->option('name');
         $uuid = $this->option('uuid');
+        $limit = $this->option('limit');
         $isDryRun = (bool) $this->option('dry-run');
         $force = (bool) $this->option('force');
         $forcePurge = (bool) $this->option('force-purge');
@@ -53,20 +56,29 @@ class RemoveAppInstances extends Command
             return self::FAILURE;
         }
 
+        if ($limit !== null && $limit !== '') {
+            if (! preg_match('/^\d+$/', (string) $limit) || (int) $limit <= 0) {
+                $this->error('The --limit option must be a positive integer.');
+
+                return self::FAILURE;
+            }
+        }
+
         $query = PolydockAppInstance::query();
         $filtersApplied = [];
 
         // 1. Resolve --app if specified
         if (! empty($appInput)) {
-            $storeApp = null;
-            if (is_numeric($appInput)) {
-                $storeApp = PolydockStoreApp::find((int) $appInput);
+            if (! Str::isUuid($appInput)) {
+                $this->error('The --app option must be a valid PolydockStoreApp UUID.');
+
+                return self::FAILURE;
             }
+
+            $storeApp = PolydockStoreApp::where('uuid', $appInput)->first();
+
             if (! $storeApp) {
-                $storeApp = PolydockStoreApp::where('name', $appInput)->first();
-            }
-            if (! $storeApp) {
-                $this->error("No PolydockStoreApp found with ID or name/slug matching: {$appInput}");
+                $this->error("No PolydockStoreApp found with UUID: {$appInput}");
 
                 return self::FAILURE;
             }
@@ -120,6 +132,12 @@ class RemoveAppInstances extends Command
             PolydockAppInstance::$stageRemoveStatuses,
             PolydockAppInstance::$stagePurgeStatuses
         ));
+
+        // Apply limit if specified
+        if ($limit !== null && $limit !== '') {
+            $query->orderBy('id', 'asc')->limit((int) $limit);
+            $filtersApplied[] = "Limit: {$limit}";
+        }
 
         $this->info('Searching for active app instances matching: '.implode(', ', $filtersApplied));
 

@@ -42,6 +42,10 @@ class LagoonProjectPurgeService
     {
         $logger ??= new PolydockLogger;
 
+        if (app()->bound(Client::class)) {
+            return new self($logger, app(Client::class));
+        }
+
         $serviceProvider = new PolydockServiceProviderFTLagoon(
             config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon'),
             $logger,
@@ -57,11 +61,15 @@ class LagoonProjectPurgeService
     protected function client(): Client
     {
         if ($this->client === null) {
-            $serviceProvider = new PolydockServiceProviderFTLagoon(
-                config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon'),
-                $this->logger,
-            );
-            $this->client = $serviceProvider->getLagoonClient();
+            if (app()->bound(Client::class)) {
+                $this->client = app(Client::class);
+            } else {
+                $serviceProvider = new PolydockServiceProviderFTLagoon(
+                    config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon'),
+                    $this->logger,
+                );
+                $this->client = $serviceProvider->getLagoonClient();
+            }
         }
 
         return $this->client;
