@@ -11,7 +11,7 @@ use App\Models\UserRemoteRegistration;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
 
-class SendAppInstanceMail extends Command
+class SendAppInstanceMail extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -185,5 +185,11 @@ class SendAppInstanceMail extends Command
                 'name' => $user->name ?? trim("{$user->first_name} {$user->last_name}"),
             ],
         ];
+    }
+
+    #[\Override]
+    public function sensitiveInputs(): array
+    {
+        return ['email'];
     }
 }

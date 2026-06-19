@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Services\EmailBlockerService;
 use Illuminate\Console\Command;
 
-class UpdateDisposableDomains extends Command
+class UpdateDisposableDomains extends BaseCommand
 {
     /**
      * The name and signature of the console command.

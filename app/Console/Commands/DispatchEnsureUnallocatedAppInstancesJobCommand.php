@@ -8,7 +8,7 @@ use App\Jobs\EnsureUnallocatedAppInstancesJob;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class DispatchEnsureUnallocatedAppInstancesJobCommand extends Command
+class DispatchEnsureUnallocatedAppInstancesJobCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.

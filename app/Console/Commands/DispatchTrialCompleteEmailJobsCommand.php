@@ -7,7 +7,7 @@ use App\Models\PolydockAppInstance;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class DispatchTrialCompleteEmailJobsCommand extends Command
+class DispatchTrialCompleteEmailJobsCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.

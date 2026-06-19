@@ -6,7 +6,6 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\Log;
  * Designed to run on a short cron (every 10 minutes by default). Backoff
  * between attempts is enforced via purge_last_attempted_at.
  */
-class DispatchProjectPurgeJobsCommand extends Command
+class DispatchProjectPurgeJobsCommand extends BaseCommand
 {
     protected $signature = 'polydock:dispatch-project-purge
                           {--dry-run : List eligible instances without dispatching}

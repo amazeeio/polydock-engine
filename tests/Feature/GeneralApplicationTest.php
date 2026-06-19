@@ -3,13 +3,16 @@
 namespace Tests\Feature;
 
 use Amazeeio\PolydockAppAmazeeclaw\PolydockAmazeeClawAiApp;
+use App\Console\Commands\BaseCommand;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use Illuminate\Console\Command;
 use Illuminate\Console\Events\CommandStarting;
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
@@ -156,6 +159,119 @@ class GeneralApplicationTest extends TestCase
         try {
             Event::dispatch(
                 new CommandStarting('test:dummy-command', $input, $output)
+            );
+        } finally {
+            if ($originalArgv === null) {
+                unset($_SERVER['argv']);
+            } else {
+                $_SERVER['argv'] = $originalArgv;
+            }
+        }
+    }
+
+    /**
+     * Test that running an artisan command correctly redacts positional arguments
+     * that are defined as sensitive, preserves non-sensitive positional arguments,
+     * and preserves non-sensitive exact short flags (like -t).
+     */
+    public function test_artisan_command_starting_redacts_sensitive_positional_arguments_and_preserves_short_flags(): void
+    {
+        $originalArgv = $_SERVER['argv'] ?? null;
+
+        $command = new class extends Command
+        {
+            protected $signature = 'test:redact-positional-command {secret-token} {safe-arg} {--t|testdox-filter=}';
+
+            public function handle() {}
+        };
+        $this->app->make(Kernel::class)->registerCommand($command);
+
+        $_SERVER['argv'] = [
+            'artisan',
+            'test:redact-positional-command',
+            'my-sensitive-token-value',
+            'my-safe-value',
+            '-t',
+            'non-sensitive-filter-val',
+        ];
+
+        Log::shouldReceive('shareContext')
+            ->once()
+            ->with(\Mockery::on(function ($context) {
+                $expectedArgv = 'artisan test:redact-positional-command [REDACTED] my-safe-value -t non-sensitive-filter-val';
+
+                return isset($context['artisan_command'])
+                    && $context['artisan_command'] === 'test:redact-positional-command'
+                    && isset($context['artisan_argv'])
+                    && $context['artisan_argv'] === $expectedArgv;
+            }));
+
+        $input = new ArrayInput([]);
+        $output = new NullOutput;
+
+        try {
+            Event::dispatch(
+                new CommandStarting('test:redact-positional-command', $input, $output)
+            );
+        } finally {
+            if ($originalArgv === null) {
+                unset($_SERVER['argv']);
+            } else {
+                $_SERVER['argv'] = $originalArgv;
+            }
+        }
+    }
+
+    /**
+     * Test that running an artisan command extending BaseCommand and implementing
+     * sensitiveInputs() correctly redacts those designated inputs.
+     */
+    public function test_artisan_command_starting_redacts_explicit_sensitive_inputs(): void
+    {
+        $originalArgv = $_SERVER['argv'] ?? null;
+
+        $command = new class extends BaseCommand
+        {
+            protected $signature = 'test:explicit-sensitive-command {sensitive-arg} {normal-arg} {--sensitive-opt=} {--normal-opt=}';
+
+            public function handle() {}
+
+            #[\Override]
+            public function sensitiveInputs(): array
+            {
+                return ['sensitive-arg', 'sensitive-opt'];
+            }
+        };
+        $this->app->make(Kernel::class)->registerCommand($command);
+
+        $_SERVER['argv'] = [
+            'artisan',
+            'test:explicit-sensitive-command',
+            'my-private-argument-value',
+            'my-public-argument-value',
+            '--sensitive-opt',
+            'my-private-option-value',
+            '--normal-opt',
+            'my-public-option-value',
+        ];
+
+        Log::shouldReceive('shareContext')
+            ->once()
+            ->with(\Mockery::on(function ($context) {
+                $expectedArgv = 'artisan test:explicit-sensitive-command [REDACTED] my-public-argument-value --sensitive-opt [REDACTED] --normal-opt my-public-option-value';
+
+                return isset($context['artisan_command'])
+                    && $context['artisan_command'] === 'test:explicit-sensitive-command'
+                    && isset($context['artisan_argv'])
+                    && $context['artisan_argv'] === $expectedArgv;
+            }));
+
+        $input = new ArrayInput([]);
+        $output = new NullOutput;
+
+        try {
+            Event::dispatch(
+                new CommandStarting('test:explicit-sensitive-command', $input, $output)
             );
         } finally {
             if ($originalArgv === null) {

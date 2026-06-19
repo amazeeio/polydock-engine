@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Console\Commands;
 
+use App\Console\Commands\RemoveAppInstances;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
@@ -351,5 +352,11 @@ class RemoveAppInstancesTest extends TestCase
         ])
             ->expectsOutputToContain('The --limit option must be a positive integer.')
             ->assertFailed();
+    }
+
+    public function test_sensitive_inputs_redacts_email(): void
+    {
+        $command = new RemoveAppInstances;
+        $this->assertContains('email', $command->sensitiveInputs());
     }
 }

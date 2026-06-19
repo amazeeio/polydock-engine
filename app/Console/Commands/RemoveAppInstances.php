@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
-class RemoveAppInstances extends Command
+class RemoveAppInstances extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -243,5 +243,11 @@ class RemoveAppInstances extends Command
         }
 
         return $errorCount > 0 ? self::FAILURE : self::SUCCESS;
+    }
+
+    #[\Override]
+    public function sensitiveInputs(): array
+    {
+        return ['email'];
     }
 }

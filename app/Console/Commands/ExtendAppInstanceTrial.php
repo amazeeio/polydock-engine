@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 use function Laravel\Prompts\multiselect;
 
-class ExtendAppInstanceTrial extends Command
+class ExtendAppInstanceTrial extends BaseCommand
 {
     /**
      * The name and signature of the console command.

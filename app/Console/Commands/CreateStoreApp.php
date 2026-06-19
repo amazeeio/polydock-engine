@@ -8,7 +8,7 @@ use App\Models\PolydockStoreApp;
 use App\Services\PolydockAppClassDiscovery;
 use Illuminate\Console\Command;
 
-class CreateStoreApp extends Command
+class CreateStoreApp extends BaseCommand
 {
     /**
      * The name and signature of the console command.
