@@ -136,13 +136,14 @@ class GeneralApplicationTest extends TestCase
             '-p',
             'short-secret-password',
             '--safe-option',
-            'safe-value'
+            'safe-value',
         ];
 
         Log::shouldReceive('shareContext')
             ->once()
             ->with(\Mockery::on(function ($context) {
                 $expectedArgv = 'artisan test:dummy-command --password=[REDACTED] --token --verbose --secret-token [REDACTED] --port=8080 -p [REDACTED] --safe-option safe-value';
+
                 return isset($context['artisan_command'])
                     && $context['artisan_command'] === 'test:dummy-command'
                     && isset($context['artisan_argv'])
