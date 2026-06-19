@@ -11,6 +11,7 @@ use Aws\DynamoDb\DynamoDbClient;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Queue\Failed\DatabaseFailedJobProvider;
 use Illuminate\Queue\Failed\DynamoDbFailedJobProvider;
@@ -19,7 +20,9 @@ use Illuminate\Queue\Failed\NullFailedJobProvider;
 use Illuminate\Queue\QueueServiceProvider;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -111,5 +114,82 @@ class AppServiceProvider extends ServiceProvider
             });
 
         Scramble::routes(fn (Route $route) => str_starts_with($route->uri(), 'api/'));
+
+        Event::listen(
+            CommandStarting::class,
+            static function (CommandStarting $event) {
+                $command = $event->command ?? 'artisan';
+
+                // Get raw CLI argv if available
+                $argv = $_SERVER['argv'] ?? [];
+
+                $redactedArgv = [];
+                $redactNext = false;
+                $exactSensitiveKeys = ['p', 't', 'k'];
+                $substringSensitiveKeys = ['password', 'pass', 'secret', 'token', 'key', 'auth', 'apikey'];
+
+                foreach ($argv as $arg) {
+                    if ($redactNext) {
+                        if (! str_starts_with($arg, '-')) {
+                            $redactedArgv[] = '[REDACTED]';
+                            $redactNext = false;
+                            continue;
+                        }
+                        $redactNext = false;
+                    }
+
+                    if (str_starts_with($arg, '-')) {
+                        if (str_contains($arg, '=')) {
+                            [$key, $value] = explode('=', $arg, 2);
+                            $optionName = ltrim($key, '-');
+                            $optionNameLower = strtolower($optionName);
+
+                            $isSensitive = in_array($optionNameLower, $exactSensitiveKeys, true);
+                            if (! $isSensitive) {
+                                foreach ($substringSensitiveKeys as $substring) {
+                                    if (str_contains($optionNameLower, $substring)) {
+                                        $isSensitive = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if ($isSensitive) {
+                                $redactedArgv[] = $key . '=[REDACTED]';
+                            } else {
+                                $redactedArgv[] = $arg;
+                            }
+                        } else {
+                            $optionName = ltrim($arg, '-');
+                            $optionNameLower = strtolower($optionName);
+
+                            $isSensitive = in_array($optionNameLower, $exactSensitiveKeys, true);
+                            if (! $isSensitive) {
+                                foreach ($substringSensitiveKeys as $substring) {
+                                    if (str_contains($optionNameLower, $substring)) {
+                                        $isSensitive = true;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if ($isSensitive) {
+                                $redactNext = true;
+                            }
+                            $redactedArgv[] = $arg;
+                        }
+                    } else {
+                        $redactedArgv[] = $arg;
+                    }
+                }
+
+                $commandLine = implode(' ', $redactedArgv);
+
+                Log::shareContext([
+                    'artisan_command' => $command,
+                    'artisan_argv' => $commandLine,
+                ]);
+            }
+        );
     }
 }

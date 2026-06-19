@@ -9,7 +9,12 @@ use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Tests\TestCase;
 
 class GeneralApplicationTest extends TestCase
@@ -109,5 +114,54 @@ class GeneralApplicationTest extends TestCase
         $response = $this->get('/api/user');
 
         $response->assertStatus(401);
+    }
+
+    /**
+     * Test that running an artisan command registers the command name and argv in log context,
+     * and correctly redacts sensitive option values.
+     */
+    public function test_artisan_command_starting_sets_log_context(): void
+    {
+        $originalArgv = $_SERVER['argv'] ?? null;
+
+        $_SERVER['argv'] = [
+            'artisan',
+            'test:dummy-command',
+            '--password=my-secret-password',
+            '--token',
+            '--verbose',
+            '--secret-token',
+            'my-secret-token',
+            '--port=8080',
+            '-p',
+            'short-secret-password',
+            '--safe-option',
+            'safe-value'
+        ];
+
+        Log::shouldReceive('shareContext')
+            ->once()
+            ->with(\Mockery::on(function ($context) {
+                $expectedArgv = 'artisan test:dummy-command --password=[REDACTED] --token --verbose --secret-token [REDACTED] --port=8080 -p [REDACTED] --safe-option safe-value';
+                return isset($context['artisan_command'])
+                    && $context['artisan_command'] === 'test:dummy-command'
+                    && isset($context['artisan_argv'])
+                    && $context['artisan_argv'] === $expectedArgv;
+            }));
+
+        $input = new ArrayInput([]);
+        $output = new NullOutput;
+
+        try {
+            Event::dispatch(
+                new CommandStarting('test:dummy-command', $input, $output)
+            );
+        } finally {
+            if ($originalArgv === null) {
+                unset($_SERVER['argv']);
+            } else {
+                $_SERVER['argv'] = $originalArgv;
+            }
+        }
     }
 }
