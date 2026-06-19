@@ -99,4 +99,15 @@ class GeneralApplicationTest extends TestCase
         // Verify we didn't break multibyte character encoding
         $this->assertTrue(mb_check_encoding($instance->status_message, 'UTF-8'));
     }
+
+    /**
+     * Test that hitting an authenticated route without Accept: application/json header
+     * does not throw RouteNotFoundException and instead returns 401.
+     */
+    public function test_unauthenticated_request_to_protected_route_without_accept_header_returns_401_unauthorized(): void
+    {
+        $response = $this->get('/api/user');
+
+        $response->assertStatus(401);
+    }
 }
