@@ -10,7 +10,7 @@ use Illuminate\Console\Command;
 
 use function Laravel\Prompts\multiselect;
 
-class TriggerLagoonDeployOnAppInstances extends Command
+class TriggerLagoonDeployOnAppInstances extends BaseCommand
 {
     protected $signature = 'polydock:instances:trigger-deploy
                             {app_uuid : The UUID of the store app}

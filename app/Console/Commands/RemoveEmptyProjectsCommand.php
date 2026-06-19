@@ -17,7 +17,7 @@ use Illuminate\Console\Command;
  * polydock:dispatch-project-purge, but this command is useful for one-off
  * cleanups (e.g. legacy rows that pre-date the automated flow).
  */
-class RemoveEmptyProjectsCommand extends Command
+class RemoveEmptyProjectsCommand extends BaseCommand
 {
     protected $signature = 'polydock:remove-empty-projects
                           {--dry-run : Show what would be removed without actually doing it}

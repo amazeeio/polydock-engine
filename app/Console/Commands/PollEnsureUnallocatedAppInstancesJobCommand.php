@@ -8,7 +8,7 @@ use App\Models\PolydockStoreApp;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class PollEnsureUnallocatedAppInstancesJobCommand extends Command
+class PollEnsureUnallocatedAppInstancesJobCommand extends BaseCommand
 {
     protected $signature = 'polydock:poll-unallocated-instances';
 

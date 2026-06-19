@@ -9,7 +9,7 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class MarkStuckInstancesFailedCommand extends Command
+class MarkStuckInstancesFailedCommand extends BaseCommand
 {
     protected $signature = 'polydock:mark-stuck-instances-failed
                             {--threshold=30 : Minutes an instance can remain in a running/pending state before being considered stuck}

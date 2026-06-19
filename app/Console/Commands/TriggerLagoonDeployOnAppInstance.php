@@ -7,7 +7,7 @@ use App\Services\LagoonClientService;
 use FreedomtechHosting\FtLagoonPhp\Client;
 use Illuminate\Console\Command;
 
-class TriggerLagoonDeployOnAppInstance extends Command
+class TriggerLagoonDeployOnAppInstance extends BaseCommand
 {
     protected $signature = 'polydock:app-instance:trigger-deploy
                             {instance_uuid : The UUID of the app instance to trigger a deploy on}

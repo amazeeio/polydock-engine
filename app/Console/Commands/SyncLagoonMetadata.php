@@ -9,7 +9,7 @@ use App\Services\LagoonClientService;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 
-class SyncLagoonMetadata extends Command
+class SyncLagoonMetadata extends BaseCommand
 {
     protected $signature = 'polydock:sync-metadata
                             {--instance-id= : Sync only a specific app instance ID}

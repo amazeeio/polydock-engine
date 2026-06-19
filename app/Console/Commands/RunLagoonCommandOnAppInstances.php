@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Process;
 
 use function Laravel\Prompts\multiselect;
 
-class RunLagoonCommandOnAppInstances extends Command
+class RunLagoonCommandOnAppInstances extends BaseCommand
 {
     /**
      * The name and signature of the console command.

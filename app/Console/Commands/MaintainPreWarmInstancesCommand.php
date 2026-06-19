@@ -9,7 +9,7 @@ use App\Models\PolydockStoreApp;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class MaintainPreWarmInstancesCommand extends Command
+class MaintainPreWarmInstancesCommand extends BaseCommand
 {
     protected $signature = 'polydock:maintain-prewarm-instances
                             {--app= : PolydockStoreApp UUID to limit maintenance to}

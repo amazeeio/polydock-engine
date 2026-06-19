@@ -7,7 +7,7 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class ListUnclaimedAppInstancesCommand extends Command
+class ListUnclaimedAppInstancesCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.

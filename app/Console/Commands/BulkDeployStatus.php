@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use App\Services\LagoonClientService;
 use Illuminate\Console\Command;
 
-class BulkDeployStatus extends Command
+class BulkDeployStatus extends BaseCommand
 {
     /**
      * The name and signature of the console command.

@@ -8,7 +8,7 @@ use App\Models\PolydockStoreApp;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class PolydockCloneStoreAppCommand extends Command
+class PolydockCloneStoreAppCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.

@@ -13,7 +13,7 @@ use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 
-class BanEmailsCommand extends Command
+class BanEmailsCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -322,5 +322,11 @@ class BanEmailsCommand extends Command
                 }
             }
         })->get();
+    }
+
+    #[\Override]
+    public function sensitiveInputs(): array
+    {
+        return ['patterns'];
     }
 }

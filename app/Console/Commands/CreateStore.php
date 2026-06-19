@@ -6,7 +6,7 @@ use App\Enums\PolydockStoreStatusEnum;
 use App\Models\PolydockStore;
 use Illuminate\Console\Command;
 
-class CreateStore extends Command
+class CreateStore extends BaseCommand
 {
     /**
      * The name and signature of the console command.

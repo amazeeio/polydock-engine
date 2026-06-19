@@ -6,7 +6,7 @@ use App\Models\PolydockStore;
 use App\Models\PolydockStoreWebhook;
 use Illuminate\Console\Command;
 
-class AttachWebhook extends Command
+class AttachWebhook extends BaseCommand
 {
     /**
      * The name and signature of the console command.
@@ -88,5 +88,11 @@ class AttachWebhook extends Command
         $this->line('   Active: '.($webhook->active ? 'Yes' : 'No'));
 
         return 0;
+    }
+
+    #[\Override]
+    public function sensitiveInputs(): array
+    {
+        return ['url'];
     }
 }
