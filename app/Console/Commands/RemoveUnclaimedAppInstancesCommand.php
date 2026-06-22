@@ -7,7 +7,7 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class RemoveUnclaimedAppInstancesCommand extends Command
+class RemoveUnclaimedAppInstancesCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.

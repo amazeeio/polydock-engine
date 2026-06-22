@@ -8,7 +8,7 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class PollDeploymentStatusCommand extends Command
+class PollDeploymentStatusCommand extends BaseCommand
 {
     protected $signature = 'polydock:poll-deployment-status';
 

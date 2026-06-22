@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 use App\Http\Middleware\EnsureInstancesReadAbility;
 use App\Http\Middleware\EnsureInstancesWriteAbility;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -23,7 +25,15 @@ return Application::configure(basePath: dirname(__DIR__))
             'instances.read.ability' => EnsureInstancesReadAbility::class,
             'instances.write.ability' => EnsureInstancesWriteAbility::class,
         ]);
+
+        $middleware->redirectGuestsTo(fn () => null);
     })
     ->withExceptions(function (Exceptions $exceptions) {
-        //
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                return response()->json(['message' => 'Unauthenticated.'], 401);
+            }
+
+            return response('Unauthenticated.', 401);
+        });
     })->create();

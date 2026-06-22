@@ -8,7 +8,7 @@ use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
-class DispatchTrialCompleteStageRemovalJobsCommand extends Command
+class DispatchTrialCompleteStageRemovalJobsCommand extends BaseCommand
 {
     /**
      * The name and signature of the console command.
