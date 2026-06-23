@@ -4,8 +4,8 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
+use App\Polydock\Clients\Lagoon\Client;
 use App\Services\LagoonClientService;
-use FreedomtechHosting\FtLagoonPhp\Client;
 use Illuminate\Console\Command;
 use Illuminate\Process\Pool;
 use Illuminate\Support\Facades\Process;

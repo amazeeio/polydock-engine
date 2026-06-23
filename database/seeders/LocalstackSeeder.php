@@ -10,7 +10,7 @@ use App\Models\PolydockStoreApp;
 use App\Models\PolydockStoreWebhook;
 use App\Models\User;
 use App\Models\UserGroup;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp;
+use App\Polydock\Apps\Generic\PolydockApp;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 

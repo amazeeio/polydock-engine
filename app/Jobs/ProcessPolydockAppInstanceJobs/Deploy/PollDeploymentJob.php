@@ -3,9 +3,9 @@
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Deploy;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\PolydockEngine\Engine;
 use App\PolydockEngine\PolydockLogger;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 

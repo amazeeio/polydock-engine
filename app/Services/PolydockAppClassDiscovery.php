@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use Composer\Autoload\ClassLoader;
+use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
+use App\Polydock\Core\Attributes\PolydockAppStoreFields;
+use App\Polydock\Core\Attributes\PolydockAppTitle;
+use App\Polydock\Core\PolydockAppInterface;
 use Filament\Forms\Components\Component;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppStoreFields;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppTitle;
-use FreedomtechHosting\PolydockApp\PolydockAppInterface;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 
@@ -594,18 +594,32 @@ class PolydockAppClassDiscovery
     }
 
     /**
-     * Get Composer's merged class map from all registered loaders.
+     * Get class map by scanning the app/Polydock/Apps directory.
      *
      * @return array<string, string> className => filePath
      */
     protected function getClassMap(): array
     {
-        /** @var ClassLoader[] $loaders */
-        $loaders = ClassLoader::getRegisteredLoaders();
-
         $classMap = [];
-        foreach ($loaders as $loader) {
-            $classMap = array_merge($classMap, $loader->getClassMap());
+        $appsPath = app_path('Polydock/Apps');
+
+        if (! File::isDirectory($appsPath)) {
+            return $classMap;
+        }
+
+        $files = File::allFiles($appsPath);
+
+        foreach ($files as $file) {
+            if ($file->getExtension() !== 'php') {
+                continue;
+            }
+
+            $relativePathname = $file->getRelativePathname();
+            $classNameWithoutExtension = substr($relativePathname, 0, -4);
+            $normalizedPath = str_replace(['/', '\\'], '\\', $classNameWithoutExtension);
+            $className = 'App\\Polydock\\Apps\\'.$normalizedPath;
+
+            $classMap[$className] = $file->getRealPath();
         }
 
         return $classMap;

@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\PolydockEngine;
 
+use App\Polydock\Core\Exceptions\PolydockEngineValidationException;
+use App\Polydock\Core\PolydockAppInstanceInterface;
+use App\Polydock\Core\PolydockAppInterface;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockAppVariableDefinitionBase;
 use App\PolydockEngine\Engine;
-use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineValidationException;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppVariableDefinitionBase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Doubles\AlphaTestPolydockServiceProvider;

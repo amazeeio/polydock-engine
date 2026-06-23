@@ -5,7 +5,7 @@ namespace App\Jobs;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

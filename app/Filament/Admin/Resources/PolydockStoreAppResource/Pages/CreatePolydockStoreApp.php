@@ -3,9 +3,9 @@
 namespace App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockStoreAppResource;
+use App\Polydock\Core\Attributes\PolydockAppStoreFields;
 use App\Services\PolydockAppClassDiscovery;
 use Filament\Resources\Pages\CreateRecord;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppStoreFields;
 
 class CreatePolydockStoreApp extends CreateRecord
 {

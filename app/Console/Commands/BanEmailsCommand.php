@@ -8,7 +8,7 @@ use App\Models\PolydockBannedPattern;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Models\UserRemoteRegistration;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;

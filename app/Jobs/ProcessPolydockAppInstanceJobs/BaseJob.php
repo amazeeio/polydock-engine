@@ -4,10 +4,10 @@ namespace App\Jobs\ProcessPolydockAppInstanceJobs;
 
 use App\Listeners\ProcessPolydockAppInstanceStatusChange;
 use App\Models\PolydockAppInstance;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\PolydockEngine\Engine;
 use App\PolydockEngine\PolydockLogger;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

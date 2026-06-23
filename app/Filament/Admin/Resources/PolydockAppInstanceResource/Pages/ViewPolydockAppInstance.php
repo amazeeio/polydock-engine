@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
 use App\Models\PolydockAppInstance;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\LagoonClientService;
 use Carbon\Carbon;
 use Filament\Actions;
@@ -13,7 +14,6 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Support\Facades\Cache;
 
 class ViewPolydockAppInstance extends ViewRecord

@@ -2,12 +2,12 @@
 
 namespace Tests\Feature;
 
-use Amazeeio\PolydockAppAmazeeclaw\PolydockAmazeeClawAiApp;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserGroup;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 use Tests\TestCase;

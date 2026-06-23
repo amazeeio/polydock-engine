@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a7bd6a56e74e7c3a51f94f576880ff85",
+    "content-hash": "3d0d66ffb76c39fb742914b84549a050",
     "packages": [
         {
             "name": "amazeeio/lagoon-logs",
@@ -54,192 +54,17 @@
             "time": "2023-04-19T05:21:35+00:00"
         },
         {
-            "name": "amazeeio/polydock-app-amazeeclaw",
-            "version": "v0.1.16",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amazeeio/polydock-app-amazeeclaw.git",
-                "reference": "f3f19c7cf9891832a68720b38bf3b5b7c7c06d41"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeclaw/zipball/f3f19c7cf9891832a68720b38bf3b5b7c7c06d41",
-                "reference": "f3f19c7cf9891832a68720b38bf3b5b7c7c06d41",
-                "shasum": ""
-            },
-            "require": {
-                "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.1"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Amazeeio\\PolydockAppAmazeeclaw\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Polydock App - AmazeeClaw AI",
-            "support": {
-                "issues": "https://github.com/amazeeio/polydock-app-amazeeclaw/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeclaw/tree/v0.1.16"
-            },
-            "time": "2026-06-16T07:26:50+00:00"
-        },
-        {
-            "name": "amazeeio/polydock-app-amazeeio-privategpt",
-            "version": "v0.1.10",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt.git",
-                "reference": "62c3bbf5a88614bd7da2183cf95adf7150e14fd3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-privategpt/zipball/62c3bbf5a88614bd7da2183cf95adf7150e14fd3",
-                "reference": "62c3bbf5a88614bd7da2183cf95adf7150e14fd3",
-                "shasum": ""
-            },
-            "require": {
-                "cuyz/valinor": "^2.4",
-                "freedomtech-hosting/ft-lagoon-php": "^0.1",
-                "freedomtech-hosting/polydock-app": "^0.1",
-                "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.1",
-                "guzzlehttp/guzzle": "^7.10"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.27.1",
-                "mockery/mockery": "^1.6.12",
-                "orchestra/testbench": "*",
-                "phpstan/extension-installer": "*",
-                "phpstan/phpstan": "^1.10",
-                "phpstan/phpstan-mockery": "^1.1",
-                "phpunit/phpunit": "^10.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Amazeeio\\PolydockAppAmazeeioPrivateGpt\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Philipp Melab",
-                    "email": "philipp.melab@amazeelabs.com"
-                }
-            ],
-            "description": "Polydock App - amazee.io PrivateGPT with Direct API Integration",
-            "support": {
-                "issues": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeio-privategpt/tree/v0.1.10"
-            },
-            "time": "2026-06-13T10:31:33+00:00"
-        },
-        {
-            "name": "amazeeio/polydock-app-anythingllm",
-            "version": "v0.1.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amazeeio/polydock-app-anythingllm.git",
-                "reference": "6cf439ff3ac27b727e532419048552c1bcb8eb55"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-anythingllm/zipball/6cf439ff3ac27b727e532419048552c1bcb8eb55",
-                "reference": "6cf439ff3ac27b727e532419048552c1bcb8eb55",
-                "shasum": ""
-            },
-            "require": {
-                "freedomtech-hosting/polydock-app": "^0.1",
-                "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.1"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.27.1",
-                "mockery/mockery": "^1.6.12",
-                "orchestra/testbench": "*",
-                "phpstan/extension-installer": "*",
-                "phpstan/phpstan": "^1.10",
-                "phpstan/phpstan-mockery": "^1.1",
-                "phpunit/phpunit": "^10.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Amazeeio\\PolydockAppAnythingLLM\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Polydock App - AnythingLLM",
-            "support": {
-                "issues": "https://github.com/amazeeio/polydock-app-anythingllm/issues",
-                "source": "https://github.com/amazeeio/polydock-app-anythingllm/tree/v0.1.7"
-            },
-            "time": "2026-06-13T10:32:34+00:00"
-        },
-        {
-            "name": "amazeeio/polydock-app-dependency-track",
-            "version": "v0.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amazeeio/polydock-app-dependency-track.git",
-                "reference": "050aa6ed23d69f07446bc73d1f4ebd39e8dc1bf3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-dependency-track/zipball/050aa6ed23d69f07446bc73d1f4ebd39e8dc1bf3",
-                "reference": "050aa6ed23d69f07446bc73d1f4ebd39e8dc1bf3",
-                "shasum": ""
-            },
-            "require": {
-                "freedomtech-hosting/polydock-app": "^0.1",
-                "freedomtech-hosting/polydock-app-amazeeio-generic": "^0.1"
-            },
-            "require-dev": {
-                "laravel/pint": "^1.27.1",
-                "mockery/mockery": "^1.6.12",
-                "orchestra/testbench": "*",
-                "phpstan/extension-installer": "*",
-                "phpstan/phpstan": "^1.10",
-                "phpstan/phpstan-mockery": "^1.1",
-                "phpunit/phpunit": "^10.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Amazeeio\\PolydockAppDependencyTrack\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "description": "Polydock App - Dependency Track",
-            "support": {
-                "issues": "https://github.com/amazeeio/polydock-app-dependency-track/issues",
-                "source": "https://github.com/amazeeio/polydock-app-dependency-track/tree/v0.1.2"
-            },
-            "time": "2026-06-13T10:33:45+00:00"
-        },
-        {
             "name": "anourvalar/eloquent-serialize",
-            "version": "1.3.9",
+            "version": "1.3.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/AnourValar/eloquent-serialize.git",
-                "reference": "da1b8c8fa5cd9bdfc5dd19a2a92a0e16f6bf1bca"
+                "reference": "2be26f176b764a2d6f20118bfa4b125f71fa88f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AnourValar/eloquent-serialize/zipball/da1b8c8fa5cd9bdfc5dd19a2a92a0e16f6bf1bca",
-                "reference": "da1b8c8fa5cd9bdfc5dd19a2a92a0e16f6bf1bca",
+                "url": "https://api.github.com/repos/AnourValar/eloquent-serialize/zipball/2be26f176b764a2d6f20118bfa4b125f71fa88f8",
+                "reference": "2be26f176b764a2d6f20118bfa4b125f71fa88f8",
                 "shasum": ""
             },
             "require": {
@@ -289,9 +114,9 @@
             ],
             "support": {
                 "issues": "https://github.com/AnourValar/eloquent-serialize/issues",
-                "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.3.9"
+                "source": "https://github.com/AnourValar/eloquent-serialize/tree/1.3.10"
             },
-            "time": "2026-06-12T13:35:57+00:00"
+            "time": "2026-06-20T14:30:25+00:00"
         },
         {
             "name": "bezhansalleh/filament-shield",
@@ -658,83 +483,6 @@
                 }
             ],
             "time": "2024-02-09T16:56:22+00:00"
-        },
-        {
-            "name": "cuyz/valinor",
-            "version": "2.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/CuyZ/Valinor.git",
-                "reference": "3b0afa3a287ed7f3a69aab223726cf1139454c34"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/CuyZ/Valinor/zipball/3b0afa3a287ed7f3a69aab223726cf1139454c34",
-                "reference": "3b0afa3a287ed7f3a69aab223726cf1139454c34",
-                "shasum": ""
-            },
-            "require": {
-                "php": "~8.2.0 || ~8.3.0 || ~8.4.0 || ~8.5.0"
-            },
-            "conflict": {
-                "phpstan/phpstan": "<1.0 || >= 3.0",
-                "vimeo/psalm": "<5.0 || >=7.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.91",
-                "infection/infection": "^0.32",
-                "marcocesarato/php-conventional-changelog": "^1.12",
-                "mikey179/vfsstream": "^1.6.10",
-                "phpbench/phpbench": "^1.3",
-                "phpstan/phpstan": "^2.0",
-                "phpstan/phpstan-phpunit": "^2.0",
-                "phpstan/phpstan-strict-rules": "^2.0",
-                "phpunit/phpunit": "^11.5",
-                "psr/http-message": "^2.0",
-                "rector/rector": "^2.0",
-                "vimeo/psalm": "^6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "CuyZ\\Valinor\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Romain Canon",
-                    "email": "romain.hydrocanon@gmail.com",
-                    "homepage": "https://github.com/romm"
-                }
-            ],
-            "description": "Dependency free PHP library that helps to map any input into a strongly-typed structure.",
-            "homepage": "https://github.com/CuyZ/Valinor",
-            "keywords": [
-                "array",
-                "conversion",
-                "hydrator",
-                "json",
-                "mapper",
-                "mapping",
-                "object",
-                "tree",
-                "yaml"
-            ],
-            "support": {
-                "issues": "https://github.com/CuyZ/Valinor/issues",
-                "source": "https://github.com/CuyZ/Valinor/tree/2.4.0"
-            },
-            "funding": [
-                {
-                    "url": "https://github.com/romm",
-                    "type": "github"
-                }
-            ],
-            "time": "2026-03-23T17:38:05+00:00"
         },
         {
             "name": "danharrin/date-format-converter",
@@ -1948,175 +1696,6 @@
             "time": "2026-06-12T16:57:28+00:00"
         },
         {
-            "name": "freedomtech-hosting/ft-lagoon-php",
-            "version": "v0.1.23",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amazeeio/polydock-lagoon-php-lib.git",
-                "reference": "2b3a16fbe4dcb621305f074febb82e63dce10fd0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-lagoon-php-lib/zipball/2b3a16fbe4dcb621305f074febb82e63dce10fd0",
-                "reference": "2b3a16fbe4dcb621305f074febb82e63dce10fd0",
-                "shasum": ""
-            },
-            "require": {
-                "softonic/graphql-client": "^3.0",
-                "spatie/ssh": "^1.10",
-                "symfony/process": "^7.1.7"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "FreedomtechHosting\\FtLagoonPhp\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bryan Gruneberg",
-                    "email": "hello@bryangruneberg.com"
-                }
-            ],
-            "description": "The Freedom Tech Lagoon PHP library",
-            "support": {
-                "issues": "https://github.com/amazeeio/polydock-lagoon-php-lib/issues",
-                "source": "https://github.com/amazeeio/polydock-lagoon-php-lib/tree/v0.1.23"
-            },
-            "time": "2026-06-19T07:31:03+00:00"
-        },
-        {
-            "name": "freedomtech-hosting/polydock-amazeeai-backend-client-php",
-            "version": "v0.1.4",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amazeeio/polydock-amazeeai-backend-php-lib.git",
-                "reference": "fc5ddf829d766efaf1aa086da1547a5a69194dd6"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-amazeeai-backend-php-lib/zipball/fc5ddf829d766efaf1aa086da1547a5a69194dd6",
-                "reference": "fc5ddf829d766efaf1aa086da1547a5a69194dd6",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "symfony/http-client": "^7.2 || ^8.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "FreedomtechHosting\\PolydockAmazeeAIBackendClient\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bryan Gruneberg",
-                    "email": "hello@bryangruneberg.com"
-                }
-            ],
-            "description": "The Freedom Tech amazee.ai Private AI PHP library",
-            "support": {
-                "issues": "https://github.com/amazeeio/polydock-amazeeai-backend-php-lib/issues",
-                "source": "https://github.com/amazeeio/polydock-amazeeai-backend-php-lib/tree/v0.1.4"
-            },
-            "time": "2026-06-13T10:27:45+00:00"
-        },
-        {
-            "name": "freedomtech-hosting/polydock-app",
-            "version": "v0.1.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amazeeio/polydock-app-lib.git",
-                "reference": "6c4f2c5ba27ce3ba21c5d233db1d8aa47cde22cd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-lib/zipball/6c4f2c5ba27ce3ba21c5d233db1d8aa47cde22cd",
-                "reference": "6c4f2c5ba27ce3ba21c5d233db1d8aa47cde22cd",
-                "shasum": ""
-            },
-            "require": {
-                "filament/support": "^3.3"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "FreedomtechHosting\\PolydockApp\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bryan Gruneberg",
-                    "email": "hello@bryangruneberg.com"
-                }
-            ],
-            "description": "Library for Polydock Apps",
-            "support": {
-                "issues": "https://github.com/amazeeio/polydock-app-lib/issues",
-                "source": "https://github.com/amazeeio/polydock-app-lib/tree/v0.1.1"
-            },
-            "time": "2026-05-29T10:42:05+00:00"
-        },
-        {
-            "name": "freedomtech-hosting/polydock-app-amazeeio-generic",
-            "version": "v0.1.15",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/amazeeio/polydock-app-amazeeio-generic.git",
-                "reference": "c64c39d6586ca134e2953d131183f8dadd27fc62"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/amazeeio/polydock-app-amazeeio-generic/zipball/c64c39d6586ca134e2953d131183f8dadd27fc62",
-                "reference": "c64c39d6586ca134e2953d131183f8dadd27fc62",
-                "shasum": ""
-            },
-            "require": {
-                "freedomtech-hosting/ft-lagoon-php": "^0.1",
-                "freedomtech-hosting/polydock-amazeeai-backend-client-php": "^0.1",
-                "freedomtech-hosting/polydock-app": "^0.1.0"
-            },
-            "require-dev": {
-                "mockery/mockery": "^1.6.12",
-                "phpunit/phpunit": "^11.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "FreedomtechHosting\\PolydockAppAmazeeioGeneric\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Bryan Gruneberg",
-                    "email": "hello@bryangruneberg.com"
-                }
-            ],
-            "description": "Polydock App - amazee.io Generic",
-            "support": {
-                "issues": "https://github.com/amazeeio/polydock-app-amazeeio-generic/issues",
-                "source": "https://github.com/amazeeio/polydock-app-amazeeio-generic/tree/v0.1.15"
-            },
-            "time": "2026-06-13T10:30:43+00:00"
-        },
-        {
             "name": "fruitcake/php-cors",
             "version": "v1.4.0",
             "source": {
@@ -2251,26 +1830,26 @@
         },
         {
             "name": "guzzlehttp/guzzle",
-            "version": "7.12.1",
+            "version": "7.12.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/guzzle.git",
-                "reference": "d34627490fbc03bf5c5d7cfed81f2faa19519425"
+                "reference": "9aa17bcdd777ee31df9fc83c337ca4ca2340def3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/d34627490fbc03bf5c5d7cfed81f2faa19519425",
-                "reference": "d34627490fbc03bf5c5d7cfed81f2faa19519425",
+                "url": "https://api.github.com/repos/guzzle/guzzle/zipball/9aa17bcdd777ee31df9fc83c337ca4ca2340def3",
+                "reference": "9aa17bcdd777ee31df9fc83c337ca4ca2340def3",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "guzzlehttp/promises": "^2.5",
-                "guzzlehttp/psr7": "^2.12.1",
+                "guzzlehttp/psr7": "^2.12.3",
                 "php": "^7.2.5 || ^8.0",
                 "psr/http-client": "^1.0",
                 "symfony/deprecation-contracts": "^2.5 || ^3.0",
-                "symfony/polyfill-php80": "^1.24"
+                "symfony/polyfill-php80": "^1.25"
             },
             "provide": {
                 "psr/http-client-implementation": "1.0"
@@ -2359,7 +1938,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/guzzle/issues",
-                "source": "https://github.com/guzzle/guzzle/tree/7.12.1"
+                "source": "https://github.com/guzzle/guzzle/tree/7.12.3"
             },
             "funding": [
                 {
@@ -2375,7 +1954,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-18T14:12:49+00:00"
+            "time": "2026-06-23T15:29:02+00:00"
         },
         {
             "name": "guzzlehttp/promises",
@@ -2463,16 +2042,16 @@
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.12.1",
+            "version": "2.12.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "172ef2f4e9824c1e058b7f30be8ae25a02c0f2b7"
+                "reference": "7ec62dc3f44aa218487dbed81a9bf9bc647be55d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/172ef2f4e9824c1e058b7f30be8ae25a02c0f2b7",
-                "reference": "172ef2f4e9824c1e058b7f30be8ae25a02c0f2b7",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/7ec62dc3f44aa218487dbed81a9bf9bc647be55d",
+                "reference": "7ec62dc3f44aa218487dbed81a9bf9bc647be55d",
                 "shasum": ""
             },
             "require": {
@@ -2481,7 +2060,7 @@
                 "psr/http-message": "^1.1 || ^2.0",
                 "ralouphie/getallheaders": "^3.0",
                 "symfony/deprecation-contracts": "^2.5 || ^3.0",
-                "symfony/polyfill-php80": "^1.24"
+                "symfony/polyfill-php80": "^1.25"
             },
             "provide": {
                 "psr/http-factory-implementation": "1.0",
@@ -2562,7 +2141,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.12.1"
+                "source": "https://github.com/guzzle/psr7/tree/2.12.3"
             },
             "funding": [
                 {
@@ -2578,25 +2157,25 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-18T09:49:37+00:00"
+            "time": "2026-06-23T15:21:08+00:00"
         },
         {
             "name": "guzzlehttp/uri-template",
-            "version": "v1.0.7",
+            "version": "v1.0.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/uri-template.git",
-                "reference": "7fe811c23a9e3cd712b4389eaeb50b5456d8c529"
+                "reference": "9c19128923b05a5d7355e5d2318d7808b7e33bbd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/uri-template/zipball/7fe811c23a9e3cd712b4389eaeb50b5456d8c529",
-                "reference": "7fe811c23a9e3cd712b4389eaeb50b5456d8c529",
+                "url": "https://api.github.com/repos/guzzle/uri-template/zipball/9c19128923b05a5d7355e5d2318d7808b7e33bbd",
+                "reference": "9c19128923b05a5d7355e5d2318d7808b7e33bbd",
                 "shasum": ""
             },
             "require": {
                 "php": "^7.2.5 || ^8.0",
-                "symfony/polyfill-php80": "^1.24"
+                "symfony/polyfill-php80": "^1.25"
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
@@ -2648,7 +2227,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/uri-template/issues",
-                "source": "https://github.com/guzzle/uri-template/tree/v1.0.7"
+                "source": "https://github.com/guzzle/uri-template/tree/v1.0.8"
             },
             "funding": [
                 {
@@ -2664,7 +2243,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-06-12T21:33:43+00:00"
+            "time": "2026-06-23T13:02:23+00:00"
         },
         {
             "name": "kirschbaum-development/eloquent-power-joins",
@@ -3683,16 +3262,16 @@
         },
         {
             "name": "league/flysystem",
-            "version": "3.34.0",
+            "version": "3.35.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/flysystem.git",
-                "reference": "2daaac3b0d4c83ea7ed5d8586e786f5d00f3540e"
+                "reference": "d0a405f03d980461e4b6e08cfed2c162650f9f6b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/2daaac3b0d4c83ea7ed5d8586e786f5d00f3540e",
-                "reference": "2daaac3b0d4c83ea7ed5d8586e786f5d00f3540e",
+                "url": "https://api.github.com/repos/thephpleague/flysystem/zipball/d0a405f03d980461e4b6e08cfed2c162650f9f6b",
+                "reference": "d0a405f03d980461e4b6e08cfed2c162650f9f6b",
                 "shasum": ""
             },
             "require": {
@@ -3760,9 +3339,9 @@
             ],
             "support": {
                 "issues": "https://github.com/thephpleague/flysystem/issues",
-                "source": "https://github.com/thephpleague/flysystem/tree/3.34.0"
+                "source": "https://github.com/thephpleague/flysystem/tree/3.35.0"
             },
-            "time": "2026-05-14T10:28:08+00:00"
+            "time": "2026-06-22T20:12:06+00:00"
         },
         {
             "name": "league/flysystem-local",
@@ -3868,71 +3447,6 @@
                 }
             ],
             "time": "2024-09-21T08:32:55+00:00"
-        },
-        {
-            "name": "league/oauth2-client",
-            "version": "2.9.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/thephpleague/oauth2-client.git",
-                "reference": "26e8c5da4f3d78cede7021e09b1330a0fc093d5e"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/oauth2-client/zipball/26e8c5da4f3d78cede7021e09b1330a0fc093d5e",
-                "reference": "26e8c5da4f3d78cede7021e09b1330a0fc093d5e",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "guzzlehttp/guzzle": "^6.5.8 || ^7.4.5",
-                "php": "^7.1 || >=8.0.0 <8.6.0"
-            },
-            "require-dev": {
-                "mockery/mockery": "^1.3.5",
-                "php-parallel-lint/php-parallel-lint": "^1.4",
-                "phpunit/phpunit": "^7 || ^8 || ^9 || ^10 || ^11",
-                "squizlabs/php_codesniffer": "^3.11"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "League\\OAuth2\\Client\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alex Bilbie",
-                    "email": "hello@alexbilbie.com",
-                    "homepage": "http://www.alexbilbie.com",
-                    "role": "Developer"
-                },
-                {
-                    "name": "Woody Gilk",
-                    "homepage": "https://github.com/shadowhand",
-                    "role": "Contributor"
-                }
-            ],
-            "description": "OAuth 2.0 Client Library",
-            "keywords": [
-                "Authentication",
-                "SSO",
-                "authorization",
-                "identity",
-                "idp",
-                "oauth",
-                "oauth2",
-                "single sign on"
-            ],
-            "support": {
-                "issues": "https://github.com/thephpleague/oauth2-client/issues",
-                "source": "https://github.com/thephpleague/oauth2-client/tree/2.9.0"
-            },
-            "time": "2025-11-25T22:17:17+00:00"
         },
         {
             "name": "league/uri",
@@ -4194,16 +3708,16 @@
         },
         {
             "name": "masterminds/html5",
-            "version": "2.10.0",
+            "version": "2.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Masterminds/html5-php.git",
-                "reference": "fcf91eb64359852f00d921887b219479b4f21251"
+                "reference": "fd5018f6815fff903946d0564977b44ce8010e29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/fcf91eb64359852f00d921887b219479b4f21251",
-                "reference": "fcf91eb64359852f00d921887b219479b4f21251",
+                "url": "https://api.github.com/repos/Masterminds/html5-php/zipball/fd5018f6815fff903946d0564977b44ce8010e29",
+                "reference": "fd5018f6815fff903946d0564977b44ce8010e29",
                 "shasum": ""
             },
             "require": {
@@ -4211,7 +3725,7 @@
                 "php": ">=5.3.0"
             },
             "require-dev": {
-                "phpunit/phpunit": "^4.8.35 || ^5.7.21 || ^6 || ^7 || ^8 || ^9"
+                "phpunit/phpunit": "^4.8.35 || ^5.7.21 || ^6 || ^7 || ^8 || ^9 || ^10"
             },
             "type": "library",
             "extra": {
@@ -4255,9 +3769,9 @@
             ],
             "support": {
                 "issues": "https://github.com/Masterminds/html5-php/issues",
-                "source": "https://github.com/Masterminds/html5-php/tree/2.10.0"
+                "source": "https://github.com/Masterminds/html5-php/tree/2.10.1"
             },
-            "time": "2025-07-25T09:04:22+00:00"
+            "time": "2026-06-23T18:43:15+00:00"
         },
         {
             "name": "monolog/monolog",
@@ -6160,107 +5674,6 @@
             "time": "2026-03-19T10:36:26+00:00"
         },
         {
-            "name": "softonic/graphql-client",
-            "version": "3.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/softonic/graphql-client.git",
-                "reference": "71efe9e93609a98f7878c7d323732ccfb817653d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/softonic/graphql-client/zipball/71efe9e93609a98f7878c7d323732ccfb817653d",
-                "reference": "71efe9e93609a98f7878c7d323732ccfb817653d",
-                "shasum": ""
-            },
-            "require": {
-                "ext-json": "*",
-                "guzzlehttp/guzzle": "^6.3 || ^7.0",
-                "php": "^8.0",
-                "softonic/guzzle-oauth2-middleware": "^2.1",
-                "symfony/console": "^6.0 || ^7.0 || ^8.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.9",
-                "mockery/mockery": "^1.5",
-                "phpunit/phpunit": "^11.0",
-                "rector/rector": "^2.0",
-                "squizlabs/php_codesniffer": "^3.7"
-            },
-            "bin": [
-                "bin/graphql-client"
-            ],
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Softonic\\GraphQL\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "Softonic GraphQL client",
-            "homepage": "https://github.com/softonic/graphql-client",
-            "keywords": [
-                "client",
-                "graphql",
-                "oauth2",
-                "softonic"
-            ],
-            "support": {
-                "issues": "https://github.com/softonic/graphql-client/issues",
-                "source": "https://github.com/softonic/graphql-client/tree/3.1.2"
-            },
-            "time": "2026-02-18T10:31:17+00:00"
-        },
-        {
-            "name": "softonic/guzzle-oauth2-middleware",
-            "version": "2.1.2",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/softonic/guzzle-oauth2-middleware.git",
-                "reference": "632853648b5915e8164eebb64175d4ad87d03055"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/softonic/guzzle-oauth2-middleware/zipball/632853648b5915e8164eebb64175d4ad87d03055",
-                "reference": "632853648b5915e8164eebb64175d4ad87d03055",
-                "shasum": ""
-            },
-            "require": {
-                "league/oauth2-client": "^2.2",
-                "php": ">=7.1",
-                "psr/cache": "^1.0|^2.0|^3.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^2.4",
-                "phpunit/phpunit": "^6.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Softonic\\OAuth2\\Guzzle\\Middleware\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "Guzzle middleware with OAuth2 integration",
-            "homepage": "https://github.com/softonic/guzzle-oauth2-middleware",
-            "keywords": [
-                "Guzzle",
-                "middleware",
-                "oauth2"
-            ],
-            "support": {
-                "issues": "https://github.com/softonic/guzzle-oauth2-middleware/issues",
-                "source": "https://github.com/softonic/guzzle-oauth2-middleware/tree/2.1.2"
-            },
-            "time": "2025-01-10T10:44:19+00:00"
-        },
-        {
             "name": "spatie/color",
             "version": "1.8.0",
             "source": {
@@ -7520,185 +6933,6 @@
                 }
             ],
             "time": "2026-05-24T11:20:33+00:00"
-        },
-        {
-            "name": "symfony/http-client",
-            "version": "v8.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/http-client.git",
-                "reference": "68a48e4c31f63fcd1bdff997a85a09e55efe8cdb"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/68a48e4c31f63fcd1bdff997a85a09e55efe8cdb",
-                "reference": "68a48e4c31f63fcd1bdff997a85a09e55efe8cdb",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.4.1",
-                "psr/log": "^1|^2|^3",
-                "symfony/deprecation-contracts": "^2.5|^3.0",
-                "symfony/http-client-contracts": "^3.7",
-                "symfony/service-contracts": "^2.5|^3"
-            },
-            "conflict": {
-                "amphp/amp": "<3",
-                "php-http/discovery": "<1.15"
-            },
-            "provide": {
-                "php-http/async-client-implementation": "*",
-                "php-http/client-implementation": "*",
-                "psr/http-client-implementation": "1.0",
-                "symfony/http-client-implementation": "3.0"
-            },
-            "require-dev": {
-                "amphp/http-client": "^5.3.2",
-                "amphp/http-tunnel": "^2.0",
-                "guzzlehttp/guzzle": "^7.10",
-                "nyholm/psr7": "^1.0",
-                "php-http/httplug": "^1.0|^2.0",
-                "psr/http-client": "^1.0",
-                "symfony/cache": "^7.4|^8.0",
-                "symfony/dependency-injection": "^7.4|^8.0",
-                "symfony/http-kernel": "^7.4|^8.0",
-                "symfony/messenger": "^7.4|^8.0",
-                "symfony/process": "^7.4|^8.0",
-                "symfony/rate-limiter": "^7.4|^8.0",
-                "symfony/stopwatch": "^7.4|^8.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Component\\HttpClient\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Tests/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Provides powerful methods to fetch HTTP resources synchronously or asynchronously",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "http"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/http-client/tree/v8.1.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2026-05-29T05:06:50+00:00"
-        },
-        {
-            "name": "symfony/http-client-contracts",
-            "version": "v3.7.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/http-client-contracts.git",
-                "reference": "4a2d00c37651c0bdc2b9e1c773487a8bf4edb12d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client-contracts/zipball/4a2d00c37651c0bdc2b9e1c773487a8bf4edb12d",
-                "reference": "4a2d00c37651c0bdc2b9e1c773487a8bf4edb12d",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.1"
-            },
-            "type": "library",
-            "extra": {
-                "thanks": {
-                    "url": "https://github.com/symfony/contracts",
-                    "name": "symfony/contracts"
-                },
-                "branch-alias": {
-                    "dev-main": "3.7-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Symfony\\Contracts\\HttpClient\\": ""
-                },
-                "exclude-from-classmap": [
-                    "/Test/"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Nicolas Grekas",
-                    "email": "p@tchwork.com"
-                },
-                {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                }
-            ],
-            "description": "Generic abstractions related to HTTP clients",
-            "homepage": "https://symfony.com",
-            "keywords": [
-                "abstractions",
-                "contracts",
-                "decoupling",
-                "interfaces",
-                "interoperability",
-                "standards"
-            ],
-            "support": {
-                "source": "https://github.com/symfony/http-client-contracts/tree/v3.7.0"
-            },
-            "funding": [
-                {
-                    "url": "https://symfony.com/sponsor",
-                    "type": "custom"
-                },
-                {
-                    "url": "https://github.com/fabpot",
-                    "type": "github"
-                },
-                {
-                    "url": "https://github.com/nicolas-grekas",
-                    "type": "github"
-                },
-                {
-                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
-                    "type": "tidelift"
-                }
-            ],
-            "time": "2026-03-06T13:17:50+00:00"
         },
         {
             "name": "symfony/http-foundation",
@@ -10482,16 +9716,16 @@
         },
         {
             "name": "laravel/sail",
-            "version": "v1.62.0",
+            "version": "v1.63.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laravel/sail.git",
-                "reference": "3aaeefc979f8ba6586fbc5b6e0b1b3638058f98e"
+                "reference": "51bbce3f803c1d386cabbb44e618c955a12ff5fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laravel/sail/zipball/3aaeefc979f8ba6586fbc5b6e0b1b3638058f98e",
-                "reference": "3aaeefc979f8ba6586fbc5b6e0b1b3638058f98e",
+                "url": "https://api.github.com/repos/laravel/sail/zipball/51bbce3f803c1d386cabbb44e618c955a12ff5fc",
+                "reference": "51bbce3f803c1d386cabbb44e618c955a12ff5fc",
                 "shasum": ""
             },
             "require": {
@@ -10541,7 +9775,7 @@
                 "issues": "https://github.com/laravel/sail/issues",
                 "source": "https://github.com/laravel/sail"
             },
-            "time": "2026-05-27T04:02:01+00:00"
+            "time": "2026-06-18T08:54:14+00:00"
         },
         {
             "name": "marc-mabe/php-enum",
@@ -11626,16 +10860,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.4.6",
+            "version": "2.5.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "9b9e5c76618e4d359f65b54ca2eabcad3d1761ee"
+                "reference": "49ff6339174bdbdf50b0b35ecbcff14a05ac9e24"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/9b9e5c76618e4d359f65b54ca2eabcad3d1761ee",
-                "reference": "9b9e5c76618e4d359f65b54ca2eabcad3d1761ee",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/49ff6339174bdbdf50b0b35ecbcff14a05ac9e24",
+                "reference": "49ff6339174bdbdf50b0b35ecbcff14a05ac9e24",
                 "shasum": ""
             },
             "require": {
@@ -11674,7 +10908,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.4.6"
+                "source": "https://github.com/rectorphp/rector/tree/2.5.2"
             },
             "funding": [
                 {
@@ -11682,7 +10916,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2026-06-17T11:56:28+00:00"
+            "time": "2026-06-22T11:39:33+00:00"
         },
         {
             "name": "sebastian/cli-parser",
