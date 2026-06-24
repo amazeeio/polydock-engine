@@ -11,6 +11,8 @@ return new class extends Migration
             $mappings = [
                 'App\Polydock\CoreAmazeeioGeneric\PolydockApp' => 'App\Polydock\Apps\Generic\PolydockApp',
                 'App\Polydock\CoreAmazeeioGeneric\PolydockAiApp' => 'App\Polydock\Apps\Generic\PolydockAiApp',
+                'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp' => 'App\Polydock\Apps\Generic\PolydockApp',
+                'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp' => 'App\Polydock\Apps\Generic\PolydockAiApp',
                 'Amazeeio\PolydockAppAmazeeclaw\PolydockAmazeeClawAiApp' => 'App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp',
                 'Amazeeio\PolydockAppAmazeeioPrivateGpt\PolydockPrivateGptApp' => 'App\Polydock\Apps\PrivateGpt\PolydockPrivateGptApp',
                 'Amazeeio\PolydockAppAnythingLLM\PolydockAnythingLLMApp' => 'App\Polydock\Apps\AnythingLlm\PolydockAnythingLLMApp',
@@ -29,15 +31,15 @@ return new class extends Migration
     {
         DB::transaction(function () {
             $mappings = [
-                'App\Polydock\CoreAmazeeioGeneric\PolydockApp' => 'App\Polydock\Apps\Generic\PolydockApp',
-                'App\Polydock\CoreAmazeeioGeneric\PolydockAiApp' => 'App\Polydock\Apps\Generic\PolydockAiApp',
-                'Amazeeio\PolydockAppAmazeeclaw\PolydockAmazeeClawAiApp' => 'App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp',
-                'Amazeeio\PolydockAppAmazeeioPrivateGpt\PolydockPrivateGptApp' => 'App\Polydock\Apps\PrivateGpt\PolydockPrivateGptApp',
-                'Amazeeio\PolydockAppAnythingLLM\PolydockAnythingLLMApp' => 'App\Polydock\Apps\AnythingLlm\PolydockAnythingLLMApp',
-                'Amazeeio\PolydockAppDependencyTrack\PolydockDependencyTrackApp' => 'App\Polydock\Apps\DependencyTrack\PolydockDependencyTrackApp',
+                'App\Polydock\Apps\Generic\PolydockApp' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp',
+                'App\Polydock\Apps\Generic\PolydockAiApp' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp',
+                'App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp' => 'Amazeeio\PolydockAppAmazeeclaw\PolydockAmazeeClawAiApp',
+                'App\Polydock\Apps\PrivateGpt\PolydockPrivateGptApp' => 'Amazeeio\PolydockAppAmazeeioPrivateGpt\PolydockPrivateGptApp',
+                'App\Polydock\Apps\AnythingLlm\PolydockAnythingLLMApp' => 'Amazeeio\PolydockAppAnythingLLM\PolydockAnythingLLMApp',
+                'App\Polydock\Apps\DependencyTrack\PolydockDependencyTrackApp' => 'Amazeeio\PolydockAppDependencyTrack\PolydockDependencyTrackApp',
             ];
 
-            foreach ($mappings as $oldClass => $newClass) {
+            foreach ($mappings as $newClass => $oldClass) {
                 DB::table('polydock_store_apps')
                     ->where('polydock_app_class', $newClass)
                     ->update(['polydock_app_class' => $oldClass]);
