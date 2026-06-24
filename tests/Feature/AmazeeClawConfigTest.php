@@ -300,4 +300,33 @@ class AmazeeClawConfigTest extends TestCase
         $this->assertEquals('auto-api-key', $app->injectedVariables['AMAZEEAI_API_KEY']);
         $this->assertEquals('https://auto.api.url', $app->injectedVariables['AMAZEEAI_BASE_URL']);
     }
+
+    public function test_build_claim_script_with_secure_stdin_variables()
+    {
+        $app = new TestablePolydockAmazeeClawAiApp('Test App', 'Description', 'Author', 'https://example.com', 'support@example.com');
+
+        $claimScript = 'node claim.js';
+        $envVars = [
+            'AMAZEEAI_API_KEY' => 'sensitive-token-here',
+            'AMAZEEAI_VECTOR_DB_PASS' => 'db-password-here',
+        ];
+
+        // Call the protected method using reflection
+        $reflection = new \ReflectionClass($app);
+        $method = $reflection->getMethod('buildClaimScriptWithInlineEnvironmentVariables');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($app, $claimScript, $envVars);
+
+        // Verify that the actual command does NOT contain any of the sensitive secrets
+        $this->assertStringNotContainsString('sensitive-token-here', $result);
+        $this->assertStringNotContainsString('db-password-here', $result);
+
+        // Verify it sets up the secure stdin redirection and sourcing logic
+        $this->assertStringContainsString('umask 077', $result);
+        $this->assertStringContainsString('cat > /tmp/.claw_env', $result);
+        $this->assertStringContainsString('. /tmp/.claw_env', $result);
+        $this->assertStringContainsString('rm -f /tmp/.claw_env', $result);
+        $this->assertStringContainsString($claimScript, $result);
+    }
 }

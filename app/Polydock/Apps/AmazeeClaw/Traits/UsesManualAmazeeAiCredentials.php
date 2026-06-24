@@ -240,19 +240,11 @@ trait UsesManualAmazeeAiCredentials
             return $claimScript;
         }
 
-        $inlineVariables = [];
-        foreach ($environmentVariables as $variableName => $variableValue) {
-            if (! preg_match('/^[A-Z0-9_]+$/', $variableName)) {
-                continue;
-            }
-
-            $inlineVariables[] = "{$variableName}=".escapeshellarg($variableValue);
-        }
-
-        if (count($inlineVariables) === 0) {
-            return $claimScript;
-        }
-
-        return 'env '.implode(' ', $inlineVariables).' '.$claimScript;
+        // To prevent leaking sensitive secrets into the container's process table
+        // (making them visible via 'ps aux'), we do not pass secrets as inline
+        // command arguments. Instead, we write them to a secure, owner-only
+        // temporary file inside the container via standard input, source it,
+        // and delete it immediately before executing the main claim script.
+        return "umask 077 && cat > /tmp/.claw_env && . /tmp/.claw_env && rm -f /tmp/.claw_env && {$claimScript}";
     }
 }

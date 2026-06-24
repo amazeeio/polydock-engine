@@ -3,6 +3,7 @@
 namespace App\Polydock\Clients\Lagoon;
 
 use Spatie\Ssh\Ssh as SpatieSsh;
+use Symfony\Component\Process\Process;
 
 /**
  * Class Ssh
@@ -47,9 +48,15 @@ class Ssh extends SpatieSsh
         return "ssh {$extraOptions} {$target} service={$serviceName} container={$containerName} $execute";
     }
 
-    public function executeSShCommand(string $command, string $serviceName = 'cli', string $containerName = 'cli'): array
+    public function executeSShCommand(string $command, string $serviceName = 'cli', string $containerName = 'cli', ?string $input = null): array
     {
         $execute = $this->getCommandForExecute($command, $serviceName, $containerName);
+
+        if ($input !== null) {
+            $this->configureProcess(function (Process $process) use ($input) {
+                $process->setInput($input);
+            });
+        }
 
         $process = $this->run($execute);
 

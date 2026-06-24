@@ -64,12 +64,22 @@ trait ClaimAppInstanceTrait
                 $this->info('Claim script', $logContext);
                 $claimScriptWithEnvironment = $this->buildClaimScriptWithInlineEnvironmentVariables($claimScript, $claimEnvironmentVariables);
 
+                $claimStdin = null;
+                if (! empty($claimEnvironmentVariables)) {
+                    $claimStdin = '';
+                    foreach ($claimEnvironmentVariables as $name => $value) {
+                        $escapedValue = str_replace("'", "'\\''", $value);
+                        $claimStdin .= "export {$name}='{$escapedValue}'\n";
+                    }
+                }
+
                 $claimResult = $this->lagoonClient->executeCommandOnProjectEnvironment(
                     $projectName,
                     $deployEnvironment,
                     $claimScriptWithEnvironment,
                     $claimScriptService,
-                    $claimScriptContainer
+                    $claimScriptContainer,
+                    $claimStdin
                 );
 
                 $this->info('Claim result', $logContext + ['claimResult' => $claimResult]);

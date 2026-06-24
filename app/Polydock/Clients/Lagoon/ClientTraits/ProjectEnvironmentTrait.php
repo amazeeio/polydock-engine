@@ -516,7 +516,8 @@ trait ProjectEnvironmentTrait
         string $environmentName,
         string $command,
         string $serviceName = 'cli',
-        string $containerName = 'cli'
+        string $containerName = 'cli',
+        ?string $input = null
     ): array {
         if ($this->getDebug()) {
             echo "Executing command on project environment: {$projectName} {$environmentName} {$command}\n";
@@ -531,7 +532,7 @@ trait ProjectEnvironmentTrait
             $this->sshPrivateKeyFile
         );
 
-        $result = $ssh->executeSShCommand($command, $serviceName, $containerName);
+        $result = $ssh->executeSShCommand($command, $serviceName, $containerName, $input);
 
         if ($this->getDebug()) {
             echo "Command Result:\n----\n";
