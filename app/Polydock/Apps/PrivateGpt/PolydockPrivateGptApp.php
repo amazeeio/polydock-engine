@@ -380,7 +380,7 @@ class PolydockPrivateGptApp extends PolydockAppBase implements AmazeeAiOperation
         $logContext['projectName'] = $projectName;
         $logContext['projectId'] = $projectId;
         $logContext['variableName'] = $variableName;
-        $logContext['variableValue'] = $variableValue;
+        $logContext['variableValue'] = '[REDACTED]';
         $logContext['variableScope'] = $variableScope;
 
         if ($this->lagoonClient) {
@@ -464,7 +464,7 @@ class PolydockPrivateGptApp extends PolydockAppBase implements AmazeeAiOperation
         $this->setLagoonClientFromAppInstance($appInstance);
 
         if ($testLagoonPing) {
-            $this->validateLagoonPingAndThrowExceptionIfFailed($appInstance);
+            $this->validateLagoonPingAndThrowExceptionIfFailed($logContext);
             $this->info('Lagoon API ping successful', $logContext);
         }
 

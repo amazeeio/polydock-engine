@@ -327,7 +327,7 @@ class PolydockApp extends PolydockAppBase
         $this->setLagoonClientFromAppInstance($appInstance);
 
         if ($testLagoonPing) {
-            $this->validateLagoonPingAndThrowExceptionIfFailed((array) $appInstance);
+            $this->validateLagoonPingAndThrowExceptionIfFailed($logContext);
             $this->info('Lagoon API ping successful', $logContext);
         }
 
@@ -375,7 +375,7 @@ class PolydockApp extends PolydockAppBase
         $logContext['projectName'] = $projectName;
         $logContext['projectId'] = $projectId;
         $logContext['variableName'] = $variableName;
-        $logContext['variableValue'] = $variableValue;
+        $logContext['variableValue'] = '[REDACTED]';
         $logContext['variableScope'] = $variableScope;
 
         $variable = $this->lagoonClient->addOrUpdateScopedVariableForProject($projectName, $variableName, $variableValue, $variableScope);
