@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
+use App\Polydock\Core\PolydockAppLoggerInterface;
 use App\Services\LagoonProjectPurgeService;
 use App\Services\PurgeResult;
 use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use Illuminate\Console\Command;
 
 /**

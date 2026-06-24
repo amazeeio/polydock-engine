@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use FreedomtechHosting\FtLagoonPhp\Client;
-use FreedomtechHosting\FtLagoonPhp\Ssh;
+use App\Polydock\Clients\Lagoon\Client;
+use App\Polydock\Clients\Lagoon\Ssh;
 use Symfony\Component\Process\Process;
 
 class LagoonClientService

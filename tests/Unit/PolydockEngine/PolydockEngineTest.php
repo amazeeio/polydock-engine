@@ -2,12 +2,12 @@
 
 namespace Tests\Unit\PolydockEngine;
 
+use App\Polydock\Core\Exceptions\PolydockEngineValidationException;
+use App\Polydock\Core\PolydockAppInstanceInterface;
+use App\Polydock\Core\PolydockAppInterface;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockAppVariableDefinitionBase;
 use App\PolydockEngine\Engine;
-use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineValidationException;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppVariableDefinitionBase;
 use Mockery;
 use PHPUnit\Framework\Attributes\Test;
 use Tests\Doubles\AlphaTestPolydockServiceProvider;
@@ -27,7 +27,7 @@ class PolydockEngineTest extends TestCase
         parent::setUp();
 
         // Create mock logger with basic method stubs
-        $this->logger = Mockery::mock(PolydockAppLoggerInterface::class);
+        $this->logger = Mockery::mock(\FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface::class.', '.PolydockAppLoggerInterface::class);
         $this->logger->shouldReceive('info')->andReturnSelf();
         $this->logger->shouldReceive('error')->andReturnSelf();
         $this->logger->shouldReceive('debug')->andReturnSelf();
@@ -141,7 +141,7 @@ class PolydockEngineTest extends TestCase
     }
 
     #[Test]
-    public function it_throws_when_required_variable_is_empty_string(): void
+    public function it_accepts_empty_string_for_required_variable_validation(): void
     {
         $app = Mockery::mock(PolydockAppInterface::class);
         $app->shouldReceive('getVariableDefinitions')
@@ -151,6 +151,21 @@ class PolydockEngineTest extends TestCase
         $appInstance = Mockery::mock(PolydockAppInstanceInterface::class);
         $appInstance->shouldReceive('getApp')->once()->andReturn($app);
         $appInstance->shouldReceive('getKeyValue')->with('lagoon-auto-idle')->once()->andReturn('');
+
+        $this->assertTrue($this->engine->validateAppInstanceHasAllRequiredVariables($appInstance));
+    }
+
+    #[Test]
+    public function it_throws_when_required_variable_is_null(): void
+    {
+        $app = Mockery::mock(PolydockAppInterface::class);
+        $app->shouldReceive('getVariableDefinitions')
+            ->once()
+            ->andReturn([new PolydockAppVariableDefinitionBase('lagoon-auto-idle')]);
+
+        $appInstance = Mockery::mock(PolydockAppInstanceInterface::class);
+        $appInstance->shouldReceive('getApp')->once()->andReturn($app);
+        $appInstance->shouldReceive('getKeyValue')->with('lagoon-auto-idle')->once()->andReturn(null);
         $appInstance->shouldReceive('getAppType')->once()->andReturn('Test_App');
 
         $this->expectException(PolydockEngineValidationException::class);

@@ -2,10 +2,10 @@
 
 namespace App\PolydockServiceProviders;
 
+use App\Polydock\Clients\AmazeeAi\Client;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockEngine\PolydockEngineServiceProviderInitializationException;
-use FreedomtechHosting\PolydockAmazeeAIBackendClient\Client;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
 
 /**
  * Polydock service provider for the Amazee AI Backend client

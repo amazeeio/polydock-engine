@@ -2,8 +2,8 @@
 
 namespace Tests\Doubles;
 
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockServiceProviderInterface;
 
 abstract class BaseTestPolydockServiceProvider implements PolydockServiceProviderInterface
 {

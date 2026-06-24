@@ -2,18 +2,18 @@
 
 namespace App\PolydockEngine;
 
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Exceptions\PolydockEngineProcessPolydockAppInstanceStatusException;
+use App\Polydock\Core\Exceptions\PolydockEngineValidationException;
+use App\Polydock\Core\PolydockAppInstanceInterface;
+use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use App\Polydock\Core\PolydockAppInterface;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockEngineBase;
+use App\Polydock\Core\PolydockEngineInterface;
+use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockEngine\Traits\PolydockEngineFunctionCallerTrait;
 use App\Services\LagoonClientService;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineProcessPolydockAppInstanceStatusException;
-use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineValidationException;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
-use FreedomtechHosting\PolydockApp\PolydockAppInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockEngineBase;
-use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
-use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class Engine extends PolydockEngineBase implements PolydockEngineInterface
@@ -77,8 +77,8 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
     /**
      * Validate that an app instance has all required variables.
      *
-     * The upstream base implementation uses a truthy check, which treats "0"
-     * as missing. We only treat truly missing values (empty string) as missing.
+     * The upstream base implementation now uses a strict null check.
+     * We only treat truly missing values (null) as missing.
      *
      * @throws PolydockEngineValidationException
      */
@@ -86,7 +86,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
     public function validateAppInstanceHasAllRequiredVariables(PolydockAppInstanceInterface $appInstance): bool
     {
         foreach ($appInstance->getApp()->getVariableDefinitions() as $variableDefinition) {
-            if ($appInstance->getKeyValue($variableDefinition->getName()) === '') {
+            if ($appInstance->getKeyValue($variableDefinition->getName()) === null) {
                 throw new PolydockEngineValidationException(
                     sprintf(
                         'App instance %s is missing required variable %s',
