@@ -135,7 +135,7 @@ trait PostCreateAppInstanceTrait
                 $this->info("{$functionName}: Injecting AI LLM Credentials", $logContext);
                 $this->addOrUpdateLagoonProjectVariable($appInstance, 'AI_LLM_API_URL', $privateAiCredentials['litellm_api_url'], 'GLOBAL');
                 $this->addOrUpdateLagoonProjectVariable($appInstance, 'AI_LLM_API_HOSTNAME', $llmApiHostname, 'GLOBAL');
-                $this->addOrUpdateLagoonProjectVariable($appInstance, 'AI_LLM_API_HOST_NAME', $privateAiCredentials['litellm_api_url'], 'GLOBAL');
+                $this->addOrUpdateLagoonProjectVariable($appInstance, 'AI_LLM_API_HOST_NAME', $llmApiHostname, 'GLOBAL');
                 $this->addOrUpdateLagoonProjectVariable($appInstance, 'AI_LLM_API_TOKEN', $privateAiCredentials['litellm_token'], 'GLOBAL');
                 $this->info("{$functionName}: Done injecting AI infrastructure", $logContext);
             }

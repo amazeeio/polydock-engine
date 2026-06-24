@@ -152,16 +152,20 @@ trait UsesAmazeeAiBackend
 
         $backendUser = null;
         try {
-            if (count($backendUserList) > 1) {
-                $this->info('Multiple users found in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext);
+            if (count($backendUserList) >= 1) {
+                if (count($backendUserList) > 1) {
+                    $this->info('Multiple users found in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext);
+                } else {
+                    $this->info('User found in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext);
+                }
                 $backendUser = $backendUserList[0];
-                $this->info('Using first user found in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext);
+                $this->info('Using user found in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext);
             } else {
                 $this->info('No user found in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext);
-                $password = substr(str_shuffle('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6);
-                $this->info('Creating new user in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext + ['password' => $password]);
+                $password = bin2hex(random_bytes(16));
+                $this->info('Creating new user in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext);
                 $backendUser = $this->amazeeAiBackendClient->createUser($amazeeAiBackendUserEmail, $password);
-                $this->info('Created new user in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext + $backendUser);
+                $this->info('Created new user in amazeeAI backend for user email: '.$amazeeAiBackendUserEmail, $logContext);
             }
         } catch (HttpException $e) {
             $this->error('Error creating user in amazeeAI backend', $logContext + [
