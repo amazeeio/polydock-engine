@@ -21,7 +21,7 @@ use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\PreUpgradeJob;
 use App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade\UpgradeJob;
 use App\Mail\AppInstanceReadyMail;
 use App\Models\PolydockAppInstance;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 

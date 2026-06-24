@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Models\PolydockAppInstance;
+use App\Polydock\Clients\Lagoon\Client;
+use App\Polydock\Core\PolydockAppLoggerInterface;
 use App\PolydockEngine\PolydockLogger;
 use App\PolydockServiceProviders\PolydockServiceProviderFTLagoon;
-use FreedomtechHosting\FtLagoonPhp\Client;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
 use Throwable;
 
 /**

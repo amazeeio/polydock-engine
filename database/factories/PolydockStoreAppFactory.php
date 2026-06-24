@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Models\PolydockStoreApp;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp;
+use App\Polydock\Apps\Generic\PolydockAiApp;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**

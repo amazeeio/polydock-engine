@@ -2,15 +2,174 @@
 
 namespace Tests\Feature;
 
-use Amazeeio\PolydockAppAmazeeclaw\PolydockAmazeeClawAiApp;
-use App\Models\PolydockAppInstance;
-use App\Models\PolydockStore;
-use App\Models\PolydockStoreApp;
-use App\Models\UserGroup;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Str;
+use App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\PolydockAppInstanceInterface;
+use App\Polydock\Core\PolydockAppInterface;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockEngineInterface;
 use Tests\TestCase;
+
+class DoublePolydockAppInstance implements PolydockAppInstanceInterface
+{
+    public $storeApp;
+
+    public $data = [];
+
+    public function __construct($storeApp = null, array $data = [])
+    {
+        $this->storeApp = $storeApp;
+        $this->data = $data;
+    }
+
+    public function getKeyValue(string $key): mixed
+    {
+        if ($key === 'secret') {
+            return $this->data['secret'] ?? [];
+        }
+        if ($key === 'amazee-ai-generated-credentials') {
+            return $this->data['amazee-ai-generated-credentials'] ?? null;
+        }
+
+        return $this->data[$key] ?? '';
+    }
+
+    public function getPolydockVariableValue(string $key, $default = '')
+    {
+        return $this->data[$key] ?? $default;
+    }
+
+    public function setApp(PolydockAppInterface $app): self
+    {
+        return $this;
+    }
+
+    public function getApp(): PolydockAppInterface
+    {
+        throw new \Exception;
+    }
+
+    public function setName(string $name): self
+    {
+        return $this;
+    }
+
+    public function getName(): string
+    {
+        return '';
+    }
+
+    public function setAppType(string $appType): self
+    {
+        return $this;
+    }
+
+    public function getAppType(): string
+    {
+        return '';
+    }
+
+    public function getStatus(): PolydockAppInstanceStatus
+    {
+        throw new \Exception;
+    }
+
+    public function setStatus(PolydockAppInstanceStatus $status, string $statusMessage = ''): self
+    {
+        return $this;
+    }
+
+    public function setStatusMessage(string $statusMessage): self
+    {
+        return $this;
+    }
+
+    public function getStatusMessage(): string
+    {
+        return '';
+    }
+
+    public function storeKeyValue(string $key, mixed $value): self
+    {
+        $this->data[$key] = $value;
+
+        return $this;
+    }
+
+    public function deleteKeyValue(string $key): self
+    {
+        unset($this->data[$key]);
+
+        return $this;
+    }
+
+    public function info(string $message, array $context = []): self
+    {
+        return $this;
+    }
+
+    public function error(string $message, array $context = []): self
+    {
+        return $this;
+    }
+
+    public function warning(string $message, array $context = []): self
+    {
+        return $this;
+    }
+
+    public function debug(string $message, array $context = []): self
+    {
+        return $this;
+    }
+
+    public function getLogger(): PolydockAppLoggerInterface
+    {
+        throw new \Exception;
+    }
+
+    public function setLogger(PolydockAppLoggerInterface $logger): self
+    {
+        return $this;
+    }
+
+    public function setEngine(PolydockEngineInterface $engine): self
+    {
+        return $this;
+    }
+
+    public function getEngine(): PolydockEngineInterface
+    {
+        throw new \Exception;
+    }
+
+    public function generateUniqueProjectName(string $prefix): string
+    {
+        return '';
+    }
+
+    public function save(array $options = []) {}
+
+    public function setAppUrl(string $url, ?string $oneTimeLoginUrl = null, ?int $numberOfHoursForOneTimeLoginUrl = 24): self
+    {
+        return $this;
+    }
+
+    public function setOneTimeLoginUrl(string $url, int $numberOfHours = 24, bool $setOnlyDontSave = false): self
+    {
+        return $this;
+    }
+
+    public function getGeneratedAppAdminUsername(): string
+    {
+        return '';
+    }
+
+    public function getGeneratedAppAdminPassword(): string
+    {
+        return '';
+    }
+}
 
 class TestablePolydockAmazeeClawAiApp extends PolydockAmazeeClawAiApp
 {
@@ -25,31 +184,12 @@ class TestablePolydockAmazeeClawAiApp extends PolydockAmazeeClawAiApp
 
 class AmazeeClawConfigTest extends TestCase
 {
-    use RefreshDatabase;
-
-    private function createAppInstance(array $config = []): PolydockAppInstance
+    private function createAppInstance(array $config = []): DoublePolydockAppInstance
     {
-        $store = PolydockStore::factory()->create();
-        $storeApp = PolydockStoreApp::factory()->create([
-            'polydock_store_id' => $store->id,
-            'app_config' => $config['app_config'] ?? [],
-        ]);
-        $userGroup = UserGroup::factory()->create();
+        $storeApp = new \stdClass;
+        $storeApp->app_config = $config['app_config'] ?? [];
 
-        $instance = new PolydockAppInstance;
-        $instance->fill([
-            'polydock_store_app_id' => $storeApp->id,
-            'user_group_id' => $userGroup->id,
-            'name' => 'test-instance',
-            'app_type' => PolydockAmazeeClawAiApp::class,
-            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
-        ]);
-        $instance->data = $config['data'] ?? [];
-
-        $instance->uuid = Str::uuid()->toString();
-        $instance->saveQuietly();
-
-        return $instance;
+        return new DoublePolydockAppInstance($storeApp, $config['data'] ?? []);
     }
 
     public function test_form_schemas_contain_key_mode()
@@ -159,5 +299,34 @@ class AmazeeClawConfigTest extends TestCase
 
         $this->assertEquals('auto-api-key', $app->injectedVariables['AMAZEEAI_API_KEY']);
         $this->assertEquals('https://auto.api.url', $app->injectedVariables['AMAZEEAI_BASE_URL']);
+    }
+
+    public function test_build_claim_script_with_secure_stdin_variables()
+    {
+        $app = new TestablePolydockAmazeeClawAiApp('Test App', 'Description', 'Author', 'https://example.com', 'support@example.com');
+
+        $claimScript = 'node claim.js';
+        $envVars = [
+            'AMAZEEAI_API_KEY' => 'sensitive-token-here',
+            'AMAZEEAI_VECTOR_DB_PASS' => 'db-password-here',
+        ];
+
+        // Call the protected method using reflection
+        $reflection = new \ReflectionClass($app);
+        $method = $reflection->getMethod('buildClaimScriptWithInlineEnvironmentVariables');
+        $method->setAccessible(true);
+
+        $result = $method->invoke($app, $claimScript, $envVars);
+
+        // Verify that the actual command does NOT contain any of the sensitive secrets
+        $this->assertStringNotContainsString('sensitive-token-here', $result);
+        $this->assertStringNotContainsString('db-password-here', $result);
+
+        // Verify it sets up the secure stdin redirection and sourcing logic
+        $this->assertStringContainsString('umask 077', $result);
+        $this->assertStringContainsString('cat > /tmp/.claw_env', $result);
+        $this->assertStringContainsString('. /tmp/.claw_env', $result);
+        $this->assertStringContainsString('rm -f /tmp/.claw_env', $result);
+        $this->assertStringContainsString($claimScript, $result);
     }
 }

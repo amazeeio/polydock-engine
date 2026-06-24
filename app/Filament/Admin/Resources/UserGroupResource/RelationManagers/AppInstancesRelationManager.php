@@ -3,12 +3,12 @@
 namespace App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 
 class AppInstancesRelationManager extends RelationManager
 {

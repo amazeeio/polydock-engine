@@ -2,10 +2,10 @@
 
 namespace App\PolydockServiceProviders;
 
+use App\Polydock\Clients\AmazeeAi\Client;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockEngine\PolydockEngineServiceProviderInitializationException;
-use FreedomtechHosting\PolydockAmazeeAIBackendClient\Client;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
 
 /**
  * Polydock service provider for the Amazee AI Backend client
@@ -24,26 +24,6 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
     public function __construct(array $config, PolydockAppLoggerInterface $logger)
     {
         $this->setLogger($logger);
-
-        $baseUrl = $config['base_url'] ?? null;
-        $tokenFile = $config['token_file'] ?? null;
-
-        if (! $baseUrl) {
-            throw new PolydockEngineServiceProviderInitializationException('amazee_ai_backend.base_url is not set');
-        }
-
-        if (! $tokenFile) {
-            throw new PolydockEngineServiceProviderInitializationException('amazee_ai_backend.token_file is not set');
-        }
-
-        if (! file_exists($tokenFile)) {
-            throw new PolydockEngineServiceProviderInitializationException('amazee_ai_backend.token_file does not exist: '
-            .$tokenFile);
-        }
-
-        $token = trim(file_get_contents($tokenFile));
-
-        $this->AmazeeAiBackendClient = new Client($baseUrl, $token);
 
         if (! isset($config['debug'])) {
             $config['debug'] = false;
@@ -82,7 +62,18 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
             .$tokenFile);
         }
 
-        $token = trim(file_get_contents($tokenFile));
+        $tokenContents = file_get_contents($tokenFile);
+        if ($tokenContents === false) {
+            throw new PolydockEngineServiceProviderInitializationException('amazee_ai_backend.token_file could not be read: '
+            .$tokenFile);
+        }
+
+        $token = trim($tokenContents);
+        if ($token === '') {
+            throw new PolydockEngineServiceProviderInitializationException('amazee_ai_backend.token_file is empty: '
+            .$tokenFile);
+        }
+
         $this->AmazeeAiBackendClient = new Client($baseUrl, $token);
 
         if ($debug) {

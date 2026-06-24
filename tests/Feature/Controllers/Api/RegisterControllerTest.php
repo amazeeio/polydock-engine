@@ -7,13 +7,14 @@ use App\Models\UserRemoteRegistration;
 use App\Support\SensitiveDataRedactor;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Log;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class RegisterControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    /** @test */
+    #[Test]
     public function it_redacts_sensitive_data_when_processing_registration(): void
     {
         // GIVEN we spy on logs
@@ -49,7 +50,7 @@ class RegisterControllerTest extends TestCase
             }));
     }
 
-    /** @test */
+    #[Test]
     public function it_redacts_sensitive_data_when_showing_registration_status(): void
     {
         // GIVEN a registration exists with sensitive data in result_data and request_data
