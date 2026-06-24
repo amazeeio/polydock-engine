@@ -205,14 +205,21 @@ trait UsesAmazeeAiBackend
             'litellm_api_url',
         ];
 
+        $redactedResponse = $response;
+        foreach (['database_username', 'database_password', 'litellm_token', 'litellm_api_url'] as $sensitiveKey) {
+            if (isset($redactedResponse[$sensitiveKey])) {
+                $redactedResponse[$sensitiveKey] = '[REDACTED]';
+            }
+        }
+
         foreach ($requiredKeys as $key) {
             if (! isset($response[$key])) {
-                $this->error('Missing required credential key: '.$key, $logContext + $response);
+                $this->error('Missing required credential key: '.$key, $logContext + $redactedResponse);
                 throw new PolydockAppInstanceStatusFlowException('Missing required credential key: '.$key);
             }
         }
 
-        $this->info('Private AI credentials found', $logContext + $response);
+        $this->info('Private AI credentials found', $logContext + $redactedResponse);
 
         return $response;
     }
