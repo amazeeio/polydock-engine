@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\PolydockStoreAppResource\RelationManagers;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\PolydockAppClassDiscovery;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
@@ -21,7 +22,6 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class PolydockStoreAppResource extends Resource

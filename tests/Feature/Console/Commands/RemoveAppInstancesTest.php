@@ -8,7 +8,7 @@ use App\Console\Commands\RemoveAppInstances;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;

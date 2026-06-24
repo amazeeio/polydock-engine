@@ -6,7 +6,7 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

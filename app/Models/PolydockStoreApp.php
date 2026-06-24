@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Enums\PolydockStoreAppStatusEnum;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Traits\HasPolydockVariables;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;

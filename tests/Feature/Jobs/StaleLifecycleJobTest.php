@@ -13,9 +13,9 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserGroup;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp;
+use App\Polydock\Apps\Generic\PolydockAiApp;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 

@@ -10,7 +10,7 @@ use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
@@ -52,7 +52,7 @@ class AuthenticatedApiTest extends TestCase
 
         $this->storeApp = PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
-            'polydock_app_class' => 'FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp', // A valid class from vendor
+            'polydock_app_class' => 'App\Polydock\Apps\Generic\PolydockApp', // A valid class from vendor
             'name' => 'Test App',
             'uuid' => Str::uuid()->toString(),
             'description' => 'Test Application Description',
