@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\PolydockEngine;
 
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockAppLoggerInterface;
 use Illuminate\Support\Facades\Log;
 
 class PolydockLogger implements PolydockAppLoggerInterface

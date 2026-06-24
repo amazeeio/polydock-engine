@@ -4,7 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\Trial\ProcessTrialCompleteStageRemovalJob;
 use App\Models\PolydockAppInstance;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 

@@ -3,7 +3,7 @@
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Claim;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ClaimJob extends BaseJob implements ShouldQueue

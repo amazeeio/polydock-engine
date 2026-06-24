@@ -6,10 +6,10 @@ namespace App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
 use App\Models\PolydockAppInstance;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Filament\Actions;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListPolydockAppInstances extends ListRecords

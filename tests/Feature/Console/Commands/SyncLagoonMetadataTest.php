@@ -7,8 +7,8 @@ use App\Models\PolydockProductType;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Polydock\Clients\Lagoon\Client;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\LagoonClientService;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
