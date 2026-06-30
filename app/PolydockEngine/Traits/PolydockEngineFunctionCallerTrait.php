@@ -3,10 +3,10 @@
 namespace App\PolydockEngine\Traits;
 
 use App\Models\PolydockAppInstance;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Exceptions\PolydockEngineProcessPolydockAppInstanceException;
+use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use Exception;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineProcessPolydockAppInstanceException;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 
 trait PolydockEngineFunctionCallerTrait
 {
@@ -222,10 +222,8 @@ trait PolydockEngineFunctionCallerTrait
             ];
             $this->error($message, $context);
             $polydockApp->error($message, $context);
-
-            return false;
         }
 
-        return true;
+        return false;
     }
 }

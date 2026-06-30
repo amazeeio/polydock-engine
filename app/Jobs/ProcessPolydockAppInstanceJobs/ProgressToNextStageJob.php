@@ -3,8 +3,8 @@
 namespace App\Jobs\ProcessPolydockAppInstanceJobs;
 
 use App\Models\PolydockAppInstance;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 

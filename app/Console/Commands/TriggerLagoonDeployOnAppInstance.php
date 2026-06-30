@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
+use App\Polydock\Clients\Lagoon\Client;
 use App\Services\LagoonClientService;
-use FreedomtechHosting\FtLagoonPhp\Client;
 use Illuminate\Console\Command;
 
 class TriggerLagoonDeployOnAppInstance extends BaseCommand

@@ -2,13 +2,13 @@
 
 namespace Tests\Unit\Services;
 
-use Amazeeio\PolydockAppAmazeeioPrivateGpt\PolydockPrivateGptApp;
+use App\Polydock\Apps\Generic\PolydockAiApp;
+use App\Polydock\Apps\Generic\PolydockApp;
+use App\Polydock\Apps\PrivateGpt\PolydockPrivateGptApp;
+use App\Polydock\Core\Attributes\PolydockAppTitle;
+use App\Polydock\Core\PolydockAppBase;
+use App\Polydock\Core\PolydockAppInterface;
 use App\Services\PolydockAppClassDiscovery;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppTitle;
-use FreedomtechHosting\PolydockApp\PolydockAppBase;
-use FreedomtechHosting\PolydockApp\PolydockAppInterface;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp;
 use Tests\TestCase;
 
 class PolydockAppClassDiscoveryTest extends TestCase
@@ -128,7 +128,7 @@ class PolydockAppClassDiscoveryTest extends TestCase
 
         // The label should either be the attribute title OR the fallback format
         $hasAttributeTitle = $aiAppLabel === 'Generic Lagoon AI App';
-        $hasFallbackFormat = str_contains($aiAppLabel, 'PolydockAiApp') && str_contains($aiAppLabel, 'FreedomtechHosting');
+        $hasFallbackFormat = str_contains($aiAppLabel, 'PolydockAiApp') && str_contains($aiAppLabel, 'App\\Polydock');
 
         $this->assertTrue(
             $hasAttributeTitle || $hasFallbackFormat,

@@ -6,6 +6,7 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
+use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use App\Services\PolydockAppClassDiscovery;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Grid;
@@ -18,7 +19,6 @@ use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
 use Illuminate\Support\Facades\Log;
 
 class CreatePolydockAppInstance extends Page

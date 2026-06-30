@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\New;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ProcessNewJob extends BaseJob implements ShouldQueue

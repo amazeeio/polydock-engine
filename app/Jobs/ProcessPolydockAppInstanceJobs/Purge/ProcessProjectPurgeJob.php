@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Purge;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\Services\LagoonProjectPurgeService;
 use App\Services\PurgeResult;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 /**

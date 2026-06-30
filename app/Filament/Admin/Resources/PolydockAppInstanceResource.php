@@ -8,6 +8,8 @@ use App\Filament\Admin\Resources\PolydockAppInstanceResource\RelationManagers;
 use App\Filament\Exports\UserRemoteRegistrationExporter;
 use App\Models\PolydockAppInstance;
 use App\Models\User;
+use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
 use App\Services\PolydockAppClassDiscovery;
@@ -26,8 +28,6 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 

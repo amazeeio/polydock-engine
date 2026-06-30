@@ -1,0 +1,250 @@
+<?php
+
+namespace App\Polydock\Apps\AmazeeClaw\Traits;
+
+use App\Polydock\Core\PolydockAppInstanceInterface;
+
+trait UsesManualAmazeeAiCredentials
+{
+    /**
+     * Hook called when an app instance is being created.
+     */
+    public function extractAiCredentialsFromHookData(PolydockAppInstanceInterface $appInstance, array $data = []): PolydockAppInstanceInterface
+    {
+        $this->info('extractAiCredentialsFromHookData: extracting AI credentials', $this->getLogContext(__FUNCTION__));
+        $this->extractAndStoreAiCredentialsFromHookData($appInstance, $data);
+
+        return $appInstance;
+    }
+
+    /**
+     * Extract AI credentials from hook data and store them in the app instance secret.
+     */
+    protected function extractAndStoreAiCredentialsFromHookData(PolydockAppInstanceInterface $appInstance, array $data): void
+    {
+        $secret = $appInstance->getKeyValue('secret') ?? [];
+        if (! \is_array($secret)) {
+            $secret = [];
+        }
+
+        $keys = [
+            'llm_key',
+            'llm_url',
+            'backend_token',
+            'team_id',
+            'vector_db_host',
+            'vector_db_port',
+            'vector_db_pass',
+            'vector_db_user',
+            'vector_db_name',
+        ];
+
+        $changed = false;
+        foreach ($keys as $key) {
+            if (isset($data[$key]) && $data[$key] !== '') {
+                $secret[$key] = $data[$key];
+                $changed = true;
+            }
+        }
+
+        // Support nested structures if provided
+        if (isset($data['ai']) && \is_array($data['ai'])) {
+            $existing = \is_array($secret['ai'] ?? null) ? $secret['ai'] : [];
+            $secret['ai'] = [...$existing, ...$data['ai']];
+            $changed = true;
+        }
+
+        if (isset($data['vector']) && \is_array($data['vector'])) {
+            $existing = \is_array($secret['vector'] ?? null) ? $secret['vector'] : [];
+            $secret['vector'] = [...$existing, ...$data['vector']];
+            $changed = true;
+        }
+
+        if ($changed) {
+            $this->info('Stored AI credentials from hook data into app instance secret', $this->getLogContext(__FUNCTION__));
+            $appInstance->storeKeyValue('secret', $secret);
+            $appInstance->save();
+        }
+    }
+
+    /**
+     * Returns environment variables derived from stored AI credentials.
+     *
+     * These values may contain sensitive secrets (for example API keys, tokens, and
+     * database passwords) and MUST be treated as confidential. Callers MUST NOT
+     * inline these values directly into shell commands, logs, or any user-visible
+     * output, and should pass them only via secure environment mechanisms.
+     *
+     * @return array<string, string> Environment variables containing sensitive values
+     */
+    public function provisionAndInjectManualAmazeeAiCredentials(PolydockAppInstanceInterface $appInstance, array $logContext = []): array
+    {
+        $functionName = __FUNCTION__;
+        $logContext = $logContext + $this->getLogContext($functionName);
+
+        $claimEnvVars = [];
+
+        $keyMode = $this->resolveAmazeeAiKeyMode($appInstance);
+        if ($keyMode === 'auto') {
+            $this->info("{$functionName}: Resolving auto-generated AI credentials", $logContext);
+            $generatedCredentialsJson = $appInstance->getKeyValue('amazee-ai-generated-credentials');
+            if ($generatedCredentialsJson) {
+                $credentials = json_decode((string) $generatedCredentialsJson, true);
+                if (\is_array($credentials)) {
+                    $claimEnvVars = [
+                        'AMAZEEAI_API_KEY' => $credentials['litellm_token'] ?? '',
+                        'AMAZEEAI_BASE_URL' => $credentials['litellm_api_url'] ?? '',
+                        'AMAZEEAI_VECTOR_DB_HOST' => $credentials['database_host'] ?? '',
+                        'AMAZEEAI_VECTOR_DB_PORT' => '5432',
+                        'AMAZEEAI_VECTOR_DB_USER' => $credentials['database_username'] ?? '',
+                        'AMAZEEAI_VECTOR_DB_PASS' => $credentials['database_password'] ?? '',
+                        'AMAZEEAI_VECTOR_DB_NAME' => $credentials['database_name'] ?? '',
+                    ];
+                }
+            } else {
+                $this->warning("{$functionName}: No auto-generated AI credentials found in app instance", $logContext);
+            }
+        } else {
+            $secret = $appInstance->getKeyValue('secret');
+
+            if (! \is_array($secret) || empty($secret)) {
+                $this->warning("{$functionName}: No manual AI credentials found in secret", $logContext);
+
+                return [];
+            }
+
+            $this->info("{$functionName}: Using manual AI credentials from secret", $logContext);
+
+            // Map known keys to expected environment variables
+            // Support both flat structure and nested ai/vector db structure
+            $mapping = [
+                // AI / LLM
+                'ai.api_key' => 'AMAZEEAI_API_KEY',
+                'ai.llm_key' => 'AMAZEEAI_API_KEY',
+                'llm_key' => 'AMAZEEAI_API_KEY', // legacy
+                'ai.llm_url' => 'AMAZEEAI_BASE_URL',
+                'llm_url' => 'AMAZEEAI_BASE_URL', // legacy
+                'ai.backend_token' => 'AMAZEEAI_BACKEND_API_TOKEN',
+                'backend_token' => 'AMAZEEAI_BACKEND_API_TOKEN', // legacy
+                'ai.team_id' => 'AMAZEE_AI_TEAM_ID',
+                'team_id' => 'AMAZEE_AI_TEAM_ID', // legacy
+
+                // Vector DB
+                'vector.db_host' => 'AMAZEEAI_VECTOR_DB_HOST',
+                'vector_db_host' => 'AMAZEEAI_VECTOR_DB_HOST', // legacy
+                'vector.db_port' => 'AMAZEEAI_VECTOR_DB_PORT',
+                'vector_db_port' => 'AMAZEEAI_VECTOR_DB_PORT', // legacy
+                'vector.db_pass' => 'AMAZEEAI_VECTOR_DB_PASS',
+                'vector_db_pass' => 'AMAZEEAI_VECTOR_DB_PASS', // legacy
+                'vector.db_user' => 'AMAZEEAI_VECTOR_DB_USER',
+                'vector_db_user' => 'AMAZEEAI_VECTOR_DB_USER', // legacy
+                'vector.db_name' => 'AMAZEEAI_VECTOR_DB_NAME',
+                'vector_db_name' => 'AMAZEEAI_VECTOR_DB_NAME', // legacy
+            ];
+
+            foreach ($mapping as $secretPath => $envVar) {
+                $val = $this->getDataFromPath($secret, $secretPath);
+                if ($val !== null) {
+                    $claimEnvVars[$envVar] = (string) $val;
+                }
+            }
+        }
+
+        $defaultModel = $this->resolveAmazeeAiDefaultModelFromInstanceOrApp($appInstance);
+        if ($defaultModel !== '') {
+            $claimEnvVars['AMAZEEAI_DEFAULT_MODEL'] = $defaultModel;
+        }
+
+        $this->info("{$functionName}: Injecting AI LLM Credentials", $logContext);
+        foreach ($claimEnvVars as $variableName => $variableValue) {
+            if ($variableValue === null || $variableValue === '') {
+                continue;
+            }
+            $this->addOrUpdateLagoonProjectVariable($appInstance, $variableName, $variableValue, 'GLOBAL');
+        }
+        $this->info("{$functionName}: Done injecting AI infrastructure", $logContext);
+
+        return $claimEnvVars;
+    }
+
+    /**
+     * Simple helper to get data from a dot-notated path in an array.
+     */
+    protected function getDataFromPath(array $data, string $path): mixed
+    {
+        if (strpos($path, '.') === false) {
+            return $data[$path] ?? null;
+        }
+
+        foreach (explode('.', $path) as $segment) {
+            if (! \is_array($data) || ! \array_key_exists($segment, $data)) {
+                return null;
+            }
+
+            $data = $data[$segment];
+        }
+
+        return $data;
+    }
+
+    protected function resolveAmazeeAiDefaultModelFromInstanceOrApp(PolydockAppInstanceInterface $appInstance): string
+    {
+        $defaultModel = '';
+        if (method_exists($appInstance, 'getPolydockVariableValue')) {
+            /** @phpstan-ignore-next-line */
+            $defaultModel = (string) ($appInstance->getPolydockVariableValue('instance_config_openclaw_default_model') ?? '');
+        }
+        if ($defaultModel === '') {
+            $defaultModel = (string) $appInstance->getKeyValue('instance_config_openclaw_default_model');
+        }
+        if ($defaultModel === '') {
+            $defaultModel = (string) $appInstance->getKeyValue('app_config_openclaw_default_model');
+        }
+        if ($defaultModel === '') {
+            /** @phpstan-ignore-next-line */
+            $storeAppConfig = (array) (($appInstance->storeApp->app_config ?? null) ?: []);
+            $defaultModel = (string) ($storeAppConfig['openclaw_default_model'] ?? '');
+        }
+
+        return $defaultModel;
+    }
+
+    public function resolveAmazeeAiKeyMode(PolydockAppInstanceInterface $appInstance): string
+    {
+        $keyMode = '';
+        if (method_exists($appInstance, 'getPolydockVariableValue')) {
+            /** @phpstan-ignore-next-line */
+            $keyMode = (string) ($appInstance->getPolydockVariableValue('instance_config_amazeeai_key_mode') ?? '');
+        }
+        if ($keyMode === '') {
+            $keyMode = (string) $appInstance->getKeyValue('instance_config_amazeeai_key_mode');
+        }
+        if ($keyMode === '') {
+            $keyMode = (string) $appInstance->getKeyValue('app_config_amazeeai_key_mode');
+        }
+        if ($keyMode === '') {
+            /** @phpstan-ignore-next-line */
+            $storeAppConfig = (array) (($appInstance->storeApp->app_config ?? null) ?: []);
+            $keyMode = (string) ($storeAppConfig['amazeeai_key_mode'] ?? '');
+        }
+
+        return $keyMode === 'auto' ? 'auto' : 'manual';
+    }
+
+    /**
+     * @param  array<string, string>  $environmentVariables
+     */
+    protected function buildClaimScriptWithInlineEnvironmentVariables(string $claimScript, array $environmentVariables): string
+    {
+        if ($claimScript === '' || \count($environmentVariables) === 0) {
+            return $claimScript;
+        }
+
+        // To prevent leaking sensitive secrets into the container's process table
+        // (making them visible via 'ps aux'), we do not pass secrets as inline
+        // command arguments. Instead, we write them to a secure, owner-only
+        // temporary file inside the container via standard input, source it,
+        // and delete it immediately before executing the main claim script.
+        return "umask 077 && cat > /tmp/.claw_env && . /tmp/.claw_env && rm -f /tmp/.claw_env && {$claimScript}";
+    }
+}
