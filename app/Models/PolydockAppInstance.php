@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
@@ -658,10 +659,26 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * @param  mixed  $value  The value to store
      * @return PolydockAppInstanceInterface Returns the instance for method chaining
      */
+    /**
+     * Keys whose values are encrypted transparently at rest inside the `data`
+     * column. Writes go through {@see encryptSecretValue()} in storeKeyValue()
+     * and reads are decrypted in getKeyValue(), so callers keep passing/reading
+     * plain arrays. See plans/notes/009-secrets-at-rest-design.md.
+     *
+     * @var list<string>
+     */
+    private const ENCRYPTED_KEYS = [
+        'secret',
+    ];
+
     public function storeKeyValue(string $key, $value): PolydockAppInstanceInterface
     {
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
             $value = $this->stripTokenFromUrl((string) $value);
+        }
+
+        if (in_array($key, self::ENCRYPTED_KEYS, true)) {
+            $value = $this->encryptSecretValue($value);
         }
 
         $resultData = $this->data ?? [];
@@ -676,6 +693,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         $value = data_get($this->data, $key, '');
 
+        if (in_array($key, self::ENCRYPTED_KEYS, true)) {
+            return $this->decryptSecretValue($value);
+        }
+
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
             $token = config('polydock.health_token');
             if (! empty($token)) {
@@ -687,6 +708,55 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         }
 
         return $value;
+    }
+
+    /**
+     * Sentinel prefix marking a value as an encrypted-at-rest secret payload.
+     * Lets getKeyValue() distinguish already-encrypted ciphertext from any
+     * legacy plaintext still present in the `data` column (backfill guard).
+     */
+    private const ENCRYPTED_SECRET_PREFIX = 'enc:v1:';
+
+    /**
+     * Encrypt a secret value for storage inside the `data` column.
+     *
+     * The value (typically an array of credentials) is serialised and encrypted
+     * with Laravel's Crypt (APP_KEY-derived, AES-256-CBC + HMAC). The result is
+     * a single opaque, prefixed string so the JSON column holds only ciphertext.
+     * Empty values are stored as-is so "no secret" stays cheaply detectable.
+     */
+    private function encryptSecretValue(mixed $value): mixed
+    {
+        if ($value === null || $value === '' || $value === []) {
+            return $value;
+        }
+
+        // Idempotent: never double-encrypt an already-encrypted payload.
+        if (is_string($value) && str_starts_with($value, self::ENCRYPTED_SECRET_PREFIX)) {
+            return $value;
+        }
+
+        return self::ENCRYPTED_SECRET_PREFIX.Crypt::encryptString(json_encode($value) ?: 'null');
+    }
+
+    /**
+     * Decrypt a secret value read from the `data` column.
+     *
+     * Ciphertext (prefixed strings) is decrypted and JSON-decoded back to the
+     * original shape. Values without the prefix are returned untouched so
+     * legacy plaintext rows keep working until they are backfilled.
+     */
+    private function decryptSecretValue(mixed $value): mixed
+    {
+        if (! is_string($value) || ! str_starts_with($value, self::ENCRYPTED_SECRET_PREFIX)) {
+            // Legacy plaintext (or empty default) — return as stored.
+            return $value;
+        }
+
+        $ciphertext = substr($value, strlen(self::ENCRYPTED_SECRET_PREFIX));
+        $decrypted = Crypt::decryptString($ciphertext);
+
+        return json_decode($decrypted, true);
     }
 
     /**
