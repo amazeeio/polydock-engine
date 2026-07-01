@@ -697,6 +697,7 @@ class PolydockStoreAppResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->with(['store', 'productType'])
             ->withCount([
                 'allocatedInstances',
                 'instances as unallocated_instances_count' => function ($query) {
