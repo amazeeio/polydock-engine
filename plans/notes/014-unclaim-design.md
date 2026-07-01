@@ -121,8 +121,15 @@ POLYDOCK_UNCLAIM_FAILED    = 'polydock-unclaim-failed'
 Plus the enum's derived maps must be updated in lockstep (label, badge colour,
 icon — the enum defines these per case around lines 160/232/304), and the model's
 `$failedStatuses` (`PolydockAppInstance.php:219-234`) gets
-`POLYDOCK_UNCLAIM_FAILED`. **Do NOT** add `POLYDOCK_UNCLAIM_COMPLETED` to
-`$completedStatuses` blindly — see §3, ordinal handling.
+`POLYDOCK_UNCLAIM_FAILED`. `POLYDOCK_UNCLAIM_COMPLETED` **must** be added to
+`$completedStatuses` (mirroring `POLYDOCK_CLAIM_COMPLETED` at line 216):
+`ProcessPolydockAppInstanceStatusChange.php:46` only dispatches
+`ProgressToNextStageJob` for statuses in that array, and `ProgressToNextStageJob`
+itself throws `PolydockAppInstanceStatusFlowException` for any status not in it —
+so omitting it would stall the transition permanently at
+`POLYDOCK_UNCLAIM_COMPLETED`. This is a **separate** mechanism from the ordinal
+concern in §3, which is only about `lifecycleStageOrdinal()` in `BaseJob.php` (the
+stale-job skip logic); handle both, but don't conflate them.
 
 ### 2.2 Job + dispatch + trait
 
@@ -145,6 +152,16 @@ icon — the enum defines these per case around lines 160/232/304), and the mode
      `POLYDOCK_UNCLAIMED_AT` marker.
   6. Apply the chosen data-hygiene policy (§5.2) — wipe or keep `user-*`.
   7. Set `POLYDOCK_UNCLAIM_COMPLETED`.
+
+  **Caution (Variant B):** `POLYDOCK_UNCLAIM_COMPLETED` is a `$completedStatuses`
+  value, so setting it in step 7 fires `ProcessPolydockAppInstanceStatusChange`
+  (`:46-94`), which syncs `remoteRegistration` from the instance's `user-*` and
+  admin-credential KVs. Because step 6 (Variant B) has just wiped those, the
+  listener would overwrite the departing user's `remoteRegistration` record with
+  null/empty values. Variant B must therefore detach or tombstone
+  `remoteRegistration` **before** step 7 (or have the trait perform the sync
+  explicitly), so the completed-status listener cannot corrupt it. Variant A
+  (which keeps `user-*`) is unaffected.
 
 ### 2.3 Two target variants (must be decided, §5.2)
 
