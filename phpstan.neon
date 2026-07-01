@@ -5,6 +5,10 @@ includes:
 
 parameters:
     level: 5
+    # Known tradeoff: disabled so baselined inline @phpstan-ignore comments and
+    # resolved baseline entries don't surface as unmatched-ignore errors. The
+    # cost is that stale baseline entries go undetected; periodically regenerate
+    # the baseline (`phpstan analyse --generate-baseline`) to trim them.
     reportUnmatchedIgnoredErrors: false
     paths:
         - app
