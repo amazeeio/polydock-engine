@@ -59,6 +59,8 @@ class ProcessMidtrialEmailJob extends BaseJob implements ShouldQueue
                 'app_instance_id' => $this->appInstance->id,
             ]);
 
+            // With >1 owner, a mid-loop send failure would re-email earlier owners on re-dispatch.
+            // Add per-owner sent-tracking if multi-owner groups ever become real.
             foreach ($this->appInstance->userGroup->owners as $owner) {
                 $mail = Mail::to($owner->email);
 
