@@ -24,6 +24,12 @@ parameters:
         -
             message: "#^Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.$#"
             path: *config/*.php
+        # Mockery's shouldReceive() is typed as ExpectationInterface|HigherOrderMessage,
+        # but andReturnSelf()/andThrow() live only on the concrete Expectation class.
+        # Known larastan false positive on a runtime-valid chain.
+        -
+            message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::(andReturnSelf|andThrow)\(\)\.$#'
+            path: tests/*
 
     excludePaths:
         - vendor/*

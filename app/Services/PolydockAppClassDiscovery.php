@@ -14,19 +14,19 @@ use ReflectionClass;
 /**
  * Discovers concrete classes that implement PolydockAppInterface.
  *
- * Uses Composer's optimized classmap to find candidates, then filters to
- * concrete (non-abstract, non-interface) implementations.
+ * Scans the app/Polydock/Apps directory for PHP files (see getClassMap()),
+ * maps each to its App\Polydock\Apps\... FQCN, then filters to concrete
+ * (non-abstract, non-interface) implementations of PolydockAppInterface.
  *
  * Register as a singleton in AppServiceProvider to ensure discovery
  * runs at most once per request.
  *
- * NOTE: The classmap pre-filter scans for classes whose FQCN contains
- * "Polydock". This is a convention-based assumption to avoid triggering
- * autoloading of unrelated vendor classes (which can cause fatal errors
- * when their dependencies are missing, e.g. dev-only test runner traits).
- * If a PolydockAppInterface implementation is published under a namespace
- * that does not contain "Polydock", it will need to be added to the
- * NAMESPACE_FILTERS constant.
+ * NOTE: A namespace pre-filter (NAMESPACE_FILTERS) keeps only candidates
+ * whose FQCN contains "Polydock". Because the scan is already rooted at
+ * app/Polydock/Apps, every candidate matches today, so this is a defensive
+ * no-op; it remains as a guard in case the scan root is ever widened. If a
+ * PolydockAppInterface implementation ever lives under a namespace that does
+ * not contain "Polydock", add it to NAMESPACE_FILTERS.
  */
 class PolydockAppClassDiscovery
 {
