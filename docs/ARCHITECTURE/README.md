@@ -14,7 +14,7 @@
   - Controls trial settings and durations
   - Manages email notification templates and triggers
   - Allows for custom Lagoon service and container definitions
-  - Implements the `PolydockAppInterface` from the inlined Polydock core (`app/Polydock/Core/PolydockAppInterface.php`; see docs below)
+  - References a `polydock_app_class` (a string column) that points to the concrete app class implementing `PolydockAppInterface` from the inlined Polydock core (`app/Polydock/Core/PolydockAppInterface.php`; see docs below). The model itself does not implement the interface.
 
 ### Instances and Groups
 - **PolydockAppInstance**: A deployed instance of a store app
