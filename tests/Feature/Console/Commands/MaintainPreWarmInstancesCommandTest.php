@@ -143,6 +143,31 @@ class MaintainPreWarmInstancesCommandTest extends TestCase
         $otherExcess2->refresh();
         $this->assertEquals(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED, $otherExcess1->status);
         $this->assertEquals(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED, $otherExcess2->status);
+
+        // The unconditional refill job is still dispatched exactly once.
+        Queue::assertPushed(EnsureUnallocatedAppInstancesJob::class, 1);
+    }
+
+    public function test_refresh_all_queues_all_removable_instances_regardless_of_target(): void
+    {
+        // At target (2 of 2): normal runs would remove nothing.
+        $storeApp = $this->createStoreApp(target: 2);
+        $a = $this->createUnallocatedInstance($storeApp);
+        $b = $this->createUnallocatedInstance($storeApp);
+
+        $this->artisan('polydock:maintain-prewarm-instances', [
+            '--refresh-all' => true,
+            '--force' => true,
+        ])->assertExitCode(0);
+
+        // With --refresh-all, every removable instance is queued for removal
+        // even though the pool is at target.
+        $a->refresh();
+        $b->refresh();
+        $this->assertEquals(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, $a->status);
+        $this->assertEquals(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, $b->status);
+
+        Queue::assertPushed(EnsureUnallocatedAppInstancesJob::class, 1);
     }
 
     public function test_confirmation_prompt_aborts_without_force(): void
