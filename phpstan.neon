@@ -1,0 +1,26 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    reportUnmatchedIgnoredErrors: false
+    paths:
+        - app
+        - bootstrap
+        - config
+        - database
+        - public
+        - resources
+        - routes
+        - tests
+
+    ignoreErrors:
+        -
+            message: "#^Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.$#"
+            path: *config/*.php
+
+    excludePaths:
+        - vendor/*
+        - */vendor/*
