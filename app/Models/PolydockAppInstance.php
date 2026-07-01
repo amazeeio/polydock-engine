@@ -14,6 +14,7 @@ use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Traits\HasWebhookSensitiveData;
 use Carbon\Carbon;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -653,17 +654,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
-     * Store a key-value pair for the app instance
-     *
-     * @param  string  $key  The key to store
-     * @param  mixed  $value  The value to store
-     * @return PolydockAppInstanceInterface Returns the instance for method chaining
-     */
-    /**
      * Keys whose values are encrypted transparently at rest inside the `data`
      * column. Writes go through {@see encryptSecretValue()} in storeKeyValue()
      * and reads are decrypted in getKeyValue(), so callers keep passing/reading
-     * plain arrays. See plans/notes/009-secrets-at-rest-design.md.
+     * plain arrays.
      *
      * @var list<string>
      */
@@ -671,6 +665,13 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'secret',
     ];
 
+    /**
+     * Store a key-value pair for the app instance
+     *
+     * @param  string  $key  The key to store
+     * @param  mixed  $value  The value to store
+     * @return PolydockAppInstanceInterface Returns the instance for method chaining
+     */
     public function storeKeyValue(string $key, $value): PolydockAppInstanceInterface
     {
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
@@ -736,7 +737,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             return $value;
         }
 
-        return self::ENCRYPTED_SECRET_PREFIX.Crypt::encryptString(json_encode($value) ?: 'null');
+        // JSON_THROW_ON_ERROR: fail loudly on an unencodable secret rather than
+        // silently storing 'null' (which would read back as null — quiet data loss).
+        return self::ENCRYPTED_SECRET_PREFIX.Crypt::encryptString(json_encode($value, JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -754,7 +757,20 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         }
 
         $ciphertext = substr($value, strlen(self::ENCRYPTED_SECRET_PREFIX));
-        $decrypted = Crypt::decryptString($ciphertext);
+
+        try {
+            $decrypted = Crypt::decryptString($ciphertext);
+        } catch (DecryptException $e) {
+            // Most likely APP_KEY was rotated without a re-encrypt pass, or the
+            // stored ciphertext is corrupted. Fail safe (null) and log rather
+            // than taking down every request/queue job that reads this secret.
+            Log::error('Failed to decrypt instance secret', [
+                'app_instance_id' => $this->id ?? null,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
 
         return json_decode($decrypted, true);
     }

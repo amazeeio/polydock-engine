@@ -9,6 +9,7 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
@@ -44,7 +45,7 @@ class DispatchMidtrialEmailJobsCommandTest extends TestCase
     private function createInstance(
         PolydockStoreApp $storeApp,
         bool $isTrial = true,
-        ?\DateTimeInterface $sendMidtrialEmailAt = null,
+        ?Carbon $sendMidtrialEmailAt = null,
         bool $midtrialEmailSent = false,
     ): PolydockAppInstance {
         $instance = new PolydockAppInstance;

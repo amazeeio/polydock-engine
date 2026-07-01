@@ -105,7 +105,6 @@ class PolydockAppInstanceSecretEncryptionTest extends TestCase
 
         $instance = $this->newInstance();
         $instance->storeKeyValue('secret', $secret);
-        $firstCipher = json_decode((string) $instance->fresh()->getRawOriginal('data'), true)['secret'];
 
         // Simulate a re-store of the already-decrypted value; must still decrypt cleanly.
         $instance->storeKeyValue('secret', $instance->getKeyValue('secret'));
@@ -126,5 +125,21 @@ class PolydockAppInstanceSecretEncryptionTest extends TestCase
 
         // getKeyValue() returns the plaintext untouched (no prefix => passthrough).
         $this->assertSame(['ai' => ['api_key' => 'legacy-plain']], $instance->fresh()->getKeyValue('secret'));
+    }
+
+    public function test_corrupted_ciphertext_returns_null_instead_of_throwing(): void
+    {
+        $instance = $this->newInstance();
+        $instance->storeKeyValue('secret', ['ai' => ['api_key' => 'sk-xyz']]);
+
+        // Corrupt the stored ciphertext while keeping the enc:v1: prefix (simulates
+        // an APP_KEY rotation without re-encrypt, or a corrupted column value).
+        $data = $instance->fresh()->data;
+        $data['secret'] = 'enc:v1:not-valid-ciphertext';
+        $instance->data = $data;
+        $instance->save();
+
+        // The read must fail safe (null) and not throw a DecryptException.
+        $this->assertNull($instance->fresh()->getKeyValue('secret'));
     }
 }
