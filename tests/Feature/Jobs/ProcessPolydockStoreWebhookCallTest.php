@@ -85,11 +85,13 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
         $call->refresh();
 
         // The non-2xx branch first writes FAILED + response_code, then throws;
-        // the catch block re-writes status. Because attempts() is 0 when the
-        // job is invoked directly (0 < tries=3), the catch block sets PENDING.
+        // the catch block re-writes status. Because attempts() returns 1 when the
+        // job is invoked directly (no queue job bound; 1 < tries=3), the catch
+        // block sets PENDING.
         $this->assertSame(PolydockStoreWebhookCallStatusEnum::PENDING, $call->status);
         $this->assertSame('500', $call->response_code);
         $this->assertSame('server error', $call->response_body);
+        $this->assertNotNull($call->processed_at);
         $this->assertNotNull($call->exception);
     }
 
@@ -110,9 +112,9 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
 
         $call->refresh();
 
-        // Characterization: invoked directly, attempts() returns 0, which is
-        // < tries (3), so the catch block sets the status back to PENDING
-        // (not FAILED) and records the exception message.
+        // Characterization: invoked directly (no queue job bound), attempts()
+        // returns 1, which is < tries (3), so the catch block sets the status
+        // back to PENDING (not FAILED) and records the exception message.
         $this->assertSame(PolydockStoreWebhookCallStatusEnum::PENDING, $call->status);
         $this->assertSame('Connection timed out', $call->exception);
         $this->assertNotNull($call->processed_at);
