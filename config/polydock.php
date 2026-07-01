@@ -66,6 +66,19 @@ return [
         'purge_max_poll_attempts' => (int) env('POLYDOCK_PURGE_MAX_POLLS', 144),
         'purge_max_per_run' => (int) env('POLYDOCK_PURGE_MAX_PER_RUN', 25),
     ],
+    'deploy' => [
+        // Max instances a single scheduled-redeploy tick will trigger. Combined
+        // with the schedule frequency this bounds the rate of new Lagoon builds.
+        'max_per_run' => (int) env('POLYDOCK_DEPLOY_MAX_PER_RUN', 50),
+        // Max environments per bulkDeployEnvironments mutation (avoids one huge call).
+        'bulk_chunk_size' => (int) env('POLYDOCK_DEPLOY_BULK_CHUNK_SIZE', 50),
+        // How often a run is re-polled for Lagoon deployment status.
+        'poll_interval_minutes' => (int) env('POLYDOCK_DEPLOY_POLL_INTERVAL', 5),
+        // Give up (mark the run failed) after this many polls without terminal state.
+        'max_poll_attempts' => (int) env('POLYDOCK_DEPLOY_MAX_POLLS', 144),
+        // Spread scheduled redeploys across this many minutes to avoid a herd.
+        'schedule_jitter_minutes' => (int) env('POLYDOCK_DEPLOY_JITTER_MINUTES', 180),
+    ],
     'redirect_landing_page_to' => env('POLYDOCK_REDIRECT_LANDING_PAGE_TO', 'https://freedomtech.hosting/'),
     'register_only_captures' => env('POLYDOCK_REGISTER_ONLY_CAPTURES', false),
     'register_simulate_round_robin' => env('POLYDOCK_REGISTER_SIMULATE_ROUND_ROBIN', false),

@@ -15,6 +15,7 @@ class SuperAdminRoleSeeder extends Seeder
         $accessAdminPanel = Permission::findOrCreate('access_admin_panel', $guard);
         $viewHorizon = Permission::findOrCreate('view_horizon', $guard);
         $mutateHorizon = Permission::findOrCreate('mutate_horizon', $guard);
+        $manageDeployments = Permission::findOrCreate('manage_polydock_deployments', $guard);
 
         /** @var Role $superAdmin */
         $superAdmin = Role::findOrCreate('super_admin', $guard);
@@ -27,5 +28,6 @@ class SuperAdminRoleSeeder extends Seeder
         $superAdmin->givePermissionTo($accessAdminPanel);
         $superAdmin->givePermissionTo($viewHorizon);
         $superAdmin->givePermissionTo($mutateHorizon);
+        $superAdmin->givePermissionTo($manageDeployments);
     }
 }

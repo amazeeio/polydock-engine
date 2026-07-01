@@ -21,6 +21,11 @@ class UserGroup extends Model
     protected $fillable = [
         'name',
         'slug',
+        'is_beta',
+    ];
+
+    protected $casts = [
+        'is_beta' => 'boolean',
     ];
 
     public function getActivitylogOptions(): LogOptions

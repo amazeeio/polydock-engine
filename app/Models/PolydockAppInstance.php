@@ -96,6 +96,12 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'purge_attempts',
         'purge_last_attempted_at',
         'purge_failure_reason',
+        'deployment_run_id',
+        'last_deployment_name',
+        'last_deployment_status',
+        'last_deployed_at',
+        'last_deploy_triggered_at',
+        'next_redeploy_at',
     ];
 
     /**
@@ -120,6 +126,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'force_purge_requested_at' => 'datetime',
         'purge_last_attempted_at' => 'datetime',
         'purge_attempts' => 'integer',
+        'last_deployed_at' => 'datetime',
+        'last_deploy_triggered_at' => 'datetime',
+        'next_redeploy_at' => 'datetime',
     ];
 
     /**
@@ -312,6 +321,18 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
         PolydockAppInstanceStatus::POLYDOCK_CLAIM_RUNNING,
         PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
+    ];
+
+    /**
+     * Statuses in which an instance may be safely redeployed (upgrade rollout).
+     * Only healthy running instances qualify — the pre-warm pool
+     * (RUNNING_HEALTHY_UNCLAIMED) and live claimed apps (RUNNING_HEALTHY_CLAIMED).
+     *
+     * @var array<int, PolydockAppInstanceStatus>
+     */
+    public static array $redeployEligibleStatuses = [
+        PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+        PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
     ];
 
     /**
@@ -966,6 +987,33 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function userGroup(): BelongsTo
     {
         return $this->belongsTo(UserGroup::class);
+    }
+
+    /**
+     * Get the deployment run that most recently redeployed this instance.
+     */
+    public function deploymentRun(): BelongsTo
+    {
+        return $this->belongsTo(PolydockDeploymentRun::class, 'deployment_run_id');
+    }
+
+    /**
+     * Whether this instance is currently in a state that can be redeployed.
+     */
+    public function isRedeployEligible(): bool
+    {
+        return in_array($this->status, self::$redeployEligibleStatuses, true);
+    }
+
+    /**
+     * Whether this instance has a redeploy that has been triggered but not yet
+     * observed as finished (used to avoid firing a second deploy over the top).
+     */
+    public function hasInFlightDeployment(): bool
+    {
+        return $this->deployment_run_id !== null
+            && $this->deploymentRun !== null
+            && ! $this->deploymentRun->isTerminal();
     }
 
     /**
