@@ -15,16 +15,25 @@ class PolydockInstanceHealthController extends Controller
         $expectedToken = config('polydock.health_token');
         $suppliedToken = $request->query('token');
 
-        if ($expectedToken) {
-            // Timing-safe comparison to prevent timing-based enumeration
-            if (! is_string($suppliedToken) || ! hash_equals((string) $expectedToken, $suppliedToken)) {
-                return response()->json([
-                    'error' => 'Unauthorized: Invalid or missing health token',
-                    'status_code' => 401,
-                ], 401);
-            }
-        } else {
-            Log::warning('POLYDOCK_HEALTH_TOKEN is not configured. Health endpoint is currently running without authentication.');
+        // Note: not empty() — a token literally set to "0" is valid and must not
+        // be treated as "unconfigured". We use is_string() so that falsy
+        // non-string values (e.g. false from POLYDOCK_HEALTH_TOKEN=false) are
+        // also treated as unconfigured rather than as an effective empty token.
+        if (! is_string($expectedToken) || $expectedToken === '') {
+            Log::error('POLYDOCK_HEALTH_TOKEN is not configured; rejecting health request (fail-closed).');
+
+            return response()->json([
+                'error' => 'Health endpoint is not configured',
+                'status_code' => 503,
+            ], 503);
+        }
+
+        // Timing-safe comparison to prevent timing-based enumeration
+        if (! is_string($suppliedToken) || ! hash_equals((string) $expectedToken, $suppliedToken)) {
+            return response()->json([
+                'error' => 'Unauthorized: Invalid or missing health token',
+                'status_code' => 401,
+            ], 401);
         }
 
         $query = $request->query();
