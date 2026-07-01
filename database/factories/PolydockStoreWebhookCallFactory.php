@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\PolydockStoreWebhookCallStatusEnum;
+use App\Models\PolydockStoreWebhook;
 use App\Models\PolydockStoreWebhookCall;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -18,18 +20,15 @@ class PolydockStoreWebhookCallFactory extends Factory
     public function definition(): array
     {
         return [
-            'id' => fake()->text(),
-            'polydock_store_webhook_id' => fake()->text(),
-            'event' => fake()->text(),
-            'payload' => $this->faker->json(),
-            'status' => fake()->text(),
-            'attempt' => fake()->text(),
-            'processed_at' => $this->faker->dateTime(),
-            'response_code' => fake()->text(),
-            'response_body' => $this->faker->paragraph(),
-            'exception' => $this->faker->paragraph(),
-            'created_at' => $this->faker->dateTime(),
-            'updated_at' => $this->faker->dateTime(),
+            'polydock_store_webhook_id' => PolydockStoreWebhook::factory(),
+            'event' => fake()->slug(),
+            'payload' => ['message' => fake()->sentence()],
+            'status' => PolydockStoreWebhookCallStatusEnum::PENDING,
+            'attempt' => 0,
+            'processed_at' => null,
+            'response_code' => null,
+            'response_body' => null,
+            'exception' => null,
         ];
     }
 }
