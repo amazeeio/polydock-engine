@@ -65,7 +65,7 @@ class ProcessOneDayLeftEmailJob extends BaseJob implements ShouldQueue
                     'app_instance_id' => $this->appInstance->id,
                 ]);
 
-                $mail->queue(new AppInstanceOneDayLeftMail($this->appInstance, $owner));
+                $mail->send(new AppInstanceOneDayLeftMail($this->appInstance, $owner));
             }
         } else {
             $this->appInstance->info('Trial expired, skipping one day left email but marking as sent', [

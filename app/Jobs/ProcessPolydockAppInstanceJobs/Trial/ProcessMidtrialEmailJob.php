@@ -77,7 +77,7 @@ class ProcessMidtrialEmailJob extends BaseJob implements ShouldQueue
                     'app_instance_id' => $this->appInstance->id,
                 ]);
 
-                $mail->queue(new AppInstanceMidtrialMail($this->appInstance, $owner));
+                $mail->send(new AppInstanceMidtrialMail($this->appInstance, $owner));
             }
         } else {
             $this->appInstance->info('Trial expired, skipping midtrial email but marking as sent', [
