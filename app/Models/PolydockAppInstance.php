@@ -1110,8 +1110,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function calculateAndSetTrialDatesFromEndDate($trialEndDateTime, bool $saveModel = false): self
     {
-        // Calculate days between now and end date
-        $durationDays = now()->diffInDays($trialEndDateTime);
+        // diffInDays() returns a float in Carbon 3; round up so a partial day still
+        // grants a full trial day rather than being truncated toward zero.
+        $durationDays = (int) ceil((float) now()->diffInDays($trialEndDateTime));
 
         return $this->calculateAndSetTrialDates($durationDays, $saveModel);
     }
