@@ -11,9 +11,11 @@ use Aws\DynamoDb\DynamoDbClient;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Http\Request;
 use Illuminate\Queue\Failed\DatabaseFailedJobProvider;
 use Illuminate\Queue\Failed\DynamoDbFailedJobProvider;
 use Illuminate\Queue\Failed\FileFailedJobProvider;
@@ -25,6 +27,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -103,6 +106,38 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Named rate limiters for the unauthenticated public API routes. Named
+        // limiters key on the limiter name + IP, so each route has its own
+        // counter — unlike anonymous `throttle:N,1`, whose signature is
+        // sha1(domain|ip) and is therefore shared across every route per IP.
+        // Trusted internal callers (e.g. MoaD) bypass the public throttles.
+        $isTrusted = fn (Request $request) => in_array($request->ip(), config('polydock.trusted_ips', []), true);
+
+        // Key on IP, not UUID: these limits exist to blunt enumeration, so a
+        // per-UUID bucket (one fresh budget per guessed UUID) would defeat them.
+        RateLimiter::for('register', fn (Request $request) => $isTrusted($request)
+            ? Limit::none()
+            : Limit::perMinute(10)->by($request->ip()));
+
+        RateLimiter::for('public-read', fn (Request $request) => $isTrusted($request)
+            ? Limit::none()
+            : Limit::perMinute(60)->by($request->ip()));
+
+        RateLimiter::for('instance-health', function (Request $request) use ($isTrusted) {
+            if ($isTrusted($request)) {
+                return Limit::none();
+            }
+
+            // A valid health token isn't guessing, so let it through unthrottled.
+            $expectedToken = config('polydock.health_token');
+            $suppliedToken = $request->query('token');
+            if (! empty($expectedToken) && is_string($suppliedToken) && hash_equals((string) $expectedToken, $suppliedToken)) {
+                return Limit::none();
+            }
+
+            return Limit::perMinute(120)->by($request->ip());
+        });
+
         Gate::define('viewApiDocs', fn (?Authenticatable $user) => true);
 
         Scramble::configure()->expose(

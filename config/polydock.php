@@ -52,6 +52,7 @@ $aisettings = [
 
 return [
     'health_token' => env('POLYDOCK_HEALTH_TOKEN'),
+    'trusted_ips' => array_filter(array_map('trim', explode(',', (string) env('POLYDOCK_TRUSTED_IPS', '')))),
     'lagoon_environment_type' => env('LAGOON_ENVIRONMENT_TYPE', 'development'),
     'default_user_group_id_for_unallocated_instances' => env('POLYDOCK_DEFAULT_USER_GROUP_ID_FOR_UNALLOCATED_INSTANCES', 1),
     'amazee_ai_backend_private_gpt_settings' => $aisettings,
