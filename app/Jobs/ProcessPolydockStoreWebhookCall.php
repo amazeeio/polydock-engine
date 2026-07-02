@@ -69,16 +69,22 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
                 'attempt' => $this->attempts(),
             ]);
 
+            // Encode the body explicitly so the signed bytes are exactly the
+            // transmitted bytes (Http::post($url, $array) would re-encode).
+            $body = json_encode($this->webhookCall->payload, JSON_THROW_ON_ERROR);
+            $signature = $this->webhookCall->webhook->signPayload($body);
+
             // Make the HTTP request
             $response = Http::timeout(30)
+                ->withBody($body, 'application/json')
                 ->withHeaders([
-                    'Content-Type' => 'application/json',
                     'User-Agent' => 'PolydockWebhook/1.0',
                     'X-Polydock-Event' => $this->webhookCall->event,
                     'X-Polydock-Delivery' => (string) $this->webhookCall->id,
                     'X-Polydock-Attempt' => (string) $this->attempts(),
+                    'X-Polydock-Signature' => $signature,
                 ])
-                ->post($this->webhookCall->webhook->url, $this->webhookCall->payload);
+                ->post($this->webhookCall->webhook->url);
 
             // Update the call with the response
             $this->webhookCall->update([

@@ -53,6 +53,8 @@ class PolydockStoreWebhookCall extends Model
 
     /**
      * Get the webhook that this call belongs to
+     *
+     * @return BelongsTo<PolydockStoreWebhook, $this>
      */
     public function webhook(): BelongsTo
     {

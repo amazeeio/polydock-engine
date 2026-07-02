@@ -67,6 +67,28 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
         });
     }
 
+    public function test_request_carries_valid_hmac_signature_over_the_sent_body(): void
+    {
+        Http::fake([
+            'https://example.test/*' => Http::response('all good', 200),
+        ]);
+
+        $call = $this->makeWebhookCall();
+        $secret = $call->webhook->secret;
+
+        $this->assertNotEmpty($secret);
+        $this->assertArrayNotHasKey('secret', $call->webhook->toArray());
+
+        (new ProcessPolydockStoreWebhookCall($call))->handle();
+
+        Http::assertSent(function ($request) use ($secret) {
+            $body = $request->body();
+            $expected = 'sha256='.hash_hmac('sha256', $body, (string) $secret);
+
+            return $request->hasHeader('X-Polydock-Signature', $expected);
+        });
+    }
+
     public function test_non_2xx_response_marks_call_as_failed_and_throws(): void
     {
         Http::fake([
