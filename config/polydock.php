@@ -70,8 +70,6 @@ return [
         // Max instances a single scheduled-redeploy tick will trigger. Combined
         // with the schedule frequency this bounds the rate of new Lagoon builds.
         'max_per_run' => (int) env('POLYDOCK_DEPLOY_MAX_PER_RUN', 50),
-        // Max environments per bulkDeployEnvironments mutation (avoids one huge call).
-        'bulk_chunk_size' => (int) env('POLYDOCK_DEPLOY_BULK_CHUNK_SIZE', 50),
         // How often a run is re-polled for Lagoon deployment status.
         'poll_interval_minutes' => (int) env('POLYDOCK_DEPLOY_POLL_INTERVAL', 5),
         // Give up (mark the run failed) after this many polls without terminal state.

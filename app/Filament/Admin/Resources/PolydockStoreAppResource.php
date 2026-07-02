@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\PolydockDeploymentRunStatusEnum;
 use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
@@ -465,6 +466,16 @@ class PolydockStoreAppResource extends Resource
                                 ->warning()
                                 ->title('Nothing to redeploy')
                                 ->body('No eligible running instances for this app.')
+                                ->send();
+
+                            return;
+                        }
+
+                        if ($run->status === PolydockDeploymentRunStatusEnum::FAILED) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Redeploy failed to trigger')
+                                ->body('See logs for details. Run: '.$run->uuid)
                                 ->send();
 
                             return;

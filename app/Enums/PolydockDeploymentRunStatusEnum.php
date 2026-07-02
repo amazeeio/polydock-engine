@@ -30,7 +30,7 @@ enum PolydockDeploymentRunStatusEnum: string implements HasColor, HasIcon, HasLa
         };
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): string
     {
         return match ($this) {
             self::PENDING => 'gray',
@@ -41,7 +41,7 @@ enum PolydockDeploymentRunStatusEnum: string implements HasColor, HasIcon, HasLa
         };
     }
 
-    public function getIcon(): ?string
+    public function getIcon(): string
     {
         return match ($this) {
             self::PENDING => 'heroicon-o-clock',

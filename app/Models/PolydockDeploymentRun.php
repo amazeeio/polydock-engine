@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Enums\PolydockDeploymentRunStatusEnum;
 use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +33,7 @@ use Illuminate\Support\Str;
  * @property Carbon|null $updated_at
  * @property PolydockStoreApp|null $storeApp
  * @property User|null $triggeredByUser
+ * @property Collection<int, PolydockAppInstance> $instances
  */
 class PolydockDeploymentRun extends Model
 {
@@ -92,6 +94,9 @@ class PolydockDeploymentRun extends Model
         return $this->belongsTo(User::class, 'triggered_by_user_id');
     }
 
+    /**
+     * @return HasMany<PolydockAppInstance, $this>
+     */
     public function instances(): HasMany
     {
         return $this->hasMany(PolydockAppInstance::class, 'deployment_run_id');

@@ -25,7 +25,7 @@ enum PolydockDeploymentRunTriggerSourceEnum: string implements HasColor, HasLabe
         };
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): string
     {
         return match ($this) {
             self::SCHEDULED => 'info',

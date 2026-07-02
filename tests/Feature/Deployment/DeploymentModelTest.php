@@ -51,7 +51,7 @@ class DeploymentModelTest extends TestCase
 
         $instance = $this->makeInstance($app, ['deployment_run_id' => $run->id]);
 
-        $this->assertTrue($run->instances()->get()->contains($instance));
+        $this->assertTrue($run->instances()->whereKey($instance->getKey())->exists());
         $this->assertTrue($instance->deploymentRun->is($run));
     }
 

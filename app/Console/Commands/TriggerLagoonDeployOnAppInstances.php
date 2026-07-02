@@ -187,7 +187,7 @@ class TriggerLagoonDeployOnAppInstances extends BaseCommand
         $bulkId = $run->lagoon_bulk_id ?? 'unknown';
         $this->info(string: "Bulk deployment triggered successfully! Run: {$run->uuid} Bulk ID: {$bulkId}");
         $this->info("\nYou can track the progress using:");
-        $this->info("  https://dashboard.amazeeio.cloud/deployments?bulkId={$bulkId}");
+        $this->info("  https://dashboard.amazeeio.cloud/alldeployments?bulkId={$bulkId}");
 
         return 0;
     }

@@ -246,6 +246,8 @@ class PolydockStoreApp extends Model
 
     /**
      * Get all instances of this store app
+     *
+     * @return HasMany<PolydockAppInstance, $this>
      */
     public function instances(): HasMany
     {

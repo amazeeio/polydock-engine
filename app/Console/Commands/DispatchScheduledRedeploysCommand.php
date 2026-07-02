@@ -98,7 +98,7 @@ class DispatchScheduledRedeploysCommand extends BaseCommand
     private function advanceCadence(PolydockAppInstance $instance): void
     {
         $isBeta = (bool) $instance->userGroup?->is_beta;
-        $intervalDays = $instance->storeApp?->effectiveRedeployIntervalDays($isBeta);
+        $intervalDays = $instance->storeApp->effectiveRedeployIntervalDays($isBeta);
 
         if ($intervalDays === null) {
             return;

@@ -59,6 +59,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property Carbon|null $updated_at
  * @property PolydockStoreApp $storeApp
  * @property UserGroup|null $userGroup
+ * @property PolydockDeploymentRun|null $deploymentRun
  */
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {

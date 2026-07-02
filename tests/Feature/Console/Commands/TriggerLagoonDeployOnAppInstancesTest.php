@@ -261,7 +261,7 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
         // The service returns before authenticating when there are no valid
         // environments, so token setup may not be reached.
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->zeroOrMoreTimes();
-        $mock->shouldReceive('initGraphqlClient')->zeroOrMoreTimes();
+        $mock->shouldReceive('initGraphqlClient');
         $mock->shouldNotReceive('bulkDeployEnvironments');
         $this->app->instance(Client::class, $mock);
 
