@@ -14,11 +14,13 @@ use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Traits\HasWebhookSensitiveData;
 use Carbon\Carbon;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
@@ -652,6 +654,18 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
+     * Keys whose values are encrypted transparently at rest inside the `data`
+     * column. Writes go through {@see encryptSecretValue()} in storeKeyValue()
+     * and reads are decrypted in getKeyValue(), so callers keep passing/reading
+     * plain arrays.
+     *
+     * @var list<string>
+     */
+    private const ENCRYPTED_KEYS = [
+        'secret',
+    ];
+
+    /**
      * Store a key-value pair for the app instance
      *
      * @param  string  $key  The key to store
@@ -662,6 +676,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
             $value = $this->stripTokenFromUrl((string) $value);
+        }
+
+        if (in_array($key, self::ENCRYPTED_KEYS, true)) {
+            $value = $this->encryptSecretValue($value);
         }
 
         $resultData = $this->data ?? [];
@@ -676,6 +694,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         $value = data_get($this->data, $key, '');
 
+        if (in_array($key, self::ENCRYPTED_KEYS, true)) {
+            return $this->decryptSecretValue($value);
+        }
+
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
             $token = config('polydock.health_token');
             if (! empty($token)) {
@@ -687,6 +709,70 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         }
 
         return $value;
+    }
+
+    /**
+     * Sentinel prefix marking a value as an encrypted-at-rest secret payload.
+     * Lets getKeyValue() distinguish already-encrypted ciphertext from any
+     * legacy plaintext still present in the `data` column (backfill guard).
+     */
+    private const ENCRYPTED_SECRET_PREFIX = 'enc:v1:';
+
+    /**
+     * Encrypt a secret value for storage inside the `data` column.
+     *
+     * The value (typically an array of credentials) is serialised and encrypted
+     * with Laravel's Crypt (APP_KEY-derived, AES-256-CBC + HMAC). The result is
+     * a single opaque, prefixed string so the JSON column holds only ciphertext.
+     * Empty values are stored as-is so "no secret" stays cheaply detectable.
+     */
+    private function encryptSecretValue(mixed $value): mixed
+    {
+        if ($value === null || $value === '' || $value === []) {
+            return $value;
+        }
+
+        // Idempotent: never double-encrypt an already-encrypted payload.
+        if (is_string($value) && str_starts_with($value, self::ENCRYPTED_SECRET_PREFIX)) {
+            return $value;
+        }
+
+        // JSON_THROW_ON_ERROR: fail loudly on an unencodable secret rather than
+        // silently storing 'null' (which would read back as null — quiet data loss).
+        return self::ENCRYPTED_SECRET_PREFIX.Crypt::encryptString(json_encode($value, JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * Decrypt a secret value read from the `data` column.
+     *
+     * Ciphertext (prefixed strings) is decrypted and JSON-decoded back to the
+     * original shape. Values without the prefix are returned untouched so
+     * legacy plaintext rows keep working until they are backfilled.
+     */
+    private function decryptSecretValue(mixed $value): mixed
+    {
+        if (! is_string($value) || ! str_starts_with($value, self::ENCRYPTED_SECRET_PREFIX)) {
+            // Legacy plaintext (or empty default) — return as stored.
+            return $value;
+        }
+
+        $ciphertext = substr($value, strlen(self::ENCRYPTED_SECRET_PREFIX));
+
+        try {
+            $decrypted = Crypt::decryptString($ciphertext);
+        } catch (DecryptException $e) {
+            // Most likely APP_KEY was rotated without a re-encrypt pass, or the
+            // stored ciphertext is corrupted. Fail safe (null) and log rather
+            // than taking down every request/queue job that reads this secret.
+            Log::error('Failed to decrypt instance secret', [
+                'app_instance_id' => $this->id ?? null,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+
+        return json_decode($decrypted, true);
     }
 
     /**

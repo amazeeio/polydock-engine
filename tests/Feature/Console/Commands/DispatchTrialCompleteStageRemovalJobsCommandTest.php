@@ -9,6 +9,7 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
@@ -44,7 +45,7 @@ class DispatchTrialCompleteStageRemovalJobsCommandTest extends TestCase
         PolydockStoreApp $storeApp,
         bool $isTrial = true,
         PolydockAppInstanceStatus $status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
-        ?\DateTimeInterface $trialEndsAt = null,
+        ?Carbon $trialEndsAt = null,
     ): PolydockAppInstance {
         $instance = new PolydockAppInstance;
         $instance->uuid = 'test-'.uniqid();
