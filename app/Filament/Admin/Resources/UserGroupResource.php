@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 use App\Models\User;
 use App\Models\UserGroup;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
@@ -15,6 +16,7 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -39,6 +41,9 @@ class UserGroupResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Toggle::make('is_beta')
+                    ->label('Beta group')
+                    ->helperText('Beta groups receive redeploys on the shorter beta cadence, where an app defines one.'),
             ]);
     }
 
@@ -73,6 +78,10 @@ class UserGroupResource extends Resource
                 TextColumn::make('users_count')
                     ->counts('users')
                     ->label('Users')
+                    ->sortable(),
+                IconColumn::make('is_beta')
+                    ->label('Beta')
+                    ->boolean()
                     ->sortable(),
                 TextColumn::make('created_at')->dateTime()
                     ->sortable(),

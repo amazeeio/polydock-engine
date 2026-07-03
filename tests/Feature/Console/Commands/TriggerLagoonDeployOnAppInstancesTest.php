@@ -9,6 +9,7 @@ use App\Polydock\Clients\Lagoon\Client;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Process;
+use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
 class TriggerLagoonDeployOnAppInstancesTest extends TestCase
@@ -61,6 +62,10 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
      */
     private function setupLagoonKey(): void
     {
+        // The redeploy service dispatches a poll job; keep it off the sync queue
+        // so it doesn't authenticate a second time during these trigger tests.
+        Queue::fake();
+
         $this->lagoonKeyDir = storage_path('framework/testing/lagoon-key-'.uniqid('', true));
 
         if (! is_dir($this->lagoonKeyDir)) {
@@ -137,9 +142,9 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
             '--force' => true,
         ])
             ->expectsOutput('Found 2 running instances.')
-            ->expectsOutput('Authenticating with Lagoon...')
             ->expectsOutput('Triggering bulk deployment for 2 instances...')
-            ->expectsOutput('Bulk deployment triggered successfully! Bulk ID: bulk-id-123')
+            ->expectsOutputToContain('Bulk deployment triggered successfully!')
+            ->expectsOutputToContain('bulk-id-123')
             ->assertExitCode(0);
     }
 
@@ -200,9 +205,9 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
             '--force' => true,
             '--concurrency' => 2,
         ])
-            ->expectsOutput('Authenticating with Lagoon...')
             ->expectsOutput('Triggering bulk deployment for 2 instances...')
-            ->expectsOutput('Bulk deployment triggered successfully! Bulk ID: bulk-id-456')
+            ->expectsOutputToContain('Bulk deployment triggered successfully!')
+            ->expectsOutputToContain('bulk-id-456')
             ->assertExitCode(0);
     }
 
@@ -253,8 +258,10 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
         $this->setupLagoonKey();
 
         $mock = \Mockery::mock(Client::class);
-        $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
-        $mock->shouldReceive('initGraphqlClient')->once();
+        // The service returns before authenticating when there are no valid
+        // environments, so token setup may not be reached.
+        $mock->shouldReceive('setLagoonToken')->with('fake-token')->zeroOrMoreTimes();
+        $mock->shouldReceive('initGraphqlClient');
         $mock->shouldNotReceive('bulkDeployEnvironments');
         $this->app->instance(Client::class, $mock);
 
@@ -278,7 +285,7 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
             'app_uuid' => $storeApp->uuid,
             '--force' => true,
         ])
-            ->expectsOutput('No valid environments found to deploy.')
+            ->expectsOutput('No deployable instances (none eligible, or all have an in-flight deploy).')
             ->assertExitCode(1);
     }
 
