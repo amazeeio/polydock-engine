@@ -47,6 +47,8 @@ class ProcessOneDayLeftEmailJob extends BaseJob implements ShouldQueue
                 'app_instance_id' => $this->appInstance->id,
             ]);
 
+            // With >1 owner, a mid-loop send failure would re-email earlier owners on re-dispatch.
+            // Add per-owner sent-tracking if multi-owner groups ever become real.
             foreach ($this->appInstance->userGroup->owners as $owner) {
                 $mail = Mail::to($owner->email);
 
@@ -65,7 +67,7 @@ class ProcessOneDayLeftEmailJob extends BaseJob implements ShouldQueue
                     'app_instance_id' => $this->appInstance->id,
                 ]);
 
-                $mail->queue(new AppInstanceOneDayLeftMail($this->appInstance, $owner));
+                $mail->send(new AppInstanceOneDayLeftMail($this->appInstance, $owner));
             }
         } else {
             $this->appInstance->info('Trial expired, skipping one day left email but marking as sent', [

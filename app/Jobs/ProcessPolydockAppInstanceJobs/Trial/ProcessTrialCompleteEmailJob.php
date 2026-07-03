@@ -41,6 +41,8 @@ class ProcessTrialCompleteEmailJob extends BaseJob implements ShouldQueue
         }
 
         // Send email to owners
+        // With >1 owner, a mid-loop send failure would re-email earlier owners on re-dispatch.
+        // Add per-owner sent-tracking if multi-owner groups ever become real.
         foreach ($this->appInstance->userGroup->owners as $owner) {
             $mail = Mail::to($owner->email);
 
@@ -53,7 +55,7 @@ class ProcessTrialCompleteEmailJob extends BaseJob implements ShouldQueue
                 'owner_email' => $owner->email,
             ]);
 
-            $mail->queue(new AppInstanceTrialCompleteMail($this->appInstance, $owner));
+            $mail->send(new AppInstanceTrialCompleteMail($this->appInstance, $owner));
         }
 
         // Update the sent flag
