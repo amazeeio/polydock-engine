@@ -288,6 +288,57 @@ trait ProjectEnvironmentTrait
     }
 
     /**
+     * Gets recent deployments for a single environment by project ID
+     *
+     * @param  int|string  $projectId  The project ID
+     * @param  string  $environmentName  The environment name
+     * @param  int  $limit  Maximum number of deployments to return
+     * @return array List of deployments or error details
+     *
+     * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
+     */
+    public function getEnvironmentDeploymentsByProjectId(int|string $projectId, string $environmentName, int $limit = 25): array
+    {
+        if (empty($this->lagoonToken) || empty($this->graphqlClient)) {
+            throw new LagoonClientInitializeRequiredToInteractException;
+        }
+
+        $query = <<<'GQL'
+            query q ($project: Int!, $name: String!, $limit: Int) {
+                environmentByName(project: $project, name: $name) {
+                    deployments(limit: $limit) {
+                        id
+                        remoteId
+                        name
+                        status
+                        created
+                        started
+                        completed
+                    }
+                }
+            }
+        GQL;
+
+        $response = $this->graphqlClient->query($query, [
+            'project' => (int) $projectId,
+            'name' => $environmentName,
+            'limit' => $limit,
+        ]);
+
+        if ($response->hasErrors()) {
+            return ['error' => $response->getErrors()];
+        }
+
+        $data = $response->getData();
+
+        if (empty($data['environmentByName'])) {
+            return ['error' => 'Environment not found: '.$environmentName];
+        }
+
+        return $data['environmentByName']['deployments'] ?? [];
+    }
+
+    /**
      * Gets deployments for a project environment
      *
      * @param  string  $projectName  The name of the project

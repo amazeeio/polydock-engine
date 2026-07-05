@@ -118,18 +118,27 @@ class ViewPolydockAppInstance extends ViewRecord
 
                                 $client = $lagoonClientService->buildClientWithToken($clientConfig, $token);
 
-                                $deployments = $client->getProjectEnvironmentDeployments($projectName, $environmentName);
+                                $projectId = $record->getKeyValue('lagoon-project-id');
+
+                                if (! empty($projectId)) {
+                                    $deployments = $client->getEnvironmentDeploymentsByProjectId($projectId, $environmentName);
+                                } else {
+                                    // Older instances without a stored project ID need the project-wide lookup
+                                    $deployments = $client->getProjectEnvironmentDeployments($projectName, $environmentName);
+                                    $deployments = $deployments['error'] ?? null ? $deployments : ($deployments[$environmentName] ?? []);
+                                }
 
                                 if (isset($deployments['error'])) {
                                     return 'API Error: '.(is_array($deployments['error']) ? json_encode($deployments['error']) : $deployments['error']);
                                 }
 
-                                if (empty($deployments) || empty($deployments[$environmentName])) {
+                                if (empty($deployments)) {
                                     return 'No deployments found for environment: '.$environmentName;
                                 }
 
-                                $latestComplete = collect($deployments[$environmentName])
+                                $latestComplete = collect($deployments)
                                     ->where('status', 'complete')
+                                    ->sortByDesc('created')
                                     ->first();
 
                                 if ($latestComplete && isset($latestComplete['completed'])) {
