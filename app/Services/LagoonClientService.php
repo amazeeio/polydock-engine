@@ -130,6 +130,8 @@ class LagoonClientService
             'ssh_port' => $sshConfig['ssh_port'] ?? '32222',
             'endpoint' => $sshConfig['endpoint'] ?? 'https://api.lagoon.amazeeio.cloud/graphql',
             'ssh_private_key_file' => $keyFile,
+            'connect_timeout' => $sshConfig['connect_timeout'] ?? 5.0,
+            'timeout' => $sshConfig['timeout'] ?? 60.0,
         ];
     }
 
