@@ -176,7 +176,7 @@ trait ProjectEnvironmentTrait
         }
 
         $mutation = <<<'GQL'
-            mutation m ($input: BulkDeployEnvironmentLatestInput!) {
+            mutation m ($input: BulkDeploymentLatestInput!) {
                 bulkDeployEnvironmentLatest(input: $input)
             }
         GQL;
