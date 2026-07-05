@@ -3,6 +3,12 @@ FROM ${CLI_IMAGE} as cli
 FROM uselagoon/php-8.4-fpm
 
 #######################################################
+# Install openssh-client for Lagoon API token fetching
+# (deploy triggers run synchronously in the php pod)
+#######################################################
+RUN apk add --no-cache openssh-client
+
+#######################################################
 # Setup Laravel Directories needed
 #######################################################
 RUN mkdir -p /app/storage/framework/sessions
