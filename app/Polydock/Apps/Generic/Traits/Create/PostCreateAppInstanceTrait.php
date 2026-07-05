@@ -112,7 +112,7 @@ trait PostCreateAppInstanceTrait
 
             foreach ($metadataPayload as $metadataKey => $metadataValue) {
                 $this->info("Writing project metadata: {$metadataKey} => {$metadataValue}", $logContext);
-                $metadataResult = $this->lagoonClient->addOrUpdateProjectMetadataByKey($projectName, $metadataKey, (string) $metadataValue);
+                $metadataResult = $this->lagoonClient->updateProjectMetadata($projectName, $metadataKey, (string) $metadataValue);
                 if (isset($metadataResult['error'])) {
                     $this->warning("Failed to write metadata '{$metadataKey}': ".json_encode($metadataResult['error']), $logContext);
                 }
