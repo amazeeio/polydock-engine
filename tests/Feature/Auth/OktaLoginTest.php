@@ -158,6 +158,48 @@ class OktaLoginTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_group_sync_grants_mapped_role(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['okta_sub' => 'okta-sub-5'])->save();
+
+        $this->fakeOktaUser('okta-sub-5', $user->email, ['groups' => ['polydock-support']]);
+
+        $this->get('/auth/okta/callback');
+
+        $this->assertTrue($user->fresh()->hasRole('support'));
+    }
+
+    public function test_group_sync_revokes_mapped_role_when_group_absent(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['okta_sub' => 'okta-sub-6'])->save();
+        Role::findOrCreate('support', 'web');
+        $user->assignRole('support');
+
+        $this->fakeOktaUser('okta-sub-6', $user->email, ['groups' => []]);
+
+        $this->get('/auth/okta/callback');
+
+        $this->assertFalse($user->fresh()->hasRole('support'));
+    }
+
+    public function test_group_sync_preserves_roles_outside_the_map(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['okta_sub' => 'okta-sub-7'])->save();
+        Role::findOrCreate('service-account', 'web');
+        $user->assignRole('service-account');
+
+        $this->fakeOktaUser('okta-sub-7', $user->email, ['groups' => ['polydock-admins']]);
+
+        $this->get('/auth/okta/callback');
+
+        $user = $user->fresh();
+        $this->assertTrue($user->hasRole('service-account'));
+        $this->assertTrue($user->hasRole('super_admin'));
+    }
+
     public function test_login_page_never_accepts_password_for_okta_domain(): void
     {
         User::factory()->create([

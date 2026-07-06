@@ -20,4 +20,20 @@ return [
         explode(',', (string) env('OKTA_DOMAINS', 'amazee.io')),
     )),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Okta group → role map
+    |--------------------------------------------------------------------------
+    |
+    | On every Okta login, roles in this map are synced from the token's
+    | `groups` claim: granted when the group is present, revoked when absent.
+    | Roles outside this map are never touched.
+    |
+    */
+
+    'group_role_map' => [
+        'polydock-admins' => 'super_admin',
+        'polydock-support' => 'support',
+    ],
+
 ];

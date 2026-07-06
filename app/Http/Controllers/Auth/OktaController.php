@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 use Laravel\Socialite\AbstractUser;
 use Laravel\Socialite\Facades\Socialite;
+use Spatie\Permission\Models\Role;
 use Spatie\SlackAlerts\Facades\SlackAlert;
 
 class OktaController extends Controller
@@ -34,6 +35,8 @@ class OktaController extends Controller
 
         $user = User::where('okta_sub', $sub)->first()
             ?? $this->linkOrCreate($sub, $email, $oktaUser);
+
+        $this->syncMappedRoles($user, (array) ($oktaUser->getRaw()['groups'] ?? []));
 
         session(['auth_provider' => 'okta']);
         Auth::login($user);
@@ -70,5 +73,31 @@ class OktaController extends Controller
         }
 
         return $user;
+    }
+
+    /**
+     * Sync roles in okta.group_role_map from the token's groups claim:
+     * grant when the group is present, revoke when absent. Roles outside
+     * the map (e.g. manually granted) are never touched.
+     */
+    private function syncMappedRoles(User $user, array $groups): void
+    {
+        foreach (config('okta.group_role_map', []) as $group => $roleName) {
+            $inGroup = in_array($group, $groups, true);
+
+            if ($inGroup && ! $user->hasRole($roleName)) {
+                $user->assignRole(Role::findOrCreate($roleName, 'web'));
+                activity()
+                    ->performedOn($user)
+                    ->withProperties(['role' => $roleName, 'okta_group' => $group])
+                    ->log('Role granted from Okta group sync');
+            } elseif (! $inGroup && $user->hasRole($roleName)) {
+                $user->removeRole($roleName);
+                activity()
+                    ->performedOn($user)
+                    ->withProperties(['role' => $roleName, 'okta_group' => $group])
+                    ->log('Role revoked from Okta group sync');
+            }
+        }
     }
 }
