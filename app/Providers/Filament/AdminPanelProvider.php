@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Admin\Pages\Auth\Login;
 use App\Filament\Admin\Widgets\PolydockAppInstancesCreatedByStoreChart;
 use App\Filament\Admin\Widgets\PolydockAppInstancesCreatedByTypeChart;
 use App\Filament\Admin\Widgets\StatsOverview;
@@ -34,7 +35,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
-            ->login()
+            ->login(Login::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -76,7 +77,11 @@ class AdminPanelProvider extends PanelProvider
                 FilamentShieldPlugin::make(),
                 BreezyCore::make()
                     ->myProfile()
-                    ->enableTwoFactorAuthentication(force: true),
+                    // TOTP is enforced for password users only; Okta users authenticate
+                    // (and MFA) upstream at Okta and have no password.
+                    ->enableTwoFactorAuthentication(
+                        force: fn (): bool => filament()->auth()->user()?->okta_sub === null,
+                    ),
             ]);
     }
 }

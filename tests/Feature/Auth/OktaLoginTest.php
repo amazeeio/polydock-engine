@@ -1,0 +1,178 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Feature\Auth;
+
+use App\Filament\Admin\Pages\Auth\Login;
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Hash;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\AbstractProvider;
+use Laravel\Socialite\Two\User as SocialiteUser;
+use Livewire\Livewire;
+use Spatie\Activitylog\Models\Activity;
+use Spatie\Permission\Models\Role;
+use Tests\TestCase;
+
+class OktaLoginTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        config([
+            'services.okta.base_url' => 'https://example.okta.com',
+            'services.okta.client_id' => 'test-client-id',
+            'services.okta.client_secret' => 'test-client-secret',
+            'okta.domains' => ['amazee.io'],
+        ]);
+    }
+
+    private function fakeOktaUser(string $sub, string $email, array $raw = []): void
+    {
+        $socialiteUser = (new SocialiteUser)
+            ->setRaw(array_merge(['sub' => $sub, 'email' => $email], $raw))
+            ->map([
+                'id' => $sub,
+                'email' => $email,
+                'name' => $raw['name'] ?? 'Test User',
+            ]);
+
+        Socialite::shouldReceive('driver')->with('okta')->andReturn(
+            \Mockery::mock(AbstractProvider::class)
+                ->shouldReceive('user')->andReturn($socialiteUser)->getMock()
+        );
+    }
+
+    public function test_okta_routes_404_when_unconfigured(): void
+    {
+        config(['services.okta.client_id' => null]);
+
+        $this->get('/auth/okta/redirect')->assertNotFound();
+        $this->get('/auth/okta/callback')->assertNotFound();
+    }
+
+    public function test_redirect_sends_user_to_okta(): void
+    {
+        $response = $this->get('/auth/okta/redirect');
+
+        $response->assertRedirect();
+        $this->assertStringStartsWith(
+            'https://example.okta.com/oauth2/v1/authorize',
+            $response->headers->get('Location'),
+        );
+    }
+
+    public function test_callback_logs_in_existing_user_by_okta_sub(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['okta_sub' => 'okta-sub-1'])->save();
+
+        $this->fakeOktaUser('okta-sub-1', 'different-email@amazee.io');
+
+        $this->get('/auth/okta/callback')->assertRedirect('/admin');
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_callback_links_existing_user_by_email_and_nulls_password(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'Staff@amazee.io',
+            'password' => Hash::make('secret-password'),
+        ]);
+
+        $this->fakeOktaUser('okta-sub-2', 'staff@amazee.io');
+
+        $this->get('/auth/okta/callback')->assertRedirect('/admin');
+
+        $user->refresh();
+        $this->assertSame('okta-sub-2', $user->okta_sub);
+        $this->assertNull($user->password);
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_callback_jit_creates_user_with_no_roles(): void
+    {
+        $this->fakeOktaUser('okta-sub-3', 'newstaff@amazee.io', [
+            'given_name' => 'New',
+            'family_name' => 'Staff',
+        ]);
+
+        $this->get('/auth/okta/callback')->assertRedirect('/admin');
+
+        $user = User::where('email', 'newstaff@amazee.io')->firstOrFail();
+        $this->assertSame('okta-sub-3', $user->okta_sub);
+        $this->assertSame('New', $user->first_name);
+        $this->assertSame('Staff', $user->last_name);
+        $this->assertNull($user->password);
+        $this->assertCount(0, $user->roles);
+        $this->assertAuthenticatedAs($user);
+
+        $this->assertTrue(
+            Activity::where('description', 'User JIT-created from Okta login')->exists(),
+        );
+    }
+
+    public function test_okta_login_is_audited_with_provider(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['okta_sub' => 'okta-sub-4'])->save();
+
+        $this->fakeOktaUser('okta-sub-4', $user->email);
+
+        $this->get('/auth/okta/callback');
+
+        $login = Activity::where('description', 'login')->latest('id')->firstOrFail();
+        $this->assertSame('okta', $login->properties['provider']);
+    }
+
+    public function test_login_page_redirects_okta_domain_to_okta(): void
+    {
+        Livewire::test(Login::class)
+            ->fillForm(['email' => 'staff@amazee.io'])
+            ->call('authenticate')
+            ->assertRedirect(route('okta.redirect'));
+    }
+
+    public function test_login_page_shows_password_step_for_other_domains(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'external@example.com',
+            'password' => Hash::make('secret-password'),
+        ]);
+        Role::findOrCreate('super_admin', 'web');
+        $user->assignRole('super_admin');
+
+        Livewire::test(Login::class)
+            ->fillForm(['email' => 'external@example.com'])
+            ->call('authenticate')
+            ->assertSet('emailChecked', true)
+            ->assertNoRedirect()
+            ->fillForm(['password' => 'secret-password'])
+            ->call('authenticate');
+
+        $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_login_page_never_accepts_password_for_okta_domain(): void
+    {
+        User::factory()->create([
+            'email' => 'sneaky@amazee.io',
+            'password' => Hash::make('secret-password'),
+        ]);
+
+        // Even if the password step is somehow reached, an Okta-forced email
+        // is redirected to Okta instead of being password-authenticated.
+        Livewire::test(Login::class)
+            ->set('emailChecked', true)
+            ->fillForm(['email' => 'sneaky@amazee.io', 'password' => 'secret-password'])
+            ->call('authenticate')
+            ->assertRedirect(route('okta.redirect'));
+
+        $this->assertGuest();
+    }
+}

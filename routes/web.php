@@ -1,8 +1,12 @@
 <?php
 
+use App\Http\Controllers\Auth\OktaController;
 use App\Http\Controllers\FormController;
 use App\Models\PolydockAppInstance;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/auth/okta/redirect', [OktaController::class, 'redirect'])->name('okta.redirect');
+Route::get('/auth/okta/callback', [OktaController::class, 'callback'])->name('okta.callback');
 
 Route::get('/', function () {
     if (! config('polydock.redirect_landing_page_to')) {

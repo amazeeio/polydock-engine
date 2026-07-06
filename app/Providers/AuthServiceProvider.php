@@ -15,8 +15,12 @@ use App\Policies\PolydockStorePolicy;
 use App\Policies\RolePolicy;
 use App\Policies\UserGroupPolicy;
 use App\Policies\UserPolicy;
+use Illuminate\Auth\Events\Login;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use SocialiteProviders\Manager\SocialiteWasCalled;
+use SocialiteProviders\Okta\Provider as OktaProvider;
 use Spatie\Activitylog\Models\Activity;
 
 class AuthServiceProvider extends ServiceProvider
@@ -42,6 +46,22 @@ class AuthServiceProvider extends ServiceProvider
             }
 
             return null;
+        });
+
+        Event::listen(function (SocialiteWasCalled $event): void {
+            $event->extendSocialite('okta', OktaProvider::class);
+        });
+
+        // Audit every interactive login with its provider (password or okta).
+        Event::listen(function (Login $event): void {
+            $provider = app()->bound('session') && session()->isStarted()
+                ? session()->pull('auth_provider', 'password')
+                : 'password';
+
+            activity()
+                ->causedBy($event->user)
+                ->withProperties(['provider' => $provider, 'guard' => $event->guard])
+                ->log('login');
         });
     }
 }
