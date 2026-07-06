@@ -6,22 +6,19 @@ use App\Enums\UserGroupRoleEnum;
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements FilamentUser, HasTenants
+class User extends Authenticatable implements FilamentUser
 {
     use HasApiTokens;
 
@@ -173,31 +170,11 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     }
 
     /**
-     * Get all tenants the user can access
-     */
-    public function getTenants(Panel $panel): Collection
-    {
-        return $this->groups;
-    }
-
-    /**
-     * Check if the user can access the tenant
-     */
-    public function canAccessTenant(Model $tenant): bool
-    {
-        return $this->groups()->whereKey($tenant)->exists();
-    }
-
-    /**
      * Check if the user can access the panel
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        if ($panel->getId() === 'admin') {
-            return $this->hasRole('super_admin') || $this->can('access_admin_panel');
-        }
-
-        return true;
+        return $this->hasRole('super_admin') || $this->can('access_admin_panel');
     }
 
     /**
