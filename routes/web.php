@@ -10,7 +10,7 @@ Route::get('/auth/okta/callback', [OktaController::class, 'callback'])->name('ok
 
 // Dev-only fake Okta IdP form (see App\Auth\FakeOktaProvider).
 Route::get('/fake-okta/authorize', function () {
-    abort_unless(config('okta.fake') && ! app()->isProduction(), 404);
+    abort_unless(config('okta.fake') && app()->environment('local', 'testing'), 404);
 
     return view('auth.fake-okta', ['state' => (string) request()->query('state')]);
 })->name('fake-okta.form');

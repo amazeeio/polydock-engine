@@ -34,6 +34,7 @@ class FakeOktaProvider extends OktaProvider
         return $this->mapUserToObject([
             'sub' => (string) ($this->request->query('sub') ?: 'fake-okta|'.$email),
             'email' => $email,
+            'email_verified' => true,
             'given_name' => (string) $this->request->query('given_name'),
             'family_name' => (string) $this->request->query('family_name'),
             'name' => trim($this->request->query('given_name').' '.$this->request->query('family_name')),

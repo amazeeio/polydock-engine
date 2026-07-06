@@ -37,7 +37,12 @@ class OktaController extends Controller
         $user = User::where('okta_sub', $sub)->first()
             ?? $this->linkOrCreate($sub, $email, $oktaUser);
 
-        $this->syncMappedRoles($user, (array) ($oktaUser->getRaw()['groups'] ?? []));
+        // A missing groups claim (e.g. not yet configured in Okta) must not
+        // revoke roles; only sync when the claim is present, even if empty.
+        $raw = (array) $oktaUser->getRaw();
+        if (array_key_exists('groups', $raw)) {
+            $this->syncMappedRoles($user, (array) $raw['groups']);
+        }
 
         session(['auth_provider' => 'okta']);
         Auth::login($user);
@@ -48,6 +53,15 @@ class OktaController extends Controller
 
     private function linkOrCreate(string $sub, string $email, AbstractUser $oktaUser): User
     {
+        // Linking or creating an account by email requires Okta to vouch for
+        // the address, or a hijacked/mistyped Okta email could bind to (and
+        // take over) someone else's local account.
+        abort_unless(
+            ($oktaUser->getRaw()['email_verified'] ?? false) === true,
+            403,
+            'Okta email is not verified.',
+        );
+
         $user = User::whereRaw('LOWER(email) = ?', [$email])->first();
 
         if ($user) {

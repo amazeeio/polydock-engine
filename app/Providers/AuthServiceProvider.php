@@ -51,7 +51,9 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Event::listen(function (SocialiteWasCalled $event): void {
-            $useFake = config('okta.fake') && ! $this->app->isProduction();
+            // local/testing only: shared non-prod deployments (Lagoon dev)
+            // must never accept the fake IdP, which grants roles from input.
+            $useFake = config('okta.fake') && $this->app->environment('local', 'testing');
 
             $event->extendSocialite('okta', $useFake ? FakeOktaProvider::class : OktaProvider::class);
         });

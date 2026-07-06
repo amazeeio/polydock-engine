@@ -35,7 +35,7 @@ class OktaLoginTest extends TestCase
     private function fakeOktaUser(string $sub, string $email, array $raw = []): void
     {
         $socialiteUser = (new SocialiteUser)
-            ->setRaw(array_merge(['sub' => $sub, 'email' => $email], $raw))
+            ->setRaw(array_merge(['sub' => $sub, 'email' => $email, 'email_verified' => true], $raw))
             ->map([
                 'id' => $sub,
                 'email' => $email,
@@ -156,6 +156,38 @@ class OktaLoginTest extends TestCase
             ->call('authenticate');
 
         $this->assertAuthenticatedAs($user);
+    }
+
+    public function test_callback_refuses_to_link_or_create_when_email_unverified(): void
+    {
+        $existing = User::factory()->create([
+            'email' => 'victim@amazee.io',
+            'password' => Hash::make('secret-password'),
+        ]);
+
+        $this->fakeOktaUser('okta-sub-evil', 'victim@amazee.io', ['email_verified' => false]);
+
+        $this->get('/auth/okta/callback')->assertForbidden();
+
+        $existing->refresh();
+        $this->assertNull($existing->okta_sub);
+        $this->assertNotNull($existing->password);
+        $this->assertGuest();
+    }
+
+    public function test_group_sync_is_skipped_when_groups_claim_is_missing(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['okta_sub' => 'okta-sub-8'])->save();
+        Role::findOrCreate('support', 'web');
+        $user->assignRole('support');
+
+        // No 'groups' key in the raw payload at all (claim not configured).
+        $this->fakeOktaUser('okta-sub-8', $user->email);
+
+        $this->get('/auth/okta/callback');
+
+        $this->assertTrue($user->fresh()->hasRole('support'));
     }
 
     public function test_group_sync_grants_mapped_role(): void
