@@ -12,7 +12,6 @@ class EditPolydockStoreWebhook extends EditRecord
 {
     protected static string $resource = PolydockStoreWebhookResource::class;
 
-    #[Override]
     protected function getHeaderActions(): array
     {
         return [

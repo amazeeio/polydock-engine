@@ -12,7 +12,6 @@ class ListPolydockStores extends ListRecords
 {
     protected static string $resource = PolydockStoreResource::class;
 
-    #[Override]
     protected function getHeaderActions(): array
     {
         return [

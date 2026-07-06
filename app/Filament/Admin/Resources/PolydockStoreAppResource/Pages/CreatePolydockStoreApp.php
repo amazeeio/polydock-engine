@@ -11,7 +11,6 @@ class CreatePolydockStoreApp extends CreateRecord
 {
     protected static string $resource = PolydockStoreAppResource::class;
 
-    #[Override]
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $discovery = app(PolydockAppClassDiscovery::class);

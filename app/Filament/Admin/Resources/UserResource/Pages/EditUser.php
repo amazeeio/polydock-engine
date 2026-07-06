@@ -11,7 +11,6 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
-    #[Override]
     protected function getHeaderActions(): array
     {
         return [

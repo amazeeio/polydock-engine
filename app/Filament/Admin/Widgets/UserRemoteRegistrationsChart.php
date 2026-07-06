@@ -16,7 +16,6 @@ class UserRemoteRegistrationsChart extends ChartWidget
 
     protected static ?int $sort = 200;
 
-    #[Override]
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
@@ -82,7 +81,6 @@ class UserRemoteRegistrationsChart extends ChartWidget
         return 'bar';
     }
 
-    #[Override]
     protected function getOptions(): array
     {
         return [

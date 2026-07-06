@@ -16,7 +16,6 @@ class ListPolydockAppInstances extends ListRecords
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
-    #[Override]
     protected function getHeaderActions(): array
     {
         return [

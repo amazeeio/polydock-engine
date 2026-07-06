@@ -44,7 +44,6 @@ class CreatePolydockAppInstance extends Page
         ]);
     }
 
-    #[Override]
     public function form(Schema $schema): Schema
     {
         return $schema

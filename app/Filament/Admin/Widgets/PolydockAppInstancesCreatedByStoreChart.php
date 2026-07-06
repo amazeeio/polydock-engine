@@ -15,7 +15,6 @@ class PolydockAppInstancesCreatedByStoreChart extends ChartWidget
 
     protected static ?int $sort = 300;
 
-    #[Override]
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
@@ -85,7 +84,6 @@ class PolydockAppInstancesCreatedByStoreChart extends ChartWidget
         return 'bar';
     }
 
-    #[Override]
     protected function getOptions(): array
     {
         return [

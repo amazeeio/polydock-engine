@@ -55,7 +55,6 @@ class PolydockStoreAppResource extends Resource
 
     protected static ?int $navigationSort = 5100;
 
-    #[Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -409,7 +408,6 @@ class PolydockStoreAppResource extends Resource
             ]);
     }
 
-    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -512,7 +510,6 @@ class PolydockStoreAppResource extends Resource
             ]);
     }
 
-    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -520,7 +517,6 @@ class PolydockStoreAppResource extends Resource
         ];
     }
 
-    #[Override]
     public static function getPages(): array
     {
         return [
@@ -531,7 +527,6 @@ class PolydockStoreAppResource extends Resource
         ];
     }
 
-    #[Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema
@@ -782,7 +777,6 @@ class PolydockStoreAppResource extends Resource
             ->columns(3);
     }
 
-    #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

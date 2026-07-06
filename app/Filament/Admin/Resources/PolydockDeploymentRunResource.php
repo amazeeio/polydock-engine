@@ -30,37 +30,31 @@ class PolydockDeploymentRunResource extends Resource
 
     protected static ?int $navigationSort = 150;
 
-    #[Override]
     public static function canViewAny(): bool
     {
         return PolydockDeploymentRun::currentUserCanManage();
     }
 
-    #[Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
-    #[Override]
     public static function canEdit($record): bool
     {
         return false;
     }
 
-    #[Override]
     public static function canDelete($record): bool
     {
         return false;
     }
 
-    #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with('storeApp');
     }
 
-    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -116,7 +110,6 @@ class PolydockDeploymentRunResource extends Resource
             ->toolbarActions([]);
     }
 
-    #[Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
@@ -150,7 +143,6 @@ class PolydockDeploymentRunResource extends Resource
         ]);
     }
 
-    #[Override]
     public static function getPages(): array
     {
         return [

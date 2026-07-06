@@ -8,7 +8,6 @@ use App\Filament\Admin\Resources\RoleResource\Pages\ListRoles;
 use App\Filament\Admin\Resources\RoleResource\Pages\ViewRole;
 use App\Models\Role;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use BezhanSalleh\FilamentShield\Forms\ShieldSelectAllToggle;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use BezhanSalleh\FilamentShield\Traits\HasShieldFormComponents;
 use Filament\Actions\DeleteAction;
@@ -21,7 +20,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class RoleResource extends Resource implements HasShieldPermissions
 {
@@ -51,7 +49,6 @@ class RoleResource extends Resource implements HasShieldPermissions
         ];
     }
 
-    #[Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -87,12 +84,7 @@ class RoleResource extends Resource implements HasShieldPermissions
                                     ->disabled(fn (string $operation): bool => $operation === 'edit')
                                     ->dehydrated(fn (string $operation): bool => $operation === 'create'),
 
-                                ShieldSelectAllToggle::make('select_all')
-                                    ->onIcon('heroicon-s-shield-check')
-                                    ->offIcon('heroicon-s-shield-exclamation')
-                                    ->label(__('filament-shield::filament-shield.field.select_all.name'))
-                                    ->helperText(fn (): HtmlString => new HtmlString(__('filament-shield::filament-shield.field.select_all.message')))
-                                    ->dehydrated(fn (bool $state): bool => $state),
+                                static::getSelectAllFormComponent(),
                             ])
                             ->columns([
                                 'sm' => 2,
@@ -103,7 +95,6 @@ class RoleResource extends Resource implements HasShieldPermissions
             ]);
     }
 
-    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -148,13 +139,11 @@ class RoleResource extends Resource implements HasShieldPermissions
             ]);
     }
 
-    #[Override]
     public static function getRelations(): array
     {
         return [];
     }
 
-    #[Override]
     public static function getPages(): array
     {
         return [

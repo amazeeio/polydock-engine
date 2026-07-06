@@ -15,7 +15,6 @@ class UserCreatedChart extends ChartWidget
 
     protected ?string $maxHeight = '300px';
 
-    #[Override]
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
@@ -68,7 +67,6 @@ class UserCreatedChart extends ChartWidget
         return 'bar';
     }
 
-    #[Override]
     protected function getOptions(): array
     {
         return [

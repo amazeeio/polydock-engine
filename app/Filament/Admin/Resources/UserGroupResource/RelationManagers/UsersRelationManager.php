@@ -33,7 +33,6 @@ class UsersRelationManager extends RelationManager
 
     protected static ?string $inverseRelationship = 'groups';
 
-    #[Override]
     public function form(Schema $schema): Schema
     {
         return $schema

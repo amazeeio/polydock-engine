@@ -53,7 +53,6 @@ class PolydockAppInstanceResource extends Resource
 
     protected static ?int $navigationSort = 100;
 
-    #[Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -66,7 +65,6 @@ class PolydockAppInstanceResource extends Resource
             ]);
     }
 
-    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -302,7 +300,6 @@ class PolydockAppInstanceResource extends Resource
             ]);
     }
 
-    #[Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema
@@ -505,7 +502,6 @@ class PolydockAppInstanceResource extends Resource
         return $renderedArray;
     }
 
-    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -514,7 +510,6 @@ class PolydockAppInstanceResource extends Resource
         ];
     }
 
-    #[Override]
     public static function canCreate(): bool
     {
         /** @var User|null $user */
@@ -523,7 +518,6 @@ class PolydockAppInstanceResource extends Resource
         return $user?->can('create', PolydockAppInstance::class) ?? false;
     }
 
-    #[Override]
     public static function getPages(): array
     {
         return [
@@ -534,7 +528,6 @@ class PolydockAppInstanceResource extends Resource
         ];
     }
 
-    #[Override]
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery()

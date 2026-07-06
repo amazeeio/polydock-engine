@@ -12,7 +12,6 @@ class ListUserGroups extends ListRecords
 {
     protected static string $resource = UserGroupResource::class;
 
-    #[Override]
     protected function getHeaderActions(): array
     {
         return [

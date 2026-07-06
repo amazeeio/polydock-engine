@@ -12,7 +12,6 @@ class ViewPolydockStore extends ViewRecord
 {
     protected static string $resource = PolydockStoreResource::class;
 
-    #[Override]
     protected function getHeaderActions(): array
     {
         return [

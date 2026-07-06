@@ -11,7 +11,6 @@ class EditPolydockStore extends EditRecord
 {
     protected static string $resource = PolydockStoreResource::class;
 
-    #[Override]
     protected function getHeaderActions(): array
     {
         return [

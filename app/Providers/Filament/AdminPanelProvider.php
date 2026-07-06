@@ -8,7 +8,9 @@ use App\Filament\Admin\Widgets\PolydockAppInstancesCreatedByTypeChart;
 use App\Filament\Admin\Widgets\StatsOverview;
 use App\Filament\Admin\Widgets\UserCreatedChart;
 use App\Filament\Admin\Widgets\UserRemoteRegistrationsChart;
+use App\Http\Middleware\EnsureMultiFactorAuthenticationIsEnabledForPasswordUsers;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use Filament\Auth\MultiFactor\App\AppAuthentication;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -35,6 +37,12 @@ class AdminPanelProvider extends PanelProvider
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
             ->login(Login::class)
+            ->multiFactorAuthentication([
+                AppAuthentication::make()->recoverable(),
+            ], isRequired: true)
+            // TOTP is enforced for password users only; Okta users authenticate
+            // (and MFA) upstream at Okta and have no password.
+            ->multiFactorAuthenticationRequiredMiddlewareName(EnsureMultiFactorAuthenticationIsEnabledForPasswordUsers::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
