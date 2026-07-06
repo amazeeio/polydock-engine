@@ -17,6 +17,7 @@ use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\PolydockAppClassDiscovery;
 use App\Services\PolydockDeploymentService;
+use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -42,14 +43,15 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class PolydockStoreAppResource extends Resource
 {
     protected static ?string $model = PolydockStoreApp::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Apps';
+    protected static string|UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'Apps';
 

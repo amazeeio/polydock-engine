@@ -9,6 +9,7 @@ use App\Filament\Admin\Resources\PolydockStoreWebhookResource\Pages\EditPolydock
 use App\Filament\Admin\Resources\PolydockStoreWebhookResource\Pages\ListPolydockStoreWebhooks;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreWebhook;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -20,14 +21,15 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class PolydockStoreWebhookResource extends Resource
 {
     protected static ?string $model = PolydockStoreWebhook::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bell';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-bell';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Apps';
+    protected static string|UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'Webhooks';
 

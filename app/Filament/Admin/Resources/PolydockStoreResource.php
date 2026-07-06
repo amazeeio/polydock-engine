@@ -10,6 +10,7 @@ use App\Filament\Admin\Resources\PolydockStoreResource\Pages\ViewPolydockStore;
 use App\Models\PolydockStore;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
+use BackedEnum;
 use Closure;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -30,14 +31,15 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class PolydockStoreResource extends Resource
 {
     protected static ?string $model = PolydockStore::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Apps';
+    protected static string|UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'Stores';
 

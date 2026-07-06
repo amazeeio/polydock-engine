@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages\ViewUserRe
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
+use BackedEnum;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -14,14 +15,15 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
+use UnitEnum;
 
 class UserRemoteRegistrationResource extends Resource
 {
     protected static ?string $model = UserRemoteRegistration::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-plus';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-plus';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Users';
+    protected static string|UnitEnum|null $navigationGroup = 'Users';
 
     protected static ?string $navigationLabel = 'Remote Registrations';
 

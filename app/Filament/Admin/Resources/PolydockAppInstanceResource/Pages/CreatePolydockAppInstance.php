@@ -8,6 +8,7 @@ use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
 use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use App\Services\PolydockAppClassDiscovery;
+use BackedEnum;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Forms\Components\KeyValue;
@@ -30,7 +31,7 @@ class CreatePolydockAppInstance extends Page
 
     protected static ?string $title = 'Create App Instance';
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-plus-circle';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-plus-circle';
 
     public ?array $data = [];
 

@@ -7,6 +7,7 @@ use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
 use App\Filament\Admin\Resources\PolydockDeploymentRunResource\Pages\ListPolydockDeploymentRuns;
 use App\Filament\Admin\Resources\PolydockDeploymentRunResource\Pages\ViewPolydockDeploymentRun;
 use App\Models\PolydockDeploymentRun;
+use BackedEnum;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
@@ -17,14 +18,15 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class PolydockDeploymentRunResource extends Resource
 {
     protected static ?string $model = PolydockDeploymentRun::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rocket-launch';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rocket-launch';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Apps';
+    protected static string|UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'Deployments';
 

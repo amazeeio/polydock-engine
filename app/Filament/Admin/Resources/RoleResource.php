@@ -7,6 +7,7 @@ use App\Filament\Admin\Resources\RoleResource\Pages\EditRole;
 use App\Filament\Admin\Resources\RoleResource\Pages\ListRoles;
 use App\Filament\Admin\Resources\RoleResource\Pages\ViewRole;
 use App\Models\Role;
+use BackedEnum;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use BezhanSalleh\FilamentShield\Traits\HasShieldFormComponents;
@@ -20,6 +21,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class RoleResource extends Resource implements HasShieldPermissions
 {
@@ -27,9 +29,9 @@ class RoleResource extends Resource implements HasShieldPermissions
 
     protected static ?string $model = Role::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'System';
+    protected static string|UnitEnum|null $navigationGroup = 'System';
 
     protected static ?int $navigationSort = 1;
 

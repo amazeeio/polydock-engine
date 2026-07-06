@@ -6,20 +6,22 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\ApiTokenResource\Pages\ListApiTokens;
 use App\Models\User;
+use BackedEnum;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Sanctum\PersonalAccessToken;
+use UnitEnum;
 
 class ApiTokenResource extends Resource
 {
     protected static ?string $model = PersonalAccessToken::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-key';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-key';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Users';
+    protected static string|UnitEnum|null $navigationGroup = 'Users';
 
     protected static ?string $navigationLabel = 'API Tokens';
 

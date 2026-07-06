@@ -11,6 +11,7 @@ use App\Filament\Admin\Resources\UserGroupResource\RelationManagers\AppInstances
 use App\Filament\Admin\Resources\UserGroupResource\RelationManagers\UsersRelationManager;
 use App\Models\User;
 use App\Models\UserGroup;
+use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -26,14 +27,15 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class UserGroupResource extends Resource
 {
     protected static ?string $model = UserGroup::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Users';
+    protected static string|UnitEnum|null $navigationGroup = 'Users';
 
     protected static ?string $navigationLabel = 'Groups';
 

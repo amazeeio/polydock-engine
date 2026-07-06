@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\PolydockStoreWebhookCallResource\Pages\ListPolydockStoreWebhookCalls;
 use App\Filament\Admin\Resources\PolydockStoreWebhookCallResource\Pages\ViewPolydockStoreWebhookCall;
 use App\Models\PolydockStoreWebhookCall;
+use BackedEnum;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
@@ -13,14 +14,15 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class PolydockStoreWebhookCallResource extends Resource
 {
     protected static ?string $model = PolydockStoreWebhookCall::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bell-alert';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-bell-alert';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Apps';
+    protected static string|UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'Webhook Calls';
 

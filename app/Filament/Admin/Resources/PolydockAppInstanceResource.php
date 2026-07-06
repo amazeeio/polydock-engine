@@ -21,6 +21,7 @@ use App\PolydockEngine\Helpers\LagoonHelper;
 use App\Services\PolydockAppClassDiscovery;
 use App\Services\PolydockDeploymentService;
 use App\Support\SensitiveDataRedactor;
+use BackedEnum;
 use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
@@ -40,14 +41,15 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
+use UnitEnum;
 
 class PolydockAppInstanceResource extends Resource
 {
     protected static ?string $model = PolydockAppInstance::class;
 
-    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Apps';
+    protected static string|UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'App Instances';
 
