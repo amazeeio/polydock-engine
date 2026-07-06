@@ -2,18 +2,17 @@
 
 namespace App\PolydockEngine;
 
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Exceptions\PolydockEngineProcessPolydockAppInstanceStatusException;
+use App\Polydock\Core\PolydockAppInstanceInterface;
+use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use App\Polydock\Core\PolydockAppInterface;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockEngineBase;
+use App\Polydock\Core\PolydockEngineInterface;
+use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockEngine\Traits\PolydockEngineFunctionCallerTrait;
 use App\Services\LagoonClientService;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineProcessPolydockAppInstanceStatusException;
-use FreedomtechHosting\PolydockApp\Exceptions\PolydockEngineValidationException;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceStatusFlowException;
-use FreedomtechHosting\PolydockApp\PolydockAppInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockEngineBase;
-use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
-use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
 use Illuminate\Database\Eloquent\Model;
 
 class Engine extends PolydockEngineBase implements PolydockEngineInterface
@@ -40,7 +39,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         protected PolydockAppLoggerInterface $logger,
         $serviceProviderSingletonConfig = [],
     ) {
-        if (count($serviceProviderSingletonConfig) > 0) {
+        if (\count($serviceProviderSingletonConfig) > 0) {
             $this->polydockServiceProviderSingletonConfig = $serviceProviderSingletonConfig;
         } else {
             $this->polydockServiceProviderSingletonConfig = config('polydock.service_providers_singletons');
@@ -72,32 +71,6 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
     public function getLogger(): PolydockAppLoggerInterface
     {
         return $this->logger;
-    }
-
-    /**
-     * Validate that an app instance has all required variables.
-     *
-     * The upstream base implementation uses a truthy check, which treats "0"
-     * as missing. We only treat truly missing values (empty string) as missing.
-     *
-     * @throws PolydockEngineValidationException
-     */
-    #[\Override]
-    public function validateAppInstanceHasAllRequiredVariables(PolydockAppInstanceInterface $appInstance): bool
-    {
-        foreach ($appInstance->getApp()->getVariableDefinitions() as $variableDefinition) {
-            if ($appInstance->getKeyValue($variableDefinition->getName()) === '') {
-                throw new PolydockEngineValidationException(
-                    sprintf(
-                        'App instance %s is missing required variable %s',
-                        $appInstance->getAppType(),
-                        $variableDefinition->getName()
-                    )
-                );
-            }
-        }
-
-        return true;
     }
 
     /**
@@ -134,7 +107,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                 'polydockServiceProviderClass' => $polydockServiceProviderClass,
             ]);
 
-            if (! class_exists($polydockServiceProviderClass)) {
+            if (! \class_exists($polydockServiceProviderClass)) {
                 throw new PolydockEngineServiceProviderNotFoundException($polydockServiceProviderClass);
             }
 
@@ -177,13 +150,13 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $appInstance->setEngine($this);
 
         $polydockAppClass = $appInstance->storeApp->polydock_app_class;
-        if (! class_exists($polydockAppClass)) {
-            throw new PolydockEngineAppNotFoundException('Class '.$polydockAppClass.' not found');
+        if (! \class_exists($polydockAppClass)) {
+            throw new PolydockEngineAppNotFoundException("Class {$polydockAppClass} not found");
         }
 
-        if (! is_subclass_of($polydockAppClass, PolydockAppInterface::class)) {
+        if (! \is_subclass_of($polydockAppClass, PolydockAppInterface::class)) {
             throw new PolydockEngineAppNotFoundException(
-                'Class '.$polydockAppClass.' does not implement PolydockAppInterface'
+                "Class {$polydockAppClass} does not implement PolydockAppInterface"
             );
         }
 
@@ -311,7 +284,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     $appInstance,
                     'upgradeAppInstance',
                     PolydockAppInstanceStatus::PENDING_UPGRADE,
-                    PolydockAppInstanceStatus::UPGRADE_RUNNING, // Note: This is not a completed status
+                    PolydockAppInstanceStatus::UPGRADE_COMPLETED,
                     PolydockAppInstanceStatus::UPGRADE_FAILED,
                 );
                 break;
@@ -430,10 +403,10 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         array $statuses,
         PolydockAppInstanceInterface $appInstance,
     ): void {
-        if (! in_array($appInstance->getStatus(), $statuses)) {
+        if (! \in_array($appInstance->getStatus(), $statuses)) {
             throw new PolydockAppInstanceStatusFlowException(
                 'PolydockAppInstance status expected to be one of '
-                .implode(', ', array_map(fn ($status) => $status->value, $statuses))
+                .\implode(', ', \array_map(fn ($status) => $status->value, $statuses))
                 .' but is '
                 .$appInstance->getStatus()->value,
             );
@@ -512,7 +485,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
             return;
         }
 
-        $this->info(sprintf('Pushing Lagoon project metadata for project: %s', $projectName));
+        $this->info(\sprintf('Pushing Lagoon project metadata for project: %s', $projectName));
 
         try {
             $client = app(LagoonClientService::class)->getAuthenticatedClient([
@@ -530,7 +503,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $lastName = $appInstance->getKeyValue('user-last-name');
 
         $productType = $appInstance->getKeyValue('product-type') ?: 'generic';
-        if ($productType === 'generic' && $appInstance instanceof Model && method_exists($appInstance, 'storeApp')) {
+        if ($productType === 'generic' && $appInstance instanceof Model && \method_exists($appInstance, 'storeApp')) {
             $appInstance->loadMissing('storeApp.productType');
             if ($appInstance->storeApp && $appInstance->storeApp->productType) {
                 $productType = $appInstance->storeApp->productType->slug;
@@ -540,7 +513,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $lagoonEnv = config('polydock.lagoon_environment_type', 'development');
         $polydockEnv = ($lagoonEnv === 'production' || config('app.env') === 'production') ? 'prod' : 'dev';
 
-        $metadataPayload = array_filter([
+        $metadataPayload = \array_filter([
             'email' => $email,
             'product-type' => $productType,
             'firstname' => $firstName,
@@ -558,14 +531,14 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                 return;
             }
             if (! empty($projectData['metadata'])) {
-                if (is_array($projectData['metadata'])) {
+                if (\is_array($projectData['metadata'])) {
                     $existingMetadata = $projectData['metadata'];
-                } elseif (is_string($projectData['metadata'])) {
-                    $existingMetadata = json_decode($projectData['metadata'], true) ?: [];
+                } elseif (\is_string($projectData['metadata'])) {
+                    $existingMetadata = \json_decode($projectData['metadata'], true) ?: [];
                 }
             }
         } catch (\Exception $e) {
-            $this->warning(sprintf('Failed to fetch existing project metadata from Lagoon: %s. Proceeding with safety writes.', $e->getMessage()));
+            $this->warning(\sprintf('Failed to fetch existing project metadata from Lagoon: %s. Proceeding with safety writes.', $e->getMessage()));
         }
 
         foreach ($metadataPayload as $key => $value) {
@@ -578,13 +551,13 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                 $result = $client->updateProjectMetadata($projectName, $key, (string) $value);
 
                 if (isset($result['error'])) {
-                    $errorMsg = is_array($result['error']) ? json_encode($result['error']) : $result['error'];
-                    $this->warning(sprintf('Failed to write metadata "%s": %s', $key, $errorMsg));
+                    $errorMsg = \is_array($result['error']) ? \json_encode($result['error']) : $result['error'];
+                    $this->warning(\sprintf('Failed to write metadata "%s": %s', $key, $errorMsg));
                 } else {
-                    $this->info(sprintf('Set metadata: %s => %s', $key, $value));
+                    $this->info(\sprintf('Set metadata: %s => %s', $key, $value));
                 }
             } catch (\Exception $e) {
-                $this->warning(sprintf('Exception writing metadata "%s": %s', $key, $e->getMessage()));
+                $this->warning(\sprintf('Exception writing metadata "%s": %s', $key, $e->getMessage()));
             }
         }
     }

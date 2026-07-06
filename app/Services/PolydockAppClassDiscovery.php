@@ -2,31 +2,31 @@
 
 namespace App\Services;
 
-use Composer\Autoload\ClassLoader;
+use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
+use App\Polydock\Core\Attributes\PolydockAppStoreFields;
+use App\Polydock\Core\Attributes\PolydockAppTitle;
+use App\Polydock\Core\PolydockAppInterface;
 use Filament\Forms\Components\Component;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppStoreFields;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppTitle;
-use FreedomtechHosting\PolydockApp\PolydockAppInterface;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use ReflectionClass;
 
 /**
  * Discovers concrete classes that implement PolydockAppInterface.
  *
- * Uses Composer's optimized classmap to find candidates, then filters to
- * concrete (non-abstract, non-interface) implementations.
+ * Scans the app/Polydock/Apps directory for PHP files (see getClassMap()),
+ * maps each to its App\Polydock\Apps\... FQCN, then filters to concrete
+ * (non-abstract, non-interface) implementations of PolydockAppInterface.
  *
  * Register as a singleton in AppServiceProvider to ensure discovery
  * runs at most once per request.
  *
- * NOTE: The classmap pre-filter scans for classes whose FQCN contains
- * "Polydock". This is a convention-based assumption to avoid triggering
- * autoloading of unrelated vendor classes (which can cause fatal errors
- * when their dependencies are missing, e.g. dev-only test runner traits).
- * If a PolydockAppInterface implementation is published under a namespace
- * that does not contain "Polydock", it will need to be added to the
- * NAMESPACE_FILTERS constant.
+ * NOTE: A namespace pre-filter (NAMESPACE_FILTERS) keeps only candidates
+ * whose FQCN contains "Polydock". Because the scan is already rooted at
+ * app/Polydock/Apps, every candidate matches today, so this is a defensive
+ * no-op; it remains as a guard in case the scan root is ever widened. If a
+ * PolydockAppInterface implementation ever lives under a namespace that does
+ * not contain "Polydock", add it to NAMESPACE_FILTERS.
  */
 class PolydockAppClassDiscovery
 {
@@ -145,13 +145,13 @@ class PolydockAppClassDiscovery
     public function getStoreAppFormSchema(string $className): array
     {
         if (empty($className)) {
-            \Log::debug('getStoreAppFormSchema: Empty class name provided');
+            Log::debug('getStoreAppFormSchema: Empty class name provided');
 
             return [];
         }
 
         if (! $this->isValidAppClass($className)) {
-            \Log::debug('getStoreAppFormSchema: Invalid app class', ['className' => $className]);
+            Log::debug('getStoreAppFormSchema: Invalid app class', ['className' => $className]);
 
             return [];
         }
@@ -161,7 +161,7 @@ class PolydockAppClassDiscovery
             $attributes = $reflection->getAttributes(PolydockAppStoreFields::class);
 
             if (empty($attributes)) {
-                \Log::debug('getStoreAppFormSchema: No PolydockAppStoreFields attribute found', ['className' => $className]);
+                Log::debug('getStoreAppFormSchema: No PolydockAppStoreFields attribute found', ['className' => $className]);
 
                 return [];
             }
@@ -171,7 +171,7 @@ class PolydockAppClassDiscovery
             $methodName = $attr->formMethod;
 
             if (! method_exists($className, $methodName)) {
-                \Log::debug('getStoreAppFormSchema: Method does not exist', [
+                Log::debug('getStoreAppFormSchema: Method does not exist', [
                     'className' => $className,
                     'methodName' => $methodName,
                 ]);
@@ -179,14 +179,14 @@ class PolydockAppClassDiscovery
                 return [];
             }
 
-            \Log::debug('getStoreAppFormSchema: Calling schema method', [
+            Log::debug('getStoreAppFormSchema: Calling schema method', [
                 'className' => $className,
                 'methodName' => $methodName,
             ]);
 
             $schema = $className::$methodName();
 
-            \Log::debug('getStoreAppFormSchema: Schema retrieved', [
+            Log::debug('getStoreAppFormSchema: Schema retrieved', [
                 'className' => $className,
                 'schemaCount' => count($schema),
             ]);
@@ -194,7 +194,7 @@ class PolydockAppClassDiscovery
             // Prefix all field names with 'app_config_'
             return $this->prefixSchemaFieldNames($schema);
         } catch (\Throwable $e) {
-            \Log::error('getStoreAppFormSchema: Exception thrown', [
+            Log::error('getStoreAppFormSchema: Exception thrown', [
                 'className' => $className,
                 'error' => $e->getMessage(),
                 'file' => $e->getFile(),
@@ -594,18 +594,32 @@ class PolydockAppClassDiscovery
     }
 
     /**
-     * Get Composer's merged class map from all registered loaders.
+     * Get class map by scanning the app/Polydock/Apps directory.
      *
      * @return array<string, string> className => filePath
      */
     protected function getClassMap(): array
     {
-        /** @var ClassLoader[] $loaders */
-        $loaders = ClassLoader::getRegisteredLoaders();
-
         $classMap = [];
-        foreach ($loaders as $loader) {
-            $classMap = array_merge($classMap, $loader->getClassMap());
+        $appsPath = app_path('Polydock/Apps');
+
+        if (! File::isDirectory($appsPath)) {
+            return $classMap;
+        }
+
+        $files = File::allFiles($appsPath);
+
+        foreach ($files as $file) {
+            if ($file->getExtension() !== 'php') {
+                continue;
+            }
+
+            $relativePathname = $file->getRelativePathname();
+            $classNameWithoutExtension = substr($relativePathname, 0, -4);
+            $normalizedPath = str_replace(['/', '\\'], '\\', $classNameWithoutExtension);
+            $className = 'App\\Polydock\\Apps\\'.$normalizedPath;
+
+            $classMap[$className] = $file->getRealPath();
         }
 
         return $classMap;

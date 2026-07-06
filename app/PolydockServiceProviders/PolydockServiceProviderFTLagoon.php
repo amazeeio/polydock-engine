@@ -2,10 +2,11 @@
 
 namespace App\PolydockServiceProviders;
 
+use App\Polydock\Clients\Lagoon\Client;
+use App\Polydock\Clients\Lagoon\Ssh;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockEngine\PolydockEngineServiceProviderInitializationException;
-use FreedomtechHosting\FtLagoonPhp\Client;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockServiceProviderInterface;
 
 /**
  * Polydock service provider for the FT Lagoon client
@@ -68,7 +69,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         $sshPrivateKeyFile = $config['ssh_private_key_file'];
 
         $sshServer = $config['ssh_server'] ?? 'ssh.lagoon.amazeeio.cloud';
-        $sshPort = $config['ssh_port'] ?? 32222;
+        $sshPort = Ssh::normalizePort($config['ssh_port'] ?? 32222);
         $endpoint = $config['endpoint'] ?? 'https://api.lagoon.amazeeio.cloud/graphql';
         $sshUser = $config['ssh_user'] ?? 'lagoon';
 

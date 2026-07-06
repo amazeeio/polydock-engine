@@ -2,13 +2,18 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\PolydockDeploymentRunStatusEnum;
+use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
 use App\Filament\Admin\Resources\PolydockStoreAppResource\RelationManagers;
 use App\Models\PolydockAppInstance;
+use App\Models\PolydockDeploymentRun;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\PolydockAppClassDiscovery;
+use App\Services\PolydockDeploymentService;
 use Filament\Forms;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
@@ -18,10 +23,10 @@ use Filament\Forms\Set;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Builder;
 
 class PolydockStoreAppResource extends Resource
@@ -124,6 +129,30 @@ class PolydockStoreAppResource extends Resource
                             ->default(7)
                             ->required(fn (Get $get): bool => (bool) $get('refresh_unallocated_instances'))
                             ->visible(fn (Get $get): bool => (bool) $get('refresh_unallocated_instances')),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
+                Section::make('Redeploy Schedule')
+                    ->description('Automatically redeploy running instances of this app on a cadence (upgrade rollouts). Trials are never auto-redeployed.')
+                    ->schema([
+                        Forms\Components\Toggle::make('redeploy_enabled')
+                            ->label('Enable scheduled redeploys')
+                            ->default(false)
+                            ->live()
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('redeploy_interval_days')
+                            ->label('Redeploy every (days)')
+                            ->numeric()
+                            ->minValue(1)
+                            ->helperText('Default cadence for all instances of this app.')
+                            ->required(fn (Get $get): bool => (bool) $get('redeploy_enabled'))
+                            ->visible(fn (Get $get): bool => (bool) $get('redeploy_enabled')),
+                        Forms\Components\TextInput::make('beta_redeploy_interval_days')
+                            ->label('Beta redeploy every (days)')
+                            ->numeric()
+                            ->minValue(1)
+                            ->helperText('Optional shorter cadence for instances owned by beta groups. Leave blank to use the default.')
+                            ->visible(fn (Get $get): bool => (bool) $get('redeploy_enabled')),
                     ])
                     ->columns(2)
                     ->collapsible(),
@@ -412,6 +441,52 @@ class PolydockStoreAppResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('redeploy_all')
+                    ->label('Redeploy all')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->visible(fn (): bool => PolydockDeploymentRun::currentUserCanManage())
+                    ->requiresConfirmation()
+                    ->modalHeading('Redeploy all running instances')
+                    ->modalDescription('Triggers a Lagoon redeploy for every eligible running instance of this app (skipping any already deploying).')
+                    ->action(function (PolydockStoreApp $record): void {
+                        $instances = $record->instances()
+                            ->whereIn('status', PolydockAppInstance::$redeployEligibleStatuses)
+                            ->with('deploymentRun')
+                            ->get();
+
+                        $run = app(PolydockDeploymentService::class)->redeploy(
+                            $instances,
+                            PolydockDeploymentRunTriggerSourceEnum::MANUAL,
+                            auth()->user(),
+                        );
+
+                        if ($run === null) {
+                            Notification::make()
+                                ->warning()
+                                ->title('Nothing to redeploy')
+                                ->body('No eligible running instances for this app.')
+                                ->send();
+
+                            return;
+                        }
+
+                        if ($run->status === PolydockDeploymentRunStatusEnum::FAILED) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Redeploy failed to trigger')
+                                ->body('See logs for details. Run: '.$run->uuid)
+                                ->send();
+
+                            return;
+                        }
+
+                        Notification::make()
+                            ->success()
+                            ->title('Redeploy triggered')
+                            ->body("Triggered {$run->total_count} deployment(s).")
+                            ->send();
+                    }),
                 Tables\Actions\DeleteAction::make()
                     ->hidden(fn (PolydockStoreApp $record): bool => $record->instances()->exists()),
             ])
@@ -697,6 +772,7 @@ class PolydockStoreAppResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
+            ->with(['store', 'productType'])
             ->withCount([
                 'allocatedInstances',
                 'instances as unallocated_instances_count' => function ($query) {

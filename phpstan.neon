@@ -1,0 +1,36 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+    - vendor/nesbot/carbon/extension.neon
+    - phpstan-baseline.neon
+
+parameters:
+    level: 5
+    # Known tradeoff: disabled so baselined inline @phpstan-ignore comments and
+    # resolved baseline entries don't surface as unmatched-ignore errors. The
+    # cost is that stale baseline entries go undetected; periodically regenerate
+    # the baseline (`phpstan analyse --generate-baseline`) to trim them.
+    reportUnmatchedIgnoredErrors: false
+    paths:
+        - app
+        - bootstrap
+        - config
+        - database
+        - public
+        - resources
+        - routes
+        - tests
+
+    ignoreErrors:
+        -
+            message: "#^Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.$#"
+            path: *config/*.php
+        # Mockery's shouldReceive() is typed as ExpectationInterface|HigherOrderMessage,
+        # but andReturnSelf()/andThrow() live only on the concrete Expectation class.
+        # Known larastan false positive on a runtime-valid chain.
+        -
+            message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::(andReturnSelf|andThrow)\(\)\.$#'
+            path: tests/*
+
+    excludePaths:
+        - vendor/*
+        - */vendor/*

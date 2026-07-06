@@ -12,7 +12,7 @@ use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Laravel\Sanctum\Sanctum;

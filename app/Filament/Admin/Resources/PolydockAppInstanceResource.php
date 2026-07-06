@@ -2,15 +2,21 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\PolydockDeploymentRunStatusEnum;
+use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
 use App\Filament\Admin\RelationManagers\ActivitiesRelationManager;
 use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 use App\Filament\Admin\Resources\PolydockAppInstanceResource\RelationManagers;
 use App\Filament\Exports\UserRemoteRegistrationExporter;
 use App\Models\PolydockAppInstance;
+use App\Models\PolydockDeploymentRun;
 use App\Models\User;
+use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
 use App\Services\PolydockAppClassDiscovery;
+use App\Services\PolydockDeploymentService;
 use App\Support\SensitiveDataRedactor;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -19,6 +25,7 @@ use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Actions\ExportAction;
@@ -26,10 +33,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppInstanceFields;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Collection;
 
 class PolydockAppInstanceResource extends Resource
 {
@@ -101,6 +107,24 @@ class PolydockAppInstanceResource extends Resource
                     ->state(fn ($record) => $record->is_trial && $record->trial_complete_email_sent
                         ? 'Sent'
                         : ($record->is_trial ? 'Pending' : '')),
+                TextColumn::make('last_deployment_status')
+                    ->label('Last Deploy')
+                    ->badge()
+                    ->color(fn ($state) => match ($state) {
+                        'complete', 'completed', 'success' => 'success',
+                        'failed', 'failure', 'error', 'cancelled', 'canceled' => 'danger',
+                        null, '' => 'gray',
+                        default => 'info',
+                    })
+                    ->description(fn ($record) => $record->last_deployed_at?->diffForHumans())
+                    ->placeholder('—')
+                    ->toggleable(),
+                TextColumn::make('next_redeploy_at')
+                    ->label('Next Redeploy')
+                    ->dateTime()
+                    ->sortable()
+                    ->placeholder('—')
+                    ->toggleable(),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -228,7 +252,50 @@ class PolydockAppInstanceResource extends Resource
                     ->label('Export registrations')
                     ->exporter(UserRemoteRegistrationExporter::class),
             ])
-            ->bulkActions([]);
+            ->bulkActions([
+                Tables\Actions\BulkAction::make('redeploy')
+                    ->label('Redeploy selected')
+                    ->icon('heroicon-o-arrow-path')
+                    ->color('warning')
+                    ->visible(fn (): bool => PolydockDeploymentRun::currentUserCanManage())
+                    ->requiresConfirmation()
+                    ->modalHeading('Trigger Lagoon redeploy')
+                    ->modalDescription('This triggers real Lagoon builds for the eligible selected instances (running & not already deploying). Instances stay online during the rolling redeploy.')
+                    ->action(function (Collection $records): void {
+                        $run = app(PolydockDeploymentService::class)->redeploy(
+                            $records,
+                            PolydockDeploymentRunTriggerSourceEnum::MANUAL,
+                            auth()->user(),
+                        );
+
+                        if ($run === null) {
+                            Notification::make()
+                                ->warning()
+                                ->title('Nothing to redeploy')
+                                ->body('None of the selected instances were eligible (must be running and not already deploying).')
+                                ->send();
+
+                            return;
+                        }
+
+                        if ($run->status === PolydockDeploymentRunStatusEnum::FAILED) {
+                            Notification::make()
+                                ->danger()
+                                ->title('Redeploy failed to trigger')
+                                ->body('See logs for details. Run: '.$run->uuid)
+                                ->send();
+
+                            return;
+                        }
+
+                        Notification::make()
+                            ->success()
+                            ->title('Redeploy triggered')
+                            ->body("Triggered {$run->total_count} deployment(s). Bulk id: ".($run->lagoon_bulk_id ?? 'n/a'))
+                            ->send();
+                    })
+                    ->deselectRecordsAfterCompletion(),
+            ]);
     }
 
     #[\Override]
@@ -470,7 +537,7 @@ class PolydockAppInstanceResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ])
-            ->with(['storeApp.store', 'userGroup']);
+            ->with(['storeApp.store', 'userGroup', 'deploymentRun']);
 
         /** @var User|null $user */
         $user = auth()->user();

@@ -4,21 +4,23 @@ namespace App\Models;
 
 use App\Events\PolydockAppInstanceCreatedWithNewStatus;
 use App\Events\PolydockAppInstanceStatusChanged;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\PolydockAppInstanceInterface;
+use App\Polydock\Core\PolydockAppInterface;
+use App\Polydock\Core\PolydockAppLoggerInterface;
+use App\Polydock\Core\PolydockEngineInterface;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Traits\HasWebhookSensitiveData;
 use Carbon\Carbon;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockApp\PolydockAppInstanceInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppInterface;
-use FreedomtechHosting\PolydockApp\PolydockAppLoggerInterface;
-use FreedomtechHosting\PolydockApp\PolydockEngineInterface;
+use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Spatie\Activitylog\LogOptions;
@@ -57,6 +59,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property Carbon|null $updated_at
  * @property PolydockStoreApp $storeApp
  * @property UserGroup|null $userGroup
+ * @property PolydockDeploymentRun|null $deploymentRun
  */
 class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 {
@@ -94,6 +97,12 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'purge_attempts',
         'purge_last_attempted_at',
         'purge_failure_reason',
+        'deployment_run_id',
+        'last_deployment_name',
+        'last_deployment_status',
+        'last_deployed_at',
+        'last_deploy_triggered_at',
+        'next_redeploy_at',
     ];
 
     /**
@@ -118,6 +127,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'force_purge_requested_at' => 'datetime',
         'purge_last_attempted_at' => 'datetime',
         'purge_attempts' => 'integer',
+        'last_deployed_at' => 'datetime',
+        'last_deploy_triggered_at' => 'datetime',
+        'next_redeploy_at' => 'datetime',
     ];
 
     /**
@@ -310,6 +322,18 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
         PolydockAppInstanceStatus::POLYDOCK_CLAIM_RUNNING,
         PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
+    ];
+
+    /**
+     * Statuses in which an instance may be safely redeployed (upgrade rollout).
+     * Only healthy running instances qualify — the pre-warm pool
+     * (RUNNING_HEALTHY_UNCLAIMED) and live claimed apps (RUNNING_HEALTHY_CLAIMED).
+     *
+     * @var array<int, PolydockAppInstanceStatus>
+     */
+    public static array $redeployEligibleStatuses = [
+        PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+        PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
     ];
 
     /**
@@ -652,6 +676,18 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     }
 
     /**
+     * Keys whose values are encrypted transparently at rest inside the `data`
+     * column. Writes go through {@see encryptSecretValue()} in storeKeyValue()
+     * and reads are decrypted in getKeyValue(), so callers keep passing/reading
+     * plain arrays.
+     *
+     * @var list<string>
+     */
+    private const ENCRYPTED_KEYS = [
+        'secret',
+    ];
+
+    /**
      * Store a key-value pair for the app instance
      *
      * @param  string  $key  The key to store
@@ -662,6 +698,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
             $value = $this->stripTokenFromUrl((string) $value);
+        }
+
+        if (in_array($key, self::ENCRYPTED_KEYS, true)) {
+            $value = $this->encryptSecretValue($value);
         }
 
         $resultData = $this->data ?? [];
@@ -676,6 +716,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         $value = data_get($this->data, $key, '');
 
+        if (in_array($key, self::ENCRYPTED_KEYS, true)) {
+            return $this->decryptSecretValue($value);
+        }
+
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
             $token = config('polydock.health_token');
             if (! empty($token)) {
@@ -687,6 +731,70 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         }
 
         return $value;
+    }
+
+    /**
+     * Sentinel prefix marking a value as an encrypted-at-rest secret payload.
+     * Lets getKeyValue() distinguish already-encrypted ciphertext from any
+     * legacy plaintext still present in the `data` column (backfill guard).
+     */
+    private const ENCRYPTED_SECRET_PREFIX = 'enc:v1:';
+
+    /**
+     * Encrypt a secret value for storage inside the `data` column.
+     *
+     * The value (typically an array of credentials) is serialised and encrypted
+     * with Laravel's Crypt (APP_KEY-derived, AES-256-CBC + HMAC). The result is
+     * a single opaque, prefixed string so the JSON column holds only ciphertext.
+     * Empty values are stored as-is so "no secret" stays cheaply detectable.
+     */
+    private function encryptSecretValue(mixed $value): mixed
+    {
+        if ($value === null || $value === '' || $value === []) {
+            return $value;
+        }
+
+        // Idempotent: never double-encrypt an already-encrypted payload.
+        if (is_string($value) && str_starts_with($value, self::ENCRYPTED_SECRET_PREFIX)) {
+            return $value;
+        }
+
+        // JSON_THROW_ON_ERROR: fail loudly on an unencodable secret rather than
+        // silently storing 'null' (which would read back as null — quiet data loss).
+        return self::ENCRYPTED_SECRET_PREFIX.Crypt::encryptString(json_encode($value, JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * Decrypt a secret value read from the `data` column.
+     *
+     * Ciphertext (prefixed strings) is decrypted and JSON-decoded back to the
+     * original shape. Values without the prefix are returned untouched so
+     * legacy plaintext rows keep working until they are backfilled.
+     */
+    private function decryptSecretValue(mixed $value): mixed
+    {
+        if (! is_string($value) || ! str_starts_with($value, self::ENCRYPTED_SECRET_PREFIX)) {
+            // Legacy plaintext (or empty default) — return as stored.
+            return $value;
+        }
+
+        $ciphertext = substr($value, strlen(self::ENCRYPTED_SECRET_PREFIX));
+
+        try {
+            $decrypted = Crypt::decryptString($ciphertext);
+        } catch (DecryptException $e) {
+            // Most likely APP_KEY was rotated without a re-encrypt pass, or the
+            // stored ciphertext is corrupted. Fail safe (null) and log rather
+            // than taking down every request/queue job that reads this secret.
+            Log::error('Failed to decrypt instance secret', [
+                'app_instance_id' => $this->id ?? null,
+                'error' => $e->getMessage(),
+            ]);
+
+            return null;
+        }
+
+        return json_decode($decrypted, true);
     }
 
     /**
@@ -880,6 +988,33 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function userGroup(): BelongsTo
     {
         return $this->belongsTo(UserGroup::class);
+    }
+
+    /**
+     * Get the deployment run that most recently redeployed this instance.
+     */
+    public function deploymentRun(): BelongsTo
+    {
+        return $this->belongsTo(PolydockDeploymentRun::class, 'deployment_run_id');
+    }
+
+    /**
+     * Whether this instance is currently in a state that can be redeployed.
+     */
+    public function isRedeployEligible(): bool
+    {
+        return in_array($this->status, self::$redeployEligibleStatuses, true);
+    }
+
+    /**
+     * Whether this instance has a redeploy that has been triggered but not yet
+     * observed as finished (used to avoid firing a second deploy over the top).
+     */
+    public function hasInFlightDeployment(): bool
+    {
+        return $this->deployment_run_id !== null
+            && $this->deploymentRun !== null
+            && ! $this->deploymentRun->isTerminal();
     }
 
     /**
@@ -1110,8 +1245,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     public function calculateAndSetTrialDatesFromEndDate($trialEndDateTime, bool $saveModel = false): self
     {
-        // Calculate days between now and end date
-        $durationDays = now()->diffInDays($trialEndDateTime);
+        // diffInDays() returns a float in Carbon 3; round up so a partial day still
+        // grants a full trial day rather than being truncated toward zero.
+        $durationDays = (int) ceil((float) now()->diffInDays($trialEndDateTime));
 
         return $this->calculateAndSetTrialDates($durationDays, $saveModel);
     }

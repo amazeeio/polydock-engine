@@ -11,8 +11,8 @@ use App\Models\PolydockStoreApp;
 use App\Models\PolydockStoreWebhook;
 use App\Models\User;
 use App\Models\UserGroup;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp;
+use App\Polydock\Apps\Generic\PolydockAiApp;
+use App\Polydock\Apps\Generic\PolydockApp;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -82,8 +82,8 @@ class DatabaseSeeder extends Seeder
             }
 
             $deployKeyFile = config('polydock.lagoon_deploy_private_key_file');
-            $deployKey = (is_string($deployKeyFile) && file_exists($deployKeyFile))
-                ? file_get_contents($deployKeyFile)
+            $deployKey = (\is_string($deployKeyFile) && \file_exists($deployKeyFile))
+                ? \file_get_contents($deployKeyFile)
                 : 'mock-deploy-private-key-for-testing';
 
             // Create the stores

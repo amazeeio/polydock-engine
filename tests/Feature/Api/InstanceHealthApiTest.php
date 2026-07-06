@@ -6,8 +6,8 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserGroup;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp;
+use App\Polydock\Apps\Generic\PolydockAiApp;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
@@ -123,5 +123,72 @@ class InstanceHealthApiTest extends TestCase
 
         // THEN it should return 400
         $response->assertStatus(400);
+    }
+
+    public function test_health_check_from_trusted_ip_bypasses_rate_limit(): void
+    {
+        // GIVEN a trusted IP is configured
+        Config::set('polydock.trusted_ips', ['10.0.0.5']);
+        Config::set('polydock.health_token', null);
+
+        // WHEN we hit the endpoint 130 times from trusted IP
+        for ($i = 0; $i < 130; $i++) {
+            $this->withServerVariables(['REMOTE_ADDR' => '10.0.0.5'])
+                ->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed")
+                ->assertStatus(200);
+        }
+    }
+
+    public function test_health_check_with_valid_token_bypasses_rate_limit(): void
+    {
+        // GIVEN a token is configured
+        Config::set('polydock.health_token', 'secure-test-token');
+
+        // WHEN we hit the endpoint 130 times with the correct token
+        for ($i = 0; $i < 130; $i++) {
+            $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed?token=secure-test-token")
+                ->assertStatus(200);
+        }
+    }
+
+    public function test_health_check_throttles_per_ip_across_uuids(): void
+    {
+        Config::set('polydock.health_token', null); // No token gating
+
+        // GIVEN another instance exists
+        $storeApp = PolydockStoreApp::first();
+        $group = UserGroup::first();
+
+        $anotherInstance = new PolydockAppInstance;
+        $anotherInstance->polydock_store_app_id = $storeApp->id;
+        $anotherInstance->user_group_id = $group->id;
+        $anotherInstance->name = 'another-instance';
+        $anotherInstance->uuid = (string) Str::uuid();
+        $anotherInstance->app_type = PolydockAiApp::class;
+        $anotherInstance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $anotherInstance->saveQuietly();
+
+        // WHEN we exhaust the per-minute limit (120) against the first UUID
+        for ($i = 0; $i < 120; $i++) {
+            $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed")
+                ->assertStatus(200);
+        }
+
+        // THEN a further request for the first UUID is throttled
+        $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed")
+            ->assertStatus(429);
+
+        // AND switching to the second UUID from the same IP is ALSO throttled —
+        // the limit keys on IP so enumerating UUIDs can't reset the budget
+        $this->getJson("/api/instance/{$anotherInstance->uuid}/health/running-healthy-claimed")
+            ->assertStatus(429);
+    }
+
+    protected function tearDown(): void
+    {
+        // Flush cache to reset rate limiters
+        $this->app['cache']->flush();
+
+        parent::tearDown();
     }
 }

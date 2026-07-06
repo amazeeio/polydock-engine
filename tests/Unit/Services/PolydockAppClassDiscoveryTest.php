@@ -2,13 +2,16 @@
 
 namespace Tests\Unit\Services;
 
-use Amazeeio\PolydockAppAmazeeioPrivateGpt\PolydockPrivateGptApp;
+use App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp;
+use App\Polydock\Apps\AnythingLlm\PolydockAnythingLLMApp;
+use App\Polydock\Apps\DependencyTrack\PolydockDependencyTrackApp;
+use App\Polydock\Apps\Generic\PolydockAiApp;
+use App\Polydock\Apps\Generic\PolydockApp;
+use App\Polydock\Apps\PrivateGpt\PolydockPrivateGptApp;
+use App\Polydock\Core\Attributes\PolydockAppTitle;
+use App\Polydock\Core\PolydockAppBase;
+use App\Polydock\Core\PolydockAppInterface;
 use App\Services\PolydockAppClassDiscovery;
-use FreedomtechHosting\PolydockApp\Attributes\PolydockAppTitle;
-use FreedomtechHosting\PolydockApp\PolydockAppBase;
-use FreedomtechHosting\PolydockApp\PolydockAppInterface;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockAiApp;
-use FreedomtechHosting\PolydockAppAmazeeioGeneric\PolydockApp;
 use Tests\TestCase;
 
 class PolydockAppClassDiscoveryTest extends TestCase
@@ -88,6 +91,41 @@ class PolydockAppClassDiscoveryTest extends TestCase
         );
     }
 
+    /**
+     * Characterization test: pins the EXACT set of concrete app classes
+     * discovered today (spike plan 013). This is the safety net for any
+     * change to the discovery mechanism — if this set changes, it must be
+     * a deliberate, reviewed change (e.g. a new app was inlined).
+     *
+     * As of commit b6f2ff09d195, discovery scans app/Polydock/Apps/**\/*.php
+     * directly and yields these six concrete PolydockAppInterface classes.
+     */
+    public function test_characterization_pins_exact_discovered_app_set(): void
+    {
+        $classNames = array_keys($this->discovery->getAvailableAppClasses());
+
+        $expected = [
+            PolydockAmazeeClawAiApp::class,
+            PolydockAnythingLLMApp::class,
+            PolydockDependencyTrackApp::class,
+            PolydockAiApp::class,
+            PolydockApp::class,
+            PolydockPrivateGptApp::class,
+        ];
+
+        // getAvailableAppClasses() ksorts its result, so the discovered keys
+        // are already alphabetical; sort the expectation to match.
+        sort($expected);
+
+        $this->assertSame(
+            $expected,
+            $classNames,
+            'The discovered app set changed. If this is intentional (a new app '
+            .'was inlined under app/Polydock/Apps/, or one was removed), update '
+            .'this characterization list. Otherwise discovery has regressed.'
+        );
+    }
+
     // ──────────────────────────────────────────────────────────────
     //  Discovery: exclusion rules
     // ──────────────────────────────────────────────────────────────
@@ -128,7 +166,7 @@ class PolydockAppClassDiscoveryTest extends TestCase
 
         // The label should either be the attribute title OR the fallback format
         $hasAttributeTitle = $aiAppLabel === 'Generic Lagoon AI App';
-        $hasFallbackFormat = str_contains($aiAppLabel, 'PolydockAiApp') && str_contains($aiAppLabel, 'FreedomtechHosting');
+        $hasFallbackFormat = str_contains($aiAppLabel, 'PolydockAiApp') && str_contains($aiAppLabel, 'App\\Polydock');
 
         $this->assertTrue(
             $hasAttributeTitle || $hasFallbackFormat,

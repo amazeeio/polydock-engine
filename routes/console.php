@@ -59,6 +59,18 @@ Schedule::command('polydock:dispatch-project-purge')
     ->everyTenMinutes()
     ->withoutOverlapping();
 
+// ///// Cadence-based redeploys (upgrade rollouts) ///////
+Schedule::command('polydock:dispatch-scheduled-redeploys')
+    ->everyTenMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// ///// Poll in-flight Lagoon deployment runs ///////
+Schedule::command('polydock:deployments:poll')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();
+
 // ///// Audit Log Retention ///////
 Schedule::command('activitylog:clean')
     ->daily()

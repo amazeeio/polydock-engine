@@ -30,12 +30,18 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-Route::post('/register', [RegisterController::class, 'processRegister'])->name('register.process');
-Route::get('/register/{uuid}', [RegisterController::class, 'showRegister'])->name('register.show');
+Route::post('/register', [RegisterController::class, 'processRegister'])
+    ->name('register.process')
+    ->middleware('throttle:register');
+Route::get('/register/{uuid}', [RegisterController::class, 'showRegister'])
+    ->name('register.show')
+    ->middleware('throttle:public-read');
 
-Route::get('/regions', [RegionsController::class, 'index'])->name('regions.index');
+Route::get('/regions', [RegionsController::class, 'index'])
+    ->name('regions.index')
+    ->middleware('throttle:public-read');
 
 Route::match(['get', 'post'], '/instance/{uuid}/health/{status}', [
     PolydockInstanceHealthController::class,
     '__invoke',
-])->name('api.instance.health');
+])->name('api.instance.health')->middleware('throttle:instance-health');

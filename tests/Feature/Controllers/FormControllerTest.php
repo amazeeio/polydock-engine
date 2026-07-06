@@ -13,6 +13,7 @@ use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Attributes\Test;
 use Tests\TestCase;
 
 class FormControllerTest extends TestCase
@@ -64,7 +65,7 @@ class FormControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_aborts_with_404_for_unknown_form_slugs()
     {
         $response = $this->get('/f/unknown-form-slug');
@@ -72,7 +73,7 @@ class FormControllerTest extends TestCase
         $response->assertStatus(404);
     }
 
-    /** @test */
+    #[Test]
     public function it_renders_the_hosted_form_correctly_with_security_headers()
     {
         $response = $this->get('/f/drupal-ai-demo');
@@ -87,7 +88,7 @@ class FormControllerTest extends TestCase
         $response->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai http://localhost http://localhost:*");
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_submitting_form_with_missing_fields()
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
@@ -105,7 +106,7 @@ class FormControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_submitting_form_with_invalid_country()
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
@@ -126,7 +127,7 @@ class FormControllerTest extends TestCase
         $this->assertStringContainsString('The selected country is invalid', $response->json('message'));
     }
 
-    /** @test */
+    #[Test]
     public function it_fails_if_recaptcha_verification_fails()
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
@@ -144,7 +145,7 @@ class FormControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_successfully_submits_and_registers_user_trial()
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
@@ -187,7 +188,7 @@ class FormControllerTest extends TestCase
         Queue::assertPushed(ProcessUserRemoteRegistration::class);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_submitting_form_with_invalid_trial_app_uuid()
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
@@ -202,7 +203,7 @@ class FormControllerTest extends TestCase
         $this->assertStringContainsString('selected trial app is invalid', $response->json('message'));
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_recaptcha_bypass_on_testing_environment_during_network_failure()
     {
         Http::fake([
@@ -231,7 +232,7 @@ class FormControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_blocks_recaptcha_bypass_on_staging_environment_during_network_failure()
     {
         $this->withoutMiddleware(ValidateCsrfToken::class);
@@ -264,7 +265,7 @@ class FormControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_allows_submitting_without_recaptcha_when_recaptcha_is_disabled()
     {
         config(['services.recaptcha.enabled' => false]);
@@ -287,7 +288,7 @@ class FormControllerTest extends TestCase
         ]);
     }
 
-    /** @test */
+    #[Test]
     public function it_rejects_submitting_form_with_app_uuid_from_a_private_store()
     {
         $privateStore = PolydockStore::create([

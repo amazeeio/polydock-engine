@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Enums\PolydockStoreAppStatusEnum;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Traits\HasPolydockVariables;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -81,6 +81,9 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property bool $refresh_unallocated_instances
  * @property int $refresh_unallocated_instances_after_days
  * @property int|null $polydock_product_type_id
+ * @property bool $redeploy_enabled
+ * @property int|null $redeploy_interval_days
+ * @property int|null $beta_redeploy_interval_days
  * @property PolydockStore $store
  * @property PolydockProductType|null $productType
  * @property Collection|PolydockAppInstance[] $instances
@@ -143,6 +146,9 @@ class PolydockStoreApp extends Model
         'lagoon_remove_service',
         'lagoon_remove_container',
         'polydock_product_type_id',
+        'redeploy_enabled',
+        'redeploy_interval_days',
+        'beta_redeploy_interval_days',
     ];
 
     protected $casts = [
@@ -153,6 +159,9 @@ class PolydockStoreApp extends Model
         'send_midtrial_email' => 'boolean',
         'send_one_day_left_email' => 'boolean',
         'send_trial_complete_email' => 'boolean',
+        'redeploy_enabled' => 'boolean',
+        'redeploy_interval_days' => 'integer',
+        'beta_redeploy_interval_days' => 'integer',
     ];
 
     /**
@@ -237,6 +246,8 @@ class PolydockStoreApp extends Model
 
     /**
      * Get all instances of this store app
+     *
+     * @return HasMany<PolydockAppInstance, $this>
      */
     public function instances(): HasMany
     {
@@ -427,5 +438,21 @@ class PolydockStoreApp extends Model
     public function getLagoonProductionEnvironmentAttribute(): ?string
     {
         return data_get($this->app_config, 'lagoon_production_environment', 'main');
+    }
+
+    /**
+     * Resolve the redeploy cadence (in days) that applies to an instance of this
+     * app, given whether that instance belongs to a beta group. Beta groups use
+     * the beta interval when one is set, otherwise they fall back to the default.
+     *
+     * Returns null when no applicable interval is configured (do not auto-redeploy).
+     */
+    public function effectiveRedeployIntervalDays(bool $isBeta = false): ?int
+    {
+        if ($isBeta && $this->beta_redeploy_interval_days !== null) {
+            return $this->beta_redeploy_interval_days;
+        }
+
+        return $this->redeploy_interval_days;
     }
 }

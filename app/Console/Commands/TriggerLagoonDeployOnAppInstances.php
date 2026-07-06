@@ -2,10 +2,13 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\PolydockDeploymentRunStatusEnum;
+use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
+use App\Polydock\Clients\Lagoon\Client;
 use App\Services\LagoonClientService;
-use FreedomtechHosting\FtLagoonPhp\Client;
+use App\Services\PolydockDeploymentService;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\multiselect;
@@ -157,69 +160,36 @@ class TriggerLagoonDeployOnAppInstances extends BaseCommand
             $this->warn('Note: Concurrency option is ignored when using bulk deployment, as Lagoon handles parallelization natively.');
         }
 
-        $this->info(string: 'Authenticating with Lagoon...');
-        try {
-            $client = app(LagoonClientService::class)->getAuthenticatedClient();
-        } catch (\Exception $e) {
-            $this->error(string: "Authentication failed: {$e->getMessage()}");
-
-            return 1;
+        if ($envOverride) {
+            $this->warn('Note: --environment override is ignored; each instance deploys its configured branch.');
         }
-
-        $environments = [];
-        foreach ($instances as $instance) {
-            $projectName = $instance->getKeyValue('lagoon-project-name');
-            $branch = $envOverride ?: $instance->getKeyValue('lagoon-deploy-branch');
-
-            if ($projectName && $branch) {
-                $environments[] = [
-                    'project' => $projectName,
-                    'name' => $branch,
-                ];
-            }
-        }
-
-        if (empty($environments)) {
-            $this->error('No valid environments found to deploy.');
-
-            return 1;
-        }
-
-        $buildVars = [];
-        if ($variablesOnly) {
-            $buildVars['LAGOON_VARIABLES_ONLY'] = 'true';
-        }
-
-        $bulkName = "Polydock Bulk Deploy: {$storeApp->name} (".now()->toDateTimeString().')';
 
         $this->info("Triggering bulk deployment for {$count} instances...");
 
-        try {
-            $result = $client->bulkDeployEnvironments(
-                environments: $environments,
-                name: $bulkName,
-                buildVariables: $buildVars
-            );
+        $run = app(PolydockDeploymentService::class)->redeploy(
+            instances: $instances,
+            source: PolydockDeploymentRunTriggerSourceEnum::MANUAL,
+            variablesOnly: (bool) $variablesOnly,
+        );
 
-            if (isset($result['error'])) {
-                $errors = is_array($result['error']) ? json_encode(value: $result['error']) : $result['error'];
-                $this->error(string: "Bulk deployment failed: {$errors}");
-
-                return 1;
-            } else {
-                $bulkId = $result['bulkDeployEnvironmentLatest'] ?? 'unknown';
-                $this->info(string: "Bulk deployment triggered successfully! Bulk ID: {$bulkId}");
-
-                $this->info("\nYou can track the progress using:");
-                $this->info("  https://dashboard.amazeeio.cloud/deployments?bulkId={$bulkId}");
-
-                return 0;
-            }
-        } catch (\Exception $e) {
-            $this->error(string: "Bulk deployment failed: {$e->getMessage()}");
+        if (! $run) {
+            $this->error('No deployable instances (none eligible, or all have an in-flight deploy).');
 
             return 1;
         }
+
+        if ($run->status === PolydockDeploymentRunStatusEnum::FAILED) {
+            $this->error("Deployment run {$run->uuid} failed to trigger. Check logs for details.");
+
+            return 1;
+        }
+
+        $bulkId = $run->lagoon_bulk_id ?? 'unknown';
+        $this->info(string: "Bulk deployment triggered successfully! Run: {$run->uuid} Bulk ID: {$bulkId}");
+        $this->info("\nYou can track the progress using:");
+        $this->info("  https://dashboard.amazeeio.cloud/alldeployments?bulkId={$bulkId}");
+
+        return 0;
     }
 
     protected function deployToInstance(

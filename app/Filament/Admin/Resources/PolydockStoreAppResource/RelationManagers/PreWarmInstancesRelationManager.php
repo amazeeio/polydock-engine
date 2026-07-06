@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\PolydockStoreAppResource\RelationManagers;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
 
 class PreWarmInstancesRelationManager extends RelationManager
 {

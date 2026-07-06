@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use FreedomtechHosting\FtLagoonPhp\Client;
-use FreedomtechHosting\FtLagoonPhp\Ssh;
+use App\Polydock\Clients\Lagoon\Client;
+use App\Polydock\Clients\Lagoon\Ssh;
+use Illuminate\Support\Facades\Log;
 use Symfony\Component\Process\Process;
 
 class LagoonClientService
@@ -22,14 +23,14 @@ class LagoonClientService
 
         if (! $clientConfig['ssh_private_key_file'] || ! file_exists($clientConfig['ssh_private_key_file'])) {
             $msg = 'Global SSH private key not found at: '.($clientConfig['ssh_private_key_file'] ?: 'not set');
-            \Log::error($msg);
+            Log::error($msg);
             throw new \Exception($msg);
         }
 
         $token = $this->getLagoonToken($clientConfig);
         if (empty($token)) {
             $msg = 'Failed to retrieve Lagoon API token. Ensure the SSH key at '.$clientConfig['ssh_private_key_file'].' is valid and authorized in Lagoon.';
-            \Log::error($msg);
+            Log::error($msg);
             throw new \Exception($msg);
         }
 
@@ -129,6 +130,8 @@ class LagoonClientService
             'ssh_port' => $sshConfig['ssh_port'] ?? '32222',
             'endpoint' => $sshConfig['endpoint'] ?? 'https://api.lagoon.amazeeio.cloud/graphql',
             'ssh_private_key_file' => $keyFile,
+            'connect_timeout' => $sshConfig['connect_timeout'] ?? 5.0,
+            'timeout' => $sshConfig['timeout'] ?? 60.0,
         ];
     }
 
@@ -137,7 +140,7 @@ class LagoonClientService
      */
     public function getLagoonToken(?array $config = null): string
     {
-        $config = $config ?? $this->getClientConfig();
+        $config ??= $this->getClientConfig();
 
         if (app()->bound('polydock.lagoon.token_fetcher')) {
             return app('polydock.lagoon.token_fetcher')($config);
@@ -146,7 +149,7 @@ class LagoonClientService
         $ssh = Ssh::createLagoonConfigured(
             user: $config['ssh_user'],
             server: $config['ssh_server'],
-            port: $config['ssh_port'],
+            port: Ssh::normalizePort($config['ssh_port'] ?? 32222),
             privateKeyFile: $config['ssh_private_key_file']
         );
 
@@ -162,7 +165,7 @@ class LagoonClientService
             return ltrim(rtrim($process->getOutput()));
         }
 
-        \Log::error('Lagoon SSH token fetch failed', [
+        Log::error('Lagoon SSH token fetch failed', [
             'exit_code' => $process->getExitCode(),
             'output' => $process->getOutput(),
             'error' => $process->getErrorOutput(),

@@ -14,7 +14,7 @@
   - Controls trial settings and durations
   - Manages email notification templates and triggers
   - Allows for custom Lagoon service and container definitions
-  - Implements the `PolydockAppInterface` from the `polydock-app` package (see docs below and [polydock-app](https://github.com/freedomtech-hosting/polydock-app))
+  - References a `polydock_app_class` (a string column) that points to the concrete app class implementing `PolydockAppInterface` from the inlined Polydock core (`app/Polydock/Core/PolydockAppInterface.php`; see docs below). The model itself does not implement the interface.
 
 ### Instances and Groups
 - **PolydockAppInstance**: A deployed instance of a store app
@@ -23,7 +23,7 @@
   - Handles one-time login URLs
   - Contains instance-specific variables and data
   - Belongs to a user group
-  - Implements the `PolydockAppInstanceInterface` from the `polydock-app` package (see docs below and [polydock-app](https://github.com/freedomtech-hosting/polydock-app))
+  - Implements the `PolydockAppInstanceInterface` from the inlined Polydock core (`app/Polydock/Core/PolydockAppInstanceInterface.php`; see docs below)
 
 - **UserGroup**: Collection of users who have access to app instances
   - Contains owners and members
@@ -43,7 +43,41 @@
 
 ## Job Processing Architecture
 
-// TODO: This needs a lot of work.
+A `PolydockAppInstance` advances through its lifecycle as a state machine driven
+by the `PolydockAppInstanceStatus` enum
+(`app/Polydock/Core/Enums/PolydockAppInstanceStatus.php`). Each lifecycle
+**stage** follows a fixed four-state pattern:
+
+```
+PENDING_<STAGE> → <STAGE>_RUNNING → <STAGE>_COMPLETED   (or <STAGE>_FAILED)
+```
+
+The queued lifecycle jobs live in `app/Jobs/ProcessPolydockAppInstanceJobs/`,
+organised by stage (`Create/`, `Deploy/`, `Claim/`, `Upgrade/`, `Remove/`,
+`Health/`, `Purge/`, ...). A stage job picks up an instance in a `PENDING_*`
+status, flips it to `*_RUNNING`, runs the work, and on success sets `*_COMPLETED`
+(or `*_FAILED` on error).
+
+Transitions between stages are handled by
+`app/Jobs/ProcessPolydockAppInstanceJobs/ProgressToNextStageJob.php`, which only
+operates on `PolydockAppInstance::$completedStatuses`. It maps each `*_COMPLETED`
+status to the next stage's `PENDING_*`. The stage order is:
+
+```
+PRE_CREATE → CREATE → POST_CREATE → PRE_DEPLOY → DEPLOY → POST_DEPLOY
+```
+
+After `POST_DEPLOY_COMPLETED`, the instance branches: if it has a remote
+registration or a `user-email` value it moves to `PENDING_POLYDOCK_CLAIM`
+(then, once claimed, `RUNNING_HEALTHY_CLAIMED`); otherwise it goes straight to
+`RUNNING_HEALTHY_UNCLAIMED`. Removal runs
+`PRE_REMOVE → REMOVE → POST_REMOVE`, ending in `REMOVED`. An upgrade path
+(`PRE_UPGRADE → UPGRADE → POST_UPGRADE`) also exists in the transition map.
+
+> **Not yet implemented**: the Upgrade jobs
+> (`Upgrade/{PreUpgradeJob,UpgradeJob,PollUpgradeJob,PostUpgradeJob}.php`) and
+> `Health/PollHealthJob.php` are currently `TODO: Implement` stubs — the status
+> transitions are wired up but the jobs perform no real work yet.
 
 ### Trial Management Jobs
 - ProcessMidtrialEmailJob
@@ -59,11 +93,18 @@
 ## Key Dependencies
 
 ### Lagoon & amazee.io Integration
-- **freedomtech/ft-lagoon-php**: Lagoon API client library
-  - Handles Lagoon API communication
+
+As of commit `b6f2ff09d195`, the Polydock core, clients, and app
+implementations are **inlined** into this repository under `app/Polydock/`.
+They are no longer external Composer packages, so there is no cross-repo
+tag-and-cascade release workflow for them — edit the code directly here.
+
+- **`app/Polydock/Clients/Lagoon/`**: Lagoon client
+  - Handles Lagoon GraphQL/SSH communication
   - Manages deployments and environments
   - Tracks deployment status
-- **freedomtech/ft-amazeeai-backend-client-php**: Integration with amazee.ai services
+- **`app/Polydock/Clients/AmazeeAi/`**: amazee.ai backend client
+  - Integration with amazee.ai services
 
 
 ### Important Laravel Framework Components
@@ -79,7 +120,13 @@
 ## Event System
 
 ### Key Events
-// TODO: This needs a lot of work.
+
+Laravel events live in `app/Events/`:
+
+- **PolydockAppInstanceCreatedWithNewStatus** - fired when an app instance is created
+- **PolydockAppInstanceStatusChanged** - fired when an app instance's lifecycle status changes
+- **UserRemoteRegistrationCreated** - fired when a remote registration record is created
+- **UserRemoteRegistrationStatusChanged** - fired when a remote registration's status changes
 
 ### Webhook System
 - Event-driven notifications
@@ -111,21 +158,29 @@
    - Expiration handling
    - Cleanup processes
 
-### Core Polydock Packages
-- **freedomtech-hosting/polydock-app**: Core package that defines the base interfaces and abstractions
+### Core Polydock Code (inlined)
+
+As of commit `b6f2ff09d195` the following were inlined into this repository
+under `app/Polydock/` and are no longer external Composer packages.
+
+- **`app/Polydock/Core/`**: base interfaces and abstractions
   - Defines `PolydockAppInterface` - the contract all Polydock apps must implement
   - Defines `PolydockAppInstanceInterface` - the contract for app instances
   - Defines `PolydockEngineInterface` - the contract for deployment engines
   - Contains core enums like `PolydockAppInstanceStatus`
-  - Provides base implementations and utilities
+    (`app/Polydock/Core/Enums/`)
+  - Provides base implementations and utilities (`PolydockAppBase`,
+    `PolydockEngineBase`, and shared traits under `app/Polydock/Core/Traits/`)
 
-- **freedomtech-hosting/polydock-app-amazeeio-generic**: Implementation package for generic amazee.io deployments
+- **`app/Polydock/Apps/Generic/`**: generic amazee.io deployment implementation
+  - Concrete apps (`app/Polydock/Apps/{AnythingLlm,PrivateGpt,AmazeeClaw,DependencyTrack}/`)
+    build on this generic base.
   - Provides two main implementation types:
     1. **PolydockApp**: Standard Lagoon deployment implementation
        - Uses standard Lagoon Git workflow
        - Handles direct Git repository deployments
        - Manages standard Lagoon project lifecycle
-    2. **PolydockAppAi**: AI-enhanced deployment implementation
+    2. **PolydockAiApp**: AI-enhanced deployment implementation
        - Integrates with amazee.ai backend services
        - Supports AI-driven deployments and configurations
        - Uses amazee.ai templates and optimizations
@@ -140,18 +195,20 @@
   - Acts as a factory/service provider for deployment helpers
   - Injects dependencies into the appropriate helpers
   - Manages lifecycle of deployment operations
-  - Implements `PolydockEngineInterface` from polydock-app package
+  - Implements `PolydockEngineInterface` from the inlined Polydock core
+    (`app/Polydock/Core/PolydockEngineInterface.php`); the orchestrator lives at
+    `app/PolydockEngine/Engine.php`
 
-- **Engine Helpers**:
+- **Engine Helpers** (`app/PolydockEngine/Helpers/`):
   1. **LagoonHelper**: Handles Lagoon-specific operations
-     - Depends on `freedomtech/ft-lagoon-php`
+     - Uses the inlined Lagoon client at `app/Polydock/Clients/Lagoon/`
      - Manages Lagoon API interactions
      - Handles project creation and management
      - Controls environment operations
      - Executes deployment tasks
 
   2. **AmazeeAiBackendHelper**: Manages amazee.ai backend interactions
-     - Depends on `freedomtech/polydock-amazeeai-backend-client-php`
+     - Uses the inlined amazee.ai backend client at `app/Polydock/Clients/AmazeeAi/`
      - Handles AI-driven deployments
      - Manages template operations
      - Controls backend service interactions

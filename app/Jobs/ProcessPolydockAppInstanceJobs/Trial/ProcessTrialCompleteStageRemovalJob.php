@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Trial;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;

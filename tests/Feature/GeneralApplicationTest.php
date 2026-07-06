@@ -2,14 +2,14 @@
 
 namespace Tests\Feature;
 
-use Amazeeio\PolydockAppAmazeeclaw\PolydockAmazeeClawAiApp;
 use App\Console\Commands\BaseCommand;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserGroup;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Console\Kernel;
@@ -29,6 +29,8 @@ class GeneralApplicationTest extends TestCase
      */
     public function test_the_application_returns_a_successful_redirect_for_the_front_page(): void
     {
+        config(['polydock.redirect_landing_page_to' => 'https://freedomtech.hosting/']);
+
         $response = $this->get('/');
 
         $response->assertStatus(302);

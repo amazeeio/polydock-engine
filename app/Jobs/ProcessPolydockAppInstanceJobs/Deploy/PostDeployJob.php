@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Deploy;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
-use FreedomtechHosting\PolydockApp\Enums\PolydockAppInstanceStatus;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class PostDeployJob extends BaseJob implements ShouldQueue
