@@ -12,7 +12,8 @@ use App\Polydock\Core\Attributes\PolydockAppTitle;
 use App\Polydock\Core\Contracts\HasAppInstanceFormFields;
 use App\Polydock\Core\Contracts\HasStoreAppFormFields;
 use App\Polydock\Core\PolydockServiceProviderInterface;
-use Filament\Forms\Components\Component;
+use Filament\Schemas\Components\Component;
+use Override;
 
 #[PolydockAppTitle('Generic Lagoon AI App')]
 #[PolydockAppStoreFields]
@@ -46,7 +47,7 @@ class PolydockAiApp extends PolydockApp implements HasAppInstanceFormFields, Has
      * Override this method in subclasses to provide app-specific display fields.
      * See docs/PolydockAiApp.md for example implementations.
      *
-     * @return array<\Filament\Infolists\Components\Component>
+     * @return array<Component>
      */
     public static function getStoreAppInfolistSchema(): array
     {
@@ -61,7 +62,7 @@ class PolydockAiApp extends PolydockApp implements HasAppInstanceFormFields, Has
      *
      * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getAppInstanceFormSchema(): array
     {
         return [];
@@ -73,9 +74,9 @@ class PolydockAiApp extends PolydockApp implements HasAppInstanceFormFields, Has
      * Inherits from parent and adds AI-specific instance display fields.
      * Use array_merge(parent::getAppInstanceInfolistSchema(), [...]) for inheritance.
      *
-     * @return array<\Filament\Infolists\Components\Component>
+     * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getAppInstanceInfolistSchema(): array
     {
         return [];

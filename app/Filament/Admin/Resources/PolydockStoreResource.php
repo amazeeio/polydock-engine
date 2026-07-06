@@ -3,48 +3,61 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Enums\PolydockStoreStatusEnum;
-use App\Filament\Admin\Resources\PolydockStoreResource\Pages;
+use App\Filament\Admin\Resources\PolydockStoreResource\Pages\CreatePolydockStore;
+use App\Filament\Admin\Resources\PolydockStoreResource\Pages\EditPolydockStore;
+use App\Filament\Admin\Resources\PolydockStoreResource\Pages\ListPolydockStores;
+use App\Filament\Admin\Resources\PolydockStoreResource\Pages\ViewPolydockStore;
 use App\Models\PolydockStore;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists\Components\Grid;
+use Closure;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class PolydockStoreResource extends Resource
 {
     protected static ?string $model = PolydockStore::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-building-storefront';
 
-    protected static ?string $navigationGroup = 'Apps';
+    protected static string|\UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'Stores';
 
     protected static ?int $navigationSort = 5000;
 
-    #[\Override]
-    public static function form(Form $form): Form
+    #[Override]
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('status')
+                Select::make('status')
                     ->options(PolydockStoreStatusEnum::class)
                     ->required(),
-                Forms\Components\Toggle::make('listed_in_marketplace')
+                Toggle::make('listed_in_marketplace')
                     ->label('Listed in Marketplace')
                     ->required(),
-                Forms\Components\TextInput::make('lagoon_deploy_region_id_ext')
+                TextInput::make('lagoon_deploy_region_id_ext')
                     ->label('Lagoon Deploy Region ID')
                     ->required()
                     ->maxLength(255)
@@ -54,7 +67,7 @@ class PolydockStoreResource extends Resource
                     ->disabled(
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
-                Forms\Components\TextInput::make('lagoon_deploy_project_prefix')
+                TextInput::make('lagoon_deploy_project_prefix')
                     ->label('Lagoon Deploy Project Prefix')
                     ->required()
                     ->maxLength(255)
@@ -64,7 +77,7 @@ class PolydockStoreResource extends Resource
                     ->disabled(
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
-                Forms\Components\TextInput::make('lagoon_deploy_organization_id_ext')
+                TextInput::make('lagoon_deploy_organization_id_ext')
                     ->label('Lagoon Deploy Organization ID')
                     ->required()
                     ->maxLength(255)
@@ -74,7 +87,7 @@ class PolydockStoreResource extends Resource
                     ->disabled(
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
-                Forms\Components\TextInput::make('amazee_ai_backend_region_id_ext')
+                TextInput::make('amazee_ai_backend_region_id_ext')
                     ->label('amazee.ai Backend Region ID')
                     ->numeric()
                     ->dehydrated(
@@ -83,7 +96,7 @@ class PolydockStoreResource extends Resource
                     ->disabled(
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
-                Forms\Components\TextInput::make('lagoon_deploy_group_name')
+                TextInput::make('lagoon_deploy_group_name')
                     ->label('Lagoon Deploy Group Name')
                     ->required()
                     ->maxLength(255)
@@ -93,7 +106,7 @@ class PolydockStoreResource extends Resource
                     ->disabled(
                         fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
-                Forms\Components\Textarea::make('lagoon_deploy_private_key')
+                Textarea::make('lagoon_deploy_private_key')
                     ->label('Lagoon Deploy Private Key')
                     ->columnSpanFull()
                     ->rows(3)
@@ -104,18 +117,18 @@ class PolydockStoreResource extends Resource
                         : 'No key is currently set. Enter a new key here.'
                     )
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (Forms\Set $set, ?string $state, ?PolydockStore $record) {
+                    ->afterStateUpdated(function (Set $set, ?string $state, ?PolydockStore $record) {
                         $keyToUse = filled($state) ? $state : $record?->lagoon_deploy_private_key;
                         $set('derived_public_key', $keyToUse ? LagoonHelper::getPublicKeyFromPrivateKey($keyToUse) : null);
                     })
                     ->rules([
-                        fn () => function (string $attribute, $value, \Closure $fail) {
+                        fn () => function (string $attribute, $value, Closure $fail) {
                             if (filled($value) && ! LagoonHelper::getPublicKeyFromPrivateKey($value)) {
                                 $fail('The private key is invalid.');
                             }
                         },
                     ]),
-                Forms\Components\Textarea::make('derived_public_key')
+                Textarea::make('derived_public_key')
                     ->label('Lagoon Deploy Public Key')
                     ->helperText('This is the public key derived from the stored private key (or the one you just entered).')
                     ->disabled()
@@ -129,43 +142,43 @@ class PolydockStoreResource extends Resource
             ]);
     }
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->searchable()
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\IconColumn::make('listed_in_marketplace')
+                TextColumn::make('status'),
+                IconColumn::make('listed_in_marketplace')
                     ->label('Listed')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('lagoon_deploy_region_id_ext')
+                TextColumn::make('lagoon_deploy_region_id_ext')
                     ->formatStateUsing(fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'))
                     ->label('Deploy Region')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('lagoon_deploy_project_prefix')
+                TextColumn::make('lagoon_deploy_project_prefix')
                     ->label('Project Prefix')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('amazee_ai_backend_region_id_ext')
+                TextColumn::make('amazee_ai_backend_region_id_ext')
                     ->label('AI Region')
                     ->formatStateUsing(
                         fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name'),
                     )
                     ->sortable(),
-                Tables\Columns\TextColumn::make('lagoon_deploy_organization_id_ext')
+                TextColumn::make('lagoon_deploy_organization_id_ext')
                     ->label('Deploy Org')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('lagoon_deploy_group_name')
+                TextColumn::make('lagoon_deploy_group_name')
                     ->label('Deploy Group')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -173,21 +186,21 @@ class PolydockStoreResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make()
                     ->hidden(fn (PolydockStore $record): bool => $record->apps()->whereHas('instances')->exists()),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->hidden(fn () => true), // Disable bulk delete entirely
                 ]),
             ]);
     }
 
-    #[\Override]
+    #[Override]
     public static function getRelations(): array
     {
         return [
@@ -195,22 +208,22 @@ class PolydockStoreResource extends Resource
         ];
     }
 
-    #[\Override]
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPolydockStores::route('/'),
-            'create' => Pages\CreatePolydockStore::route('/create'),
-            'view' => Pages\ViewPolydockStore::route('/{record}'),
-            'edit' => Pages\EditPolydockStore::route('/{record}/edit'),
+            'index' => ListPolydockStores::route('/'),
+            'create' => CreatePolydockStore::route('/create'),
+            'view' => ViewPolydockStore::route('/{record}'),
+            'edit' => EditPolydockStore::route('/{record}/edit'),
         ];
     }
 
-    #[\Override]
-    public static function infolist(Infolist $infolist): Infolist
+    #[Override]
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('Store Details')
                     ->schema([
                         Grid::make(2)

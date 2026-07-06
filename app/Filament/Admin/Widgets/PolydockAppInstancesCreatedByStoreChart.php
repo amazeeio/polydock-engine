@@ -9,13 +9,13 @@ use Illuminate\Support\Facades\DB;
 
 class PolydockAppInstancesCreatedByStoreChart extends ChartWidget
 {
-    protected static ?string $heading = 'App Instances by Store';
+    protected ?string $heading = 'App Instances by Store';
 
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
 
     protected static ?int $sort = 300;
 
-    #[\Override]
+    #[Override]
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
@@ -85,7 +85,7 @@ class PolydockAppInstancesCreatedByStoreChart extends ChartWidget
         return 'bar';
     }
 
-    #[\Override]
+    #[Override]
     protected function getOptions(): array
     {
         return [

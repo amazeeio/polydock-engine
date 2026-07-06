@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Polydock\Core\Contracts;
 
-use Filament\Forms\Components\Component;
+use Filament\Schemas\Components\Component;
 
 /**
  * Interface for Polydock App classes that provide custom App Instance form fields.
@@ -57,7 +57,7 @@ interface HasAppInstanceFormFields
      * The prefix is added automatically when the schema is processed.
      * Use array_merge(parent::getAppInstanceInfolistSchema(), [...]) for inheritance.
      *
-     * @return array<\Filament\Infolists\Components\Component>
+     * @return array<Component>
      *
      * @example
      * ```php

@@ -6,10 +6,11 @@ use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use App\Polydock\Core\Attributes\PolydockAppStoreFields;
 use App\Polydock\Core\Attributes\PolydockAppTitle;
 use App\Polydock\Core\PolydockAppInterface;
-use Filament\Forms\Components\Component;
+use Filament\Schemas\Components\Component;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use ReflectionClass;
+use Throwable;
 
 /**
  * Discovers concrete classes that implement PolydockAppInterface.
@@ -71,7 +72,7 @@ class PolydockAppClassDiscovery
                 }
 
                 $reflection = new ReflectionClass($className);
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 continue;
             }
 
@@ -193,7 +194,7 @@ class PolydockAppClassDiscovery
 
             // Prefix all field names with 'app_config_'
             return $this->prefixSchemaFieldNames($schema);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('getStoreAppFormSchema: Exception thrown', [
                 'className' => $className,
                 'error' => $e->getMessage(),
@@ -211,7 +212,7 @@ class PolydockAppClassDiscovery
      * Field names are automatically prefixed with 'app_config_'.
      *
      * @param  string  $className  The fully qualified class name
-     * @return array<\Filament\Infolists\Components\Component> Array of Filament infolist components
+     * @return array<Component> Array of Filament infolist components
      */
     public function getStoreAppInfolistSchema(string $className): array
     {
@@ -264,7 +265,7 @@ class PolydockAppClassDiscovery
 
             // Prefix all field names with 'app_config_'
             return $this->prefixSchemaFieldNames($schema);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('getStoreAppInfolistSchema: Exception thrown', [
                 'className' => $className,
                 'error' => $e->getMessage(),
@@ -348,7 +349,7 @@ class PolydockAppClassDiscovery
 
             // Prefix all field names with 'instance_config_'
             return $this->prefixAppInstanceSchemaFieldNames($schema);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('getAppInstanceFormSchema: Exception thrown', [
                 'className' => $className,
                 'error' => $e->getMessage(),
@@ -366,7 +367,7 @@ class PolydockAppClassDiscovery
      * Field names are automatically prefixed with 'instance_config_'.
      *
      * @param  string  $className  The fully qualified class name
-     * @return array<\Filament\Infolists\Components\Component> Array of Filament infolist components
+     * @return array<Component> Array of Filament infolist components
      */
     public function getAppInstanceInfolistSchema(string $className): array
     {
@@ -419,7 +420,7 @@ class PolydockAppClassDiscovery
 
             // Prefix all field names with 'instance_config_'
             return $this->prefixAppInstanceSchemaFieldNames($schema);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('getAppInstanceInfolistSchema: Exception thrown', [
                 'className' => $className,
                 'error' => $e->getMessage(),

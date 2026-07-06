@@ -34,6 +34,8 @@ use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\Polydock\Core\PolydockAppVariableDefinitionBase;
 use App\Polydock\Core\PolydockEngineInterface;
+use Exception;
+use Override;
 
 #[PolydockAppTitle('Private GPT App')]
 #[PolydockAppStoreFields]
@@ -125,7 +127,7 @@ class PolydockPrivateGptApp extends PolydockAppBase implements AmazeeAiOperation
             }
 
             return $ping;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
         }
     }
@@ -392,7 +394,7 @@ class PolydockPrivateGptApp extends PolydockAppBase implements AmazeeAiOperation
                         'lagoonVariable' => $variable,
                         'error' => $variable['error'],
                     ]);
-                throw new \Exception("Failed to add or update {$variableName} variable");
+                throw new Exception("Failed to add or update {$variableName} variable");
             }
 
             if ($this->lagoonClient->getDebug()) {
@@ -414,7 +416,7 @@ class PolydockPrivateGptApp extends PolydockAppBase implements AmazeeAiOperation
     /**
      * @param  array<string, mixed>  $context
      */
-    #[\Override]
+    #[Override]
     public function info(string $message, array $context = []): PolydockAppBase
     {
         // Delegate to parent class logging (inherited from PolydockAppBase)
@@ -424,7 +426,7 @@ class PolydockPrivateGptApp extends PolydockAppBase implements AmazeeAiOperation
     /**
      * @param  array<string, mixed>  $context
      */
-    #[\Override]
+    #[Override]
     public function error(string $message, array $context = []): PolydockAppBase
     {
         // Delegate to parent class logging (inherited from PolydockAppBase)

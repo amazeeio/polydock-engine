@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Override;
 
 class UserRemoteRegistration extends Model
 {
@@ -61,7 +62,7 @@ class UserRemoteRegistration extends Model
     /**
      * Boot the model.
      */
-    #[\Override]
+    #[Override]
     protected static function boot()
     {
         parent::boot();
@@ -153,7 +154,7 @@ class UserRemoteRegistration extends Model
      *
      * @return string
      */
-    #[\Override]
+    #[Override]
     public function getRouteKeyName()
     {
         return 'uuid';

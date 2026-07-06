@@ -14,8 +14,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Override;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property int $id
@@ -188,7 +189,7 @@ class PolydockStoreApp extends Model
                 'trial_duration_days',
             ])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontLogEmptyChanges();
     }
 
     /**
@@ -213,7 +214,7 @@ class PolydockStoreApp extends Model
     /**
      * Boot the model.
      */
-    #[\Override]
+    #[Override]
     protected static function boot()
     {
         parent::boot();
@@ -228,7 +229,7 @@ class PolydockStoreApp extends Model
      *
      * @return string
      */
-    #[\Override]
+    #[Override]
     public function getRouteKeyName()
     {
         return 'uuid';

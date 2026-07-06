@@ -8,6 +8,7 @@ use App\Models\PolydockAppInstance;
 use App\Models\UserRemoteRegistration;
 use App\Rules\BannedEmail;
 use App\Support\SensitiveDataRedactor;
+use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -64,7 +65,7 @@ class RegisterController extends Controller
                 'request_data' => $request->all(),
                 'status' => UserRemoteRegistrationStatusEnum::PENDING,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error creating user remote registration', ['error' => $e->getMessage()]);
 
             return response()->json([

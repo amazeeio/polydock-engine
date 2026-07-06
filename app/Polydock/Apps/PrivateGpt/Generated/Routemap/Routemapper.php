@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Polydock\Apps\PrivateGpt\Generated\Routemap;
 
+use InvalidArgumentException;
+use JsonException;
+
 class Routemapper
 {
     public static function clusterMap(int $deployTarget): string
@@ -16,7 +19,7 @@ class Routemapper
             126 => 'us2',
             122 => 'uk3',
             2001 => 'local',
-            default => throw new \InvalidArgumentException('Invalid deploy target: '.$deployTarget),
+            default => throw new InvalidArgumentException('Invalid deploy target: '.$deployTarget),
         };
     }
 
@@ -48,7 +51,7 @@ class Routemapper
     }
 
     /**
-     * @throws \JsonException
+     * @throws JsonException
      */
     public static function base64encodedRoutes(int $deployTarget, string $projectName): string
     {

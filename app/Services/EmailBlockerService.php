@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\PolydockBannedPattern;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -74,7 +75,7 @@ class EmailBlockerService
             }
 
             Log::warning('Failed to update disposable email domains list: response not successful or malformed JSON.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Exception triggered while updating disposable email domains', ['message' => $e->getMessage()]);
         }
 

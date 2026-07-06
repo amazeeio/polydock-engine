@@ -5,33 +5,26 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Pages\Auth;
 
 use Filament\Actions\Action;
-use Filament\Forms\Form;
-use Filament\Http\Responses\Auth\Contracts\LoginResponse;
-use Filament\Pages\Auth\Login as BaseLogin;
+use Filament\Auth\Http\Responses\Contracts\LoginResponse;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
 /**
  * Identifier-first login: email first; Okta-forced domains are redirected to
  * Okta OIDC and never see a password field, everyone else gets password login.
  */
-class Login extends BaseLogin
+class Login extends \Filament\Auth\Pages\Login
 {
     public bool $emailChecked = false;
 
-    /**
-     * @return array<int | string, string | Form>
-     */
-    protected function getForms(): array
+    public function form(Schema $schema): Schema
     {
-        return [
-            'form' => $this->makeForm()
-                ->schema([
-                    $this->getEmailFormComponent(),
-                    $this->getPasswordFormComponent()->visible(fn (): bool => $this->emailChecked),
-                    $this->getRememberFormComponent()->visible(fn (): bool => $this->emailChecked),
-                ])
-                ->statePath('data'),
-        ];
+        return $schema
+            ->components([
+                $this->getEmailFormComponent(),
+                $this->getPasswordFormComponent()->visible(fn (): bool => $this->emailChecked),
+                $this->getRememberFormComponent()->visible(fn (): bool => $this->emailChecked),
+            ]);
     }
 
     public function authenticate(): ?LoginResponse
@@ -68,7 +61,7 @@ class Login extends BaseLogin
     {
         return parent::getAuthenticateFormAction()
             ->label(fn (): string => $this->emailChecked
-                ? __('filament-panels::pages/auth/login.form.actions.authenticate.label')
+                ? __('filament-panels::auth/pages/login.form.actions.authenticate.label')
                 : 'Continue');
     }
 }

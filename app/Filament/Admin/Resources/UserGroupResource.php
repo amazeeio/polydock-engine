@@ -3,19 +3,25 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\RelationManagers\ActivitiesRelationManager;
-use App\Filament\Admin\Resources\UserGroupResource\Pages;
-use App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
+use App\Filament\Admin\Resources\UserGroupResource\Pages\CreateUserGroup;
+use App\Filament\Admin\Resources\UserGroupResource\Pages\EditUserGroup;
+use App\Filament\Admin\Resources\UserGroupResource\Pages\ListUserGroups;
+use App\Filament\Admin\Resources\UserGroupResource\Pages\ViewUserGroup;
+use App\Filament\Admin\Resources\UserGroupResource\RelationManagers\AppInstancesRelationManager;
+use App\Filament\Admin\Resources\UserGroupResource\RelationManagers\UsersRelationManager;
 use App\Models\User;
 use App\Models\UserGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -25,19 +31,19 @@ class UserGroupResource extends Resource
 {
     protected static ?string $model = UserGroup::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-user-group';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $navigationGroup = 'Users';
+    protected static string|\UnitEnum|null $navigationGroup = 'Users';
 
     protected static ?string $navigationLabel = 'Groups';
 
     protected static ?int $navigationSort = 2;
 
-    #[\Override]
-    public static function form(Form $form): Form
+    #[Override]
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -47,7 +53,7 @@ class UserGroupResource extends Resource
             ]);
     }
 
-    #[\Override]
+    #[Override]
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
@@ -65,7 +71,7 @@ class UserGroupResource extends Resource
         return $query->whereIn('id', $user->groups()->select('user_groups.id'));
     }
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -86,43 +92,43 @@ class UserGroupResource extends Resource
                 TextColumn::make('created_at')->dateTime()
                     ->sortable(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
 
-    #[\Override]
+    #[Override]
     public static function getRelations(): array
     {
         return [
-            RelationManagers\UsersRelationManager::class,
-            RelationManagers\AppInstancesRelationManager::class,
+            UsersRelationManager::class,
+            AppInstancesRelationManager::class,
             ActivitiesRelationManager::class,
         ];
     }
 
-    #[\Override]
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUserGroups::route('/'),
-            'create' => Pages\CreateUserGroup::route('/create'),
-            'view' => Pages\ViewUserGroup::route('/{record}'),
-            'edit' => Pages\EditUserGroup::route('/{record}/edit'),
+            'index' => ListUserGroups::route('/'),
+            'create' => CreateUserGroup::route('/create'),
+            'view' => ViewUserGroup::route('/{record}'),
+            'edit' => EditUserGroup::route('/{record}/edit'),
         ];
     }
 
-    #[\Override]
-    public static function infolist(Infolist $infolist): Infolist
+    #[Override]
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('Group Details')
                     ->schema([
                         Grid::make(2)

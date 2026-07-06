@@ -3,6 +3,7 @@
 namespace App\Rules;
 
 use App\Services\EmailBlockerService;
+use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
@@ -15,9 +16,9 @@ class BannedEmail implements ValidationRule
     /**
      * Run the validation rule.
      *
-     * @param  \Closure(string): PotentiallyTranslatedString  $fail
+     * @param  Closure(string):PotentiallyTranslatedString  $fail
      */
-    public function validate(string $attribute, mixed $value, \Closure $fail): void
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (empty($value) || ! is_string($value) || ! filter_var($value, FILTER_VALIDATE_EMAIL)) {
             return;

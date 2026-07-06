@@ -6,6 +6,7 @@ namespace App\Polydock\Apps\DependencyTrack\Traits\Create;
 
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
+use Exception;
 
 trait PostCreateAppInstanceTrait
 {
@@ -53,7 +54,7 @@ trait PostCreateAppInstanceTrait
                         ? ($addGroupToProjectResult['error'][0]['message'] ?? json_encode($addGroupToProjectResult['error']))
                         : $addGroupToProjectResult['error'];
                     $this->error($errorMessage);
-                    throw new \Exception($errorMessage);
+                    throw new Exception($errorMessage);
                 }
             }
 
@@ -81,7 +82,7 @@ trait PostCreateAppInstanceTrait
 
             if (! $apiEndpoint) {
                 $this->error('Could not determine Dependency Track API endpoint (no route starting with apiserver.)');
-                throw new \Exception('Missing API route for Dependency Track');
+                throw new Exception('Missing API route for Dependency Track');
             }
 
             $this->info("$functionName: determined API Endpoint: $apiEndpoint", $logContext);
@@ -89,7 +90,7 @@ trait PostCreateAppInstanceTrait
             // TODO: Execute CLI script inside the environment to get the API Key (TODO)
             $apiKey = $appInstance->getKeyValue('app-admin-api-key');
             if (empty($apiKey)) {
-                throw new \Exception('Missing Dependency-Track API key on app instance. Claim must run before post-create can publish organization variables.');
+                throw new Exception('Missing Dependency-Track API key on app instance. Claim must run before post-create can publish organization variables.');
             }
 
             $this->info("$functionName: using API Key captured during claim", $logContext);
@@ -111,7 +112,7 @@ trait PostCreateAppInstanceTrait
                 );
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Post Create Failed: '.$e->getMessage(), [
                 'exception_class' => get_class($e),
                 'exception_trace' => $e->getTraceAsString(),

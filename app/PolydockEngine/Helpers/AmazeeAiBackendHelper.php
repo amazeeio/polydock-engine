@@ -4,6 +4,7 @@ namespace App\PolydockEngine\Helpers;
 
 use App\PolydockEngine\PolydockLogger;
 use App\PolydockServiceProviders\PolydockServiceProviderAmazeeAiBackend;
+use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
@@ -37,7 +38,7 @@ class AmazeeAiBackendHelper
             Cache::put($cacheKey, $region, self::$cacheTTL);
 
             return $region;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error getting Amazee AI Backend region '.$regionId.': '.$e->getMessage());
 
             return null;

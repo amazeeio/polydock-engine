@@ -7,7 +7,10 @@ namespace App\Filament\Admin\Resources\ApiTokenResource\Pages;
 use App\Filament\Admin\Resources\ApiTokenResource;
 use App\Models\User;
 use Filament\Actions\Action;
-use Filament\Forms;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Carbon;
@@ -16,7 +19,7 @@ class ListApiTokens extends ListRecords
 {
     protected static string $resource = ApiTokenResource::class;
 
-    #[\Override]
+    #[Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -25,8 +28,8 @@ class ListApiTokens extends ListRecords
                 ->icon('heroicon-o-plus')
                 ->modalHeading('Create API token')
                 ->modalDescription('The token will only be shown once after creation.')
-                ->form([
-                    Forms\Components\Select::make('user_id')
+                ->schema([
+                    Select::make('user_id')
                         ->label('Owner user')
                         ->required()
                         ->searchable()
@@ -43,11 +46,11 @@ class ListApiTokens extends ListRecords
                                 ->whereKey($value)
                                 ->value('email'),
                         ),
-                    Forms\Components\TextInput::make('token_name')
+                    TextInput::make('token_name')
                         ->label('Token name')
                         ->required()
                         ->maxLength(255),
-                    Forms\Components\CheckboxList::make('abilities')
+                    CheckboxList::make('abilities')
                         ->label('Abilities')
                         ->options([
                             'instances.read' => 'instances.read',
@@ -58,7 +61,7 @@ class ListApiTokens extends ListRecords
                         ->required()
                         ->minItems(1)
                         ->columns(1),
-                    Forms\Components\DateTimePicker::make('expires_at')
+                    DateTimePicker::make('expires_at')
                         ->label('Expires at')
                         ->seconds(false),
                 ])

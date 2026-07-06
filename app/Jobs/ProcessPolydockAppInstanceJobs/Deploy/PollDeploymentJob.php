@@ -6,6 +6,7 @@ use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\PolydockEngine\Engine;
 use App\PolydockEngine\PolydockLogger;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
@@ -20,7 +21,7 @@ class PollDeploymentJob extends BaseJob implements ShouldQueue
         $appInstance = $this->appInstance;
 
         if (! $appInstance) {
-            throw new \Exception(
+            throw new Exception(
                 'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
             );
         }
@@ -46,7 +47,7 @@ class PollDeploymentJob extends BaseJob implements ShouldQueue
                 'status' => $appInstance->status->value,
                 'next_poll_after' => $appInstance->next_poll_after,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error polling deployment status', [
                 'app_instance_id' => $appInstance->id,
                 'error' => $e->getMessage(),

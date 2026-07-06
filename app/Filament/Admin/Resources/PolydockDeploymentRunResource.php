@@ -4,14 +4,15 @@ namespace App\Filament\Admin\Resources;
 
 use App\Enums\PolydockDeploymentRunStatusEnum;
 use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
-use App\Filament\Admin\Resources\PolydockDeploymentRunResource\Pages;
+use App\Filament\Admin\Resources\PolydockDeploymentRunResource\Pages\ListPolydockDeploymentRuns;
+use App\Filament\Admin\Resources\PolydockDeploymentRunResource\Pages\ViewPolydockDeploymentRun;
 use App\Models\PolydockDeploymentRun;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Section;
+use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -21,45 +22,45 @@ class PolydockDeploymentRunResource extends Resource
 {
     protected static ?string $model = PolydockDeploymentRun::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rocket-launch';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-rocket-launch';
 
-    protected static ?string $navigationGroup = 'Apps';
+    protected static string|\UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'Deployments';
 
     protected static ?int $navigationSort = 150;
 
-    #[\Override]
+    #[Override]
     public static function canViewAny(): bool
     {
         return PolydockDeploymentRun::currentUserCanManage();
     }
 
-    #[\Override]
+    #[Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
-    #[\Override]
+    #[Override]
     public static function canEdit($record): bool
     {
         return false;
     }
 
-    #[\Override]
+    #[Override]
     public static function canDelete($record): bool
     {
         return false;
     }
 
-    #[\Override]
+    #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with('storeApp');
     }
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -109,16 +110,16 @@ class PolydockDeploymentRunResource extends Resource
                         ->mapWithKeys(fn ($case) => [$case->value => $case->getLabel()])
                         ->all()),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
             ])
-            ->bulkActions([]);
+            ->toolbarActions([]);
     }
 
-    #[\Override]
-    public static function infolist(Infolist $infolist): Infolist
+    #[Override]
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist->schema([
+        return $schema->components([
             Section::make('Deployment Run')
                 ->schema([
                     Grid::make(3)->schema([
@@ -149,12 +150,12 @@ class PolydockDeploymentRunResource extends Resource
         ]);
     }
 
-    #[\Override]
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPolydockDeploymentRuns::route('/'),
-            'view' => Pages\ViewPolydockDeploymentRun::route('/{record}'),
+            'index' => ListPolydockDeploymentRuns::route('/'),
+            'view' => ViewPolydockDeploymentRun::route('/{record}'),
         ];
     }
 }

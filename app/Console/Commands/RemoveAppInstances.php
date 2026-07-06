@@ -7,10 +7,12 @@ namespace App\Console\Commands;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Override;
 
 class RemoveAppInstances extends BaseCommand
 {
@@ -215,7 +217,7 @@ class RemoveAppInstances extends BaseCommand
                     "✓ Instance {$instance->id} ({$instance->name}) set to PENDING_PRE_REMOVE (was: {$previousStatus->getLabel()}){$suffix}"
                 );
                 $successCount++;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error("✗ Failed to update instance {$instance->id}: {$e->getMessage()}");
                 Log::error("Failed to remove app instance {$instance->id} via console command", [
                     'instance_id' => $instance->id,
@@ -245,7 +247,7 @@ class RemoveAppInstances extends BaseCommand
         return $errorCount > 0 ? self::FAILURE : self::SUCCESS;
     }
 
-    #[\Override]
+    #[Override]
     public function sensitiveInputs(): array
     {
         return ['email'];

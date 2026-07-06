@@ -6,6 +6,7 @@ namespace App\Polydock\Apps\AmazeeClaw\Traits\Create;
 
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
+use Exception;
 
 trait PreCreateAppInstanceTrait
 {
@@ -63,7 +64,7 @@ trait PreCreateAppInstanceTrait
             while ($this->lagoonClient->projectExistsByName($finalProjectName)) {
                 if ($attempts >= $maxAttempts) {
                     $this->error("{$functionName}: Failed to generate a unique project name after {$maxAttempts} attempts", $logContext);
-                    throw new \Exception('Failed to generate a unique project name for Lagoon');
+                    throw new Exception('Failed to generate a unique project name for Lagoon');
                 }
                 $this->info("{$functionName}: Project name {$finalProjectName} already exists on Lagoon, generating unique variant", $logContext);
                 $finalProjectName = $this->generateUniqueProjectName($baseName);
@@ -109,7 +110,7 @@ trait PreCreateAppInstanceTrait
         $uniqueIdLengthBytes = 3; // 6 hex chars
         try {
             $shortUniqueId = bin2hex(random_bytes($uniqueIdLengthBytes));
-        } catch (\Exception) {
+        } catch (Exception) {
             // Fallback preserves randomness if secure source is unavailable.
             $shortUniqueId = substr(hash('sha256', uniqid('', true)), 0, $uniqueIdLengthBytes * 2);
         }

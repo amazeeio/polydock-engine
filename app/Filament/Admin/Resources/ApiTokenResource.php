@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\ApiTokenResource\Pages;
+use App\Filament\Admin\Resources\ApiTokenResource\Pages\ListApiTokens;
 use App\Models\User;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Laravel\Sanctum\PersonalAccessToken;
@@ -16,69 +17,69 @@ class ApiTokenResource extends Resource
 {
     protected static ?string $model = PersonalAccessToken::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-key';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-key';
 
-    protected static ?string $navigationGroup = 'Users';
+    protected static string|\UnitEnum|null $navigationGroup = 'Users';
 
     protected static ?string $navigationLabel = 'API Tokens';
 
     protected static ?int $navigationSort = 120;
 
-    #[\Override]
+    #[Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
             ->where('tokenable_type', User::class);
     }
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tokenable.email')
+                TextColumn::make('tokenable.email')
                     ->label('Owner')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('abilities')
+                TextColumn::make('abilities')
                     ->formatStateUsing(
                         static fn (mixed $state): string => is_array($state) ? implode(', ', $state) : (string) $state
                     )
                     ->label('Abilities')
                     ->wrap(),
-                Tables\Columns\TextColumn::make('last_used_at')
+                TextColumn::make('last_used_at')
                     ->dateTime()
                     ->sortable()
                     ->placeholder('Never'),
-                Tables\Columns\TextColumn::make('expires_at')
+                TextColumn::make('expires_at')
                     ->dateTime()
                     ->sortable()
                     ->placeholder('Never'),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
             ])
-            ->actions([
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                DeleteAction::make()
                     ->label('Revoke'),
             ])
-            ->bulkActions([]);
+            ->toolbarActions([]);
     }
 
-    #[\Override]
+    #[Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
-    #[\Override]
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListApiTokens::route('/'),
+            'index' => ListApiTokens::route('/'),
         ];
     }
 }

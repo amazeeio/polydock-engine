@@ -5,25 +5,25 @@ namespace App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages;
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource;
 use App\Models\UserRemoteRegistration;
 use App\Support\SensitiveDataRedactor;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewUserRemoteRegistration extends ViewRecord
 {
     protected static string $resource = UserRemoteRegistrationResource::class;
 
     // Remove any header actions (including edit button)
-    #[\Override]
+    #[Override]
     protected function getHeaderActions(): array
     {
         return [];
     }
 
-    #[\Override]
-    public function infolist(Infolist $infolist): Infolist
+    #[Override]
+    public function infolist(Schema $schema): Schema
     {
         return $infolist
             ->schema([

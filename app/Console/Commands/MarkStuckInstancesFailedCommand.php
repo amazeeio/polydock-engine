@@ -8,6 +8,7 @@ use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
+use LogicException;
 
 class MarkStuckInstancesFailedCommand extends BaseCommand
 {
@@ -64,7 +65,7 @@ class MarkStuckInstancesFailedCommand extends BaseCommand
             PolydockAppInstanceStatus::POLYDOCK_CLAIM_RUNNING,
             PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED => PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
 
-            default => throw new \LogicException("No failed status mapping for: {$status->value}"),
+            default => throw new LogicException("No failed status mapping for: {$status->value}"),
         };
     }
 

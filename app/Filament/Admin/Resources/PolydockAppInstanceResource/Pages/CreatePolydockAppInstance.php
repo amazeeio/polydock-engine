@@ -8,28 +8,29 @@ use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
 use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use App\Services\PolydockAppClassDiscovery;
+use Exception;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\KeyValue;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Log;
 
 class CreatePolydockAppInstance extends Page
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
-    protected static string $view = 'filament.admin.pages.create-polydock-app-instance';
+    protected string $view = 'filament.admin.pages.create-polydock-app-instance';
 
     protected static ?string $title = 'Create App Instance';
 
-    protected static ?string $navigationIcon = 'heroicon-o-plus-circle';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-plus-circle';
 
     public ?array $data = [];
 
@@ -43,11 +44,11 @@ class CreatePolydockAppInstance extends Page
         ]);
     }
 
-    #[\Override]
-    public function form(Form $form): Form
+    #[Override]
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('User Information')
                     ->description('Enter the user details for the instance owner')
                     ->schema([
@@ -224,7 +225,7 @@ class CreatePolydockAppInstance extends Page
 
             // Redirect to the registrations list so they can track progress
             $this->redirect(PolydockAppInstanceResource::getUrl('index'));
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to create admin-initiated instance', [
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),

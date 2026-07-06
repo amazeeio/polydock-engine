@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -109,7 +110,7 @@ class RemoveUnclaimedAppInstancesCommand extends BaseCommand
                     $updatedCount++;
 
                     $this->line("✓ Updated instance: {$instance->name} (ID: {$instance->id})");
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->error(
                         "✗ Failed to update instance {$instance->name} (ID: {$instance->id}): ".$e->getMessage(),
                     );
@@ -136,7 +137,7 @@ class RemoveUnclaimedAppInstancesCommand extends BaseCommand
             ]);
 
             return Command::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Failed to process unclaimed instances: '.$e->getMessage());
             Log::error('Failed to process unclaimed instances via command', [
                 'error' => $e->getMessage(),

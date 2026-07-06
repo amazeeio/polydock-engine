@@ -10,13 +10,13 @@ use Illuminate\Support\Facades\DB;
 
 class UserRemoteRegistrationsChart extends ChartWidget
 {
-    protected static ?string $heading = 'Remote Registrations by Status';
+    protected ?string $heading = 'Remote Registrations by Status';
 
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
 
     protected static ?int $sort = 200;
 
-    #[\Override]
+    #[Override]
     protected function getData(): array
     {
         $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
@@ -82,7 +82,7 @@ class UserRemoteRegistrationsChart extends ChartWidget
         return 'bar';
     }
 
-    #[\Override]
+    #[Override]
     protected function getOptions(): array
     {
         return [

@@ -2,38 +2,42 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\PolydockStoreWebhookCallResource\Pages;
+use App\Filament\Admin\Resources\PolydockStoreWebhookCallResource\Pages\ListPolydockStoreWebhookCalls;
+use App\Filament\Admin\Resources\PolydockStoreWebhookCallResource\Pages\ViewPolydockStoreWebhookCall;
 use App\Models\PolydockStoreWebhookCall;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use Filament\Actions\ViewAction;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class PolydockStoreWebhookCallResource extends Resource
 {
     protected static ?string $model = PolydockStoreWebhookCall::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-bell-alert';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-bell-alert';
 
-    protected static ?string $navigationGroup = 'Apps';
+    protected static string|\UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'Webhook Calls';
 
     protected static ?int $navigationSort = 5200;
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-                Tables\Columns\TextColumn::make('webhook.store.name')
+                TextColumn::make('webhook.store.name')
                     ->description(fn (PolydockStoreWebhookCall $record) => $record->webhook->url)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('event')
+                TextColumn::make('event')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->description(fn (PolydockStoreWebhookCall $record) => $record->response_code)
                     ->badge()
                     ->color(fn ($state) => match ($state->getLabel()) {
@@ -41,77 +45,77 @@ class PolydockStoreWebhookCallResource extends Resource
                         'Failed' => 'danger',
                         default => 'warning',
                     }),
-                Tables\Columns\TextColumn::make('attempt')
+                TextColumn::make('attempt')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('processed_at')
+                TextColumn::make('processed_at')
                     ->dateTime()
                     ->sortable(),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
             ])
-            ->bulkActions([]);
+            ->toolbarActions([]);
     }
 
-    #[\Override]
-    public static function infolist(Infolist $infolist): Infolist
+    #[Override]
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make('Call Information')
+        return $schema
+            ->components([
+                Section::make('Call Information')
                     ->schema([
-                        Infolists\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Infolists\Components\TextEntry::make('webhook.store.name')
+                                TextEntry::make('webhook.store.name')
                                     ->label('Store')
                                     ->icon('heroicon-m-building-storefront')
                                     ->columnSpan(1),
-                                Infolists\Components\TextEntry::make('event')
+                                TextEntry::make('event')
                                     ->icon('heroicon-m-bell')
                                     ->columnSpan(1),
-                                Infolists\Components\TextEntry::make('webhook.url')
+                                TextEntry::make('webhook.url')
                                     ->label('URL')
                                     ->url(fn ($state) => $state)
                                     ->openUrlInNewTab()
                                     ->icon('heroicon-m-globe-alt')
                                     ->columnSpanFull(),
                             ]),
-                        Infolists\Components\Grid::make(4)
+                        Grid::make(4)
                             ->schema([
-                                Infolists\Components\TextEntry::make('status')
+                                TextEntry::make('status')
                                     ->badge()
                                     ->color(fn ($state) => match ($state->getLabel()) {
                                         'Success' => 'success',
                                         'Failed' => 'danger',
                                         default => 'warning',
                                     }),
-                                Infolists\Components\TextEntry::make('response_code')
+                                TextEntry::make('response_code')
                                     ->label('Response Code')
                                     ->icon('heroicon-m-signal')
                                     ->color(fn ($state) => str_starts_with((string) $state, '2')
                                         ? 'success'
                                         : 'danger'),
-                                Infolists\Components\TextEntry::make('attempt')
+                                TextEntry::make('attempt')
                                     ->icon('heroicon-m-arrow-path'),
-                                Infolists\Components\TextEntry::make('processed_at')
+                                TextEntry::make('processed_at')
                                     ->dateTime()
                                     ->icon('heroicon-m-calendar'),
                             ]),
                     ])
                     ->columnSpan(3),
 
-                Infolists\Components\Section::make('Payload & Response')
+                Section::make('Payload & Response')
                     ->schema([
-                        Infolists\Components\TextEntry::make('payload')
+                        TextEntry::make('payload')
                             ->label('Request Payload')
                             ->state(fn ($record) => json_encode($record->payload, JSON_PRETTY_PRINT))
                             ->columnSpanFull(),
-                        Infolists\Components\TextEntry::make('response_body')
+                        TextEntry::make('response_body')
                             ->label('Response Body')
                             ->visible(fn ($state) => ! empty($state))
                             ->columnSpanFull(),
-                        Infolists\Components\TextEntry::make('exception')
+                        TextEntry::make('exception')
                             ->label('Error Details')
                             ->visible(fn ($state) => ! empty($state))
                             ->color('danger')
@@ -122,18 +126,18 @@ class PolydockStoreWebhookCallResource extends Resource
             ->columns(3);
     }
 
-    #[\Override]
+    #[Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
-    #[\Override]
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPolydockStoreWebhookCalls::route('/'),
-            'view' => Pages\ViewPolydockStoreWebhookCall::route('/{record}'),
+            'index' => ListPolydockStoreWebhookCalls::route('/'),
+            'view' => ViewPolydockStoreWebhookCall::route('/{record}'),
         ];
     }
 }

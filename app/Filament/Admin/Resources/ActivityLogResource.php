@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\ActivityLogResource\Pages;
-use Filament\Infolists;
-use Filament\Infolists\Infolist;
+use App\Filament\Admin\Resources\ActivityLogResource\Pages\ListActivityLogs;
+use App\Filament\Admin\Resources\ActivityLogResource\Pages\ViewActivityLog;
+use Filament\Actions\ViewAction;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Spatie\Activitylog\Models\Activity;
@@ -17,9 +21,9 @@ class ActivityLogResource extends Resource
 {
     protected static ?string $model = Activity::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $navigationGroup = 'System';
+    protected static string|\UnitEnum|null $navigationGroup = 'System';
 
     protected static ?string $navigationLabel = 'Audit Log';
 
@@ -29,37 +33,37 @@ class ActivityLogResource extends Resource
 
     protected static ?int $navigationSort = 9000;
 
-    #[\Override]
+    #[Override]
     public static function table(Table $table): Table
     {
         return $table
             ->defaultSort('created_at', 'desc')
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('When')
                     ->dateTime('Y-m-d H:i:s')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('causer.email')
+                TextColumn::make('causer.email')
                     ->label('Actor')
                     ->searchable()
                     ->description(fn (Activity $record) => $record->properties['is_service_account'] ?? false
                         ? 'service-account'
                         : null)
                     ->placeholder('System'),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label('Action')
                     ->searchable()
                     ->wrap()
                     ->limit(80),
-                Tables\Columns\TextColumn::make('subject_type')
+                TextColumn::make('subject_type')
                     ->label('Resource')
                     ->formatStateUsing(fn (?string $state) => $state ? class_basename($state) : '-')
                     ->badge()
                     ->color('gray'),
-                Tables\Columns\TextColumn::make('subject_id')
+                TextColumn::make('subject_id')
                     ->label('ID')
                     ->placeholder('-'),
-                Tables\Columns\TextColumn::make('event')
+                TextColumn::make('event')
                     ->label('Event')
                     ->badge()
                     ->color(fn (?string $state) => match ($state) {
@@ -104,39 +108,39 @@ class ActivityLogResource extends Resource
                         return $query;
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
+            ->recordActions([
+                ViewAction::make(),
             ])
-            ->bulkActions([]);
+            ->toolbarActions([]);
     }
 
-    #[\Override]
-    public static function infolist(Infolist $infolist): Infolist
+    #[Override]
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                Infolists\Components\Section::make('Activity Details')
+        return $schema
+            ->components([
+                Section::make('Activity Details')
                     ->schema([
-                        Infolists\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Infolists\Components\TextEntry::make('created_at')
+                                TextEntry::make('created_at')
                                     ->label('Timestamp')
                                     ->dateTime('Y-m-d H:i:s'),
-                                Infolists\Components\TextEntry::make('causer.email')
+                                TextEntry::make('causer.email')
                                     ->label('Actor')
                                     ->placeholder('System'),
-                                Infolists\Components\TextEntry::make('description')
+                                TextEntry::make('description')
                                     ->label('Action'),
                             ]),
-                        Infolists\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
-                                Infolists\Components\TextEntry::make('subject_type')
+                                TextEntry::make('subject_type')
                                     ->label('Resource Type')
                                     ->formatStateUsing(fn (?string $state) => $state ? class_basename($state) : '-'),
-                                Infolists\Components\TextEntry::make('subject_id')
+                                TextEntry::make('subject_id')
                                     ->label('Resource ID')
                                     ->placeholder('-'),
-                                Infolists\Components\TextEntry::make('event')
+                                TextEntry::make('event')
                                     ->badge()
                                     ->color(fn (?string $state) => match ($state) {
                                         'created' => 'success',
@@ -146,48 +150,48 @@ class ActivityLogResource extends Resource
                                     }),
                             ]),
                     ]),
-                Infolists\Components\Section::make('Context')
+                Section::make('Context')
                     ->schema([
-                        Infolists\Components\Grid::make(4)
+                        Grid::make(4)
                             ->schema([
-                                Infolists\Components\TextEntry::make('properties.ip')
+                                TextEntry::make('properties.ip')
                                     ->label('IP Address')
                                     ->placeholder('-'),
-                                Infolists\Components\TextEntry::make('properties.token_name')
+                                TextEntry::make('properties.token_name')
                                     ->label('Token')
                                     ->placeholder('-'),
-                                Infolists\Components\TextEntry::make('properties.is_service_account')
+                                TextEntry::make('properties.is_service_account')
                                     ->label('Service Account')
                                     ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No')
                                     ->badge()
                                     ->color(fn ($state) => $state ? 'warning' : 'gray'),
-                                Infolists\Components\TextEntry::make('properties.user_agent')
+                                TextEntry::make('properties.user_agent')
                                     ->label('User Agent')
                                     ->placeholder('-')
                                     ->limit(60),
                             ]),
                     ]),
-                Infolists\Components\Section::make('Changes')
+                Section::make('Changes')
                     ->schema([
-                        Infolists\Components\TextEntry::make('properties.old')
+                        TextEntry::make('attribute_changes.old')
                             ->label('Before')
-                            ->state(fn (Activity $record) => isset($record->properties['old'])
-                                ? json_encode($record->properties['old'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+                            ->state(fn (Activity $record) => isset($record->attribute_changes['old'])
+                                ? json_encode($record->attribute_changes['old'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
                                 : null)
                             ->placeholder('N/A')
                             ->columnSpanFull(),
-                        Infolists\Components\TextEntry::make('properties.attributes')
+                        TextEntry::make('attribute_changes.attributes')
                             ->label('After')
-                            ->state(fn (Activity $record) => isset($record->properties['attributes'])
-                                ? json_encode($record->properties['attributes'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
+                            ->state(fn (Activity $record) => isset($record->attribute_changes['attributes'])
+                                ? json_encode($record->attribute_changes['attributes'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
                                 : null)
                             ->placeholder('N/A')
                             ->columnSpanFull(),
                     ])
-                    ->visible(fn (Activity $record) => isset($record->properties['old']) || isset($record->properties['attributes'])),
-                Infolists\Components\Section::make('Full Properties')
+                    ->visible(fn (Activity $record) => isset($record->attribute_changes['old']) || isset($record->attribute_changes['attributes'])),
+                Section::make('Full Properties')
                     ->schema([
-                        Infolists\Components\TextEntry::make('properties')
+                        TextEntry::make('properties')
                             ->label('')
                             ->state(fn (Activity $record) => json_encode(
                                 collect($record->properties)->except(['old', 'attributes', 'ip', 'user_agent', 'token_id', 'token_name', 'is_service_account', 'request_id'])->all(),
@@ -202,18 +206,18 @@ class ActivityLogResource extends Resource
             ]);
     }
 
-    #[\Override]
+    #[Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
-    #[\Override]
+    #[Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListActivityLogs::route('/'),
-            'view' => Pages\ViewActivityLog::route('/{record}'),
+            'index' => ListActivityLogs::route('/'),
+            'view' => ViewActivityLog::route('/{record}'),
         ];
     }
 }
