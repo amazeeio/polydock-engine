@@ -50,4 +50,16 @@ class EnforcedMfaTest extends TestCase
             ->get('/admin')
             ->assertOk();
     }
+
+    public function test_okta_linked_user_with_a_password_is_not_exempt(): void
+    {
+        // A runbook-issued temporary password re-opens password login,
+        // so local TOTP must be required again.
+        $user = $this->adminUser();
+        $user->forceFill(['okta_sub' => 'okta-sub-mfa'])->save();
+
+        $this->actingAs($user)
+            ->get('/admin')
+            ->assertRedirect(route('filament.admin.auth.multi-factor-authentication.set-up-required'));
+    }
 }
