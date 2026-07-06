@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
+use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -28,6 +29,7 @@ class User extends Authenticatable implements FilamentUser
     use HasRoles;
     use LogsActivity;
     use Notifiable;
+    use TwoFactorAuthenticatable;
 
     /**
      * Explicitly set the guard for spatie/laravel-permission.
