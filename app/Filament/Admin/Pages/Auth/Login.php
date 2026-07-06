@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Pages\Auth;
 
 use Filament\Actions\Action;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse;
+use Filament\Auth\Pages\Login as BaseLogin;
 use Filament\Schemas\Schema;
 use Illuminate\Support\Str;
 
@@ -13,7 +14,7 @@ use Illuminate\Support\Str;
  * Identifier-first login: email first; Okta-forced domains are redirected to
  * Okta OIDC and never see a password field, everyone else gets password login.
  */
-class Login extends \Filament\Auth\Pages\Login
+class Login extends BaseLogin
 {
     public bool $emailChecked = false;
 
