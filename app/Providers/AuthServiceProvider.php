@@ -16,6 +16,7 @@ use App\Policies\RolePolicy;
 use App\Policies\UserGroupPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Auth\Events\Login;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -59,7 +60,7 @@ class AuthServiceProvider extends ServiceProvider
                 : 'password';
 
             activity()
-                ->causedBy($event->user)
+                ->causedBy($event->user instanceof Model ? $event->user : null)
                 ->withProperties(['provider' => $provider, 'guard' => $event->guard])
                 ->log('login');
         });

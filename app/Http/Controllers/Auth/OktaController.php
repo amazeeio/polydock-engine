@@ -16,7 +16,7 @@ use Spatie\SlackAlerts\Facades\SlackAlert;
 
 class OktaController extends Controller
 {
-    public function redirect(): RedirectResponse
+    public function redirect(): \Symfony\Component\HttpFoundation\RedirectResponse
     {
         abort_unless((bool) config('services.okta.client_id'), 404);
 
@@ -27,6 +27,7 @@ class OktaController extends Controller
     {
         abort_unless((bool) config('services.okta.client_id'), 404);
 
+        /** @var AbstractUser $oktaUser */
         $oktaUser = Socialite::driver('okta')->user();
 
         $sub = (string) $oktaUser->getId();
