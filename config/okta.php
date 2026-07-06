@@ -36,4 +36,17 @@ return [
         'polydock-support' => 'support',
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Fake Okta (local development only)
+    |--------------------------------------------------------------------------
+    |
+    | When true (and not in production), the okta Socialite driver is swapped
+    | for a local fake IdP form so the full SSO flow can be exercised without
+    | a real Okta app. Requires OKTA_CLIENT_ID to be set to any value.
+    |
+    */
+
+    'fake' => (bool) env('OKTA_FAKE', false),
+
 ];

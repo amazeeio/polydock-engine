@@ -56,15 +56,15 @@ class OktaLoginTest extends TestCase
         $this->get('/auth/okta/callback')->assertNotFound();
     }
 
-    public function test_redirect_sends_user_to_okta(): void
+    public function test_redirect_sends_user_to_the_idp_with_state(): void
     {
+        // In the test env the fake Okta driver is active (OKTA_FAKE in
+        // phpunit.xml); the real provider's URL building is vendor code.
         $response = $this->get('/auth/okta/redirect');
 
         $response->assertRedirect();
-        $this->assertStringStartsWith(
-            'https://example.okta.com/oauth2/v1/authorize',
-            $response->headers->get('Location'),
-        );
+        $location = (string) $response->headers->get('Location');
+        $this->assertStringContainsString('/fake-okta/authorize?state=', $location);
     }
 
     public function test_callback_logs_in_existing_user_by_okta_sub(): void

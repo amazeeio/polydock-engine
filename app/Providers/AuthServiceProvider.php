@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Auth\FakeOktaProvider;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\Role;
@@ -50,7 +51,9 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Event::listen(function (SocialiteWasCalled $event): void {
-            $event->extendSocialite('okta', OktaProvider::class);
+            $useFake = config('okta.fake') && ! $this->app->isProduction();
+
+            $event->extendSocialite('okta', $useFake ? FakeOktaProvider::class : OktaProvider::class);
         });
 
         // Audit every interactive login with its provider (password or okta).
