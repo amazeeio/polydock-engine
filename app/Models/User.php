@@ -13,8 +13,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
-use Jeffgreco13\FilamentBreezy\Models\BreezySession;
-use Jeffgreco13\FilamentBreezy\Traits\TwoFactorAuthenticatable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Activitylog\LogOptions;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -22,8 +20,6 @@ use Spatie\Permission\Traits\HasRoles;
 
 /**
  * @property string|null $okta_sub
- * @property-read BreezySession|null $breezySession
- * @property-read array<int, string>|null $two_factor_recovery_codes
  */
 class User extends Authenticatable implements FilamentUser
 {
@@ -35,7 +31,6 @@ class User extends Authenticatable implements FilamentUser
     use HasRoles;
     use LogsActivity;
     use Notifiable;
-    use TwoFactorAuthenticatable;
 
     /**
      * Explicitly set the guard for spatie/laravel-permission.

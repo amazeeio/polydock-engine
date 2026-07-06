@@ -27,7 +27,7 @@ class AuditLogAccessControlTest extends TestCase
 
         activity()->log('Test entry');
 
-        $this->actingAsWithTwoFactor($user)
+        $this->actingAs($user)
             ->get('/admin/activity-logs')
             ->assertOk();
     }
@@ -42,7 +42,7 @@ class AuditLogAccessControlTest extends TestCase
         activity()->log('Detail test');
         $activity = Activity::first();
 
-        $this->actingAsWithTwoFactor($user)
+        $this->actingAs($user)
             ->get("/admin/activity-logs/{$activity->id}")
             ->assertOk();
     }

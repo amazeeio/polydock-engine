@@ -23,7 +23,6 @@ use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use Jeffgreco13\FilamentBreezy\BreezyCore;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -75,13 +74,6 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->plugins([
                 FilamentShieldPlugin::make(),
-                BreezyCore::make()
-                    ->myProfile()
-                    // TOTP is enforced for password users only; Okta users authenticate
-                    // (and MFA) upstream at Okta and have no password.
-                    ->enableTwoFactorAuthentication(
-                        force: fn (): bool => filament()->auth()->user()?->okta_sub === null,
-                    ),
             ]);
     }
 }
