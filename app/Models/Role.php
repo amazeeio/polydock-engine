@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Permission\Models\Role as SpatieRole;
 
 /**
@@ -23,7 +23,7 @@ class Role extends SpatieRole
         return LogOptions::defaults()
             ->logOnly(['name', 'label', 'guard_name'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontLogEmptyChanges();
     }
 
     /**

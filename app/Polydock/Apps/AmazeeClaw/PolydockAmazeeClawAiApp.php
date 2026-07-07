@@ -14,8 +14,10 @@ use App\Polydock\Core\Attributes\PolydockAppStoreFields;
 use App\Polydock\Core\Attributes\PolydockAppTitle;
 use App\Polydock\Core\Contracts\HasAppInstanceFormFields;
 use App\Polydock\Core\Contracts\HasStoreAppFormFields;
-use Filament\Forms;
-use Filament\Infolists;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
+use Override;
 
 #[PolydockAppTitle('AmazeeClaw AI App')]
 #[PolydockAppStoreFields]
@@ -29,16 +31,16 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
 
     public static string $version = '0.1.10';
 
-    #[\Override]
+    #[Override]
     public static function getStoreAppFormSchema(): array
     {
         return [
-            Forms\Components\TextInput::make('openclaw_default_model')
+            TextInput::make('openclaw_default_model')
                 ->label('openClawDefaultModel')
                 ->placeholder('e.g. kimi-k2.5')
                 ->maxLength(255)
                 ->helperText('Default model for OpenClaw amazee.ai behavior. Used when instance value is not set.'),
-            Forms\Components\Select::make('amazeeai_key_mode')
+            Select::make('amazeeai_key_mode')
                 ->label('Amazee AI Key Mode')
                 ->options([
                     'manual' => 'Inject keys manually / from request data',
@@ -49,24 +51,24 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
         ];
     }
 
-    #[\Override]
+    #[Override]
     public static function getStoreAppInfolistSchema(): array
     {
         return [
-            Infolists\Components\TextEntry::make('openclaw_default_model')
+            TextEntry::make('openclaw_default_model')
                 ->label('openClawDefaultModel')
                 ->placeholder('Not configured'),
-            Infolists\Components\TextEntry::make('amazeeai_key_mode')
+            TextEntry::make('amazeeai_key_mode')
                 ->label('Amazee AI Key Mode')
                 ->placeholder('Inject keys manually / from request data'),
         ];
     }
 
-    #[\Override]
+    #[Override]
     public static function getAppInstanceFormSchema(): array
     {
         return [
-            Forms\Components\TextInput::make('openclaw_default_model')
+            TextInput::make('openclaw_default_model')
                 ->label('openClawDefaultModel')
                 ->placeholder('e.g. kimi-k2.5')
                 ->maxLength(255)
@@ -74,11 +76,11 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
         ];
     }
 
-    #[\Override]
+    #[Override]
     public static function getAppInstanceInfolistSchema(): array
     {
         return [
-            Infolists\Components\TextEntry::make('openclaw_default_model')
+            TextEntry::make('openclaw_default_model')
                 ->label('openClawDefaultModel')
                 ->placeholder('Not configured'),
         ];

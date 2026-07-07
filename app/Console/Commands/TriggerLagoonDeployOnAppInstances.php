@@ -9,6 +9,7 @@ use App\Models\PolydockStoreApp;
 use App\Polydock\Clients\Lagoon\Client;
 use App\Services\LagoonClientService;
 use App\Services\PolydockDeploymentService;
+use Exception;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\multiselect;
@@ -210,7 +211,7 @@ class TriggerLagoonDeployOnAppInstances extends BaseCommand
         if (! $client) {
             try {
                 $client = app(LagoonClientService::class)->getAuthenticatedClient();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error("Authentication failed for instance {$instance->id}: {$e->getMessage()}");
 
                 return 1;
@@ -239,7 +240,7 @@ class TriggerLagoonDeployOnAppInstances extends BaseCommand
 
                 return 0;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error(string: "\n[FAILED] {$projectName}: {$e->getMessage()}");
 
             return 1;

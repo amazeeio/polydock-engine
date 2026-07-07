@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Models\Activity;
@@ -40,18 +40,18 @@ class ActivitiesRelationManager extends RelationManager
             ->defaultSort('created_at', 'desc')
             ->recordTitleAttribute('description')
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('When')
                     ->dateTime('Y-m-d H:i:s')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('causer.email')
+                TextColumn::make('causer.email')
                     ->label('Actor')
                     ->placeholder('System'),
-                Tables\Columns\TextColumn::make('description')
+                TextColumn::make('description')
                     ->label('Action')
                     ->wrap()
                     ->limit(80),
-                Tables\Columns\TextColumn::make('event')
+                TextColumn::make('event')
                     ->badge()
                     ->color(fn (?string $state) => match ($state) {
                         'created' => 'success',
@@ -59,7 +59,7 @@ class ActivitiesRelationManager extends RelationManager
                         'deleted' => 'danger',
                         default => 'gray',
                     }),
-                Tables\Columns\TextColumn::make('properties')
+                TextColumn::make('properties')
                     ->label('Changes')
                     ->formatStateUsing(function (Activity $record): string {
                         $props = $record->properties;
@@ -80,7 +80,7 @@ class ActivitiesRelationManager extends RelationManager
             ])
             ->filters([])
             ->headerActions([])
-            ->actions([])
-            ->bulkActions([]);
+            ->recordActions([])
+            ->toolbarActions([]);
     }
 }

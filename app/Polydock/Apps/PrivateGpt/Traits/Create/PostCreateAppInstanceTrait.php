@@ -8,6 +8,8 @@ use App\Polydock\Apps\PrivateGpt\Interfaces\LagoonOperationsInterface;
 use App\Polydock\Apps\PrivateGpt\Interfaces\LoggerInterface;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
+use Exception;
+use RuntimeException;
 
 trait PostCreateAppInstanceTrait
 {
@@ -97,12 +99,12 @@ trait PostCreateAppInstanceTrait
                 if (isset($addGroupToProjectResult['error'])) {
                     $errorMessage = $addGroupToProjectResult['error'][0]['message'] ?? json_encode($addGroupToProjectResult['error']);
                     $this->postCreateLogger?->error($errorMessage, $logContext);
-                    throw new \Exception($errorMessage);
+                    throw new Exception($errorMessage);
                 }
 
                 if (! isset($addGroupToProjectResult['addGroupsToProject']) || ! isset($addGroupToProjectResult['addGroupsToProject']['id'])) {
                     $this->postCreateLogger?->error('addGroupsToProject ID not found in data', $logContext);
-                    throw new \Exception('addGroupsToProject ID not found in data');
+                    throw new Exception('addGroupsToProject ID not found in data');
                 }
             }
 
@@ -153,7 +155,7 @@ trait PostCreateAppInstanceTrait
                 if (isset($credentials['backend_key']) && isset($credentials['backend_key']['token'])) {
                     $this->postCreateLagoonOps?->addOrUpdateLagoonProjectVariable($appInstance, 'AMAZEE_AI_BACKEND_TOKEN', $credentials['backend_key']['token'], 'GLOBAL');
                 } else {
-                    throw new \RuntimeException('No backend_key token found in amazee-ai-team-credentials');
+                    throw new RuntimeException('No backend_key token found in amazee-ai-team-credentials');
                 }
             }
 
@@ -211,7 +213,7 @@ trait PostCreateAppInstanceTrait
 
             $this->postCreateLogger?->info($functionName.': completed injecting amazee.ai direct API credentials', $logContext);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->postCreateLogger?->error('Post Create Failed: '.$e->getMessage(), $logContext);
             $appInstance->setStatus(PolydockAppInstanceStatus::POST_CREATE_FAILED, 'An exception occurred: '.$e->getMessage())->save();
 

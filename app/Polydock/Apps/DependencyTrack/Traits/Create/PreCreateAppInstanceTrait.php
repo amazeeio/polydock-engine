@@ -6,6 +6,7 @@ namespace App\Polydock\Apps\DependencyTrack\Traits\Create;
 
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
+use Exception;
 
 trait PreCreateAppInstanceTrait
 {
@@ -49,7 +50,7 @@ trait PreCreateAppInstanceTrait
                     'enabled'
                 );
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Pre Create Failed: '.$e->getMessage(), [
                 'exception_class' => \get_class($e),
                 'exception_trace' => $e->getTraceAsString(),

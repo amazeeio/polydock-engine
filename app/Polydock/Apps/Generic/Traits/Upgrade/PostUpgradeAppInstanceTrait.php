@@ -5,6 +5,7 @@ namespace App\Polydock\Apps\Generic\Traits\Upgrade;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use Exception;
 
 trait PostUpgradeAppInstanceTrait
 {
@@ -54,7 +55,7 @@ trait PostUpgradeAppInstanceTrait
         try {
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_LAST_UPGRADED_DATE', date('Y-m-d'), 'GLOBAL');
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_LAST_UPGRADED_TIME', date('H:i:s'), 'GLOBAL');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error($e->getMessage());
             $appInstance->setStatus(PolydockAppInstanceStatus::POST_UPGRADE_FAILED, $e->getMessage())->save();
 

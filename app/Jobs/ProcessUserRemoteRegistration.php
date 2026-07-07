@@ -13,6 +13,7 @@ use App\Models\UserGroup;
 use App\Models\UserRemoteRegistration;
 use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use App\Services\PolydockAppClassDiscovery;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -267,7 +268,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                     $this->registration->setResultValue('message', 'Trial created.');
                     $this->registration->setResultValue('trial_app_url', "https://www.example.com/{$uniqueId}");
                 } elseif (($this->registration->id % 3) === 0) {
-                    throw new \Exception('An error occurred while processing the registration.');
+                    throw new Exception('An error occurred while processing the registration.');
                 } else {
                     $this->registration->setResultValue('result_type', 'trial_registered');
                     $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
@@ -278,7 +279,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
             } elseif ($this->registration->registerSimulateError) {
                 Log::info('Simulating error registration', ['registration' => $this->registration->toArray()]);
-                throw new \Exception('An error occurred while processing the registration.');
+                throw new Exception('An error occurred while processing the registration.');
             } else {
                 Log::info('Starting actual trial creation', ['registration' => $this->registration->toArray()]);
                 $this->registration->status = UserRemoteRegistrationStatusEnum::PROCESSING;
@@ -312,7 +313,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 // Store instance config fields as PolydockVariables
                 $this->storeInstanceConfigFields($allocatedInstance, $trialApp);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Failed to process trial registration', [
                 'registration_id' => $this->registration->id,
                 'error' => $e->getMessage(),

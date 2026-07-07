@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -100,7 +101,7 @@ class PolydockCloneStoreAppCommand extends BaseCommand
                 'new_app_id' => $newApp->id,
                 'target_store_id' => $targetStore->id,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error("Failed to clone app: {$e->getMessage()}");
             Log::error('Failed to clone store app', [
                 'error' => $e->getMessage(),

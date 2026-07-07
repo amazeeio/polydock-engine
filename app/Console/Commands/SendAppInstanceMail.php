@@ -8,8 +8,10 @@ use App\Mail\AppInstanceReadyMail;
 use App\Mail\AppInstanceTrialCompleteMail;
 use App\Models\User;
 use App\Models\UserRemoteRegistration;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use Override;
 
 class SendAppInstanceMail extends BaseCommand
 {
@@ -132,7 +134,7 @@ class SendAppInstanceMail extends BaseCommand
 
                 $this->info("✓ Email sent to {$recipient['name']} ({$recipient['email']})");
                 $successCount++;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error("✗ Failed to send to {$recipient['email']}: {$e->getMessage()}");
                 $errorCount++;
             }
@@ -187,7 +189,7 @@ class SendAppInstanceMail extends BaseCommand
         ];
     }
 
-    #[\Override]
+    #[Override]
     public function sensitiveInputs(): array
     {
         return ['email'];

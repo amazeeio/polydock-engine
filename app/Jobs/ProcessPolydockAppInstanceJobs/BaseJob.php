@@ -8,6 +8,7 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\PolydockEngine\Engine;
 use App\PolydockEngine\PolydockLogger;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -15,6 +16,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 abstract class BaseJob implements ShouldQueue
 {
@@ -58,7 +60,7 @@ abstract class BaseJob implements ShouldQueue
                 'job_type' => class_basename(static::class),
             ]);
 
-            throw new \Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
+            throw new Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
         }
 
         $appInstance->refresh();
@@ -68,7 +70,7 @@ abstract class BaseJob implements ShouldQueue
         return $uniqueId;
     }
 
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
         Log::error('Job failed: '.class_basename(static::class), [
             'app_instance_id' => $this->appInstanceId ?? null,
@@ -82,7 +84,7 @@ abstract class BaseJob implements ShouldQueue
                 $message = 'Failed processing with the following - '.$exception->getMessage();
                 $appInstance->logLine('error', $message);
             }
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Ensure the failed handler never throws
             Log::error('Error while running job failed() handler', [
                 'original_error' => $exception->getMessage(),
@@ -255,7 +257,7 @@ abstract class BaseJob implements ShouldQueue
                 'job_type' => class_basename(static::class),
             ]);
 
-            throw new \Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
+            throw new Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
         }
 
         $appInstance->refresh();
@@ -280,7 +282,7 @@ abstract class BaseJob implements ShouldQueue
                 'job_type' => class_basename(static::class),
             ]);
 
-            throw new \Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
+            throw new Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
         }
 
         $uniqueId = $this->getPolydockJobId();

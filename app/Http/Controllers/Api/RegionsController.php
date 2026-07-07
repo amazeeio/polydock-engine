@@ -6,6 +6,7 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\PolydockStore;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 class RegionsController extends Controller
@@ -76,7 +77,7 @@ class RegionsController extends Controller
                 ],
                 'status_code' => 200,
             ], 200);
-        } catch (\Exception) {
+        } catch (Exception) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Failed to retrieve regions and apps',

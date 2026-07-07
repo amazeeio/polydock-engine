@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Polydock\Clients\Lagoon\Client;
 use App\Polydock\Clients\Lagoon\Ssh;
+use Exception;
 use Illuminate\Support\Facades\Log;
+use RuntimeException;
 use Symfony\Component\Process\Process;
 
 class LagoonClientService
@@ -12,7 +14,7 @@ class LagoonClientService
     /**
      * Build and configure a Client using the project's standard lagoon configuration
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getAuthenticatedClient(array $overrides = []): Client
     {
@@ -24,14 +26,14 @@ class LagoonClientService
         if (! $clientConfig['ssh_private_key_file'] || ! file_exists($clientConfig['ssh_private_key_file'])) {
             $msg = 'Global SSH private key not found at: '.($clientConfig['ssh_private_key_file'] ?: 'not set');
             Log::error($msg);
-            throw new \Exception($msg);
+            throw new Exception($msg);
         }
 
         $token = $this->getLagoonToken($clientConfig);
         if (empty($token)) {
             $msg = 'Failed to retrieve Lagoon API token. Ensure the SSH key at '.$clientConfig['ssh_private_key_file'].' is valid and authorized in Lagoon.';
             Log::error($msg);
-            throw new \Exception($msg);
+            throw new Exception($msg);
         }
 
         return $this->buildClientWithToken($clientConfig, $token);
@@ -40,7 +42,7 @@ class LagoonClientService
     /**
      * Build a Client using a pre-fetched token (useful when the token is cached externally)
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function buildClientWithToken(array $clientConfig, string $token): Client
     {
@@ -98,7 +100,7 @@ class LagoonClientService
             $dir = dirname($tempKeyFile);
             if (! is_dir($dir)) {
                 if (! @mkdir($dir, 0700, true) && ! is_dir($dir)) {
-                    throw new \RuntimeException('Failed to create SSH key directory: '.$dir);
+                    throw new RuntimeException('Failed to create SSH key directory: '.$dir);
                 }
             }
 
@@ -108,17 +110,17 @@ class LagoonClientService
                 $bytesWritten = @file_put_contents($tmpFile, $keyContent, LOCK_EX);
                 if ($bytesWritten === false) {
                     @unlink($tmpFile);
-                    throw new \RuntimeException('Failed to write SSH private key to temporary file: '.$tmpFile);
+                    throw new RuntimeException('Failed to write SSH private key to temporary file: '.$tmpFile);
                 }
 
                 if (! @chmod($tmpFile, 0600)) {
                     @unlink($tmpFile);
-                    throw new \RuntimeException('Failed to set permissions on SSH private key file: '.$tmpFile);
+                    throw new RuntimeException('Failed to set permissions on SSH private key file: '.$tmpFile);
                 }
 
                 if (! @rename($tmpFile, $tempKeyFile)) {
                     @unlink($tmpFile);
-                    throw new \RuntimeException('Failed to move SSH private key file into place: '.$tempKeyFile);
+                    throw new RuntimeException('Failed to move SSH private key file into place: '.$tempKeyFile);
                 }
             }
             $keyFile = $tempKeyFile;

@@ -26,7 +26,7 @@ enum UserRemoteRegistrationStatusEnum: string implements HasColor, HasIcon, HasL
         };
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): ?string
     {
         return match ($this) {
             self::PENDING => 'warning',

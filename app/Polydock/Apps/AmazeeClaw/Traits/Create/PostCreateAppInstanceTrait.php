@@ -4,6 +4,7 @@ namespace App\Polydock\Apps\AmazeeClaw\Traits\Create;
 
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
+use Exception;
 
 trait PostCreateAppInstanceTrait
 {
@@ -47,12 +48,12 @@ trait PostCreateAppInstanceTrait
                     ? ($addGroupToProjectResult['error'][0]['message'] ?? json_encode($addGroupToProjectResult['error']))
                     : $addGroupToProjectResult['error'];
                 $this->error($errorMessage);
-                throw new \Exception($errorMessage);
+                throw new Exception($errorMessage);
             }
 
             if (! isset($addGroupToProjectResult['addGroupsToProject']) || ! isset($addGroupToProjectResult['addGroupsToProject']['id'])) {
                 $this->error('addGroupsToProject ID not found in data');
-                throw new \Exception('addGroupsToProject ID not found in data');
+                throw new Exception('addGroupsToProject ID not found in data');
             }
 
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_NAME', $appInstance->getApp()->getAppName(), 'GLOBAL');
@@ -91,7 +92,7 @@ trait PostCreateAppInstanceTrait
                 }
                 $this->provisionAndInjectManualAmazeeAiCredentials($appInstance, $logContext);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Post Create Failed: '.$e->getMessage(), [
                 'exception_class' => \get_class($e),
                 'exception_trace' => $e->getTraceAsString(),

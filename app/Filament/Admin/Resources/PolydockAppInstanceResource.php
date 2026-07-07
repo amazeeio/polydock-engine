@@ -5,8 +5,11 @@ namespace App\Filament\Admin\Resources;
 use App\Enums\PolydockDeploymentRunStatusEnum;
 use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
 use App\Filament\Admin\RelationManagers\ActivitiesRelationManager;
-use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
-use App\Filament\Admin\Resources\PolydockAppInstanceResource\RelationManagers;
+use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages\CreatePolydockAppInstance;
+use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages\EditPolydockAppInstance;
+use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages\ListPolydockAppInstances;
+use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages\ViewPolydockAppInstance;
+use App\Filament\Admin\Resources\PolydockAppInstanceResource\RelationManagers\LogsRelationManager;
 use App\Filament\Exports\UserRemoteRegistrationExporter;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockDeploymentRun;
@@ -18,17 +21,19 @@ use App\PolydockEngine\Helpers\LagoonHelper;
 use App\Services\PolydockAppClassDiscovery;
 use App\Services\PolydockDeploymentService;
 use App\Support\SensitiveDataRedactor;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists\Components\Grid;
+use BackedEnum;
+use Filament\Actions\BulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\KeyValueEntry;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Actions\ExportAction;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TrashedFilter;
@@ -36,25 +41,25 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Collection;
+use UnitEnum;
 
 class PolydockAppInstanceResource extends Resource
 {
     protected static ?string $model = PolydockAppInstance::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
-    protected static ?string $navigationGroup = 'Apps';
+    protected static string|UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'App Instances';
 
     protected static ?int $navigationSort = 100;
 
-    #[\Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('name')
+        return $schema
+            ->components([
+                TextInput::make('name')
                     ->label('Instance Name')
                     ->required()
                     ->maxLength(255)
@@ -62,7 +67,6 @@ class PolydockAppInstanceResource extends Resource
             ]);
     }
 
-    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -243,17 +247,17 @@ class PolydockAppInstanceResource extends Resource
                 TrashedFilter::make()
                     ->label('Include Purged'),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
             ->headerActions([
                 ExportAction::make()
                     ->label('Export registrations')
                     ->exporter(UserRemoteRegistrationExporter::class),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkAction::make('redeploy')
+            ->toolbarActions([
+                BulkAction::make('redeploy')
                     ->label('Redeploy selected')
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
@@ -298,11 +302,10 @@ class PolydockAppInstanceResource extends Resource
             ]);
     }
 
-    #[\Override]
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('Instance Details')
                     ->schema([
                         Grid::make(2)
@@ -501,16 +504,14 @@ class PolydockAppInstanceResource extends Resource
         return $renderedArray;
     }
 
-    #[\Override]
     public static function getRelations(): array
     {
         return [
-            RelationManagers\LogsRelationManager::class,
+            LogsRelationManager::class,
             ActivitiesRelationManager::class,
         ];
     }
 
-    #[\Override]
     public static function canCreate(): bool
     {
         /** @var User|null $user */
@@ -519,18 +520,16 @@ class PolydockAppInstanceResource extends Resource
         return $user?->can('create', PolydockAppInstance::class) ?? false;
     }
 
-    #[\Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPolydockAppInstances::route('/'),
-            'create' => Pages\CreatePolydockAppInstance::route('/create'),
-            'view' => Pages\ViewPolydockAppInstance::route('/{record}'),
-            'edit' => Pages\EditPolydockAppInstance::route('/{record}/edit'),
+            'index' => ListPolydockAppInstances::route('/'),
+            'create' => CreatePolydockAppInstance::route('/create'),
+            'view' => ViewPolydockAppInstance::route('/{record}'),
+            'edit' => EditPolydockAppInstance::route('/{record}/edit'),
         ];
     }
 
-    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery()

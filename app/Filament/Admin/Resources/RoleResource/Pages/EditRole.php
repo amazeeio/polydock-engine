@@ -5,7 +5,7 @@ namespace App\Filament\Admin\Resources\RoleResource\Pages;
 use App\Filament\Admin\Resources\RoleResource;
 use App\Models\Role;
 use BezhanSalleh\FilamentShield\Support\Utils;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
@@ -19,7 +19,7 @@ class EditRole extends EditRecord
     protected function getActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->hidden(fn (): bool => in_array($this->record?->name, ['super_admin', 'service-account'])),
         ];
     }

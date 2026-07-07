@@ -12,6 +12,7 @@ use App\Models\PolydockDeploymentRun;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 /**
  * Single entry point for triggering and tracking Lagoon redeploys ("upgrade
@@ -94,7 +95,7 @@ class PolydockDeploymentService
                 name: 'Polydock redeploy '.$run->uuid,
                 buildVariables: $buildVariables,
             );
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::error('Redeploy trigger failed', ['run' => $run->uuid, 'error' => $e->getMessage()]);
             $this->failRun($run, 'Trigger failed: '.$e->getMessage());
 
@@ -158,7 +159,7 @@ class PolydockDeploymentService
         try {
             $client = $this->lagoon->getAuthenticatedClient();
             $deployments = $client->getDeploymentsByBulkId($run->lagoon_bulk_id);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             Log::warning('Redeploy poll failed', ['run' => $run->uuid, 'error' => $e->getMessage()]);
             $this->giveUpIfExhausted($run, 'Polling failed: '.$e->getMessage());
 

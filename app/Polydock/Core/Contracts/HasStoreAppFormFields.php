@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Polydock\Core\Contracts;
 
-use Filament\Forms\Components\Component;
+use Filament\Schemas\Components\Component;
 
 /**
  * Interface for Polydock App classes that provide custom Store App form fields.
@@ -53,7 +53,7 @@ interface HasStoreAppFormFields
      * Field names should match those in getStoreAppFormSchema() (without prefix).
      * The prefix is added automatically when the schema is processed.
      *
-     * @return array<\Filament\Infolists\Components\Component>
+     * @return array<Component>
      *
      * @example
      * ```php
