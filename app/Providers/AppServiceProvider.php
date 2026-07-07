@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Health\Checks\Checks\HorizonCheck;
+use Spatie\Health\Facades\Health;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -106,6 +108,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Health::checks([
+            HorizonCheck::new(),
+        ]);
+
         // Named rate limiters for the unauthenticated public API routes. Named
         // limiters key on the limiter name + IP, so each route has its own
         // counter — unlike anonymous `throttle:N,1`, whose signature is
