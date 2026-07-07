@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
+use App\Mail\Traits\AppliesMailTheme;
 use App\Models\PolydockAppInstance;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -11,10 +12,10 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Config;
 
 class AppInstanceTrialCompleteMail extends Mailable
 {
+    use AppliesMailTheme;
     use Queueable;
     use SerializesModels;
 
@@ -41,8 +42,7 @@ class AppInstanceTrialCompleteMail extends Mailable
      */
     public function content(): Content
     {
-        $mjmlConfig = Config::get('mail.mjml-config');
-        // $mjmlConfig['theme'] = $mjmlConfig['themes']['dark'];
+        $mjmlConfig = $this->mjmlConfig();
         $mjmlConfig['appInstance'] = $this->appInstance;
 
         return new Content(
