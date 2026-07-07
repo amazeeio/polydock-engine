@@ -6,8 +6,11 @@ namespace App\Filament\Admin\Resources\PolydockStoreAppResource\RelationManagers
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Filament\Actions\ViewAction;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 class PreWarmInstancesRelationManager extends RelationManager
@@ -22,25 +25,25 @@ class PreWarmInstancesRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->modifyQueryUsing(fn ($query) => $query->orderByDesc('created_at'))
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->url(fn ($record) => PolydockAppInstanceResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->badge()
                     ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
                     ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
                     ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel()),
-                Tables\Columns\IconColumn::make('allocation_lock')
+                IconColumn::make('allocation_lock')
                     ->label('Locked')
                     ->state(fn ($record) => filled($record->allocation_lock))
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->label('Created')
                     ->dateTime(),
-                Tables\Columns\TextColumn::make('age')
+                TextColumn::make('age')
                     ->state(fn ($record) => $record->created_at?->diffForHumans()),
-                Tables\Columns\IconColumn::make('is_stale')
+                IconColumn::make('is_stale')
                     ->label('Stale')
                     ->state(fn ($record) => $record->created_at?->lte(
                         now()->subDays($this->getOwnerRecord()->refresh_unallocated_instances_after_days),
@@ -48,7 +51,7 @@ class PreWarmInstancesRelationManager extends RelationManager
                     ->boolean(),
             ])
             ->filters([
-                Tables\Filters\TernaryFilter::make('stale')
+                TernaryFilter::make('stale')
                     ->label('Stale')
                     ->queries(
                         true: fn ($query) => $query->where(
@@ -65,10 +68,10 @@ class PreWarmInstancesRelationManager extends RelationManager
                     ),
             ])
             ->headerActions([])
-            ->actions([
-                Tables\Actions\ViewAction::make()
+            ->recordActions([
+                ViewAction::make()
                     ->url(fn ($record) => PolydockAppInstanceResource::getUrl('view', ['record' => $record])),
             ])
-            ->bulkActions([]);
+            ->toolbarActions([]);
     }
 }

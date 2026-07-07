@@ -2,21 +2,23 @@
 
 namespace App\Forms;
 
+use Override;
+
 abstract class BaseHostedForm implements HostedFormInterface
 {
-    #[\Override]
+    #[Override]
     public function getSeoTitle(): string
     {
         return $this->getTitle().' | Polydock';
     }
 
-    #[\Override]
+    #[Override]
     public function getSeoDescription(): string
     {
         return 'Provision and try a trial environment instantly with Polydock.';
     }
 
-    #[\Override]
+    #[Override]
     public function getAllowedEmbedDomains(): array
     {
         $domains = [
@@ -31,13 +33,13 @@ abstract class BaseHostedForm implements HostedFormInterface
         return $domains;
     }
 
-    #[\Override]
+    #[Override]
     public function getRecaptchaEnabled(): bool
     {
         return (bool) config('services.recaptcha.enabled', true);
     }
 
-    #[\Override]
+    #[Override]
     public function getAllowedEmbedOrigins(): array
     {
         $origins = [];
@@ -56,7 +58,7 @@ abstract class BaseHostedForm implements HostedFormInterface
     /**
      * Map form submission fields to the schema required by UserRemoteRegistration
      */
-    #[\Override]
+    #[Override]
     public function transformPayload(array $validatedData): array
     {
         return [

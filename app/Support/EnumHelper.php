@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Support;
 
+use BackedEnum;
 use Filament\Support\Contracts\HasLabel;
 
 class EnumHelper
@@ -11,7 +12,7 @@ class EnumHelper
     /**
      * Get the value => label options map for any string-backed PHP Enum class.
      *
-     * @param  class-string<\BackedEnum>  $enumClass
+     * @param  class-string<BackedEnum>  $enumClass
      * @return array<string, string>
      */
     public static function getEnumOptions(string $enumClass): array

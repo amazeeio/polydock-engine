@@ -8,6 +8,7 @@ use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInterface;
 use App\Polydock\Core\PolydockAppLoggerInterface;
 use App\Polydock\Core\PolydockEngineInterface;
+use Filament\Forms\Components\Field;
 use Tests\TestCase;
 
 class DoublePolydockAppInstance implements PolydockAppInstanceInterface
@@ -199,14 +200,14 @@ class AmazeeClawConfigTest extends TestCase
 
         $hasKeyModeInStore = false;
         foreach ($storeSchema as $component) {
-            if ($component->getName() === 'amazeeai_key_mode') {
+            if ($component instanceof Field && $component->getName() === 'amazeeai_key_mode') {
                 $hasKeyModeInStore = true;
             }
         }
 
         $hasKeyModeInInstance = false;
         foreach ($instanceSchema as $component) {
-            if ($component->getName() === 'amazeeai_key_mode') {
+            if ($component instanceof Field && $component->getName() === 'amazeeai_key_mode') {
                 $hasKeyModeInInstance = true;
             }
         }

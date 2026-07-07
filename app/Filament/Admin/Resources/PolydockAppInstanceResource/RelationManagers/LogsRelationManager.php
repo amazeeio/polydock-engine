@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\PolydockAppInstanceResource\RelationManagers;
 
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class LogsRelationManager extends RelationManager
@@ -17,13 +17,13 @@ class LogsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('message')
             ->columns([
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime('d-m-Y H:i:s'),
-                Tables\Columns\TextColumn::make('message')
+                TextColumn::make('message')
                     ->description(fn ($record) => json_encode($record->data, JSON_PRETTY_PRINT))
                     ->wrap(),
-                Tables\Columns\TextColumn::make('type'),
-                Tables\Columns\TextColumn::make('level')
+                TextColumn::make('type'),
+                TextColumn::make('level')
                     ->badge()
                     ->color(fn ($state): string => match ($state) {
                         'error' => 'danger',
@@ -34,7 +34,7 @@ class LogsRelationManager extends RelationManager
             ])
             ->filters([])
             ->headerActions([])
-            ->actions([])
-            ->bulkActions([]);
+            ->recordActions([])
+            ->toolbarActions([]);
     }
 }

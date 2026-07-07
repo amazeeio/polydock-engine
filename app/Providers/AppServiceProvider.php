@@ -29,13 +29,16 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Override;
+use ReflectionClass;
+use Throwable;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.
      */
-    #[\Override]
+    #[Override]
     public function register(): void
     {
         $this->app->singleton(PolydockAppClassDiscovery::class);
@@ -168,13 +171,13 @@ class AppServiceProvider extends ServiceProvider
                 $commandInstance = null;
                 try {
                     $kernel = app(Kernel::class);
-                    $property = (new \ReflectionClass($kernel))->getProperty('artisan');
+                    $property = (new ReflectionClass($kernel))->getProperty('artisan');
                     $property->setAccessible(true);
                     $artisan = $property->getValue($kernel);
                     if ($artisan) {
                         $commandInstance = $artisan->find($command);
                     }
-                } catch (\Throwable $e) {
+                } catch (Throwable $e) {
                     $commandInstance = null;
                 }
 
@@ -183,7 +186,7 @@ class AppServiceProvider extends ServiceProvider
                     if ($allCommandsFallback === null) {
                         try {
                             $allCommandsFallback = Artisan::all();
-                        } catch (\Throwable $e) {
+                        } catch (Throwable $e) {
                             $allCommandsFallback = [];
                         }
                     }

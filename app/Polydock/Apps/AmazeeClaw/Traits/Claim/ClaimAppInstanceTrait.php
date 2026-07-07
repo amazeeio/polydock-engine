@@ -6,6 +6,7 @@ namespace App\Polydock\Apps\AmazeeClaw\Traits\Claim;
 
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
+use Exception;
 
 trait ClaimAppInstanceTrait
 {
@@ -85,7 +86,7 @@ trait ClaimAppInstanceTrait
                 $this->info('Claim result', $logContext + ['claimResult' => $claimResult]);
 
                 if (($claimResult['result'] ?? 1) !== 0) {
-                    throw new \Exception(
+                    throw new Exception(
                         ($claimResult['result'] ?? '')
                         .' | '.($claimResult['result_text'] ?? '')
                         .' | '.($claimResult['error'] ?? '')
@@ -93,7 +94,7 @@ trait ClaimAppInstanceTrait
                 }
 
                 if (! isset($claimResult['output'])) {
-                    throw new \Exception(
+                    throw new Exception(
                         'No output from claim command: '
                         .($claimResult['result'] ?? '')
                         .' | '.($claimResult['result_text'] ?? '')
@@ -102,7 +103,7 @@ trait ClaimAppInstanceTrait
                 }
 
                 if (! filter_var(trim((string) $claimResult['output']), FILTER_VALIDATE_URL)) {
-                    throw new \Exception('Claim command output is not a valid URL: '.$claimResult['output']);
+                    throw new Exception('Claim command output is not a valid URL: '.$claimResult['output']);
                 }
 
                 $appInstance->storeKeyValue('claim-command-output', trim((string) $claimResult['output']));
@@ -110,7 +111,7 @@ trait ClaimAppInstanceTrait
             } else {
                 $this->info('No claim script detected', $logContext);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error($e->getMessage(), $logContext + [
                 'exception_class' => \get_class($e),
             ]);

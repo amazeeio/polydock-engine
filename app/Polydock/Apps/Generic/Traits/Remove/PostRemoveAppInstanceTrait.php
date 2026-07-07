@@ -5,6 +5,7 @@ namespace App\Polydock\Apps\Generic\Traits\Remove;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use Exception;
 
 trait PostRemoveAppInstanceTrait
 {
@@ -53,7 +54,7 @@ trait PostRemoveAppInstanceTrait
         try {
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_REMOVED_DATE', date('Y-m-d'), 'GLOBAL');
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_REMOVED_TIME', date('H:i:s'), 'GLOBAL');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error($e->getMessage());
             $appInstance->setStatus(PolydockAppInstanceStatus::POST_REMOVE_FAILED, $e->getMessage())->save();
 

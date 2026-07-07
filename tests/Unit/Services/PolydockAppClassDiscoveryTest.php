@@ -306,7 +306,6 @@ class PolydockAppClassDiscoveryTest extends TestCase
             PolydockPrivateGptApp::class
         );
 
-        $this->assertIsArray($schema);
         $this->assertEmpty($schema);
     }
 
@@ -314,7 +313,6 @@ class PolydockAppClassDiscoveryTest extends TestCase
     {
         $schema = $this->discovery->getStoreAppFormSchema('NonExistent\\Class');
 
-        $this->assertIsArray($schema);
         $this->assertEmpty($schema);
     }
 
@@ -322,7 +320,6 @@ class PolydockAppClassDiscoveryTest extends TestCase
     {
         $schema = $this->discovery->getStoreAppFormSchema('');
 
-        $this->assertIsArray($schema);
         $this->assertEmpty($schema);
     }
 
@@ -330,7 +327,6 @@ class PolydockAppClassDiscoveryTest extends TestCase
     {
         $schema = $this->discovery->getStoreAppInfolistSchema('NonExistent\\Class');
 
-        $this->assertIsArray($schema);
         $this->assertEmpty($schema);
     }
 
@@ -338,7 +334,6 @@ class PolydockAppClassDiscoveryTest extends TestCase
     {
         $schema = $this->discovery->getStoreAppInfolistSchema('');
 
-        $this->assertIsArray($schema);
         $this->assertEmpty($schema);
     }
 
@@ -377,23 +372,6 @@ class PolydockAppClassDiscoveryTest extends TestCase
                 $fieldName,
                 "Field '{$fieldName}' should be prefixed with 'app_config_'"
             );
-        }
-    }
-
-    public function test_store_app_form_schema_returns_components_when_attribute_present(): void
-    {
-        $schema = $this->discovery->getStoreAppFormSchema(
-            PolydockAiApp::class
-        );
-
-        // The schema may be empty if the package hasn't been updated yet
-        // But if it has components, they should be Filament components
-        $this->assertIsArray($schema);
-
-        if (! empty($schema)) {
-            foreach ($schema as $component) {
-                $this->assertIsObject($component);
-            }
         }
     }
 }

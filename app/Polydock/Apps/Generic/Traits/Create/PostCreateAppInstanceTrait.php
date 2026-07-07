@@ -5,6 +5,7 @@ namespace App\Polydock\Apps\Generic\Traits\Create;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use Exception;
 
 trait PostCreateAppInstanceTrait
 {
@@ -66,12 +67,12 @@ trait PostCreateAppInstanceTrait
                     ? ($addGroupToProjectResult['error'][0]['message'] ?? json_encode($addGroupToProjectResult['error']))
                     : $addGroupToProjectResult['error'];
                 $this->error($errorMessage);
-                throw new \Exception($errorMessage);
+                throw new Exception($errorMessage);
             }
 
             if (! isset($addGroupToProjectResult['addGroupsToProject']) || ! isset($addGroupToProjectResult['addGroupsToProject']['id'])) {
                 $this->error('addGroupsToProject ID not found in data');
-                throw new \Exception('addGroupsToProject ID not found in data');
+                throw new Exception('addGroupsToProject ID not found in data');
             }
 
             //            $this->addOrUpdateLagoonProjectVariable($appInstance, "POLYDOCK_APP_CREATED_DATE", date('Y-m-d'), "GLOBAL");
@@ -140,7 +141,7 @@ trait PostCreateAppInstanceTrait
                 $this->info("{$functionName}: Done injecting AI infrastructure", $logContext);
             }
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Post Create Failed: '.$e->getMessage(), [
                 'exception_class' => get_class($e),
                 'exception_trace' => $e->getTraceAsString(),

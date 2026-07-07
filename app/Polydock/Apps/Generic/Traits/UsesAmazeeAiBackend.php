@@ -6,6 +6,7 @@ use App\Polydock\Clients\AmazeeAi\Client;
 use App\Polydock\Clients\AmazeeAi\Exception\HttpException;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use Exception;
 
 trait UsesAmazeeAiBackend
 {
@@ -65,7 +66,7 @@ trait UsesAmazeeAiBackend
 
         try {
             $response = $this->amazeeAiBackendClient->getMe();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Failed to authenticate with Amazee AI backend: '.$e->getMessage(), $logContext);
 
             return false;
@@ -121,7 +122,7 @@ trait UsesAmazeeAiBackend
 
                 return false;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Error pinging amazeeAI backend: ', $logContext + ['error' => $e->getMessage()]);
             throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
         }

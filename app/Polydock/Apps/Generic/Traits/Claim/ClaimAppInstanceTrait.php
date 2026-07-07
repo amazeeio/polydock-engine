@@ -5,6 +5,7 @@ namespace App\Polydock\Apps\Generic\Traits\Claim;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use Exception;
 
 trait ClaimAppInstanceTrait
 {
@@ -74,21 +75,21 @@ trait ClaimAppInstanceTrait
                 $this->info('Claim result', $logContext + ['claimResult' => $claimResult]);
 
                 if ($claimResult['result'] !== 0) {
-                    throw new \Exception($claimResult['result'].' | '.$claimResult['result_text'].' | '.$claimResult['error']);
+                    throw new Exception($claimResult['result'].' | '.$claimResult['result_text'].' | '.$claimResult['error']);
                 }
 
                 if (! isset($claimResult['output'])) {
-                    throw new \Exception('No output from claim command: '.$claimResult['result'].' | '.$claimResult['result_text'].' | '.$claimResult['error']);
+                    throw new Exception('No output from claim command: '.$claimResult['result'].' | '.$claimResult['result_text'].' | '.$claimResult['error']);
                 }
 
                 if (! filter_var(trim($claimResult['output']), FILTER_VALIDATE_URL)) {
-                    throw new \Exception('Claim command output is not a valid URL: '.$claimResult['output']);
+                    throw new Exception('Claim command output is not a valid URL: '.$claimResult['output']);
                 }
 
                 $appInstance->storeKeyValue('claim-command-output', trim($claimResult['output']));
                 $appInstance->setAppUrl($claimResult['output'], $claimResult['output'], 24);
 
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error($e->getMessage());
                 $appInstance->setStatus(PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED, substr($e->getMessage(), 0, 100))->save();
 
@@ -107,7 +108,7 @@ trait ClaimAppInstanceTrait
                 } else {
                     $this->warning('No usable Lagoon route found for claim fallback', $logContext);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error('Failed deriving claim URL from Lagoon routes: '.$e->getMessage(), $logContext);
             }
         }
@@ -115,7 +116,7 @@ trait ClaimAppInstanceTrait
         // We run this either way to ensure the variable is set
         try {
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_CLAIMED_AT', date('Y-m-d H:i:s'), 'GLOBAL');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error($e->getMessage());
             $appInstance->setStatus(PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED, substr($e->getMessage(), 0, 100))->save();
 

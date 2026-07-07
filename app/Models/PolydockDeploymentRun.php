@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
+use Override;
 
 /**
  * A single triggered rollout of Lagoon redeploys across one or more app instances.
@@ -78,7 +79,7 @@ class PolydockDeploymentRun extends Model
         });
     }
 
-    #[\Override]
+    #[Override]
     public function getRouteKeyName()
     {
         return 'uuid';

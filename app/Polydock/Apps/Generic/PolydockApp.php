@@ -30,6 +30,7 @@ use App\Polydock\Core\PolydockAppVariableDefinitionInterface;
 use App\Polydock\Core\PolydockEngineInterface;
 use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockServiceProviders\PolydockServiceProviderFTLagoon;
+use Exception;
 
 #[PolydockAppTitle('Generic Lagoon App')]
 class PolydockApp extends PolydockAppBase
@@ -109,7 +110,7 @@ class PolydockApp extends PolydockAppBase
             }
 
             return $ping;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
         }
     }
@@ -391,7 +392,7 @@ class PolydockApp extends PolydockAppBase
                     'error' => $variable['error'],
                     'parsed_error' => $errorMessage,
                 ]);
-            throw new \Exception("Failed to add or update {$variableName} variable: ".$errorMessage);
+            throw new Exception("Failed to add or update {$variableName} variable: ".$errorMessage);
         }
 
         if ($this->lagoonClient->getDebug()) {

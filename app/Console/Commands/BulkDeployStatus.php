@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Services\LagoonClientService;
+use Exception;
 use Illuminate\Console\Command;
 
 class BulkDeployStatus extends BaseCommand
@@ -91,7 +92,7 @@ class BulkDeployStatus extends BaseCommand
             );
 
             return 0;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error("Error checking bulk deployment status: {$e->getMessage()}");
 
             return 1;

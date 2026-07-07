@@ -6,9 +6,11 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockStoreApp;
 use App\Polydock\Clients\Lagoon\Client;
 use App\Services\LagoonClientService;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Process\Pool;
 use Illuminate\Support\Facades\Process;
+use Throwable;
 
 use function Laravel\Prompts\multiselect;
 
@@ -214,7 +216,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
             try {
                 $lagoonClientService = app(LagoonClientService::class);
                 $prefetchedToken = $lagoonClientService->getLagoonToken();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error(string: "Authentication failed: {$e->getMessage()}");
 
                 return 1;
@@ -250,7 +252,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
 
             try {
                 $pool->concurrency($concurrency);
-            } catch (\Throwable) {
+            } catch (Throwable) {
                 // Ignore if method doesn't exist
             }
 
@@ -281,7 +283,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
         $this->info(string: 'Authenticating with Lagoon (Serial Mode)...');
         try {
             $client = app(LagoonClientService::class)->getAuthenticatedClient();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error(string: "Authentication failed: {$e->getMessage()}");
 
             return 1;
@@ -330,7 +332,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
         if (! $client) {
             try {
                 $client = app(LagoonClientService::class)->getAuthenticatedClient();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error(string: "Authentication failed for instance {$instance->id}: {$e->getMessage()}");
 
                 return 1;
@@ -356,7 +358,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
 
                 return 0;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error(string: "\n[FAILED] {$projectName}: {$e->getMessage()}");
 
             return 1;

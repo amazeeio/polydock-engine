@@ -26,3 +26,6 @@ yarn-error.log
 /.zed
 amazeeai-trial.pass
 /*.sql
+/public/js/filament
+/public/css/filament
+/public/fonts/filament

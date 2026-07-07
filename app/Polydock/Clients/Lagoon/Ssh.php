@@ -2,6 +2,7 @@
 
 namespace App\Polydock\Clients\Lagoon;
 
+use Exception;
 use Spatie\Ssh\Ssh as SpatieSsh;
 use Symfony\Component\Process\Process;
 
@@ -89,7 +90,7 @@ class Ssh extends SpatieSsh
      * @param  string  $privateKeyFile  Path to the private key file for authentication
      * @return static Returns configured SSH connection instance
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public static function createLagoonConfigured(string $user, string $server, int $port, string $privateKeyFile): static
     {

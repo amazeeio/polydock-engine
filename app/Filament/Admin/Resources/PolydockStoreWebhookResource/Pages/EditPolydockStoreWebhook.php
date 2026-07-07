@@ -5,18 +5,17 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\PolydockStoreWebhookResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockStoreWebhookResource;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditPolydockStoreWebhook extends EditRecord
 {
     protected static string $resource = PolydockStoreWebhookResource::class;
 
-    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            DeleteAction::make(),
         ];
     }
 }

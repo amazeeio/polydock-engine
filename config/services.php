@@ -37,6 +37,13 @@ return [
         ],
     ],
 
+    'okta' => [
+        'base_url' => env('OKTA_BASE_URL'),
+        'client_id' => env('OKTA_CLIENT_ID'),
+        'client_secret' => env('OKTA_CLIENT_SECRET'),
+        'redirect' => '/auth/okta/callback',
+    ],
+
     'recaptcha' => [
         'enabled' => (bool) env('RECAPTCHA_ENABLED', true),
         'sitekey' => env('NOCAPTCHA_SITEKEY') ?? env('RECAPTCHA_SITEKEY'),

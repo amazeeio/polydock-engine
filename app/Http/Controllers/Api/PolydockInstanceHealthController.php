@@ -7,6 +7,7 @@ use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use ValueError;
 
 class PolydockInstanceHealthController extends Controller
 {
@@ -61,7 +62,7 @@ class PolydockInstanceHealthController extends Controller
         // Validate status
         try {
             $statusEnum = PolydockAppInstanceStatus::from($status);
-        } catch (\ValueError) {
+        } catch (ValueError) {
             Log::error('Invalid status value', $logContext + ['status_code' => 400]);
 
             return response()->json([

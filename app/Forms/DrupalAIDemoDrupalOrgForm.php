@@ -6,40 +6,41 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
 use App\Rules\BannedEmail;
 use Illuminate\Validation\Rule;
+use Override;
 
 class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
 {
-    #[\Override]
+    #[Override]
     public function getSlug(): string
     {
         return 'drupal-ai-demo';
     }
 
-    #[\Override]
+    #[Override]
     public function getTitle(): string
     {
         return 'Private Drupal AI Demo on drupal.org';
     }
 
-    #[\Override]
+    #[Override]
     public function getSeoTitle(): string
     {
         return 'Drupal AI Demo on drupal.org by amazee.ai';
     }
 
-    #[\Override]
+    #[Override]
     public function getSeoDescription(): string
     {
         return 'Try Drupal AI with our custom demo experiences designed for developers and content editors new to Drupal AI on drupal.org.';
     }
 
-    #[\Override]
+    #[Override]
     public function getViewName(): string
     {
         return 'forms.drupal-ai-demo';
     }
 
-    #[\Override]
+    #[Override]
     public function getValidationRules(): array
     {
         return [
@@ -73,7 +74,7 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
         ];
     }
 
-    #[\Override]
+    #[Override]
     public function transformPayload(array $validatedData): array
     {
         $payload = parent::transformPayload($validatedData);
