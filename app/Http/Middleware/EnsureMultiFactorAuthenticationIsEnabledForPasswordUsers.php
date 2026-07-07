@@ -19,10 +19,17 @@ class EnsureMultiFactorAuthenticationIsEnabledForPasswordUsers extends EnsureMul
     {
         $user = Filament::auth()->user();
 
-        // Exempt only users whose sole login path is Okta: linked AND no
-        // password. A temporary runbook password re-opens password login,
-        // so it must also re-enable the local TOTP requirement.
-        if ($user?->okta_sub !== null && $user->password === null) {
+        // Exempt only when all three hold: the account's sole login path is
+        // Okta (linked AND no password — a temporary runbook password
+        // re-opens password login), and THIS session was stamped by the Okta
+        // callback as MFA-verified upstream. Any other session — password
+        // login, or an Okta session whose amr claim showed no MFA — gets
+        // local TOTP.
+        if (
+            $user?->okta_sub !== null
+            && $user->password === null
+            && $request->session()->get('okta_mfa_verified') === true
+        ) {
             return $next($request);
         }
 

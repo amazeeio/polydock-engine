@@ -32,7 +32,7 @@ class OktaLoginTest extends TestCase
         ]);
     }
 
-    private function fakeOktaUser(string $sub, string $email, array $raw = []): void
+    private function fakeOktaUser(string $sub, string $email, array $raw = [], ?array $idTokenClaims = null): void
     {
         $socialiteUser = (new SocialiteUser)
             ->setRaw(array_merge(['sub' => $sub, 'email' => $email, 'email_verified' => true], $raw))
@@ -40,12 +40,18 @@ class OktaLoginTest extends TestCase
                 'id' => $sub,
                 'email' => $email,
                 'name' => $raw['name'] ?? 'Test User',
+                'id_token' => $idTokenClaims === null ? null : $this->fakeIdToken($idTokenClaims),
             ]);
 
         Socialite::shouldReceive('driver')->with('okta')->andReturn(
             \Mockery::mock(AbstractProvider::class)
                 ->shouldReceive('user')->andReturn($socialiteUser)->getMock()
         );
+    }
+
+    private function fakeIdToken(array $claims): string
+    {
+        return 'header.'.rtrim(strtr(base64_encode((string) json_encode($claims)), '+/', '-_'), '=').'.signature';
     }
 
     public function test_okta_routes_404_when_unconfigured(): void
@@ -188,6 +194,36 @@ class OktaLoginTest extends TestCase
         $this->get('/auth/okta/callback');
 
         $this->assertTrue($user->fresh()->hasRole('support'));
+    }
+
+    public function test_callback_stamps_session_mfa_verified_when_amr_reports_mfa(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['okta_sub' => 'okta-sub-amr1'])->save();
+
+        $this->fakeOktaUser('okta-sub-amr1', $user->email, [], ['amr' => ['mfa', 'otp', 'pwd']]);
+
+        $this->get('/auth/okta/callback')->assertSessionHas('okta_mfa_verified', true);
+    }
+
+    public function test_callback_stamps_session_not_mfa_verified_when_amr_lacks_mfa(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['okta_sub' => 'okta-sub-amr2'])->save();
+
+        $this->fakeOktaUser('okta-sub-amr2', $user->email, [], ['amr' => ['pwd']]);
+
+        $this->get('/auth/okta/callback')->assertSessionHas('okta_mfa_verified', false);
+    }
+
+    public function test_callback_trusts_okta_policy_when_amr_claim_is_absent(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['okta_sub' => 'okta-sub-amr3'])->save();
+
+        $this->fakeOktaUser('okta-sub-amr3', $user->email);
+
+        $this->get('/auth/okta/callback')->assertSessionHas('okta_mfa_verified', true);
     }
 
     public function test_group_sync_grants_mapped_role(): void

@@ -41,14 +41,27 @@ class EnforcedMfaTest extends TestCase
             ->assertOk();
     }
 
-    public function test_okta_user_is_exempt_from_local_mfa(): void
+    public function test_okta_user_with_mfa_verified_session_is_exempt_from_local_mfa(): void
     {
         $user = $this->adminUser();
         $user->forceFill(['okta_sub' => 'okta-sub-mfa', 'password' => null])->save();
 
         $this->actingAs($user)
+            ->withSession(['okta_mfa_verified' => true])
             ->get('/admin')
             ->assertOk();
+    }
+
+    public function test_okta_user_without_the_session_stamp_is_not_exempt(): void
+    {
+        // Account shape alone is not enough: the session must have been
+        // stamped by the Okta callback as upstream-MFA-verified.
+        $user = $this->adminUser();
+        $user->forceFill(['okta_sub' => 'okta-sub-mfa', 'password' => null])->save();
+
+        $this->actingAs($user)
+            ->get('/admin')
+            ->assertRedirect(route('filament.admin.auth.multi-factor-authentication.set-up-required'));
     }
 
     public function test_okta_linked_user_with_a_password_is_not_exempt(): void

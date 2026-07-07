@@ -48,6 +48,11 @@ class OktaController extends Controller
         Auth::login($user);
         session()->regenerate();
 
+        // Session-level proof for the MFA-exemption middleware: this session
+        // came from an Okta login, and Okta reported MFA where the amr claim
+        // is available. Set after regenerate() so it lives in the final session.
+        session(['okta_mfa_verified' => $this->upstreamMfaVerified($oktaUser)]);
+
         return redirect()->intended('/admin');
     }
 
@@ -88,6 +93,34 @@ class OktaController extends Controller
         }
 
         return $user;
+    }
+
+    /**
+     * Whether the Okta session behind this login satisfied MFA upstream.
+     *
+     * Okta includes "mfa" in the ID token's amr claim whenever MFA was
+     * performed. When the claim is present without "mfa", the session is
+     * not MFA-verified and the user falls back to local TOTP. When the
+     * claim (or ID token) is absent, we trust the Okta org sign-on policy
+     * to enforce MFA, per the agreed plan.
+     */
+    private function upstreamMfaVerified(AbstractUser $oktaUser): bool
+    {
+        $idToken = $oktaUser->id_token ?? null;
+
+        if (! is_string($idToken) || substr_count($idToken, '.') !== 2) {
+            return true;
+        }
+
+        // No signature verification needed: the token came straight from
+        // Okta's token endpoint over TLS with client authentication.
+        $claims = json_decode(base64_decode(strtr(explode('.', $idToken)[1], '-_', '+/')) ?: '', true);
+
+        if (! is_array($claims) || ! array_key_exists('amr', $claims)) {
+            return true;
+        }
+
+        return in_array('mfa', (array) $claims['amr'], true);
     }
 
     /**
