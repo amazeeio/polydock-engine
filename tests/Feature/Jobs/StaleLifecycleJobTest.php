@@ -194,6 +194,27 @@ class StaleLifecycleJobTest extends TestCase
         $this->assertSame('Post deploy completed', $appInstance->status_message);
     }
 
+    public function test_poll_deployment_job_skips_when_deploy_already_completed(): void
+    {
+        // A stale PollDeploymentJob can start after an earlier poll has
+        // already completed the deploy. DEPLOY_COMPLETED shares the deploy
+        // stage with DEPLOY_RUNNING, so the generic advanced-past-stage skip
+        // doesn't apply — the poll job must still no-op instead of handing
+        // an unprocessable status to the engine.
+        $appInstance = $this->createAppInstance(
+            'completed-poll-deploy-job-test',
+            PolydockAppInstanceStatus::DEPLOY_COMPLETED,
+            'Deploy completed',
+        );
+
+        (new PollDeploymentJob($appInstance->id))->handle();
+
+        $appInstance->refresh();
+
+        $this->assertSame(PolydockAppInstanceStatus::DEPLOY_COMPLETED, $appInstance->status);
+        $this->assertSame('Deploy completed', $appInstance->status_message);
+    }
+
     private function createAppInstance(
         string $name,
         PolydockAppInstanceStatus $status,

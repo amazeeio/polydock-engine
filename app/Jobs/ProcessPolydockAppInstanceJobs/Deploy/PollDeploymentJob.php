@@ -26,11 +26,15 @@ class PollDeploymentJob extends BaseJob implements ShouldQueue
         }
 
         if ($appInstance->status != PolydockAppInstanceStatus::DEPLOY_RUNNING) {
-            if ($this->shouldSkipBecauseStatusAdvanced(PolydockAppInstanceStatus::DEPLOY_RUNNING)) {
-                $this->polydockJobDone();
+            // A poll job has nothing to do unless the deploy is still running;
+            // a stale job can start after an earlier poll completed the deploy.
+            Log::info('Skipping stale PollDeploymentJob - instance no longer deploying', [
+                'app_instance_id' => $appInstance->id,
+                'status' => $appInstance->status->value,
+            ]);
+            $this->polydockJobDone();
 
-                return;
-            }
+            return;
         }
 
         try {
