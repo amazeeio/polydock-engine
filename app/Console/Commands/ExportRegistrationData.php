@@ -92,8 +92,14 @@ class ExportRegistrationData extends BaseCommand
             return self::SUCCESS;
         }
 
-        $filename = ($this->option('file') ?? 'user_registrations_'.now()->format('Y-m-d_H-i-s')).'.'.$format;
-        Storage::put("exports/{$filename}", $content);
+        $baseFilename = basename((string) ($this->option('file') ?? 'user_registrations_'.now()->format('Y-m-d_H-i-s')));
+        $filename = $baseFilename.'.'.$format;
+
+        if (! Storage::put("exports/{$filename}", $content)) {
+            $this->error('Failed to write registration data export.');
+
+            return self::FAILURE;
+        }
 
         $this->info('Registration data exported successfully.');
         $this->line('   Format: '.strtoupper($format));
