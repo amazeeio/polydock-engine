@@ -16,7 +16,7 @@ trait AppliesMailTheme
     {
         $config = Config::get('mail.mjml-config');
 
-        $theme = $this->appInstance->storeApp?->mail_theme;
+        $theme = $this->appInstance->storeApp->mail_theme;
 
         if ($theme && isset($config['themes'][$theme])) {
             $config['default_theme'] = $theme;

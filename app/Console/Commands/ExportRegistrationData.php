@@ -33,6 +33,14 @@ class ExportRegistrationData extends BaseCommand
      */
     public function handle(): int
     {
+        $format = $this->option('format');
+
+        if (! in_array($format, ['csv', 'json'], true)) {
+            $this->error("Unsupported format [{$format}]. Supported formats: csv, json.");
+
+            return self::FAILURE;
+        }
+
         $query = UserRemoteRegistration::with([
             'user',
             'userGroup',
@@ -65,22 +73,20 @@ class ExportRegistrationData extends BaseCommand
         $exportData = $registrations->map(function (UserRemoteRegistration $registration) {
             return [
                 'id' => $registration->id,
-                'type' => $registration->type?->value ?? '',
+                'type' => $registration->type->value ?? '',
                 'email' => $registration->email,
-                'user_name' => $registration->user?->name ?? '',
-                'user_group_name' => $registration->userGroup?->name ?? '',
-                'store_name' => $registration->storeApp?->store?->name ?? '',
-                'store_app_name' => $registration->storeApp?->name ?? '',
+                'user_name' => $registration->user->name ?? '',
+                'user_group_name' => $registration->userGroup->name ?? '',
+                'store_name' => $registration->storeApp->store->name ?? '',
+                'store_app_name' => $registration->storeApp->name ?? '',
                 'status' => $registration->status->value,
                 'created_at' => $registration->created_at?->format('Y-m-d H:i:s'),
                 'updated_at' => $registration->updated_at?->format('Y-m-d H:i:s'),
-                'app_instance_name' => $registration->appInstance?->name ?? '',
-                'app_instance_url' => $registration->appInstance?->app_url ?? '',
+                'app_instance_name' => $registration->appInstance->name ?? '',
+                'app_instance_url' => $registration->appInstance->app_url ?? '',
                 'request_data' => json_encode(SensitiveDataRedactor::redact($registration->request_data ?? [])),
             ];
         });
-
-        $format = $this->option('format') === 'json' ? 'json' : 'csv';
 
         $content = $format === 'json'
             ? $exportData->toJson(JSON_PRETTY_PRINT)
@@ -92,7 +98,7 @@ class ExportRegistrationData extends BaseCommand
             return self::SUCCESS;
         }
 
-        $baseFilename = basename((string) ($this->option('file') ?? 'user_registrations_'.now()->format('Y-m-d_H-i-s')));
+        $baseFilename = basename((string) $this->option('file')) ?: 'user_registrations_'.now()->format('Y-m-d_H-i-s');
         $filename = $baseFilename.'.'.$format;
 
         if (! Storage::put("exports/{$filename}", $content)) {

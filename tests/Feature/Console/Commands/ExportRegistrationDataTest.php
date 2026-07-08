@@ -27,6 +27,13 @@ class ExportRegistrationDataTest extends TestCase
             ->assertSuccessful();
     }
 
+    public function test_rejects_unsupported_format(): void
+    {
+        $this->artisan('polydock:export-registration-data', ['--stdout' => true, '--format' => 'tsv'])
+            ->expectsOutput('Unsupported format [tsv]. Supported formats: csv, json.')
+            ->assertFailed();
+    }
+
     public function test_warns_when_no_registrations_match(): void
     {
         $this->artisan('polydock:export-registration-data', ['--stdout' => true, '--status' => 'nonexistent'])

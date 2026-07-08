@@ -13,6 +13,12 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
+/**
+ * @property-read User|null $user
+ * @property-read UserGroup|null $userGroup
+ * @property-read PolydockStoreApp|null $storeApp
+ * @property-read PolydockAppInstance|null $appInstance
+ */
 class UserRemoteRegistration extends Model
 {
     use HasWebhookSensitiveData;

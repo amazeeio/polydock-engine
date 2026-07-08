@@ -26,7 +26,9 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
         }
 
         // Check if store app exists before proceeding
-        if (! $event->registration->storeApp || ! $event->registration->storeApp->store) {
+        $store = $event->registration->storeApp?->store;
+
+        if (! $store) {
             Log::info('No store app associated with registration, skipping webhook calls', [
                 'registration_id' => $event->registration->id,
             ]);
@@ -41,10 +43,7 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
         ]);
 
         // Create webhook calls for all active webhooks
-        $event
-            ->registration
-            ->storeApp
-            ->store
+        $store
             ->webhooks()
             ->where('active', true)
             ->get()

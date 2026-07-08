@@ -53,6 +53,8 @@ class PolydockStore extends Model
 
     /**
      * Get the webhooks for this store
+     *
+     * @return HasMany<PolydockStoreWebhook, $this>
      */
     public function webhooks(): HasMany
     {
