@@ -267,7 +267,9 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                     $uniqueId = Str::random(10);
                     $this->registration->setResultValue('result_type', 'trial_created');
                     $this->registration->setResultValue('message', 'Trial created.');
-                    $this->registration->setResultValue('trial_app_url', "https://www.example.com/{$uniqueId}");
+                    // Use the same result key the real flow sets so the hosted
+                    // form status poller recognises the simulated success.
+                    $this->registration->setResultValue('app_url', "https://www.example.com/{$uniqueId}");
                 } elseif (($this->registration->id % 3) === 0) {
                     throw new \Exception('An error occurred while processing the registration.');
                 } else {
