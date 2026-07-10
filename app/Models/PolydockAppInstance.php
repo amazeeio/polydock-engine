@@ -904,7 +904,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Pick a random animal name
      */
-    private function pickAnimal(): string
+    public static function pickAnimal(): string
     {
         $animals = [
             'Lion', 'Tiger', 'Bear', 'Wolf', 'Fox', 'Eagle', 'Hawk', 'Dolphin', 'Whale', 'Elephant',
@@ -946,7 +946,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Pick a random color
      */
-    private function pickColor(): string
+    public static function pickColor(): string
     {
         $colors = [
             'Red', 'Blue', 'Green', 'Yellow', 'Purple',
@@ -968,8 +968,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         $adjectives = $storeApp?->project_naming_adjectives ?: [];
         $nouns = $storeApp?->project_naming_nouns ?: [];
 
-        $adjective = $adjectives === [] ? $this->pickColor() : $adjectives[array_rand($adjectives)];
-        $noun = $nouns === [] ? $this->pickAnimal() : $nouns[array_rand($nouns)];
+        $adjective = $adjectives === [] ? self::pickColor() : $adjectives[array_rand($adjectives)];
+        $noun = $nouns === [] ? self::pickAnimal() : $nouns[array_rand($nouns)];
 
         return strtolower(
             $prefix.'-'.
@@ -1040,9 +1040,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         // Randomly choose between color-animal or verb-animal pattern
         if (random_int(0, 1) === 0) {
-            return strtolower($this->pickColor().$this->pickAnimal());
+            return strtolower(self::pickColor().self::pickAnimal());
         } else {
-            return strtolower($this->pickVerb().$this->pickAnimal());
+            return strtolower($this->pickVerb().self::pickAnimal());
         }
     }
 
