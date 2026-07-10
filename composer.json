@@ -27,6 +27,7 @@
         "parfaitementweb/filament-country-field": "^2.5",
         "phpseclib/phpseclib": "^3.0",
         "spatie/laravel-activitylog": "^4.10",
+        "spatie/laravel-health": "^1.40",
         "spatie/laravel-permission": "^6.25",
         "spatie/laravel-slack-alerts": "^1.9",
         "spatie/mjml-php": "^1.2",

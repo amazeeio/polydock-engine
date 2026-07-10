@@ -3,10 +3,18 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use Illuminate\Support\Facades\Schema;
+use Spatie\Health\Commands\RunHealthChecksCommand;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+// ///// Health Checks (Horizon) ///////
+Schedule::command(RunHealthChecksCommand::class)
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->when(fn () => Schema::hasTable('health_check_result_history_items'));
 
 // ///// Midtrial Emails ///////
 Schedule::command('polydock:dispatch-midtrial-emails')

@@ -6,6 +6,7 @@ use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserGroup;
+use App\Polydock\Apps\Generic\PolydockAiApp;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\URL;
@@ -29,7 +30,7 @@ class OneTimeLoginRouteSecurityTest extends TestCase
             'polydock_store_app_id' => $storeApp->id,
             'user_group_id' => $userGroup->id,
             'name' => 'test-instance',
-            'app_type' => 'App\Polydock\Apps\Generic\PolydockAiApp',
+            'app_type' => PolydockAiApp::class,
             'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
             'app_one_time_login_url' => 'https://example.com/login',
             'app_one_time_login_valid_until' => now()->addHour(),

@@ -45,7 +45,9 @@ class Ssh extends SpatieSsh
         $extraOptions = implode(' ', $this->getExtraOptions());
         $target = $this->getTargetForSsh();
 
-        return "ssh {$extraOptions} {$target} service={$serviceName} container={$containerName} $execute";
+        // Quote the remote command so the engine's local shell doesn't split it
+        // on &&, > etc. and run the tail of the command locally.
+        return "ssh {$extraOptions} {$target} service={$serviceName} container={$containerName} ".escapeshellarg($execute);
     }
 
     public function executeSShCommand(string $command, string $serviceName = 'cli', string $containerName = 'cli', ?string $input = null): array

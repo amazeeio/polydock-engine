@@ -427,14 +427,14 @@
         <div class="disclaimer-text">
             <p>
                 By participating in this trial, you acknowledge that you have read, understood, and
-                agree to the <a href="/terms-and-conditions" target="_blank">terms of this consent</a> 
-                and you grant permission to the Drupal Association and <a href="https://amazee.ai" target="_blank">amazee.ai</a> 
-                to <a href="https://docs.amazee.io/policy/acceptable-use" target="_blank">share your personal information</a> 
+                agree to the <a href="https://amazee.ai/terms-and-conditions" target="_blank">terms of this consent</a>
+                and you grant permission to the Drupal Association and <a href="https://amazee.ai" target="_blank">amazee.ai</a>
+                to <a href="https://docs.amazee.io/policy/acceptable-use" target="_blank">share your personal information</a>
                 for the purposes of facilitating your participation in the trial and the Purpose set forth therein.
             </p>
             <p>
                 By participating in this trial, you acknowledge that you have read, understood, and
-                agree to the privacy policies of both the <a href="https://www.drupal.org/privacy" target="_blank">Drupal Association</a> 
+                agree to the privacy policies of both the <a href="https://www.drupal.org/privacy" target="_blank">Drupal Association</a>
                 and our Trial Partner, <a href="https://amazee.ai" target="_blank">amazee.ai</a>.
             </p>
         </div>
@@ -513,7 +513,7 @@
                     <line x1="12" y1="17" x2="12.01" y2="17"></line>
                 </svg>
                 <span>
-                    <strong>Need some help?</strong> Our friendly support team is standing by at: 
+                    <strong>Need some help?</strong> Our friendly support team is standing by at:
                     <a href="mailto:ai.support@amazee.io" style="color: var(--color-primary); font-weight: 600; text-decoration: none;">ai.support@amazee.io</a>
                 </span>
             </div>
@@ -663,7 +663,7 @@
                             // Populate success card
                             document.getElementById('credUsername').textContent = data.result_data.app_admin_username || 'admin';
                             document.getElementById('credPassword').textContent = data.result_data.app_admin_password || '********';
-                            
+
                             const safeAppUrl = getSafeUrl(data.result_data.app_url);
 
                             const credUrlLink = document.getElementById('credUrl');
@@ -676,6 +676,10 @@
                             // Show success screen
                             loadingScreen.style.display = 'none';
                             successScreen.style.display = 'block';
+                        } else if (status === 'success' && data.result_data && data.result_data.result_type === 'trial_registered') {
+                            // Terminal success without an app URL: the registration
+                            // was captured and provisioning/details follow by email.
+                            renderRegisteredScreen();
                         } else {
                             renderSnagScreen();
                         }
@@ -704,7 +708,7 @@
         function renderSnagScreen() {
             loadingScreen.style.display = 'none';
             signupForm.style.display = 'none';
-            
+
             const snagHtml = `
                 <div class="status-screen" style="animation: fadeIn 0.4s ease-out;">
                     <div style="color: var(--color-accent); font-size: 3rem; margin-bottom: 1.5rem;">⚠️</div>
@@ -718,10 +722,27 @@
             document.querySelector('.form-container').innerHTML = snagHtml;
         }
 
+        function renderRegisteredScreen() {
+            loadingScreen.style.display = 'none';
+            signupForm.style.display = 'none';
+
+            const registeredHtml = `
+                <div class="status-screen" style="animation: fadeIn 0.4s ease-out;">
+                    <div style="color: var(--color-primary); font-size: 3rem; margin-bottom: 1.5rem;">✅</div>
+                    <div class="status-title">You're registered!</div>
+                    <div class="status-message">
+                        <p>We've received your trial registration and will email you your access details as soon as your trial is ready.</p>
+                        <p style="margin-top: 1rem;">Questions? Contact us at <a href="mailto:ai.support@amazee.io">ai.support@amazee.io</a>.</p>
+                    </div>
+                </div>
+            `;
+            document.querySelector('.form-container').innerHTML = registeredHtml;
+        }
+
         function renderDelayScreen() {
             loadingScreen.style.display = 'none';
             signupForm.style.display = 'none';
-            
+
             const delayHtml = `
                 <div class="status-screen" style="animation: fadeIn 0.4s ease-out;">
                     <div style="color: var(--color-primary); font-size: 3rem; margin-bottom: 1.5rem;">⏱️</div>

@@ -318,6 +318,15 @@ class PolydockStoreAppResource extends Resource
                     ->columnSpanFull(),
                 Section::make('Instance Ready Email Configuration')
                     ->schema([
+                        Forms\Components\Select::make('mail_theme')
+                            ->label('Email Theme')
+                            ->options(fn (): array => collect(config('mail.mjml-config.themes', []))
+                                ->map(fn (array $theme, string $key): string => $theme['name'] ?? $key)
+                                ->all())
+                            ->placeholder('Default theme')
+                            ->helperText('Leave blank to use the default email theme')
+                            ->columnSpanFull(),
+
                         Forms\Components\TextInput::make('email_subject_line')
                             ->label('Email Subject Line')
                             ->placeholder('Your {app name} Instance is Ready')
