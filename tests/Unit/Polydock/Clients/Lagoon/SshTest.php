@@ -11,7 +11,7 @@ class SshTest extends TestCase
 {
     public function test_command_for_execute_quotes_remote_command(): void
     {
-        $ssh = Ssh::create('project-env', 'ssh.lagoon.example.com');
+        $ssh = new Ssh('project-env', 'ssh.lagoon.example.com');
 
         $command = $ssh->getCommandForExecute(
             'umask 077 && cat > /tmp/.claw_env && /lagoon/polydock_claim.sh',
