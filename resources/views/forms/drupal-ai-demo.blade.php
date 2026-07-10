@@ -676,6 +676,10 @@
                             // Show success screen
                             loadingScreen.style.display = 'none';
                             successScreen.style.display = 'block';
+                        } else if (status === 'success' && data.result_data && data.result_data.result_type === 'trial_registered') {
+                            // Terminal success without an app URL: the registration
+                            // was captured and provisioning/details follow by email.
+                            renderRegisteredScreen();
                         } else {
                             renderSnagScreen();
                         }
@@ -716,6 +720,23 @@
                 </div>
             `;
             document.querySelector('.form-container').innerHTML = snagHtml;
+        }
+
+        function renderRegisteredScreen() {
+            loadingScreen.style.display = 'none';
+            signupForm.style.display = 'none';
+
+            const registeredHtml = `
+                <div class="status-screen" style="animation: fadeIn 0.4s ease-out;">
+                    <div style="color: var(--color-primary); font-size: 3rem; margin-bottom: 1.5rem;">✅</div>
+                    <div class="status-title">You're registered!</div>
+                    <div class="status-message">
+                        <p>We've received your trial registration and will email you your access details as soon as your trial is ready.</p>
+                        <p style="margin-top: 1rem;">Questions? Contact us at <a href="mailto:ai.support@amazee.io">ai.support@amazee.io</a>.</p>
+                    </div>
+                </div>
+            `;
+            document.querySelector('.form-container').innerHTML = registeredHtml;
         }
 
         function renderDelayScreen() {

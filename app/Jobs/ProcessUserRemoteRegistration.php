@@ -236,10 +236,11 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 ]);
             }
 
-            // Update registration with user info
+            // Update registration with user info. The status is left untouched here:
+            // persisting SUCCESS before the trial is created races the frontend
+            // status poller, which treats success-without-app_url as a failure.
             $this->registration->user_id = $user->id;
             $this->registration->user_group_id = $user->groups()->first()->id;
-            $this->registration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
             $this->registration->save();
 
             $email = $user->email;
@@ -260,12 +261,15 @@ class ProcessUserRemoteRegistration implements ShouldQueue
 
             if ($this->registration->registerSimulateRoundRobin) {
                 Log::info('Simulating round robin registration', ['registration' => $this->registration->toArray()]);
+                $this->registration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
                 // Set success message and URL if even ID
                 if (($this->registration->id % 2) === 0) {
                     $uniqueId = Str::random(10);
                     $this->registration->setResultValue('result_type', 'trial_created');
                     $this->registration->setResultValue('message', 'Trial created.');
-                    $this->registration->setResultValue('trial_app_url', "https://www.example.com/{$uniqueId}");
+                    // Use the same result key the real flow sets so the hosted
+                    // form status poller recognises the simulated success.
+                    $this->registration->setResultValue('app_url', "https://www.example.com/{$uniqueId}");
                 } elseif (($this->registration->id % 3) === 0) {
                     throw new \Exception('An error occurred while processing the registration.');
                 } else {
@@ -274,6 +278,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
                 }
             } elseif ($this->registration->registerOnlyCaptures) {
                 Log::info('Only capturing registration', ['registration' => $this->registration->toArray()]);
+                $this->registration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
                 $this->registration->setResultValue('result_type', 'trial_registered');
                 $this->registration->setResultValue('message', 'You have been registered for a trial allocation.');
             } elseif ($this->registration->registerSimulateError) {

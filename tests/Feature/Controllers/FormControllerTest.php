@@ -9,6 +9,7 @@ use App\Jobs\ProcessUserRemoteRegistration;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
+use App\Polydock\Apps\Generic\PolydockApp;
 use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
@@ -54,7 +55,7 @@ class FormControllerTest extends TestCase
         $this->storeApp = PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
             'name' => 'CKEditor Demo',
-            'polydock_app_class' => 'App\\PolydockApp',
+            'polydock_app_class' => PolydockApp::class,
             'lagoon_deploy_git' => 'git@github.com:example/app.git',
             'lagoon_deploy_branch' => 'main',
             'status' => PolydockStoreAppStatusEnum::AVAILABLE,
@@ -303,7 +304,7 @@ class FormControllerTest extends TestCase
         $privateApp = PolydockStoreApp::create([
             'polydock_store_id' => $privateStore->id,
             'name' => 'Internal Private Tool',
-            'polydock_app_class' => 'App\\PolydockApp',
+            'polydock_app_class' => PolydockApp::class,
             'lagoon_deploy_git' => 'git@github.com:example/private-app.git',
             'lagoon_deploy_branch' => 'main',
             'status' => PolydockStoreAppStatusEnum::AVAILABLE,
