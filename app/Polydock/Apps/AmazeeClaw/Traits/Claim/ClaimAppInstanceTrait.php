@@ -57,6 +57,13 @@ trait ClaimAppInstanceTrait
             // Keep existing claim marker behavior.
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_CLAIMED_AT', date('Y-m-d H:i:s'), 'GLOBAL');
 
+            // Pre-warmed instances run post-create before a user is allocated,
+            // so user-email is empty there — set it (again) now that we have one.
+            $userEmail = (string) ($appInstance->getKeyValue('user-email') ?? '');
+            if ($userEmail !== '') {
+                $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_USER_EMAIL', $userEmail, 'GLOBAL');
+            }
+
             // Provision/reuse credentials for the assigned user/team and inject into Lagoon.
             $claimEnvironmentVariables = $this->provisionAndInjectManualAmazeeAiCredentials($appInstance, $logContext);
 
