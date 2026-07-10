@@ -384,7 +384,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $model->setAppType($storeApp->polydock_app_class);
 
                 if (empty($model->name)) {
-                    $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
+                    $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix, $storeApp);
                 }
 
                 // Ensure name uniqueness
@@ -963,13 +963,19 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * @param  string  $prefix  The prefix for the project name
      * @return string The generated unique name
      */
-    public function generateUniqueProjectName(string $prefix): string
+    public function generateUniqueProjectName(string $prefix, ?PolydockStoreApp $storeApp = null): string
     {
+        $adjectives = $storeApp?->project_naming_adjectives ?: [];
+        $nouns = $storeApp?->project_naming_nouns ?: [];
+
+        $adjective = $adjectives === [] ? $this->pickColor() : $adjectives[array_rand($adjectives)];
+        $noun = $nouns === [] ? $this->pickAnimal() : $nouns[array_rand($nouns)];
+
         return strtolower(
             $prefix.'-'.
             // $this->pickVerb() . '-' . // we're removing the verb for now, it's not necessary
-            $this->pickColor().'-'.
-            $this->pickAnimal().'-'.
+            $adjective.'-'.
+            $noun.'-'.
             uniqid()
         );
     }
