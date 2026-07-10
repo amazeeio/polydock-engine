@@ -528,7 +528,7 @@ class PolydockStoreApp extends Model
     {
         $clean = [];
         foreach ((array) $words as $word) {
-            $word = strtolower(trim((string) preg_replace('/[^a-zA-Z0-9]+/', '', (string) $word)));
+            $word = strtolower(trim((string) preg_replace('/[^a-zA-Z0-9-]+/', '-', (string) $word), '-'));
             if ($word !== '') {
                 $clean[] = $word;
             }

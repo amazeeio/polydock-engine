@@ -42,9 +42,10 @@ trait PreCreateAppInstanceTrait
             'projectPrefix' => $appInstance->getKeyValue('lagoon-deploy-project-prefix'),
         ]);
 
-        // AmazeeClaw always accepts externally supplied names, regardless of
-        // the store app's naming mode - prefix, sanitize, and dedupe on Lagoon.
-        $this->finalizeCustomProjectName($appInstance);
+        // Store apps configured for custom naming accept externally supplied
+        // names - prefix, sanitize, and dedupe on Lagoon. Pattern-named
+        // (pre-warmed) instances are already unique and skip the Lagoon check.
+        $this->finalizeCustomProjectNameIfConfigured($appInstance);
 
         $projectName = $appInstance->getKeyValue('lagoon-project-name');
 

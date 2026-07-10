@@ -16,24 +16,34 @@ use App\Polydock\Core\PolydockAppInstanceInterface;
  */
 trait ResolvesCustomProjectNameTrait
 {
+    /**
+     * Run finalization only for store apps configured for custom naming.
+     */
+    protected function finalizeCustomProjectNameIfConfigured(PolydockAppInstanceInterface $appInstance): void
+    {
+        $storeApp = $appInstance instanceof PolydockAppInstance ? $appInstance->storeApp : null;
+
+        if ($storeApp?->project_naming_mode === PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM) {
+            $this->finalizeCustomProjectName($appInstance);
+        }
+    }
+
     protected function finalizeCustomProjectName(PolydockAppInstanceInterface $appInstance): void
     {
         $projectName = (string) $appInstance->getKeyValue('lagoon-project-name');
         $projectPrefix = (string) $appInstance->getKeyValue('lagoon-deploy-project-prefix');
 
-        if ($projectPrefix === '') {
-            if ($projectName === '') {
-                // No name and no prefix? This should probably not happen if validation passed, but let's be safe.
-                $this->setProjectName($appInstance, $this->generateProjectNameVariant('polydock', $appInstance));
-            }
+        if ($projectPrefix === '' && $projectName === '') {
+            // No name and no prefix? This should probably not happen if validation passed, but let's be safe.
+            $this->setProjectName($appInstance, $this->generateProjectNameVariant('polydock', $appInstance));
 
             return;
         }
 
-        // A prefix is set, so ensure the name follows the prefix-driven pattern
-        // while incorporating the requested name if one exists.
+        // Ensure the name follows the prefix-driven pattern while
+        // incorporating the requested name if one exists.
         $baseName = $projectName !== '' ? $projectName : $projectPrefix;
-        if ($projectName !== '' && ! str_starts_with($projectName, $projectPrefix)) {
+        if ($projectPrefix !== '' && $projectName !== '' && ! str_starts_with($projectName, $projectPrefix)) {
             $baseName = "{$projectPrefix}-{$projectName}";
         }
 
@@ -60,10 +70,7 @@ trait ResolvesCustomProjectNameTrait
 
     protected function generateProjectNameVariant(string $prefix, PolydockAppInstanceInterface $appInstance): string
     {
-        $storeApp = method_exists($appInstance, 'storeApp') ? $appInstance->storeApp : null;
-        if (! $storeApp instanceof PolydockStoreApp) {
-            $storeApp = null;
-        }
+        $storeApp = $appInstance instanceof PolydockAppInstance ? $appInstance->storeApp : null;
 
         $adjectives = $storeApp?->project_naming_adjectives ?: static::defaultProjectNamingAdjectives();
         $nouns = $storeApp?->project_naming_nouns ?: static::defaultProjectNamingNouns();

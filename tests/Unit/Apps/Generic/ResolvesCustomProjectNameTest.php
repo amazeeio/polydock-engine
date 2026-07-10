@@ -26,6 +26,7 @@ class ResolvesCustomProjectNameHarness
 {
     use ResolvesCustomProjectNameTrait {
         finalizeCustomProjectName as public;
+        finalizeCustomProjectNameIfConfigured as public;
     }
 
     public object $lagoonClient;
@@ -145,6 +146,33 @@ class ResolvesCustomProjectNameTest extends TestCase
 
         $this->expectExceptionMessage('Failed to generate a unique project name for Lagoon');
         $harness->finalizeCustomProjectName($instance);
+    }
+
+    public function test_name_without_prefix_is_still_sanitized_and_deduped(): void
+    {
+        $instance = $this->makeInstance(requestedName: 'My Company App!');
+        $instance->storeKeyValue('lagoon-deploy-project-prefix', '');
+        $instance->save();
+
+        $harness = $this->makeHarness();
+        $harness->finalizeCustomProjectName($instance);
+
+        $this->assertEquals('my-company-app', $instance->getKeyValue('lagoon-project-name'));
+    }
+
+    public function test_gate_only_runs_for_custom_naming_mode(): void
+    {
+        $patternInstance = $this->makeInstance(requestedName: 'Keep Me Raw');
+        $harness = $this->makeHarness();
+        $harness->finalizeCustomProjectNameIfConfigured($patternInstance);
+        $this->assertEquals('Keep Me Raw', $patternInstance->getKeyValue('lagoon-project-name'));
+
+        $customInstance = $this->makeInstance(
+            ['project_naming_mode' => PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM],
+            requestedName: 'Fix Me Up',
+        );
+        $harness->finalizeCustomProjectNameIfConfigured($customInstance);
+        $this->assertEquals('claw-fix-me-up', $customInstance->getKeyValue('lagoon-project-name'));
     }
 
     public function test_no_prefix_and_no_name_generates_polydock_fallback(): void

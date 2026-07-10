@@ -52,7 +52,7 @@ class PolydockStoreAppNamingConfigTest extends TestCase
             'project_naming_nouns' => ['Lobster'],
         ]);
 
-        $this->assertEquals(['snappy', 'zesty', 'badword'], $app->project_naming_adjectives);
+        $this->assertEquals(['snappy', 'zesty', 'bad-word'], $app->project_naming_adjectives);
         $this->assertEquals(['lobster'], $app->project_naming_nouns);
     }
 

@@ -7,7 +7,7 @@ use App\Events\PolydockAppInstanceStatusChanged;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
-use App\Polydock\Apps\Generic\Traits\Create\PostCreateAppInstanceTrait;
+use App\Polydock\Apps\Generic\Traits\Create\InjectsLagoonCustomRouteTrait;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
@@ -42,7 +42,7 @@ class LagoonCustomRouteVariableTest extends TestCase
     {
         return new class
         {
-            use PostCreateAppInstanceTrait;
+            use InjectsLagoonCustomRouteTrait;
 
             /** @var array<int, array{name: string, value: string, scope: string}> */
             public array $variables = [];
