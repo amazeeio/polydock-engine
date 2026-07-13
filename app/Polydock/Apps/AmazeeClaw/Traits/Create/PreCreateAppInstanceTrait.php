@@ -37,54 +37,17 @@ trait PreCreateAppInstanceTrait
             }
         }
 
+        $this->info("{$functionName}: Initial project name check", $logContext + [
+            'projectName' => $appInstance->getKeyValue('lagoon-project-name'),
+            'projectPrefix' => $appInstance->getKeyValue('lagoon-deploy-project-prefix'),
+        ]);
+
+        // Store apps configured for custom naming accept externally supplied
+        // names - prefix, sanitize, and dedupe on Lagoon. Pattern-named
+        // (pre-warmed) instances are already unique and skip the Lagoon check.
+        $this->finalizeCustomProjectNameIfConfigured($appInstance);
+
         $projectName = $appInstance->getKeyValue('lagoon-project-name');
-        $projectPrefix = $appInstance->getKeyValue('lagoon-deploy-project-prefix');
-
-        $this->info("{$functionName}: Initial project name check", $logContext + ['projectName' => $projectName, 'projectPrefix' => $projectPrefix]);
-
-        // If a prefix is set, we always want to ensure the name follows the prefix-driven pattern
-        // BUT we should try to incorporate the requested name if it exists.
-        if ($projectPrefix !== '') {
-            $baseName = $projectName ?: $projectPrefix;
-            // Ensure baseName doesn't already start with prefix if we're prepending it
-            if ($projectName && ! str_starts_with($projectName, $projectPrefix)) {
-                $baseName = "{$projectPrefix}-{$projectName}";
-            }
-
-            // Sanitize base name: lowercase, alphanumeric and hyphens only
-            $baseName = strtolower((string) preg_replace('/[^a-z0-9-]+/', '-', $baseName));
-            $baseName = trim($baseName, '-');
-
-            // Check if this project name already exists on Lagoon
-            $finalProjectName = $baseName;
-            $attempts = 0;
-            $maxAttempts = 10;
-
-            while ($this->lagoonClient->projectExistsByName($finalProjectName)) {
-                if ($attempts >= $maxAttempts) {
-                    $this->error("{$functionName}: Failed to generate a unique project name after {$maxAttempts} attempts", $logContext);
-                    throw new \Exception('Failed to generate a unique project name for Lagoon');
-                }
-                $this->info("{$functionName}: Project name {$finalProjectName} already exists on Lagoon, generating unique variant", $logContext);
-                $finalProjectName = $this->generateUniqueProjectName($baseName);
-                $attempts++;
-            }
-
-            $projectName = $finalProjectName;
-            $this->info("{$functionName}: Final unique project name: {$projectName}", $logContext);
-
-            /** @phpstan-ignore-next-line */
-            $appInstance->setName($projectName);
-            $appInstance->storeKeyValue('lagoon-project-name', $projectName);
-            $appInstance->save();
-        } elseif ($projectName === '') {
-            // No name and no prefix? This should probably not happen if validation passed, but let's be safe.
-            $projectName = $this->generateUniqueProjectName('polydock');
-            /** @phpstan-ignore-next-line */
-            $appInstance->setName($projectName);
-            $appInstance->storeKeyValue('lagoon-project-name', $projectName);
-            $appInstance->save();
-        }
 
         $this->info("{$functionName}: starting for project: {$projectName}", $logContext);
         $appInstance->setStatus(
@@ -96,48 +59,5 @@ trait PreCreateAppInstanceTrait
         $appInstance->setStatus(PolydockAppInstanceStatus::PRE_CREATE_COMPLETED, 'Pre-create completed')->save();
 
         return $appInstance;
-    }
-
-    /**
-     * Local override point for project-name strategy.
-     *
-     * Tweak this method directly if you want a different order/length,
-     * e.g. animal before color, or a shorter unique id.
-     */
-    protected function generateUniqueProjectName(string $prefix): string
-    {
-        $uniqueIdLengthBytes = 3; // 6 hex chars
-        try {
-            $shortUniqueId = bin2hex(random_bytes($uniqueIdLengthBytes));
-        } catch (\Exception) {
-            // Fallback preserves randomness if secure source is unavailable.
-            $shortUniqueId = substr(hash('sha256', uniqid('', true)), 0, $uniqueIdLengthBytes * 2);
-        }
-
-        return strtolower(
-            "{$prefix}-{$this->pickAdjective()}-{$this->pickAnimal()}-{$shortUniqueId}"
-        );
-    }
-
-    protected function pickAnimal(): string
-    {
-        $animals = [
-            'crab', 'lobster', 'crayfish', 'prawn', 'shrimp',
-            'hermitcrab', 'fiddlercrab', 'kingcrab', 'rocklobster', 'langoustine',
-            'scorpion', 'mantis',
-        ];
-
-        return $animals[array_rand($animals)];
-    }
-
-    protected function pickAdjective(): string
-    {
-        $adjectives = [
-            'snappy', 'pinchy', 'crabby', 'clawesome', 'nippy',
-            'cheeky', 'zesty', 'scrappy', 'wiggly', 'spiky',
-            'grumpy', 'sassy', 'bouncy', 'sneaky', 'jolly',
-        ];
-
-        return $adjectives[array_rand($adjectives)];
     }
 }

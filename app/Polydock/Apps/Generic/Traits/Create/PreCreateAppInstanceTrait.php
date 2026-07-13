@@ -8,6 +8,8 @@ use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 
 trait PreCreateAppInstanceTrait
 {
+    use ResolvesCustomProjectNameTrait;
+
     /**
      * Handles pre-creation tasks for an app instance.
      *
@@ -47,6 +49,10 @@ trait PreCreateAppInstanceTrait
             // Throws PolydockAppInstanceStatusFlowException
             $this->setAmazeeAiBackendClientFromAppInstance($appInstance);
         }
+
+        // Apps configured for custom naming may carry an externally supplied
+        // name - enforce the prefix, sanitize it, and dedupe against Lagoon.
+        $this->finalizeCustomProjectNameIfConfigured($appInstance);
 
         $projectName = $appInstance->getKeyValue('lagoon-project-name');
 

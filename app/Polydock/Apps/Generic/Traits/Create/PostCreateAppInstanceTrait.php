@@ -8,6 +8,8 @@ use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 
 trait PostCreateAppInstanceTrait
 {
+    use InjectsLagoonCustomRouteTrait;
+
     /**
      * Handles post-creation tasks for an app instance.
      *
@@ -86,6 +88,8 @@ trait PostCreateAppInstanceTrait
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_USER_EMAIL', $appInstance->getKeyValue('user-email'), 'GLOBAL');
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_INSTANCE_HEALTH_WEBHOOK_URL', $appInstance->getKeyValue('polydock-app-instance-health-webhook-url'), 'GLOBAL');
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'LAGOON_FEATURE_FLAG_INSIGHTS', 'false', 'GLOBAL');
+
+            $this->addLagoonCustomRouteVariable($appInstance, $projectName, $logContext);
 
             // Sync project metadata to Lagoon
             $email = $appInstance->getKeyValue('user-email');
