@@ -29,6 +29,35 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
 
     public static string $version = '0.1.10';
 
+    /**
+     * Fallback themed word lists for project-name variants, used when the
+     * store app has no word lists configured (see Project Naming settings).
+     *
+     * @return array<int, string>
+     */
+    #[\Override]
+    public static function defaultProjectNamingAdjectives(): array
+    {
+        return [
+            'snappy', 'pinchy', 'crabby', 'clawesome', 'nippy',
+            'cheeky', 'zesty', 'scrappy', 'wiggly', 'spiky',
+            'grumpy', 'sassy', 'bouncy', 'sneaky', 'jolly',
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    #[\Override]
+    public static function defaultProjectNamingNouns(): array
+    {
+        return [
+            'crab', 'lobster', 'crayfish', 'prawn', 'shrimp',
+            'hermitcrab', 'fiddlercrab', 'kingcrab', 'rocklobster', 'langoustine',
+            'scorpion', 'mantis',
+        ];
+    }
+
     #[\Override]
     public static function getStoreAppFormSchema(): array
     {

@@ -84,6 +84,15 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
                 continue;
             }
 
+            if (! $app->supports_pre_warming) {
+                Log::info('Skipping pre-warm creation: app uses custom project naming', [
+                    'app_id' => $app->id,
+                    'app_name' => $app->name,
+                ]);
+
+                continue;
+            }
+
             $neededTotal += $needed;
 
             Log::info('Creating unallocated instances', [

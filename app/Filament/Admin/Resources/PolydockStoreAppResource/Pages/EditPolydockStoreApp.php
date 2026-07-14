@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockStoreAppResource;
+use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Attributes\PolydockAppStoreFields;
 use App\Services\PolydockAppClassDiscovery;
 use Filament\Actions;
@@ -40,6 +41,13 @@ class EditPolydockStoreApp extends EditRecord
         $data['lagoon_production_environment'] = $appConfig['lagoon_production_environment'] ?? 'main';
         $data['refresh_unallocated_instances'] = $appConfig['refresh_unallocated_instances'] ?? false;
         $data['refresh_unallocated_instances_after_days'] = $appConfig['refresh_unallocated_instances_after_days'] ?? 7;
+        $data['project_naming_mode'] = $appConfig['project_naming_mode'] ?? PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN;
+        $data['project_naming_adjectives'] = $appConfig['project_naming_adjectives'] ?? [];
+        $data['project_naming_nouns'] = $appConfig['project_naming_nouns'] ?? [];
+        $data['lagoon_custom_route_enabled'] = $appConfig['lagoon_custom_route_enabled'] ?? false;
+        $data['lagoon_custom_route_domain_pattern'] = $appConfig['lagoon_custom_route_domain_pattern'] ?? '';
+        $data['lagoon_custom_route_service'] = $appConfig['lagoon_custom_route_service'] ?? '';
+        $data['lagoon_custom_route_annotations'] = $appConfig['lagoon_custom_route_annotations'] ?? [];
 
         return $data;
     }
@@ -100,11 +108,53 @@ class EditPolydockStoreApp extends EditRecord
                 ?? 7
             ),
         );
+        $appConfig['project_naming_mode'] = (string) (
+            $data['project_naming_mode']
+            ?? $existingAppConfig['project_naming_mode']
+            ?? PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN
+        );
+        $appConfig['project_naming_adjectives'] = array_values((array) (
+            $data['project_naming_adjectives']
+            ?? $existingAppConfig['project_naming_adjectives']
+            ?? []
+        ));
+        $appConfig['project_naming_nouns'] = array_values((array) (
+            $data['project_naming_nouns']
+            ?? $existingAppConfig['project_naming_nouns']
+            ?? []
+        ));
+        $appConfig['lagoon_custom_route_enabled'] = (bool) (
+            $data['lagoon_custom_route_enabled']
+            ?? $existingAppConfig['lagoon_custom_route_enabled']
+            ?? false
+        );
+        $appConfig['lagoon_custom_route_domain_pattern'] = (string) (
+            $data['lagoon_custom_route_domain_pattern']
+            ?? $existingAppConfig['lagoon_custom_route_domain_pattern']
+            ?? ''
+        );
+        $appConfig['lagoon_custom_route_service'] = (string) (
+            $data['lagoon_custom_route_service']
+            ?? $existingAppConfig['lagoon_custom_route_service']
+            ?? ''
+        );
+        $appConfig['lagoon_custom_route_annotations'] = (array) (
+            $data['lagoon_custom_route_annotations']
+            ?? $existingAppConfig['lagoon_custom_route_annotations']
+            ?? []
+        );
         unset(
             $data['lagoon_auto_idle'],
             $data['lagoon_production_environment'],
             $data['refresh_unallocated_instances'],
             $data['refresh_unallocated_instances_after_days'],
+            $data['project_naming_mode'],
+            $data['project_naming_adjectives'],
+            $data['project_naming_nouns'],
+            $data['lagoon_custom_route_enabled'],
+            $data['lagoon_custom_route_domain_pattern'],
+            $data['lagoon_custom_route_service'],
+            $data['lagoon_custom_route_annotations'],
         );
 
         // Store the app config as JSON

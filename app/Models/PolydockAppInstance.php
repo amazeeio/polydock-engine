@@ -384,7 +384,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $model->setAppType($storeApp->polydock_app_class);
 
                 if (empty($model->name)) {
-                    $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
+                    $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix, $storeApp);
                 }
 
                 // Ensure name uniqueness
@@ -904,7 +904,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Pick a random animal name
      */
-    private function pickAnimal(): string
+    public static function pickAnimal(): string
     {
         $animals = [
             'Lion', 'Tiger', 'Bear', 'Wolf', 'Fox', 'Eagle', 'Hawk', 'Dolphin', 'Whale', 'Elephant',
@@ -946,7 +946,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Pick a random color
      */
-    private function pickColor(): string
+    public static function pickColor(): string
     {
         $colors = [
             'Red', 'Blue', 'Green', 'Yellow', 'Purple',
@@ -963,13 +963,19 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * @param  string  $prefix  The prefix for the project name
      * @return string The generated unique name
      */
-    public function generateUniqueProjectName(string $prefix): string
+    public function generateUniqueProjectName(string $prefix, ?PolydockStoreApp $storeApp = null): string
     {
+        $adjectives = $storeApp?->project_naming_adjectives ?: [];
+        $nouns = $storeApp?->project_naming_nouns ?: [];
+
+        $adjective = $adjectives === [] ? self::pickColor() : $adjectives[array_rand($adjectives)];
+        $noun = $nouns === [] ? self::pickAnimal() : $nouns[array_rand($nouns)];
+
         return strtolower(
             $prefix.'-'.
             // $this->pickVerb() . '-' . // we're removing the verb for now, it's not necessary
-            $this->pickColor().'-'.
-            $this->pickAnimal().'-'.
+            $adjective.'-'.
+            $noun.'-'.
             uniqid()
         );
     }
@@ -1034,9 +1040,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         // Randomly choose between color-animal or verb-animal pattern
         if (random_int(0, 1) === 0) {
-            return strtolower($this->pickColor().$this->pickAnimal());
+            return strtolower(self::pickColor().self::pickAnimal());
         } else {
-            return strtolower($this->pickVerb().$this->pickAnimal());
+            return strtolower($this->pickVerb().self::pickAnimal());
         }
     }
 

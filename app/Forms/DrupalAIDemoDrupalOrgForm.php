@@ -40,6 +40,16 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
     }
 
     #[\Override]
+    public function getAllowedEmbedDomains(): array
+    {
+        return array_merge(parent::getAllowedEmbedDomains(), [
+            'drupal.org',
+            'www.drupal.org',
+            'new.drupal.org',
+        ]);
+    }
+
+    #[\Override]
     public function getValidationRules(): array
     {
         return [
