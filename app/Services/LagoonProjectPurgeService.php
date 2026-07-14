@@ -117,6 +117,20 @@ class LagoonProjectPurgeService
         $this->lastFailureReason = null;
         $this->lastEnvironmentCount = null;
 
+        // Adopted (claimed) projects are pre-existing and must never be deleted by
+        // Polydock. Treat as AlreadyGone so the Polydock record is cleaned up while
+        // the real Lagoon project is left fully intact.
+        if ($instance->getKeyValue('adopted')) {
+            $this->logger->info('Skipping purge of adopted project — leaving Lagoon project intact', [
+                'app_instance_id' => $instance->id,
+                // Adopted instances store the name under the hyphenated key;
+                // resolveProjectName() looks for `project_name` (underscore).
+                'project_name' => $instance->getKeyValue('lagoon-project-name'),
+            ]);
+
+            return PurgeResult::AlreadyGone;
+        }
+
         $projectName = $this->resolveProjectName($instance);
 
         if ($projectName === null) {

@@ -24,12 +24,29 @@ trait PostRemoveAppInstanceTrait
     {
         $functionName = __FUNCTION__;
         $logContext = $this->getLogContext($functionName);
+
+        $this->info($functionName.': starting', $logContext);
+
+        // Adopted (claimed) projects are detached, not destroyed. Skip the
+        // post-remove markers entirely — writing POLYDOCK_APP_REMOVED_* onto the
+        // still-live Lagoon project would mutate an environment we promised to
+        // leave intact. Guard runs before the Lagoon ping/validation so it never
+        // touches Lagoon.
+        if ($appInstance->getKeyValue('adopted')) {
+            $this->validateAppInstanceStatusIsExpected($appInstance, PolydockAppInstanceStatus::PENDING_POST_REMOVE);
+            $this->info($functionName.': adopted project — skipping Lagoon post-remove markers', $logContext);
+            $appInstance->setStatus(
+                PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
+                'Post-remove skipped for adopted project (Lagoon environment left intact)'
+            )->save();
+
+            return $appInstance;
+        }
+
         $testLagoonPing = true;
         $validateLagoonValues = true;
         $validateLagoonProjectName = true;
         $validateLagoonProjectId = true;
-
-        $this->info($functionName.': starting', $logContext);
 
         // Throws PolydockAppInstanceStatusFlowException
         $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(

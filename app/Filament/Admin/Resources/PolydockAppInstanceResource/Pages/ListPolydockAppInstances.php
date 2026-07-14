@@ -6,8 +6,15 @@ namespace App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
 use App\Models\PolydockAppInstance;
+use App\Models\PolydockStoreApp;
+use App\Models\UserGroup;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use App\Services\ClaimExistingProjectService;
 use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
@@ -21,6 +28,59 @@ class ListPolydockAppInstances extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+            Action::make('claim_existing_project')
+                ->label('Claim existing Lagoon project')
+                ->icon('heroicon-o-link')
+                ->modalHeading('Claim an existing Lagoon project')
+                ->modalDescription('Adopt a project that already exists on Lagoon so Polydock auto-updates it with scheduled deployments. Polydock grants its deploy group access to the project and will never delete a project it did not create.')
+                ->modalSubmitActionLabel('Claim')
+                ->form([
+                    TextInput::make('project_name')
+                        ->label('Lagoon project name')
+                        ->required()
+                        ->helperText('Must exactly match the project name on Lagoon.'),
+                    Select::make('polydock_store_app_id')
+                        ->label('Store app')
+                        ->helperText('Determines the app type, region, deploy group and redeploy schedule.')
+                        ->required()
+                        ->searchable()
+                        ->options(fn () => PolydockStoreApp::query()->orderBy('name')->pluck('name', 'id')),
+                    Select::make('user_group_id')
+                        ->label('Owner user group')
+                        ->required()
+                        ->searchable()
+                        ->options(fn () => UserGroup::query()->orderBy('name')->pluck('name', 'id')),
+                ])
+                ->action(function (array $data): void {
+                    try {
+                        $instance = app(ClaimExistingProjectService::class)->claim(
+                            PolydockStoreApp::findOrFail($data['polydock_store_app_id']),
+                            UserGroup::findOrFail($data['user_group_id']),
+                            $data['project_name'],
+                        );
+
+                        activity('audit')
+                            ->performedOn($instance)
+                            ->causedBy(auth()->user())
+                            ->withProperties([
+                                'action' => 'filament.claim_existing_project',
+                                'project_name' => $data['project_name'],
+                            ])
+                            ->log('Claimed existing Lagoon project (admin UI)');
+
+                        Notification::make()
+                            ->title('Project claimed')
+                            ->success()
+                            ->body("Instance #{$instance->id} now tracks '{$data['project_name']}' and is eligible for scheduled redeploys.")
+                            ->send();
+                    } catch (\Throwable $e) {
+                        Notification::make()
+                            ->title('Claim failed')
+                            ->danger()
+                            ->body($e->getMessage())
+                            ->send();
+                    }
+                }),
         ];
     }
 
