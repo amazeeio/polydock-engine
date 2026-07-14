@@ -105,6 +105,26 @@ class PolydockInstanceHealthController extends Controller
             ], 400);
         }
 
+        // Health reports must not change the claim dimension: a claimed instance
+        // flipped to unclaimed becomes eligible for the unclaimed-cleanup job,
+        // destroying a live tenant's app. Only the claim flow may cross this axis.
+        $claimStatuses = [
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+        ];
+        $crossesClaimAxis = in_array($instance->status, $claimStatuses, true)
+            && in_array($statusEnum, $claimStatuses, true)
+            && $instance->status !== $statusEnum;
+
+        if ($crossesClaimAxis) {
+            Log::error('Health check may not change claimed/unclaimed state', $logContext + ['status_code' => 409]);
+
+            return response()->json([
+                'error' => 'Health check may not change claimed/unclaimed state',
+                'status_code' => 409,
+            ], 409);
+        }
+
         $debugData = $request->isMethod('post') ? $data : $query;
 
         $logContext['debug_data'] = $debugData;
