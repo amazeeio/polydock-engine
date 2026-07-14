@@ -86,7 +86,7 @@ class FormControllerTest extends TestCase
 
         // Check framing security headers are set properly
         $response->assertHeaderMissing('X-Frame-Options');
-        $response->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai http://localhost http://localhost:*");
+        $response->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai http://localhost http://localhost:* https://drupal.org https://www.drupal.org https://new.drupal.org");
     }
 
     #[Test]
