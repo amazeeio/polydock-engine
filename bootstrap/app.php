@@ -24,6 +24,11 @@ return Application::configure(basePath: dirname(__DIR__))
 
         $middleware->append(XRobotsTagNoIndex::class);
 
+        // Public hosted forms are embedded cross-origin in iframes, where the
+        // SameSite session cookie isn't sent, so CSRF tokens can't match.
+        // These endpoints are guarded by reCAPTCHA + throttling instead.
+        $middleware->validateCsrfTokens(except: ['f/*']);
+
         $middleware->alias([
             'instances.read.ability' => EnsureInstancesReadAbility::class,
             'instances.write.ability' => EnsureInstancesWriteAbility::class,
