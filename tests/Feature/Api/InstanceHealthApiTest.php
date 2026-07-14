@@ -184,6 +184,34 @@ class InstanceHealthApiTest extends TestCase
             ->assertStatus(429);
     }
 
+    public function test_health_check_cannot_unclaim_a_claimed_instance(): void
+    {
+        Config::set('polydock.health_token', null);
+
+        // WHEN a claimed instance is reported as unclaimed
+        $response = $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-unclaimed");
+
+        // THEN it is rejected and the instance stays claimed
+        $response->assertStatus(409);
+        $this->instance->refresh();
+        $this->assertEquals(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, $this->instance->status);
+    }
+
+    public function test_health_check_cannot_claim_an_unclaimed_instance(): void
+    {
+        Config::set('polydock.health_token', null);
+        $this->instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED;
+        $this->instance->saveQuietly();
+
+        // WHEN an unclaimed instance is reported as claimed
+        $response = $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed");
+
+        // THEN it is rejected and the instance stays unclaimed
+        $response->assertStatus(409);
+        $this->instance->refresh();
+        $this->assertEquals(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED, $this->instance->status);
+    }
+
     protected function tearDown(): void
     {
         // Flush cache to reset rate limiters
