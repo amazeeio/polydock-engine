@@ -1285,12 +1285,6 @@ parameters:
 			path: tests/Feature/Filament/CreatePolydockAppInstanceTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<App\\Polydock\\Apps\\PrivateGpt\\Generated\\Dto\\RegionResponse\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Apps/PrivateGpt/Client/AmazeeAiClientTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1

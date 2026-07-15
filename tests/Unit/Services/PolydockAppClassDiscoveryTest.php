@@ -7,7 +7,6 @@ use App\Polydock\Apps\AnythingLlm\PolydockAnythingLLMApp;
 use App\Polydock\Apps\DependencyTrack\PolydockDependencyTrackApp;
 use App\Polydock\Apps\Generic\PolydockAiApp;
 use App\Polydock\Apps\Generic\PolydockApp;
-use App\Polydock\Apps\PrivateGpt\PolydockPrivateGptApp;
 use App\Polydock\Core\Attributes\PolydockAppTitle;
 use App\Polydock\Core\PolydockAppBase;
 use App\Polydock\Core\PolydockAppInterface;
@@ -83,12 +82,6 @@ class PolydockAppClassDiscoveryTest extends TestCase
             $classNames,
             'Should include PolydockApp'
         );
-
-        $this->assertContains(
-            PolydockPrivateGptApp::class,
-            $classNames,
-            'Should include PolydockPrivateGptApp'
-        );
     }
 
     /**
@@ -98,7 +91,7 @@ class PolydockAppClassDiscoveryTest extends TestCase
      * a deliberate, reviewed change (e.g. a new app was inlined).
      *
      * As of commit b6f2ff09d195, discovery scans app/Polydock/Apps/**\/*.php
-     * directly and yields these six concrete PolydockAppInterface classes.
+     * directly and yields these five concrete PolydockAppInterface classes.
      */
     public function test_characterization_pins_exact_discovered_app_set(): void
     {
@@ -110,7 +103,6 @@ class PolydockAppClassDiscoveryTest extends TestCase
             PolydockDependencyTrackApp::class,
             PolydockAiApp::class,
             PolydockApp::class,
-            PolydockPrivateGptApp::class,
         ];
 
         // getAvailableAppClasses() ksorts its result, so the discovered keys
@@ -303,7 +295,7 @@ class PolydockAppClassDiscoveryTest extends TestCase
     public function test_get_store_app_form_schema_returns_empty_for_class_without_attribute(): void
     {
         $schema = $this->discovery->getStoreAppFormSchema(
-            PolydockPrivateGptApp::class
+            PolydockApp::class
         );
 
         $this->assertIsArray($schema);

@@ -51,9 +51,4 @@ class AmazeeAiBackendHelper
 
         return $region[$key] ?? null;
     }
-
-    public static function getDataForPrivateGPTSettings(): array
-    {
-        return config('polydock.amazee_ai_backend_private_gpt_settings') ?? [];
-    }
 }

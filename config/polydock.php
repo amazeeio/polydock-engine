@@ -37,25 +37,11 @@ foreach ($filterServiceProviders as $filterServiceProvider) {
     }
 }
 
-$aisettings = [
-    'amazee-ai-backend-token' => env('AMAZEE_AI_BACKEND_TOKEN', 'no-amazee-ai-backend-token-set'),
-    'amazee-ai-backend-url' => env('AMAZEE_AI_BACKEND_URL', 'no-amazee-ai-backend-url-set'),
-    'amazee-ai-admin-email' => env('AMAZEE_AI_ADMIN_EMAIL', 'no-amazee-ai-admin-email-set'),
-    'amazee-ai-in-dev-mode' => strtolower((string) env('AMAZEE_AI_IN_DEV_MODE', 'false')) == 'true' || env('AMAZEE_AI_IN_DEV_MODE') === true ? 'true' : 'false',
-    'amazee-ai-registry-ghcr-username' => env('REGISTRY_GHCR_USERNAME', 'no-ghcr-username-set'),
-    'amazee-ai-registry-ghcr-password' => env('REGISTRY_GHCR_TOKEN', 'no-ghcr-token-set'),
-    'amazee-ai-phoenix-api-key' => env('PHOENIX_API_KEY', 'no-phoenix-api-key-set'),
-    'amazee-ai-phoenix-collector-endpoint' => env('PHOENIX_COLLECTOR_ENDPOINT', 'no-phoenix-collector-endpoint-set'),
-    'amazee-ai-unleash-api-token' => env('UNLEASH_API_TOKEN', 'no-unleash-api-token-set'),
-    'amazee-ai-unleash-url' => env('UNLEASH_URL', 'no-unleash-url-set'),
-];
-
 return [
     'health_token' => env('POLYDOCK_HEALTH_TOKEN'),
     'trusted_ips' => array_filter(array_map('trim', explode(',', (string) env('POLYDOCK_TRUSTED_IPS', '')))),
     'lagoon_environment_type' => env('LAGOON_ENVIRONMENT_TYPE', 'development'),
     'default_user_group_id_for_unallocated_instances' => env('POLYDOCK_DEFAULT_USER_GROUP_ID_FOR_UNALLOCATED_INSTANCES', 1),
-    'amazee_ai_backend_private_gpt_settings' => $aisettings,
     'max_per_run_dispatch_midtrial_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_MIDTRIAL_EMAILS', 25),
     'max_per_run_dispatch_one_day_left_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_ONE_DAY_LEFT_EMAILS', 25),
     'max_per_run_dispatch_trial_complete_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_EMAILS', 25),

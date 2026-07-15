@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Polydock\Apps\AmazeeClaw\Traits\Create;
 
+use App\Polydock\Apps\AmazeeClaw\Enums\AmazeeAiKeyMode;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 
@@ -30,8 +31,9 @@ trait PreCreateAppInstanceTrait
             $validateLagoonProjectId
         );
 
-        // Call the hook to extract AI credentials from the initial request data if in manual mode
-        if ($this->resolveAmazeeAiKeyMode($appInstance) === 'manual') {
+        // Call the hook to extract externally-injected AI credentials from the
+        // initial request data when keys are injected rather than generated.
+        if ($this->resolveAmazeeAiKeyMode($appInstance) === AmazeeAiKeyMode::Injected) {
             if (method_exists($this, 'extractAiCredentialsFromHookData')) {
                 $this->extractAiCredentialsFromHookData($appInstance, $appInstance->config['request_data'] ?? []);
             }
