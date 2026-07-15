@@ -46,8 +46,8 @@ class ProcessTrialCompleteEmailJob extends BaseJob implements ShouldQueue
         foreach ($this->appInstance->userGroup->owners as $owner) {
             $mail = Mail::to($owner->email);
 
-            if (env('MAIL_CC_ALL', false)) {
-                $mail->cc(env('MAIL_CC_ALL'));
+            if (config('mail.cc_all')) {
+                $mail->cc(config('mail.cc_all'));
             }
 
             $this->appInstance->info('Sending trial complete email to owner', [
