@@ -245,8 +245,8 @@ class ProcessPolydockAppInstanceStatusChange
                     foreach ($appInstance->userGroup->owners as $owner) {
                         $mail = Mail::to($owner->email);
 
-                        if (env('MAIL_CC_ALL', false)) {
-                            $mail->cc(env('MAIL_CC_ALL'));
+                        if (config('mail.cc_all')) {
+                            $mail->cc(config('mail.cc_all'));
                         }
 
                         $appInstance->info('Sending ready email to owner', [
