@@ -15,7 +15,6 @@ use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Http\Request;
-use Illuminate\Queue\Failed\NullFailedJobProvider;
 use Illuminate\Queue\QueueServiceProvider;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Facades\Artisan;
@@ -40,23 +39,22 @@ class AppServiceProvider extends ServiceProvider
 
         Scramble::ignoreDefaultRoutes();
 
-        // Force load QueueServiceProvider so that our queue.failer override is not overwritten by deferred loading
-        $this->app->register(QueueServiceProvider::class);
+        // Swap in the safe database-uuids failed-job provider. The override is
+        // only installed when that driver is configured — any other driver
+        // keeps Laravel's stock resolution instead of silently losing failed
+        // job records.
+        if (($this->app['config']['queue.failed.driver'] ?? null) === 'database-uuids') {
+            // Force load QueueServiceProvider so that our queue.failer override is not overwritten by deferred loading
+            $this->app->register(QueueServiceProvider::class);
 
-        $this->app->singleton('queue.failer', function ($app) {
-            $config = $app['config']['queue.failed'];
+            $this->app->singleton('queue.failer', function ($app) {
+                $config = $app['config']['queue.failed'];
 
-            // ponytail: only database-uuids is ever configured here; restore
-            // Laravel's file/dynamodb/database branches if another failed-job
-            // driver is ever introduced.
-            if (($config['driver'] ?? null) === 'database-uuids') {
                 return new SafeDatabaseUuidFailedJobProvider(
                     $app['db'], $config['database'], $config['table']
                 );
-            }
-
-            return new NullFailedJobProvider;
-        });
+            });
+        }
     }
 
     /**

@@ -51,7 +51,7 @@ class ProgressToNextStageJob extends BaseJob implements ShouldQueue
 
         if ($next === null) {
             Log::info('NOT Progressing app instance '.$appInstance->id
-                .' to next stage from '.$appInstance->status->name.'. This is the end of the line.');
+                .' to next stage from '.$appInstance->status->name.'. Polling should start now.');
         } else {
             Log::info('Progressing app instance '.$appInstance->id
                 .' to next stage from '.$appInstance->status->name.' to '.$next->name);
