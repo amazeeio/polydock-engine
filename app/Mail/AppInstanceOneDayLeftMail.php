@@ -4,50 +4,11 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use App\Mail\Traits\AppliesMailTheme;
-use App\Models\PolydockAppInstance;
-use App\Models\User;
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
-
-class AppInstanceOneDayLeftMail extends Mailable
+class AppInstanceOneDayLeftMail extends TrialEmailMail
 {
-    use AppliesMailTheme;
-    use Queueable;
-    use SerializesModels;
+    protected string $subjectField = 'one_day_left_email_subject';
 
-    public function __construct(
-        public PolydockAppInstance $appInstance,
-        public User $toUser,
-    ) {}
+    protected string $defaultSubject = 'One Day Left in Your Trial';
 
-    /**
-     * Get the message envelope.
-     */
-    public function envelope(): Envelope
-    {
-        $subject = $this->appInstance->storeApp->one_day_left_email_subject ?? 'One Day Left in Your Trial';
-        $subject .= ' ['.$this->appInstance->name.']';
-
-        return new Envelope(
-            subject: $subject,
-        );
-    }
-
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        $mjmlConfig = $this->mjmlConfig();
-        $mjmlConfig['appInstance'] = $this->appInstance;
-
-        return new Content(
-            view: 'emails.app-instance.one-day-left',
-            with: ['config' => $mjmlConfig],
-        );
-    }
+    protected string $mailView = 'emails.app-instance.one-day-left';
 }

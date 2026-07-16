@@ -6,10 +6,46 @@ use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\Exceptions\PolydockEngineProcessPolydockAppInstanceException;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use App\Polydock\Core\PolydockAppInterface;
 use Exception;
 
 trait PolydockEngineFunctionCallerTrait
 {
+    /**
+     * Resolve the app object for an instance and confirm it exposes the
+     * requested function. Logs and returns null when it can't.
+     *
+     * @return PolydockAppInterface|null
+     */
+    private function resolveAppFunction(PolydockAppInstance $appInstance, string $appFunctionName, array $outputContext)
+    {
+        try {
+            $polydockApp = $appInstance->getApp();
+
+            if (! $polydockApp) {
+                $this->error($appFunctionName.' failed - app instance not found', $outputContext);
+
+                return null;
+            }
+
+            if (! method_exists($polydockApp, $appFunctionName)) {
+                $this->error($appFunctionName.' failed - app function not found', $outputContext);
+
+                return null;
+            }
+
+            return $polydockApp;
+        } catch (Exception $e) {
+            $this->error($appFunctionName.' failed - unknown initialisation exception', $outputContext + [
+                'exception_message' => $e->getMessage(),
+                'exception_class' => $e::class,
+                'exception_trace' => $e->getTraceAsString(),
+            ]);
+
+            return null;
+        }
+    }
+
     /**
      * Process a Polydock app function with status flow control
      *
@@ -42,30 +78,8 @@ trait PolydockEngineFunctionCallerTrait
 
         $this->info('Initialising '.$location.' for '.$appFunctionName, $outputContext);
 
-        // Initialise the required resources
-        try {
-            $polydockApp = $appInstance->getApp();
-
-            if (! $polydockApp) {
-                $this->error($appFunctionName.' failed - app instance not found', $outputContext);
-
-                return false;
-            }
-
-            if (! method_exists($polydockApp, $appFunctionName)) {
-                $this->error($appFunctionName.' failed - app function not found', $outputContext);
-
-                return false;
-            }
-        } catch (Exception $e) {
-            $message = $appFunctionName.' failed - unknown initialisation exception';
-            $context = $outputContext + [
-                'exception_message' => $e->getMessage(),
-                'exception_class' => $e::class,
-                'exception_trace' => $e->getTraceAsString(),
-            ];
-            $this->error($message, $context);
-
+        $polydockApp = $this->resolveAppFunction($appInstance, $appFunctionName, $outputContext);
+        if (! $polydockApp) {
             return false;
         }
 
@@ -142,30 +156,8 @@ trait PolydockEngineFunctionCallerTrait
 
         $this->info('Initialising '.$location.' for '.$appFunctionName, $outputContext);
 
-        // Initialise the required resources
-        try {
-            $polydockApp = $appInstance->getApp();
-
-            if (! $polydockApp) {
-                $this->error($appFunctionName.' failed - app instance not found', $outputContext);
-
-                return false;
-            }
-
-            if (! method_exists($polydockApp, $appFunctionName)) {
-                $this->error($appFunctionName.' failed - app function not found', $outputContext);
-
-                return false;
-            }
-        } catch (Exception $e) {
-            $message = $appFunctionName.' failed - unknown initialisation exception';
-            $context = $outputContext + [
-                'exception_message' => $e->getMessage(),
-                'exception_class' => $e::class,
-                'exception_trace' => $e->getTraceAsString(),
-            ];
-            $this->error($message, $context);
-
+        $polydockApp = $this->resolveAppFunction($appInstance, $appFunctionName, $outputContext);
+        if (! $polydockApp) {
             return false;
         }
 

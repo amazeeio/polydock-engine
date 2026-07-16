@@ -2,65 +2,20 @@
 
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Trial;
 
-use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
 use App\Mail\AppInstanceTrialCompleteMail;
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Mail;
 
-class ProcessTrialCompleteEmailJob extends BaseJob implements ShouldQueue
+class ProcessTrialCompleteEmailJob extends TrialEmailJob
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
+    protected string $enabledField = 'send_trial_complete_email';
 
-    public function handle()
-    {
-        $this->polydockJobStart();
+    protected string $atField = 'trial_ends_at';
 
-        if (
-            ! $this->appInstance->is_trial
-            || ! $this->appInstance->storeApp->send_trial_complete_email
-            || ! $this->appInstance->trial_ends_at
-            || ! $this->appInstance->trial_ends_at->isPast()
-            || $this->appInstance->trial_complete_email_sent
-        ) {
-            $this->appInstance->info('Trial complete email not sent', [
-                'app_instance_id' => $this->appInstance->id,
-                'is_trial' => $this->appInstance->is_trial,
-                'send_trial_complete_email' => $this->appInstance->storeApp->send_trial_complete_email,
-                'trial_ends_at' => $this->appInstance->trial_ends_at,
-                'trial_complete_email_sent' => $this->appInstance->trial_complete_email_sent,
-            ]);
+    protected string $sentFlag = 'trial_complete_email_sent';
 
-            return;
-        }
+    protected string $mailClass = AppInstanceTrialCompleteMail::class;
 
-        // Send email to owners
-        // With >1 owner, a mid-loop send failure would re-email earlier owners on re-dispatch.
-        // Add per-owner sent-tracking if multi-owner groups ever become real.
-        foreach ($this->appInstance->userGroup->owners as $owner) {
-            $mail = Mail::to($owner->email);
+    protected string $label = 'Trial complete';
 
-            if (config('mail.cc_all')) {
-                $mail->cc(config('mail.cc_all'));
-            }
-
-            $this->appInstance->info('Sending trial complete email to owner', [
-                'owner_id' => $owner->id,
-                'owner_email' => $owner->email,
-            ]);
-
-            $mail->send(new AppInstanceTrialCompleteMail($this->appInstance, $owner));
-        }
-
-        // Update the sent flag
-        $this->appInstance->update(['trial_complete_email_sent' => true]);
-
-        $this->polydockJobDone();
-    }
+    // The trial-complete email is sent after expiry by definition.
+    protected bool $skipWhenExpired = false;
 }

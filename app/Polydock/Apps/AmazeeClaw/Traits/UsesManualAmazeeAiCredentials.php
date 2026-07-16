@@ -144,7 +144,7 @@ trait UsesManualAmazeeAiCredentials
             ];
 
             foreach ($mapping as $secretPath => $envVar) {
-                $val = $this->getDataFromPath($secret, $secretPath);
+                $val = data_get($secret, $secretPath);
                 if ($val !== null) {
                     $claimEnvVars[$envVar] = (string) $val;
                 }
@@ -169,67 +169,39 @@ trait UsesManualAmazeeAiCredentials
     }
 
     /**
-     * Simple helper to get data from a dot-notated path in an array.
+     * Resolve a config value through the standard cascade:
+     * polydock variable -> instance data key -> app_config data key -> store-app app_config.
      */
-    protected function getDataFromPath(array $data, string $path): mixed
+    protected function resolveInstanceOrAppConfig(PolydockAppInstanceInterface $appInstance, string $key): string
     {
-        if (strpos($path, '.') === false) {
-            return $data[$path] ?? null;
+        $value = '';
+        if (method_exists($appInstance, 'getPolydockVariableValue')) {
+            /** @phpstan-ignore-next-line */
+            $value = (string) ($appInstance->getPolydockVariableValue("instance_config_{$key}") ?? '');
+        }
+        if ($value === '') {
+            $value = (string) $appInstance->getKeyValue("instance_config_{$key}");
+        }
+        if ($value === '') {
+            $value = (string) $appInstance->getKeyValue("app_config_{$key}");
+        }
+        if ($value === '') {
+            /** @phpstan-ignore-next-line */
+            $storeAppConfig = (array) (($appInstance->storeApp->app_config ?? null) ?: []);
+            $value = (string) ($storeAppConfig[$key] ?? '');
         }
 
-        foreach (explode('.', $path) as $segment) {
-            if (! \is_array($data) || ! \array_key_exists($segment, $data)) {
-                return null;
-            }
-
-            $data = $data[$segment];
-        }
-
-        return $data;
+        return $value;
     }
 
     protected function resolveAmazeeAiDefaultModelFromInstanceOrApp(PolydockAppInstanceInterface $appInstance): string
     {
-        $defaultModel = '';
-        if (method_exists($appInstance, 'getPolydockVariableValue')) {
-            /** @phpstan-ignore-next-line */
-            $defaultModel = (string) ($appInstance->getPolydockVariableValue('instance_config_openclaw_default_model') ?? '');
-        }
-        if ($defaultModel === '') {
-            $defaultModel = (string) $appInstance->getKeyValue('instance_config_openclaw_default_model');
-        }
-        if ($defaultModel === '') {
-            $defaultModel = (string) $appInstance->getKeyValue('app_config_openclaw_default_model');
-        }
-        if ($defaultModel === '') {
-            /** @phpstan-ignore-next-line */
-            $storeAppConfig = (array) (($appInstance->storeApp->app_config ?? null) ?: []);
-            $defaultModel = (string) ($storeAppConfig['openclaw_default_model'] ?? '');
-        }
-
-        return $defaultModel;
+        return $this->resolveInstanceOrAppConfig($appInstance, 'openclaw_default_model');
     }
 
     public function resolveAmazeeAiKeyMode(PolydockAppInstanceInterface $appInstance): AmazeeAiKeyMode
     {
-        $keyMode = '';
-        if (method_exists($appInstance, 'getPolydockVariableValue')) {
-            /** @phpstan-ignore-next-line */
-            $keyMode = (string) ($appInstance->getPolydockVariableValue('instance_config_amazeeai_key_mode') ?? '');
-        }
-        if ($keyMode === '') {
-            $keyMode = (string) $appInstance->getKeyValue('instance_config_amazeeai_key_mode');
-        }
-        if ($keyMode === '') {
-            $keyMode = (string) $appInstance->getKeyValue('app_config_amazeeai_key_mode');
-        }
-        if ($keyMode === '') {
-            /** @phpstan-ignore-next-line */
-            $storeAppConfig = (array) (($appInstance->storeApp->app_config ?? null) ?: []);
-            $keyMode = (string) ($storeAppConfig['amazeeai_key_mode'] ?? '');
-        }
-
-        return AmazeeAiKeyMode::fromStorage($keyMode);
+        return AmazeeAiKeyMode::fromStorage($this->resolveInstanceOrAppConfig($appInstance, 'amazeeai_key_mode'));
     }
 
     /**

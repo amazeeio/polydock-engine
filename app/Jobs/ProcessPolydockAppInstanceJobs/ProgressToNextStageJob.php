@@ -18,137 +18,44 @@ class ProgressToNextStageJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
 
         $appInstance = $this->appInstance;
-        if (! $appInstance) {
-            throw new \Exception(
-                'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
-            );
-        }
 
         if (! in_array($appInstance->status, PolydockAppInstance::$completedStatuses)) {
             throw new PolydockAppInstanceStatusFlowException(
-                'ProgressToNextStageJob can only be run on completed statuses',
-                $appInstance->status,
+                'ProgressToNextStageJob can only be run on completed statuses, got '.$appInstance->status->value,
             );
         }
 
-        switch ($appInstance->status) {
-            case PolydockAppInstanceStatus::PRE_CREATE_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from PRE_CREATE_COMPLETED to PENDING_CREATE');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::PENDING_CREATE)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::CREATE_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from CREATE_COMPLETED to PENDING_POST_CREATE');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::PENDING_POST_CREATE)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::POST_CREATE_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from POST_CREATE_COMPLETED to PENDING_PRE_DEPLOY');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::PENDING_PRE_DEPLOY)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from PRE_DEPLOY_COMPLETED to PENDING_DEPLOY');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::PENDING_DEPLOY)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::DEPLOY_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from DEPLOY_COMPLETED to PENDING_POST_DEPLOY');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::PENDING_POST_DEPLOY)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED:
-                if ($appInstance->remoteRegistration || $appInstance->getKeyValue('user-email')) {
-                    Log::info('Progressing app instance '
-                    .$appInstance->id
-                    .' to next stage from POST_DEPLOY_COMPLETED to PENDING_POLYDOCK_CLAIM');
-                    $appInstance
-                        ->setStatus(PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM)
-                        ->save();
-                } else {
-                    Log::info('Progressing app instance '
-                    .$appInstance->id
-                    .' to next stage from POST_DEPLOY_COMPLETED to RUNNING_HEALTHY_UNCLAIMED');
-                    $appInstance
-                        ->setStatus(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
-                        ->save();
-                }
-                break;
-            case PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from POLYDOCK_CLAIM_COMPLETED to RUNNING_HEALTHY_CLAIMED');
+        // Completed status => next pending status. POST_DEPLOY branches on
+        // whether a user is attached; POST_UPGRADE ends the flow (polling
+        // takes over from there).
+        $next = match ($appInstance->status) {
+            PolydockAppInstanceStatus::PRE_CREATE_COMPLETED => PolydockAppInstanceStatus::PENDING_CREATE,
+            PolydockAppInstanceStatus::CREATE_COMPLETED => PolydockAppInstanceStatus::PENDING_POST_CREATE,
+            PolydockAppInstanceStatus::POST_CREATE_COMPLETED => PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
+            PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED => PolydockAppInstanceStatus::PENDING_DEPLOY,
+            PolydockAppInstanceStatus::DEPLOY_COMPLETED => PolydockAppInstanceStatus::PENDING_POST_DEPLOY,
+            PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED => ($appInstance->remoteRegistration || $appInstance->getKeyValue('user-email'))
+                ? PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM
+                : PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+            PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+            PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED => PolydockAppInstanceStatus::PENDING_REMOVE,
+            PolydockAppInstanceStatus::REMOVE_COMPLETED => PolydockAppInstanceStatus::PENDING_POST_REMOVE,
+            PolydockAppInstanceStatus::POST_REMOVE_COMPLETED => PolydockAppInstanceStatus::REMOVED,
+            PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED => PolydockAppInstanceStatus::PENDING_UPGRADE,
+            PolydockAppInstanceStatus::UPGRADE_COMPLETED => PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
+            PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED => null,
+            default => throw new PolydockAppInstanceStatusFlowException(
+                'ProgressToNextStageJob can only be run on completed statuses, got '.$appInstance->status->value,
+            ),
+        };
 
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED)
-                    ->save();
-
-                break;
-            case PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from PRE_REMOVE_COMPLETED to PENDING_REMOVE');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::PENDING_REMOVE)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::REMOVE_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from REMOVE_COMPLETED to PENDING_POST_REMOVE');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::PENDING_POST_REMOVE)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::POST_REMOVE_COMPLETED:
-                Log::info('NOT Progressing app instance '
-                .$appInstance->id
-                .' to next stage from POST_REMOVE_COMPLETED. This is the end of the line.');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::REMOVED)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::PRE_UPGRADE_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from PRE_UPGRADE_COMPLETED to PENDING_UPGRADE');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::PENDING_UPGRADE)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::UPGRADE_COMPLETED:
-                Log::info('Progressing app instance '
-                .$appInstance->id
-                .' to next stage from UPGRADE_COMPLETED to PENDING_POST_UPGRADE');
-                $appInstance
-                    ->setStatus(PolydockAppInstanceStatus::PENDING_POST_UPGRADE)
-                    ->save();
-                break;
-            case PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED:
-                Log::info('NOT Progressing app instance '
-                .$appInstance->id
-                .' to next stage from POST_UPGRADE_COMPLETED. Polling should start now.');
-                break;
-            default:
-                throw new PolydockAppInstanceStatusFlowException(
-                    'ProgressToNextStageJob can only be run on completed statuses',
-                    $appInstance->status,
-                );
+        if ($next === null) {
+            Log::info('NOT Progressing app instance '.$appInstance->id
+                .' to next stage from '.$appInstance->status->name.'. Polling should start now.');
+        } else {
+            Log::info('Progressing app instance '.$appInstance->id
+                .' to next stage from '.$appInstance->status->name.' to '.$next->name);
+            $appInstance->setStatus($next)->save();
         }
 
         $this->polydockJobDone();

@@ -56,25 +56,7 @@ trait PostCreateAppInstanceTrait
         )->save();
 
         try {
-
-            $addGroupToProjectResult = $this->lagoonClient->addGroupToProject(
-                $appInstance->getKeyValue('lagoon-deploy-group-name'),
-                $projectName
-            );
-
-            if (isset($addGroupToProjectResult['error'])) {
-                // Handle both array errors (from GraphQL) and string errors (from not found)
-                $errorMessage = is_array($addGroupToProjectResult['error'])
-                    ? ($addGroupToProjectResult['error'][0]['message'] ?? json_encode($addGroupToProjectResult['error']))
-                    : $addGroupToProjectResult['error'];
-                $this->error($errorMessage);
-                throw new \Exception($errorMessage);
-            }
-
-            if (! isset($addGroupToProjectResult['addGroupsToProject']) || ! isset($addGroupToProjectResult['addGroupsToProject']['id'])) {
-                $this->error('addGroupsToProject ID not found in data');
-                throw new \Exception('addGroupsToProject ID not found in data');
-            }
+            $this->addDeployGroupToLagoonProject($appInstance);
 
             //            $this->addOrUpdateLagoonProjectVariable($appInstance, "POLYDOCK_APP_CREATED_DATE", date('Y-m-d'), "GLOBAL");
             //            $this->addOrUpdateLagoonProjectVariable($appInstance, "POLYDOCK_APP_CREATED_TIME", date('H:i:s'), "GLOBAL");

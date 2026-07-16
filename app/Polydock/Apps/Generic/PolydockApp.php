@@ -148,6 +148,33 @@ class PolydockApp extends PolydockAppBase
     }
 
     /**
+     * Grant the instance's deploy group access to its Lagoon project.
+     *
+     * @throws \Exception If Lagoon rejects the grant or returns no id
+     */
+    public function addDeployGroupToLagoonProject(PolydockAppInstanceInterface $appInstance): void
+    {
+        $result = $this->lagoonClient->addGroupToProject(
+            $appInstance->getKeyValue('lagoon-deploy-group-name'),
+            $appInstance->getKeyValue('lagoon-project-name')
+        );
+
+        if (isset($result['error'])) {
+            // Handle both array errors (from GraphQL) and string errors (from not found)
+            $errorMessage = is_array($result['error'])
+                ? ($result['error'][0]['message'] ?? json_encode($result['error']))
+                : $result['error'];
+            $this->error($errorMessage);
+            throw new \Exception($errorMessage);
+        }
+
+        if (! isset($result['addGroupsToProject']['id'])) {
+            $this->error('addGroupsToProject ID not found in data');
+            throw new \Exception('addGroupsToProject ID not found in data');
+        }
+    }
+
+    /**
      * Verifies that the lagoon values are available.
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
