@@ -92,43 +92,35 @@ class ListPolydockAppInstances extends ListRecords
 
     public function getTabs(): array
     {
-        return [
-            'active' => Tab::make('Active')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', '!=', PolydockAppInstanceStatus::REMOVED))
-                ->badge(static::$resource::getEloquentQuery()->where('status', '!=', PolydockAppInstanceStatus::REMOVED)->count()),
-
-            'in_progress' => Tab::make('In Progress')
-                ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('status', [
-                    PolydockAppInstanceStatus::NEW,
-                    ...PolydockAppInstance::$stageCreateStatuses,
-                    ...PolydockAppInstance::$stageDeployStatuses,
-                    ...PolydockAppInstance::$stageClaimStatuses,
-                    ...PolydockAppInstance::$stageUpgradeStatuses,
-                    ...array_filter(PolydockAppInstance::$stageRemoveStatuses, fn ($status) => $status !== PolydockAppInstanceStatus::REMOVED),
-                ]))
-                ->badge(static::$resource::getEloquentQuery()->whereIn('status', [
-                    PolydockAppInstanceStatus::NEW,
-                    ...PolydockAppInstance::$stageCreateStatuses,
-                    ...PolydockAppInstance::$stageDeployStatuses,
-                    ...PolydockAppInstance::$stageClaimStatuses,
-                    ...PolydockAppInstance::$stageUpgradeStatuses,
-                    ...array_filter(PolydockAppInstance::$stageRemoveStatuses, fn ($status) => $status !== PolydockAppInstanceStatus::REMOVED),
-                ])->count()),
-
-            'healthy_claimed' => Tab::make('Healthy (Claimed)')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED))
-                ->badge(static::$resource::getEloquentQuery()->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED)->count()),
-
-            'healthy_unclaimed' => Tab::make('Healthy (Unclaimed)')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED))
-                ->badge(static::$resource::getEloquentQuery()->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)->count()),
-
-            'removed' => Tab::make('Removed')
-                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', PolydockAppInstanceStatus::REMOVED))
-                ->badge(static::$resource::getEloquentQuery()->where('status', PolydockAppInstanceStatus::REMOVED)->count()),
-
-            'all' => Tab::make('All')
-                ->badge(static::$resource::getEloquentQuery()->count()),
+        $inProgressStatuses = [
+            PolydockAppInstanceStatus::NEW,
+            ...PolydockAppInstance::$stageCreateStatuses,
+            ...PolydockAppInstance::$stageDeployStatuses,
+            ...PolydockAppInstance::$stageClaimStatuses,
+            ...PolydockAppInstance::$stageUpgradeStatuses,
+            ...array_filter(PolydockAppInstance::$stageRemoveStatuses, fn ($status) => $status !== PolydockAppInstanceStatus::REMOVED),
         ];
+
+        // Each tab's scope is written once and reused for both the tab query
+        // and its badge count.
+        $scopes = [
+            'active' => ['Active', fn (Builder $query) => $query->where('status', '!=', PolydockAppInstanceStatus::REMOVED)],
+            'in_progress' => ['In Progress', fn (Builder $query) => $query->whereIn('status', $inProgressStatuses)],
+            'healthy_claimed' => ['Healthy (Claimed)', fn (Builder $query) => $query->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED)],
+            'healthy_unclaimed' => ['Healthy (Unclaimed)', fn (Builder $query) => $query->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)],
+            'removed' => ['Removed', fn (Builder $query) => $query->where('status', PolydockAppInstanceStatus::REMOVED)],
+        ];
+
+        $tabs = [];
+        foreach ($scopes as $key => [$label, $scope]) {
+            $tabs[$key] = Tab::make($label)
+                ->modifyQueryUsing($scope)
+                ->badge($scope(static::$resource::getEloquentQuery())->count());
+        }
+
+        $tabs['all'] = Tab::make('All')
+            ->badge(static::$resource::getEloquentQuery()->count());
+
+        return $tabs;
     }
 }
