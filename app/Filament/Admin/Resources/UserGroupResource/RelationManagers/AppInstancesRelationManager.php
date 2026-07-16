@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
-use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\RelationManagers\RelationManager;
@@ -38,11 +37,10 @@ class AppInstancesRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('storeApp.name')
                     ->label('Store App')
                     ->searchable(),
+                // The status enum implements HasColor/HasIcon/HasLabel, so
+                // badge() resolves color, icon, and label by itself.
                 Tables\Columns\TextColumn::make('status')
-                    ->badge()
-                    ->color(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getColor())
-                    ->icon(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getIcon())
-                    ->formatStateUsing(fn ($state) => PolydockAppInstanceStatus::from($state->value)->getLabel()),
+                    ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime(),
             ])
