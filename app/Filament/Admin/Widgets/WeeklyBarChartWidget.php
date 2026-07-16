@@ -49,14 +49,28 @@ abstract class WeeklyBarChartWidget extends ChartWidget
         ];
     }
 
+    private ?Carbon $startDate = null;
+
+    /**
+     * Memoized so the query window and the label window are computed from the
+     * same instant — a render straddling a week boundary would otherwise
+     * fetch and label from different weeks.
+     */
     protected function startDate(): Carbon
     {
-        return Carbon::now()->subWeeks(6)->startOfWeek();
+        return $this->startDate ??= Carbon::now()->subWeeks(6)->startOfWeek();
     }
 
     /** SQL expression bucketing a datetime column to the Monday of its week. */
     protected function weekBucketSql(string $column = 'created_at'): string
     {
+        // The expression is interpolated into DB::raw() — hard-fail on
+        // anything but a plain [table.]column identifier so a future caller
+        // can never feed it request input.
+        if (! preg_match('/^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)?$/', $column)) {
+            throw new \InvalidArgumentException("Invalid column identifier: {$column}");
+        }
+
         return "DATE({$column} - INTERVAL WEEKDAY({$column}) DAY)";
     }
 
@@ -101,6 +115,9 @@ abstract class WeeklyBarChartWidget extends ChartWidget
 
             foreach (array_keys($seriesMeta) as $key) {
                 $match = $seriesField === null ? $weekData : $weekData->where($seriesField, $key);
+                // first() may return null for an empty week; `??` uses
+                // isset() semantics, so the chained access is null-safe
+                // without `?->` (which PHPStan rejects on the left of `??`).
                 $datasets[$key]['data'][] = $match->first()->count ?? 0;
             }
         }
