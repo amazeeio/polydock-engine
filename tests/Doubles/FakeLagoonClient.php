@@ -44,15 +44,47 @@ class FakeLagoonClient extends Client
         // Intentionally bypass the real Client constructor (SSH/config setup).
     }
 
+    public bool $throwOnGetProject = false;
+
+    /** @var array<int, array{project: string, environment: string}> Recorded environment deletions. */
+    public array $environmentDeletes = [];
+
+    public ?array $deleteEnvironmentResponse = null;
+
+    /** @var array<int, string> Recorded project deletions. */
+    public array $projectDeletes = [];
+
+    public ?array $deleteProjectResponse = null;
+
     #[\Override]
     public function getProjectByName(string $projectName): array
     {
+        if ($this->throwOnGetProject) {
+            throw new \RuntimeException('getProjectByName failed');
+        }
+
         if (! isset($this->projects[$projectName])) {
             // Lagoon returns a null payload for unknown projects.
             return ['projectByName' => null];
         }
 
         return ['projectByName' => $this->projects[$projectName]];
+    }
+
+    #[\Override]
+    public function deleteProjectEnvironmentByName(string $projectName, string $environmentName): array
+    {
+        $this->environmentDeletes[] = ['project' => $projectName, 'environment' => $environmentName];
+
+        return $this->deleteEnvironmentResponse ?? ['deleteEnvironment' => 'success'];
+    }
+
+    #[\Override]
+    public function deleteProjectByName(string $projectName): array
+    {
+        $this->projectDeletes[] = $projectName;
+
+        return $this->deleteProjectResponse ?? ['deleteProject' => 'success'];
     }
 
     #[\Override]
