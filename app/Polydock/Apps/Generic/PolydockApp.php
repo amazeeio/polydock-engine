@@ -281,25 +281,6 @@ class PolydockApp extends PolydockAppBase
     }
 
     /**
-     * Verifies that the project name and id are available.
-     *
-     * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
-     * @return bool True if the project name and id are available, false otherwise
-     */
-    public function verifyLagoonProjectAndIdAreAvailable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
-    {
-        if (! $this->verifyLagoonProjectNameIsAvailable($appInstance, $logContext)) {
-            return false;
-        }
-
-        if (! $this->verifyLagoonProjectIdIsAvailable($appInstance, $logContext)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * @throws PolydockAppInstanceStatusFlowException
      */
     public function validateLagoonPingAndThrowExceptionIfFailed(array $logContext = []): void
@@ -402,10 +383,5 @@ class PolydockApp extends PolydockAppBase
     public function getRequiresAiInfrastructure(): bool
     {
         return $this->requiresAiInfrastructure;
-    }
-
-    public function setRequiresAiInfrastructure(bool $requiresAiInfrastructure): void
-    {
-        $this->requiresAiInfrastructure = $requiresAiInfrastructure;
     }
 }
