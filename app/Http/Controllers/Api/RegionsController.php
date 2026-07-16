@@ -15,39 +15,9 @@ class RegionsController extends Controller
      *
      * Get all public regions with their available apps.
      *
-     * @group Regions
+     * @tags Regions
      *
      * @unauthenticated
-     *
-     * @response 200 {
-     *   "status": "success",
-     *   "message": "Regions and apps retrieved successfully",
-     *   "data": {
-     *     "regions": [
-     *       {
-     *         "id": 1,
-     *         "label": "Demo US East Region Store",
-     *         "apps": [
-     *           {
-     *             "uuid": "app-abcd-1234",
-     *             "label": "Example Analytics App"
-     *           },
-     *           {
-     *             "uuid": "app-efgh-5678",
-     *             "label": "Acme Monitoring App"
-     *           }
-     *         ]
-     *       }
-     *     ]
-     *   },
-     *   "status_code": 200
-     * }
-     * @response 500 {
-     *   "status": "error",
-     *   "message": "Failed to retrieve regions and apps",
-     *   "data": null,
-     *   "status_code": 500
-     * }
      */
     public function index(): JsonResponse
     {
