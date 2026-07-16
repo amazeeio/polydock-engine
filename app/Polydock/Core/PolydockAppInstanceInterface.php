@@ -100,14 +100,6 @@ interface PolydockAppInstanceInterface
     public function getKeyValue(string $key): mixed;
 
     /**
-     * Delete a stored key-value pair
-     *
-     * @param  string  $key  The key to delete
-     * @return self Returns the instance for method chaining
-     */
-    public function deleteKeyValue(string $key): self;
-
-    /**
      * Log an informational message
      *
      * @param  string  $message  The message to log

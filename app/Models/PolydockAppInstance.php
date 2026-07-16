@@ -814,19 +814,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $url;
     }
 
-    /**
-     * Delete a stored key-value pair
-     *
-     * @param  string  $key  The key to delete
-     * @return self Returns the instance for method chaining
-     */
-    public function deleteKeyValue(string $key): self
-    {
-        unset($this->data[$key]);
-
-        return $this;
-    }
-
     public function setLogger(PolydockAppLoggerInterface $logger): self
     {
         $this->logger = $logger;
@@ -1094,16 +1081,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function remoteRegistration(): HasOne
     {
         return $this->hasOne(UserRemoteRegistration::class, 'polydock_app_instance_id');
-    }
-
-    // Helper method to check if trial is active
-    public function isTrialActive(): bool
-    {
-        if (! $this->is_trial || $this->trial_completed) {
-            return false;
-        }
-
-        return $this->trial_ends_at->isFuture();
     }
 
     // Helper method to check if trial is expired

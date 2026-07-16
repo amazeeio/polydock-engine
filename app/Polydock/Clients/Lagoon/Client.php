@@ -134,20 +134,6 @@ class Client
     }
 
     /**
-     * Gets the GraphQL client instance.
-     *
-     * @throws LagoonClientTokenRequiredToInitializeException if graphql client is not set
-     */
-    public function getGraphqlClient(): ?GraphQLClient
-    {
-        if (empty($this->lagoonToken) || empty($this->graphqlClient)) {
-            throw new LagoonClientTokenRequiredToInitializeException;
-        }
-
-        return $this->graphqlClient;
-    }
-
-    /**
      * Sets the Lagoon authentication token
      *
      * @param  string  $token  The authentication token

@@ -39,8 +39,8 @@ return [
 
     'recaptcha' => [
         'enabled' => (bool) env('RECAPTCHA_ENABLED', true),
-        'sitekey' => env('NOCAPTCHA_SITEKEY') ?? env('RECAPTCHA_SITEKEY'),
-        'secret' => env('NOCAPTCHA_SECRET') ?? env('RECAPTCHA_SECRET'),
+        'sitekey' => env('RECAPTCHA_SITEKEY'),
+        'secret' => env('RECAPTCHA_SECRET'),
     ],
 
 ];
