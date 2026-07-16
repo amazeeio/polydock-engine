@@ -24,12 +24,29 @@ trait PreRemoveAppInstanceTrait
     {
         $functionName = __FUNCTION__;
         $logContext = $this->getLogContext($functionName);
+
+        $this->info($functionName.': starting', $logContext);
+
+        // Adopted (claimed) projects detach instead of being removed. Removal
+        // enters the pipeline here (PENDING_PRE_REMOVE), so this guard must
+        // mirror the ones in Remove/PostRemove — without it the Lagoon
+        // ping/validation below runs first and a detach could never succeed
+        // while Lagoon is unreachable.
+        if ($appInstance->getKeyValue('adopted')) {
+            $this->validateAppInstanceStatusIsExpected($appInstance, PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
+            $this->info($functionName.': adopted project — skipping Lagoon pre-remove checks', $logContext);
+            $appInstance->setStatus(
+                PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED,
+                'Pre-remove skipped for adopted project (Lagoon environment left intact)'
+            )->save();
+
+            return $appInstance;
+        }
+
         $testLagoonPing = true;
         $validateLagoonValues = true;
         $validateLagoonProjectName = true;
         $validateLagoonProjectId = true;
-
-        $this->info($functionName.': starting', $logContext);
 
         // Throws PolydockAppInstanceStatusFlowException
         $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(

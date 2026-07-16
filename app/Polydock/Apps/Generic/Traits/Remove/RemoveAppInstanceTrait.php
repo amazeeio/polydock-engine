@@ -26,12 +26,29 @@ trait RemoveAppInstanceTrait
     {
         $functionName = __FUNCTION__;
         $logContext = $this->getLogContext($functionName);
+
+        $this->info($functionName.': starting', $logContext);
+
+        // Adopted (claimed) projects are pre-existing environments Polydock did
+        // not create. Removing one means detaching: drop the Polydock record but
+        // leave the running Lagoon environment intact — never delete it, and
+        // never touch Lagoon. This guard runs before the Lagoon ping/validation
+        // below so a detach succeeds even when Lagoon is unreachable.
+        if ($appInstance->getKeyValue('adopted')) {
+            $this->validateAppInstanceStatusIsExpected($appInstance, PolydockAppInstanceStatus::PENDING_REMOVE);
+            $this->info($functionName.': adopted project — detaching, leaving Lagoon environment intact', $logContext);
+            $appInstance->setStatus(
+                PolydockAppInstanceStatus::REMOVE_COMPLETED,
+                'Adopted project detached (Lagoon environment left intact)'
+            )->save();
+
+            return $appInstance;
+        }
+
         $testLagoonPing = true;
         $validateLagoonValues = true;
         $validateLagoonProjectName = true;
         $validateLagoonProjectId = true;
-
-        $this->info($functionName.': starting', $logContext);
 
         // Throws PolydockAppInstanceStatusFlowException
         $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(
