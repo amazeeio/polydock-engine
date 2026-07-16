@@ -27,7 +27,12 @@ return [
     'sources' => [
         'local' => [
             'source' => 'local',
-            'base_path' => env('SPEC_PATH'),
+            // Default to the vendored spec directory so tests work without
+            // env setup: the engine's own spec is exported there via
+            // `composer spec:export`; consumed-API specs (e.g. api.amazee.ai)
+            // are vendored alongside and selected per-test with
+            // Spectator::using('<file>.json').
+            'base_path' => env('SPEC_PATH', base_path('tests/fixtures/openapi')),
         ],
 
         'remote' => [
@@ -53,7 +58,10 @@ return [
     |
     */
 
-    'path_prefix' => '',
+    // Scramble exports paths relative to its `/api` server URL (spec paths
+    // are `/regions`, not `/api/regions`), so requests must be matched with
+    // this prefix stripped.
+    'path_prefix' => 'api',
 
     /*
     |--------------------------------------------------------------------------
