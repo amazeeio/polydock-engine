@@ -7,7 +7,6 @@ namespace App\Providers;
 use App\Queue\Failed\SafeDatabaseUuidFailedJobProvider;
 use App\Services\EmailBlockerService;
 use App\Services\PolydockAppClassDiscovery;
-use Aws\DynamoDb\DynamoDbClient;
 use Dedoc\Scramble\Scramble;
 use Dedoc\Scramble\Support\Generator\OpenApi;
 use Dedoc\Scramble\Support\Generator\SecurityScheme;
@@ -16,13 +15,9 @@ use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Http\Request;
-use Illuminate\Queue\Failed\DatabaseFailedJobProvider;
-use Illuminate\Queue\Failed\DynamoDbFailedJobProvider;
-use Illuminate\Queue\Failed\FileFailedJobProvider;
 use Illuminate\Queue\Failed\NullFailedJobProvider;
 use Illuminate\Queue\QueueServiceProvider;
 use Illuminate\Routing\Route;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -51,51 +46,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton('queue.failer', function ($app) {
             $config = $app['config']['queue.failed'];
 
-            if (isset($config['driver']) && $config['driver'] === 'database-uuids') {
+            // ponytail: only database-uuids is ever configured here; restore
+            // Laravel's file/dynamodb/database branches if another failed-job
+            // driver is ever introduced.
+            if (($config['driver'] ?? null) === 'database-uuids') {
                 return new SafeDatabaseUuidFailedJobProvider(
                     $app['db'], $config['database'], $config['table']
-                );
-            }
-
-            // Fallback for other drivers using Laravel's standard resolution logic:
-            if (array_key_exists('driver', $config) &&
-                (is_null($config['driver']) || $config['driver'] === 'null')) {
-                return new NullFailedJobProvider;
-            }
-
-            if (isset($config['driver']) && $config['driver'] === 'file') {
-                return new FileFailedJobProvider(
-                    $config['path'] ?? $app->storagePath('framework/cache/failed-jobs.json'),
-                    $config['limit'] ?? 100,
-                    fn () => $app['cache']->store('file'),
-                );
-            }
-
-            if (isset($config['driver']) && $config['driver'] === 'dynamodb') {
-                $dynamoConfig = [
-                    'region' => $config['region'],
-                    'version' => 'latest',
-                    'endpoint' => $config['endpoint'] ?? null,
-                ];
-
-                if (! empty($config['key']) && ! empty($config['secret'])) {
-                    $dynamoConfig['credentials'] = Arr::only($config, ['key', 'secret']);
-
-                    if (! empty($config['token'])) {
-                        $dynamoConfig['credentials']['token'] = $config['token'];
-                    }
-                }
-
-                return new DynamoDbFailedJobProvider(
-                    new DynamoDbClient($dynamoConfig),
-                    $app['config']['app.name'],
-                    $config['table']
-                );
-            }
-
-            if (isset($config['table'])) {
-                return new DatabaseFailedJobProvider(
-                    $app['db'], $config['database'] ?? null, $config['table']
                 );
             }
 

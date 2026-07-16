@@ -33,10 +33,7 @@ class PollEnsureUnallocatedAppInstancesJobCommand extends BaseCommand
                 ->get()
                 ->filter(fn ($app) => $app->needs_unallocated_maintenance);
 
-            $maintenanceCount = 0;
-            foreach ($apps as $app) {
-                $maintenanceCount++;
-            }
+            $maintenanceCount = $apps->count();
 
             if ($maintenanceCount > 0) {
                 Log::info('Found apps needing unallocated instance maintenance', [

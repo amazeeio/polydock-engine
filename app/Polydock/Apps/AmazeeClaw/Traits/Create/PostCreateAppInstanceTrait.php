@@ -38,44 +38,13 @@ trait PostCreateAppInstanceTrait
         )->save();
 
         try {
-            $addGroupToProjectResult = $this->lagoonClient->addGroupToProject(
-                $appInstance->getKeyValue('lagoon-deploy-group-name'),
-                $projectName
-            );
-
-            if (isset($addGroupToProjectResult['error'])) {
-                $errorMessage = \is_array($addGroupToProjectResult['error'])
-                    ? ($addGroupToProjectResult['error'][0]['message'] ?? json_encode($addGroupToProjectResult['error']))
-                    : $addGroupToProjectResult['error'];
-                $this->error($errorMessage);
-                throw new \Exception($errorMessage);
-            }
-
-            if (! isset($addGroupToProjectResult['addGroupsToProject']) || ! isset($addGroupToProjectResult['addGroupsToProject']['id'])) {
-                $this->error('addGroupsToProject ID not found in data');
-                throw new \Exception('addGroupsToProject ID not found in data');
-            }
+            $this->addDeployGroupToLagoonProject($appInstance);
 
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_NAME', $appInstance->getApp()->getAppName(), 'GLOBAL');
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_USER_EMAIL', $appInstance->getKeyValue('user-email'), 'GLOBAL');
             $this->addOrUpdateLagoonProjectVariable($appInstance, 'LAGOON_FEATURE_FLAG_INSIGHTS', 'false', 'GLOBAL');
 
-            $amazeeClawDefaultModel = '';
-            if (method_exists($appInstance, 'getPolydockVariableValue')) {
-                /** @phpstan-ignore-next-line */
-                $amazeeClawDefaultModel = (string) ($appInstance->getPolydockVariableValue('instance_config_openclaw_default_model') ?? '');
-            }
-            if ($amazeeClawDefaultModel === '') {
-                $amazeeClawDefaultModel = $appInstance->getKeyValue('instance_config_openclaw_default_model');
-            }
-            if ($amazeeClawDefaultModel === '') {
-                $amazeeClawDefaultModel = $appInstance->getKeyValue('app_config_openclaw_default_model');
-            }
-            if ($amazeeClawDefaultModel === '') {
-                /** @phpstan-ignore-next-line */
-                $storeAppConfig = (array) (($appInstance->storeApp->app_config ?? null) ?: []);
-                $amazeeClawDefaultModel = (string) ($storeAppConfig['openclaw_default_model'] ?? '');
-            }
+            $amazeeClawDefaultModel = $this->resolveAmazeeAiDefaultModelFromInstanceOrApp($appInstance);
             if ($amazeeClawDefaultModel !== '') {
                 $this->addOrUpdateLagoonProjectVariable($appInstance, 'AMAZEEAI_DEFAULT_MODEL', $amazeeClawDefaultModel, 'GLOBAL');
             }
