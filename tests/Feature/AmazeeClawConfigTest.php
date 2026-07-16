@@ -97,13 +97,6 @@ class DoublePolydockAppInstance implements PolydockAppInstanceInterface
         return $this;
     }
 
-    public function deleteKeyValue(string $key): self
-    {
-        unset($this->data[$key]);
-
-        return $this;
-    }
-
     public function info(string $message, array $context = []): self
     {
         return $this;
