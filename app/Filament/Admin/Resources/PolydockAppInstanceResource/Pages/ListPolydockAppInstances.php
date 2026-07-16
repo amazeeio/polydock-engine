@@ -31,6 +31,8 @@ class ListPolydockAppInstances extends ListRecords
             Action::make('claim_existing_project')
                 ->label('Claim existing Lagoon project')
                 ->icon('heroicon-o-link')
+                // Claiming creates an instance, so gate it like CreateAction.
+                ->visible(fn (): bool => PolydockAppInstanceResource::canCreate())
                 ->modalHeading('Claim an existing Lagoon project')
                 ->modalDescription('Adopt a project that already exists on Lagoon so Polydock auto-updates it with scheduled deployments. Polydock grants its deploy group access to the project and will never delete a project it did not create.')
                 ->modalSubmitActionLabel('Claim')
@@ -41,10 +43,14 @@ class ListPolydockAppInstances extends ListRecords
                         ->helperText('Must exactly match the project name on Lagoon.'),
                     Select::make('polydock_store_app_id')
                         ->label('Store app')
-                        ->helperText('Determines the app type, region, deploy group and redeploy schedule.')
+                        ->helperText('Determines the app type, region, deploy group and redeploy schedule. Only store apps with scheduled redeploys enabled are listed — that schedule is the point of adopting.')
                         ->required()
                         ->searchable()
-                        ->options(fn () => PolydockStoreApp::query()->orderBy('name')->pluck('name', 'id')),
+                        ->options(fn () => PolydockStoreApp::query()
+                            ->where('redeploy_enabled', true)
+                            ->whereNotNull('redeploy_interval_days')
+                            ->orderBy('name')
+                            ->pluck('name', 'id')),
                     Select::make('user_group_id')
                         ->label('Owner user group')
                         ->required()

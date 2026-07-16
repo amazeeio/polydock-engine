@@ -36,6 +36,25 @@ class ClaimExistingProjectService
             throw new \InvalidArgumentException('A Lagoon project name is required.');
         }
 
+        // The whole point of adopting is the scheduled-redeploy benefit
+        // (DispatchScheduledRedeploysCommand filters on these two store-app
+        // fields). Claiming against a store app that can't redeploy would
+        // silently produce an instance that never updates — fail loudly instead.
+        if (! $storeApp->redeploy_enabled || $storeApp->redeploy_interval_days === null) {
+            throw new \RuntimeException(
+                "Store app '{$storeApp->name}' has scheduled redeploys disabled — an adopted instance would never be redeployed. Enable redeploys (with an interval) on the store app first."
+            );
+        }
+
+        // Without a deploy group the global token may have no access to the
+        // project, so the scheduled bulk deploy would fail Lagoon-side. Same
+        // fail-loudly rationale as above.
+        if (empty($storeApp->lagoon_deploy_group_name)) {
+            throw new \RuntimeException(
+                "Store app '{$storeApp->name}' has no Lagoon deploy group configured — Polydock could not grant itself access to '{$projectName}'."
+            );
+        }
+
         // Serialize claims for the same project. There is no DB-level unique
         // constraint on the `data->lagoon-project-name` JSON path, so without
         // this lock two concurrent admin requests could both pass the uniqueness
@@ -78,19 +97,17 @@ class ClaimExistingProjectService
             // worse silent-failure mode. Lagoon has no removeGroupFromProject
             // mutation to revert with anyway.
             $groupName = $storeApp->lagoon_deploy_group_name;
-            if (! empty($groupName)) {
-                $groupResponse = $client->addGroupToProject($groupName, $projectName);
-                if (isset($groupResponse['error'])) {
-                    throw new \RuntimeException(
-                        "Failed to add group '{$groupName}' to project '{$projectName}': ".json_encode($groupResponse['error'])
-                    );
-                }
+            $groupResponse = $client->addGroupToProject($groupName, $projectName);
+            if (isset($groupResponse['error'])) {
+                throw new \RuntimeException(
+                    "Failed to add group '{$groupName}' to project '{$projectName}': ".json_encode($groupResponse['error'])
+                );
             }
 
             $productionEnvironment = $project['productionEnvironment'] ?? $storeApp->lagoon_deploy_branch;
             $regionId = $project['openshift']['id'] ?? $storeApp->lagoon_deploy_region_id_ext;
 
-            return DB::transaction(function () use ($storeApp, $userGroup, $projectName, $project, $groupName, $productionEnvironment, $regionId) {
+            return DB::transaction(function () use ($storeApp, $userGroup, $projectName, $project, $productionEnvironment, $regionId) {
                 // The creating hook seeds `data` from the store app (deploy keys,
                 // group, region, health webhook, generated creds). We then overwrite
                 // the identity/lifecycle keys to point at the real project.
@@ -108,9 +125,6 @@ class ClaimExistingProjectService
                 $data['lagoon-production-environment'] = $productionEnvironment;
                 $data['lagoon-deploy-region-id'] = $regionId;
                 $data['adopted'] = true;
-                if (! empty($groupName)) {
-                    $data['adopted-added-group'] = $groupName;
-                }
                 if (! empty($project['gitUrl'])) {
                     $data['lagoon-deploy-git'] = $project['gitUrl'];
                 }

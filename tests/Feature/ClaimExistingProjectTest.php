@@ -46,6 +46,10 @@ class ClaimExistingProjectTest extends TestCase
         ]);
         $this->storeApp = PolydockStoreApp::factory()->create([
             'polydock_store_id' => $store->id,
+            // Claiming requires a redeploy-capable store app — the scheduled
+            // redeploy is the stated point of adopting a project.
+            'redeploy_enabled' => true,
+            'redeploy_interval_days' => 7,
         ]);
         $this->group = UserGroup::factory()->create();
     }
@@ -143,17 +147,23 @@ class ClaimExistingProjectTest extends TestCase
         $this->assertSame([], $this->client->groupAdds); // no access granted while blocked
     }
 
-    public function test_adopted_remove_and_post_remove_detach_without_touching_lagoon(): void
+    public function test_adopted_removal_pipeline_detaches_without_touching_lagoon(): void
     {
         $this->client->registerProject('acme-site');
         $instance = $this->service()->claim($this->storeApp, $this->group, 'acme-site');
 
-        // The app object has no Lagoon client wired in. If either guard sat after
+        // The app object has no Lagoon client wired in. If any guard sat after
         // the Lagoon ping/validation — or if post-remove still wrote its
         // POLYDOCK_APP_REMOVED_* markers — these calls would throw. Reaching
         // *_COMPLETED proves the adopted detach is fully local and never mutates
-        // the live Lagoon project.
+        // the live Lagoon project. Entry is PENDING_PRE_REMOVE — the status the
+        // real removal flow dispatches first — so the whole pipeline is covered,
+        // not just the tail stages.
         $app = new PolydockAiApp('claim-test', 'desc', 'author', 'https://example.com', 'a@example.com');
+
+        $instance->setStatus(PolydockAppInstanceStatus::PENDING_PRE_REMOVE)->save();
+        $app->preRemoveAppInstance($instance);
+        $this->assertSame(PolydockAppInstanceStatus::PRE_REMOVE_COMPLETED, $instance->status);
 
         $instance->setStatus(PolydockAppInstanceStatus::PENDING_REMOVE)->save();
         $app->removeAppInstance($instance);
@@ -162,6 +172,40 @@ class ClaimExistingProjectTest extends TestCase
         $instance->setStatus(PolydockAppInstanceStatus::PENDING_POST_REMOVE)->save();
         $app->postRemoveAppInstance($instance);
         $this->assertSame(PolydockAppInstanceStatus::POST_REMOVE_COMPLETED, $instance->status);
+    }
+
+    public function test_group_grant_rejection_fails_claim_and_creates_nothing(): void
+    {
+        $this->client->registerProject('acme-site');
+        $this->client->addGroupResponse = ['error' => [['message' => 'group does not exist']]];
+
+        try {
+            $this->service()->claim($this->storeApp, $this->group, 'acme-site');
+            $this->fail('Expected a rejected group grant to fail the claim.');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('Failed to add group', $e->getMessage());
+        }
+
+        $this->assertSame(0, PolydockAppInstance::count());
+    }
+
+    public function test_redeploy_disabled_store_app_is_rejected(): void
+    {
+        $storeApp = PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $this->storeApp->polydock_store_id,
+            'redeploy_enabled' => false,
+        ]);
+        $this->client->registerProject('acme-site');
+
+        try {
+            $this->service()->claim($storeApp, $this->group, 'acme-site');
+            $this->fail('Expected claim against a redeploy-disabled store app to throw.');
+        } catch (\RuntimeException $e) {
+            $this->assertStringContainsString('redeploys disabled', $e->getMessage());
+        }
+
+        $this->assertSame(0, PolydockAppInstance::count());
+        $this->assertSame([], $this->client->groupAdds); // rejected before any Lagoon mutation
     }
 
     public function test_purge_never_deletes_an_adopted_project(): void
