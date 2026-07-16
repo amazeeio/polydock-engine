@@ -69,6 +69,12 @@ trait ClaimAppInstanceTrait
             // user's email is not known during pre-warm/post-create.
             if ($this->getRequiresAiInfrastructure()
                 && $this->resolveAmazeeAiKeyMode($appInstance) === AmazeeAiKeyMode::User) {
+                if ($userEmail === '') {
+                    // Without an email the backend would silently fall back to the
+                    // anonymous @autogen.null identity — fail the claim instead of
+                    // handing the user keys tied to the wrong identity.
+                    throw new \Exception('AI key mode is "user" but no user-email is set on the instance — cannot generate per-user keys.');
+                }
                 $this->info("{$functionName}: Generating per-user AI keys via amazee.ai API", $logContext);
                 $this->generateAndStoreAmazeeAiCredentials($appInstance, $logContext, $userEmail);
             }

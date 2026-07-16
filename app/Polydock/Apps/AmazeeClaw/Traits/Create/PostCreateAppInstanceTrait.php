@@ -84,11 +84,17 @@ trait PostCreateAppInstanceTrait
             // user-scoped keys are generated at claim time (see the claim trait),
             // when the claiming user's email is known.
             if ($this->getRequiresAiInfrastructure()) {
-                if ($this->resolveAmazeeAiKeyMode($appInstance) === AmazeeAiKeyMode::Anonymous) {
+                $keyMode = $this->resolveAmazeeAiKeyMode($appInstance);
+                if ($keyMode === AmazeeAiKeyMode::Anonymous) {
                     $this->info("{$functionName}: Auto-generating anonymous AI keys via amazee.ai API", $logContext);
                     $this->generateAndStoreAmazeeAiCredentials($appInstance, $logContext);
                 }
-                $this->provisionAndInjectManualAmazeeAiCredentials($appInstance, $logContext);
+                // User-mode credentials don't exist until claim, so there is
+                // nothing to inject yet — skip to avoid a spurious "no
+                // auto-generated credentials" warning on every post-create.
+                if ($keyMode !== AmazeeAiKeyMode::User) {
+                    $this->provisionAndInjectManualAmazeeAiCredentials($appInstance, $logContext);
+                }
             }
         } catch (\Exception $e) {
             $this->error('Post Create Failed: '.$e->getMessage(), [
