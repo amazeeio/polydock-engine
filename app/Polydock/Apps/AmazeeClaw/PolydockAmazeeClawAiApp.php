@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Polydock\Apps\AmazeeClaw;
 
+use App\Polydock\Apps\AmazeeClaw\Enums\AmazeeAiKeyMode;
 use App\Polydock\Apps\AmazeeClaw\Traits\Claim\ClaimAppInstanceTrait;
 use App\Polydock\Apps\AmazeeClaw\Traits\Create\PostCreateAppInstanceTrait;
 use App\Polydock\Apps\AmazeeClaw\Traits\Create\PreCreateAppInstanceTrait;
@@ -70,11 +71,12 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
             Forms\Components\Select::make('amazeeai_key_mode')
                 ->label('Amazee AI Key Mode')
                 ->options([
-                    'manual' => 'Inject keys manually / from request data',
-                    'auto' => 'Auto-generate keys via amazee.ai API',
+                    AmazeeAiKeyMode::Injected->value => 'Injected — supplied in request data / secret (e.g. MOAD)',
+                    AmazeeAiKeyMode::Anonymous->value => 'Anonymous — auto-generate keys per project via amazee.ai',
+                    AmazeeAiKeyMode::User->value => 'User — auto-generate keys for the claiming user via amazee.ai',
                 ])
-                ->default('manual')
-                ->helperText('Choose whether to auto-generate AI keys using the Amazee AI backend, or inject them manually.'),
+                ->default(AmazeeAiKeyMode::Injected->value)
+                ->helperText('How AI keys are provided to this app: injected externally, auto-generated per project (anonymous), or auto-generated for the claiming user.'),
         ];
     }
 
@@ -87,7 +89,7 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
                 ->placeholder('Not configured'),
             Infolists\Components\TextEntry::make('amazeeai_key_mode')
                 ->label('Amazee AI Key Mode')
-                ->placeholder('Inject keys manually / from request data'),
+                ->placeholder('Injected — supplied in request data / secret'),
         ];
     }
 

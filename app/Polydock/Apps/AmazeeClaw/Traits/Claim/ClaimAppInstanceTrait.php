@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Polydock\Apps\AmazeeClaw\Traits\Claim;
 
+use App\Polydock\Apps\AmazeeClaw\Enums\AmazeeAiKeyMode;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 
@@ -62,6 +63,20 @@ trait ClaimAppInstanceTrait
             $userEmail = (string) ($appInstance->getKeyValue('user-email') ?? '');
             if ($userEmail !== '') {
                 $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_USER_EMAIL', $userEmail, 'GLOBAL');
+            }
+
+            // User-mode keys are generated here, at claim time — the claiming
+            // user's email is not known during pre-warm/post-create.
+            if ($this->getRequiresAiInfrastructure()
+                && $this->resolveAmazeeAiKeyMode($appInstance) === AmazeeAiKeyMode::User) {
+                if ($userEmail === '') {
+                    // Without an email the backend would silently fall back to the
+                    // anonymous @autogen.null identity — fail the claim instead of
+                    // handing the user keys tied to the wrong identity.
+                    throw new \Exception('AI key mode is "user" but no user-email is set on the instance — cannot generate per-user keys.');
+                }
+                $this->info("{$functionName}: Generating per-user AI keys via amazee.ai API", $logContext);
+                $this->generateAndStoreAmazeeAiCredentials($appInstance, $logContext, $userEmail);
             }
 
             // Provision/reuse credentials for the assigned user/team and inject into Lagoon.

@@ -2,6 +2,7 @@
 
 namespace App\Polydock\Apps\AmazeeClaw\Traits\Create;
 
+use App\Polydock\Apps\AmazeeClaw\Enums\AmazeeAiKeyMode;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 
@@ -79,17 +80,21 @@ trait PostCreateAppInstanceTrait
                 $this->addOrUpdateLagoonProjectVariable($appInstance, 'AMAZEEAI_DEFAULT_MODEL', $amazeeClawDefaultModel, 'GLOBAL');
             }
 
-            // AI credentials configuration
+            // AI credentials configuration. Anonymous keys are generated now;
+            // user-scoped keys are generated at claim time (see the claim trait),
+            // when the claiming user's email is known.
             if ($this->getRequiresAiInfrastructure()) {
                 $keyMode = $this->resolveAmazeeAiKeyMode($appInstance);
-                if ($keyMode === 'auto') {
-                    $this->info("{$functionName}: Auto-generating AI keys via amazee.ai API", $logContext);
-                    $this->setAmazeeAiBackendClientFromAppInstance($appInstance);
-                    $privateAiCredentials = $this->getPrivateAICredentialsFromBackend($appInstance);
-                    $appInstance->storeKeyValue('amazee-ai-generated-credentials', json_encode($privateAiCredentials) ?: '');
-                    $appInstance->save();
+                if ($keyMode === AmazeeAiKeyMode::Anonymous) {
+                    $this->info("{$functionName}: Auto-generating anonymous AI keys via amazee.ai API", $logContext);
+                    $this->generateAndStoreAmazeeAiCredentials($appInstance, $logContext);
                 }
-                $this->provisionAndInjectManualAmazeeAiCredentials($appInstance, $logContext);
+                // User-mode credentials don't exist until claim, so there is
+                // nothing to inject yet — skip to avoid a spurious "no
+                // auto-generated credentials" warning on every post-create.
+                if ($keyMode !== AmazeeAiKeyMode::User) {
+                    $this->provisionAndInjectManualAmazeeAiCredentials($appInstance, $logContext);
+                }
             }
         } catch (\Exception $e) {
             $this->error('Post Create Failed: '.$e->getMessage(), [
