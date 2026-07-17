@@ -84,3 +84,15 @@ Schedule::command('activitylog:clean')
     ->daily()
     ->withoutOverlapping()
     ->onOneServer();
+
+// ///// Operational Instance Log Retention ///////
+Schedule::command('polydock:prune-instance-logs')
+    ->daily()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// ///// Horizon queue metrics snapshots ///////
+Schedule::command('horizon:snapshot')
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->onOneServer();

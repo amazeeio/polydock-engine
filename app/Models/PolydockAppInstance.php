@@ -1057,6 +1057,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the logs for this instance
+     *
+     * @return HasMany<PolydockAppInstanceLog, $this>
      */
     public function logs(): HasMany
     {
