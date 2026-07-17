@@ -1123,12 +1123,6 @@ parameters:
 			path: app/PolydockEngine/Helpers/LagoonHelper.php
 
 		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 1
-			path: app/PolydockEngine/Helpers/LagoonHelper.php
-
-		-
 			message: '#^Call to method getMessage\(\) on an unknown class App\\PolydockServiceProviders\\Throwable\.$#'
 			identifier: class.notFound
 			count: 1
