@@ -40,18 +40,9 @@ class LagoonProjectPurgeService
      */
     public static function makeWithDefaults(?PolydockAppLoggerInterface $logger = null): self
     {
-        $logger ??= new PolydockLogger;
-
-        if (app()->bound(Client::class)) {
-            return new self($logger, app(Client::class));
-        }
-
-        $serviceProvider = new PolydockServiceProviderFTLagoon(
-            config('polydock.service_providers_singletons.PolydockServiceProviderFTLagoon'),
-            $logger,
-        );
-
-        return new self($logger, $serviceProvider->getLagoonClient());
+        // The lazy client() resolver below builds the identical client on
+        // first use — no need to duplicate that resolution eagerly here.
+        return new self($logger ?? new PolydockLogger);
     }
 
     /**
