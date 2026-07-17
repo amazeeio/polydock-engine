@@ -50,22 +50,9 @@ abstract class BaseJob implements ShouldQueue
 
     public function getPolydockJobId()
     {
-        $appInstance = PolydockAppInstance::withTrashed()->find($this->appInstanceId);
-
-        if (! $appInstance) {
-            Log::error('Failed to process PolydockAppInstance - not found', [
-                'app_instance_id' => $this->appInstanceId,
-                'job_type' => class_basename(static::class),
-            ]);
-
-            throw new \Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
-        }
-
-        $appInstance->refresh();
-
-        $uniqueId = "app-instance-{$appInstance->id}-job-".class_basename(static::class);
-
-        return $uniqueId;
+        // Identity only — no DB round-trip. Existence is enforced once, in
+        // polydockJobStart(), which every handle() calls first.
+        return "app-instance-{$this->appInstanceId}-job-".class_basename(static::class);
     }
 
     public function failed(\Throwable $exception): void
@@ -248,7 +235,12 @@ abstract class BaseJob implements ShouldQueue
 
     public function polydockJobStart()
     {
-        $appInstance = PolydockAppInstance::withTrashed()->find($this->appInstanceId);
+        // Single fetch for the whole job: find() already returns a fresh row
+        // (no refresh needed) and storeApp is eager-loaded for the log lines
+        // here and in polydockJobDone().
+        $appInstance = PolydockAppInstance::withTrashed()
+            ->with('storeApp')
+            ->find($this->appInstanceId);
         if (! $appInstance) {
             Log::error('Failed to process PolydockAppInstance - not found', [
                 'app_instance_id' => $this->appInstanceId,
@@ -258,7 +250,6 @@ abstract class BaseJob implements ShouldQueue
             throw new \Exception('Failed to process PolydockAppInstance '.$this->appInstanceId.' - not found');
         }
 
-        $appInstance->refresh();
         $this->appInstance = $appInstance;
 
         $uniqueId = $this->getPolydockJobId();

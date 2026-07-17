@@ -19,7 +19,12 @@ class LagoonHelper
             return Cache::get($cacheKey);
         }
 
-        $FTLAGOON_ENDPOINT = env('FTLAGOON_ENDPOINT', 'https://api.lagoon.amazeeio.cloud/graphql');
+        // Read via config, not env(): env() returns null once config is
+        // cached in production, which silently broke region lookups.
+        $FTLAGOON_ENDPOINT = config(
+            'polydock.service_providers_singletons.PolydockServiceProviderFTLagoon.endpoint',
+            'https://api.lagoon.amazeeio.cloud/graphql'
+        );
         $allLagoonCoresData = config('polydock.lagoon_cores');
         $lagoonCoreData = $allLagoonCoresData[$FTLAGOON_ENDPOINT] ?? null;
 
