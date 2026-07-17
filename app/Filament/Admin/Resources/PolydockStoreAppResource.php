@@ -489,7 +489,8 @@ class PolydockStoreAppResource extends Resource
                                     ->label('Pre-warm Refresh After (Days)'),
                                 TextEntry::make('allocatedInstances')
                                     ->label('Allocated Instances')
-                                    ->state(fn ($record) => $record->allocatedInstances()->count())
+                                    // getEloquentQuery() already eager-counts this.
+                                    ->state(fn ($record) => $record->allocated_instances_count)
                                     ->icon('heroicon-m-check-circle')
                                     ->iconColor('success'),
                                 TextEntry::make('lagoon_production_environment')

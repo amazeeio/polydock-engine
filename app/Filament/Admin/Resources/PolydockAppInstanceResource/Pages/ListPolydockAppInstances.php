@@ -101,8 +101,8 @@ class ListPolydockAppInstances extends ListRecords
             ...array_filter(PolydockAppInstance::$stageRemoveStatuses, fn ($status) => $status !== PolydockAppInstanceStatus::REMOVED),
         ];
 
-        // Each tab's scope is written once and reused for both the tab query
-        // and its badge count.
+        // Each tab's scope is written once; all badges derive from a single
+        // grouped count query instead of one COUNT per tab per render.
         $scopes = [
             'active' => ['Active', fn (Builder $query) => $query->where('status', '!=', PolydockAppInstanceStatus::REMOVED)],
             'in_progress' => ['In Progress', fn (Builder $query) => $query->whereIn('status', $inProgressStatuses)],
@@ -111,15 +111,36 @@ class ListPolydockAppInstances extends ListRecords
             'removed' => ['Removed', fn (Builder $query) => $query->where('status', PolydockAppInstanceStatus::REMOVED)],
         ];
 
+        $countsByStatus = static::$resource::getEloquentQuery()
+            ->selectRaw('status, count(*) as aggregate')
+            ->groupBy('status')
+            ->pluck('aggregate', 'status');
+
+        $total = $countsByStatus->sum();
+        $removed = (int) $countsByStatus->get(PolydockAppInstanceStatus::REMOVED->value, 0);
+
+        $badges = [
+            'active' => $total - $removed,
+            // unique() restores the set semantics whereIn had: NEW appears
+            // both explicitly and inside $stageCreateStatuses, and a status
+            // listed twice must not be counted twice.
+            'in_progress' => collect($inProgressStatuses)
+                ->unique(fn (PolydockAppInstanceStatus $status) => $status->value)
+                ->sum(fn (PolydockAppInstanceStatus $status) => (int) $countsByStatus->get($status->value, 0)),
+            'healthy_claimed' => (int) $countsByStatus->get(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED->value, 0),
+            'healthy_unclaimed' => (int) $countsByStatus->get(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED->value, 0),
+            'removed' => $removed,
+        ];
+
         $tabs = [];
         foreach ($scopes as $key => [$label, $scope]) {
             $tabs[$key] = Tab::make($label)
                 ->modifyQueryUsing($scope)
-                ->badge($scope(static::$resource::getEloquentQuery())->count());
+                ->badge($badges[$key]);
         }
 
         $tabs['all'] = Tab::make('All')
-            ->badge(static::$resource::getEloquentQuery()->count());
+            ->badge($total);
 
         return $tabs;
     }

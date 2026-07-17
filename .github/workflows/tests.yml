@@ -21,7 +21,7 @@ jobs:
       with:
         php-version: '8.4'
         extensions: mbstring, dom, fileinfo, sqlite3
-        coverage: xdebug
+        coverage: pcov
 
     - name: Copy .env
       run: php -r "file_exists('.env') || copy('.env.example', '.env');"
@@ -41,5 +41,8 @@ jobs:
     - name: Static analysis (PHPStan)
       run: ./vendor/bin/phpstan analyse --no-progress
 
-    - name: Execute tests (Unit and Feature tests) via PHPUnit
-      run: php artisan test
+    - name: Execute tests (Unit and Feature tests) via PHPUnit, with coverage gate
+      # Baseline measured at 37.15% lines (2026-07-17); floor set 2 points
+      # under it. Ratchet upward deliberately as coverage-focused PRs land;
+      # never lower it silently.
+      run: php artisan test --coverage --min=35

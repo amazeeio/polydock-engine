@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserRemoteRegistration;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\Facades\Cache;
 
 class StatsOverview extends BaseWidget
 {
@@ -15,18 +16,26 @@ class StatsOverview extends BaseWidget
     #[\Override]
     protected function getStats(): array
     {
+        // Full-table counts, cached briefly: the dashboard tolerates a minute
+        // of staleness better than three COUNT(*) scans per render.
+        $totals = Cache::remember('admin-stats-overview', 60, fn (): array => [
+            'users' => User::count(),
+            'registrations' => UserRemoteRegistration::count(),
+            'instances' => PolydockAppInstance::count(),
+        ]);
+
         return [
-            Stat::make('Total Users', User::count())
+            Stat::make('Total Users', $totals['users'])
                 ->description('Total registered users')
                 ->descriptionIcon('heroicon-m-user-group')
                 ->color('primary'),
 
-            Stat::make('Total Remote Registrations', UserRemoteRegistration::count())
+            Stat::make('Total Remote Registrations', $totals['registrations'])
                 ->description('Total registration attempts')
                 ->descriptionIcon('heroicon-m-document-text')
                 ->color('info'),
 
-            Stat::make('Total App Instances', PolydockAppInstance::count())
+            Stat::make('Total App Instances', $totals['instances'])
                 ->description('Total app instances created')
                 ->descriptionIcon('heroicon-m-server')
                 ->color('success'),
