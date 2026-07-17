@@ -47,6 +47,10 @@ return [
     'max_per_run_dispatch_trial_complete_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_EMAILS', 25),
     'max_per_run_dispatch_trial_complete_stage_removal' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_STAGE_REMOVAL', 5),
     'cleanup' => [
+        // Operational instance logs (health pings, stage chatter) are pruned
+        // after this many days; the durable who-did-what audit trail lives in
+        // activity_log with its own retention (activitylog:clean).
+        'instance_log_retention_days' => (int) env('POLYDOCK_INSTANCE_LOG_RETENTION_DAYS', 7),
         'project_grace_period_days' => (int) env('POLYDOCK_PROJECT_GRACE_DAYS', 14),
         'purge_poll_interval_minutes' => (int) env('POLYDOCK_PURGE_POLL_INTERVAL', 10),
         'purge_max_poll_attempts' => (int) env('POLYDOCK_PURGE_MAX_POLLS', 144),

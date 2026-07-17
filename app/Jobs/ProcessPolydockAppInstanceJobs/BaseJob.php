@@ -14,7 +14,10 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
+use Spatie\SlackAlerts\Facades\SlackAlert;
 
 abstract class BaseJob implements ShouldQueue
 {
@@ -63,6 +66,8 @@ abstract class BaseJob implements ShouldQueue
             'trace' => $exception->getTraceAsString(),
         ]);
 
+        // DB breadcrumb — best-effort and deliberately independent of the
+        // Slack alert below: a database outage must not stop the page.
         try {
             $appInstance = $this->appInstance ?? PolydockAppInstance::withTrashed()->find($this->appInstanceId);
             if ($appInstance) {
@@ -72,6 +77,40 @@ abstract class BaseJob implements ShouldQueue
         } catch (\Throwable $e) {
             // Ensure the failed handler never throws
             Log::error('Error while running job failed() handler', [
+                'original_error' => $exception->getMessage(),
+                'handler_error' => $e->getMessage(),
+            ]);
+        }
+
+        // Slack page — its own fail-safe block so it survives DB outages
+        // (above) and cache outages (inner catch).
+        try {
+            // One alert per job class per 5 minutes: a systemic outage fails
+            // many jobs at once, and a flooded channel gets muted. Later
+            // failures remain visible in logs and Horizon's failed-jobs tab.
+            // Cache::add is atomic, so concurrent failures race safely.
+            $shouldAlert = false;
+            if (config('slack-alerts.webhook_urls.default')) {
+                try {
+                    $shouldAlert = Cache::add('slack-alert:'.class_basename(static::class), true, 300);
+                } catch (\Throwable) {
+                    // The dedup store being down is exactly the kind of outage
+                    // this alert exists for — fail open rather than silent.
+                    $shouldAlert = true;
+                }
+            }
+
+            if ($shouldAlert) {
+                SlackAlert::message(sprintf(
+                    ':rotating_light: %s failed for app instance #%d — %s',
+                    class_basename(static::class),
+                    $this->appInstanceId,
+                    Str::limit($exception->getMessage(), 300),
+                ));
+            }
+        } catch (\Throwable $e) {
+            // Ensure the failed handler never throws
+            Log::error('Error while sending job failure alert', [
                 'original_error' => $exception->getMessage(),
                 'handler_error' => $e->getMessage(),
             ]);

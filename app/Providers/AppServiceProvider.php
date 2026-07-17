@@ -23,7 +23,9 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\HorizonCheck;
+use Spatie\Health\Checks\Checks\RedisCheck;
 use Spatie\Health\Facades\Health;
 
 class AppServiceProvider extends ServiceProvider
@@ -64,6 +66,8 @@ class AppServiceProvider extends ServiceProvider
     {
         Health::checks([
             HorizonCheck::new(),
+            DatabaseCheck::new(),
+            RedisCheck::new(),
         ]);
 
         // Named rate limiters for the unauthenticated public API routes. Named
