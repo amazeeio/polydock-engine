@@ -1065,6 +1065,59 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this->hasMany(PolydockAppInstanceLog::class);
     }
 
+    /**
+     * Status transitions in chronological order — the timing source of truth
+     * for per-stage durations.
+     *
+     * @return HasMany<PolydockAppInstanceStatusTransition, $this>
+     */
+    public function statusTransitions(): HasMany
+    {
+        return $this->hasMany(PolydockAppInstanceStatusTransition::class)->orderBy('created_at')->orderBy('id');
+    }
+
+    /**
+     * Seconds between first entering $from and first entering $to.
+     * Null when either transition was never observed (e.g. instances that
+     * predate transition recording).
+     */
+    public function secondsBetweenStatuses(PolydockAppInstanceStatus $from, PolydockAppInstanceStatus $to): ?int
+    {
+        $rows = $this->statusTransitions;
+        $enteredFrom = $rows->firstWhere('to_status', $from);
+        $enteredTo = $rows->firstWhere('to_status', $to);
+
+        return ($enteredFrom && $enteredTo && $enteredTo->created_at >= $enteredFrom->created_at)
+            ? (int) $enteredFrom->created_at->diffInSeconds($enteredTo->created_at)
+            : null;
+    }
+
+    /**
+     * Seconds the instance sat claimable in the pre-warm pool before a claim
+     * started; null if it was never unclaimed or never claimed.
+     */
+    public function secondsUnclaimedBeforeClaim(): ?int
+    {
+        return $this->secondsBetweenStatuses(
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+            PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
+        );
+    }
+
+    /**
+     * Seconds from instance creation until it first became claimed & healthy;
+     * null until that status is observed in the transition log.
+     */
+    public function secondsFromCreationToClaimed(): ?int
+    {
+        $claimed = $this->statusTransitions
+            ->firstWhere('to_status', PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED);
+
+        return ($claimed && $this->created_at)
+            ? (int) $this->created_at->diffInSeconds($claimed->created_at)
+            : null;
+    }
+
     public function logLine(string $level, string $message, array $context = []): self
     {
         $this->logs()->create([
