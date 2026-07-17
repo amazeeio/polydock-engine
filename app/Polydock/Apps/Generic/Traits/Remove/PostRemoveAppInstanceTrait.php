@@ -23,9 +23,6 @@ trait PostRemoveAppInstanceTrait
     public function postRemoveAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $functionName = __FUNCTION__;
-        $logContext = $this->getLogContext($functionName);
-
-        $this->info($functionName.': starting', $logContext);
 
         // Adopted (claimed) projects are detached, not destroyed. Skip the
         // post-remove markers entirely — writing POLYDOCK_APP_REMOVED_* onto the
@@ -33,6 +30,7 @@ trait PostRemoveAppInstanceTrait
         // leave intact. Guard runs before the Lagoon ping/validation so it never
         // touches Lagoon.
         if ($appInstance->getKeyValue('adopted')) {
+            $logContext = $this->getLogContext($functionName);
             $this->validateAppInstanceStatusIsExpected($appInstance, PolydockAppInstanceStatus::PENDING_POST_REMOVE);
             $this->info($functionName.': adopted project — skipping Lagoon post-remove markers', $logContext);
             $appInstance->setStatus(
@@ -43,43 +41,31 @@ trait PostRemoveAppInstanceTrait
             return $appInstance;
         }
 
-        $testLagoonPing = true;
-        $validateLagoonValues = true;
-        $validateLagoonProjectName = true;
-        $validateLagoonProjectId = true;
-
-        // Throws PolydockAppInstanceStatusFlowException
-        $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(
+        return $this->runLifecyclePhase(
             $appInstance,
+            $functionName,
             PolydockAppInstanceStatus::PENDING_POST_REMOVE,
-            $logContext,
-            $testLagoonPing,
-            $validateLagoonValues,
-            $validateLagoonProjectName,
-            $validateLagoonProjectId
-        );
-
-        $projectName = $appInstance->getKeyValue('lagoon-project-name');
-
-        $this->info($functionName.': starting for project: '.$projectName, $logContext);
-        $appInstance->setStatus(
             PolydockAppInstanceStatus::POST_REMOVE_RUNNING,
-            PolydockAppInstanceStatus::POST_REMOVE_RUNNING->getStatusMessage()
-        )->save();
+            PolydockAppInstanceStatus::POST_REMOVE_COMPLETED,
+            PolydockAppInstanceStatus::POST_REMOVE_FAILED,
+            function (PolydockAppInstanceInterface $appInstance, array $logContext) use ($functionName): ?PolydockAppInstanceInterface {
+                $projectName = $appInstance->getKeyValue('lagoon-project-name');
 
-        try {
-            $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_REMOVED_DATE', date('Y-m-d'), 'GLOBAL');
-            $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_REMOVED_TIME', date('H:i:s'), 'GLOBAL');
-        } catch (\Exception $e) {
-            $this->error($e->getMessage());
-            $appInstance->setStatus(PolydockAppInstanceStatus::POST_REMOVE_FAILED, $e->getMessage())->save();
+                $this->info($functionName.': starting for project: '.$projectName, $logContext);
 
-            return $appInstance;
-        }
+                try {
+                    $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_REMOVED_DATE', date('Y-m-d'), 'GLOBAL');
+                    $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_REMOVED_TIME', date('H:i:s'), 'GLOBAL');
+                } catch (\Exception $e) {
+                    $this->error($e->getMessage());
+                    $appInstance->setStatus(PolydockAppInstanceStatus::POST_REMOVE_FAILED, $e->getMessage())->save();
 
-        $this->info($functionName.': completed', $logContext);
-        $appInstance->setStatus(PolydockAppInstanceStatus::POST_REMOVE_COMPLETED, 'Post-remove completed')->save();
+                    return $appInstance;
+                }
 
-        return $appInstance;
+                return null;
+            },
+            'Post-remove completed',
+        );
     }
 }
