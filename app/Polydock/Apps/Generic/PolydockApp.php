@@ -362,6 +362,62 @@ class PolydockApp extends PolydockAppBase
     }
 
     /**
+     * Shared skeleton of every lifecycle stage: validate the expected status
+     * (configuring the Lagoon client), mark *_RUNNING, run the stage body,
+     * and mark *_COMPLETED — mapping thrown exceptions to *_FAILED. The body
+     * may itself set a failure status and return non-null to short-circuit.
+     *
+     * @param  callable(PolydockAppInstanceInterface, array): ?PolydockAppInstanceInterface  $body
+     *                                                                                              Receives ($appInstance, $logContext). Return the instance to
+     *                                                                                              short-circuit (body already set a terminal status), or null to
+     *                                                                                              let the template mark the stage completed.
+     */
+    protected function runLifecyclePhase(
+        PolydockAppInstanceInterface $appInstance,
+        string $functionName,
+        PolydockAppInstanceStatus $expectedStatus,
+        PolydockAppInstanceStatus $runningStatus,
+        PolydockAppInstanceStatus $completedStatus,
+        PolydockAppInstanceStatus $failedStatus,
+        callable $body,
+        string $completedMessage,
+        bool $testLagoonPing = true,
+        bool $validateLagoonValues = true,
+        bool $validateLagoonProjectName = true,
+        bool $validateLagoonProjectId = true,
+    ): PolydockAppInstanceInterface {
+        $logContext = $this->getLogContext($functionName);
+        $this->info($functionName.': starting', $logContext);
+
+        $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(
+            $appInstance, $expectedStatus, $logContext,
+            $testLagoonPing, $validateLagoonValues,
+            $validateLagoonProjectName, $validateLagoonProjectId
+        );
+
+        $appInstance->setStatus($runningStatus, $runningStatus->getStatusMessage())->save();
+
+        try {
+            $shortCircuit = $body($appInstance, $logContext);
+            if ($shortCircuit !== null) {
+                return $shortCircuit;
+            }
+        } catch (\Exception $e) {
+            $this->error($functionName.' failed: '.$e->getMessage(), $logContext + [
+                'exception_class' => get_class($e),
+            ]);
+            $appInstance->setStatus($failedStatus, 'An exception occurred: '.$e->getMessage())->save();
+
+            return $appInstance;
+        }
+
+        $this->info($functionName.': completed', $logContext);
+        $appInstance->setStatus($completedStatus, $completedMessage)->save();
+
+        return $appInstance;
+    }
+
+    /**
      * Get the log context for a specific function.
      *
      * @param  string  $location  The location of the log context
