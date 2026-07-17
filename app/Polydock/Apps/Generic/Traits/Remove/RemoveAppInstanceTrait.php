@@ -33,6 +33,7 @@ trait RemoveAppInstanceTrait
         // below so a detach succeeds even when Lagoon is unreachable.
         if ($appInstance->getKeyValue('adopted')) {
             $logContext = $this->getLogContext($functionName);
+            $this->info($functionName.': starting', $logContext);
             $this->validateAppInstanceStatusIsExpected($appInstance, PolydockAppInstanceStatus::PENDING_REMOVE);
             $this->info($functionName.': adopted project — detaching, leaving Lagoon environment intact', $logContext);
             $appInstance->setStatus(

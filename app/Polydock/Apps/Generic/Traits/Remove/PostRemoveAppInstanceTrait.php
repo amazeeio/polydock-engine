@@ -31,6 +31,7 @@ trait PostRemoveAppInstanceTrait
         // touches Lagoon.
         if ($appInstance->getKeyValue('adopted')) {
             $logContext = $this->getLogContext($functionName);
+            $this->info($functionName.': starting', $logContext);
             $this->validateAppInstanceStatusIsExpected($appInstance, PolydockAppInstanceStatus::PENDING_POST_REMOVE);
             $this->info($functionName.': adopted project — skipping Lagoon post-remove markers', $logContext);
             $appInstance->setStatus(

@@ -31,6 +31,7 @@ trait PreRemoveAppInstanceTrait
         // while Lagoon is unreachable.
         if ($appInstance->getKeyValue('adopted')) {
             $logContext = $this->getLogContext($functionName);
+            $this->info($functionName.': starting', $logContext);
             $this->validateAppInstanceStatusIsExpected($appInstance, PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
             $this->info($functionName.': adopted project — skipping Lagoon pre-remove checks', $logContext);
             $appInstance->setStatus(
