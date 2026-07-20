@@ -42,6 +42,7 @@ class EditPolydockStoreApp extends EditRecord
         $data['refresh_unallocated_instances'] = $appConfig['refresh_unallocated_instances'] ?? false;
         $data['refresh_unallocated_instances_after_days'] = $appConfig['refresh_unallocated_instances_after_days'] ?? 7;
         $data['project_naming_mode'] = $appConfig['project_naming_mode'] ?? PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN;
+        $data['project_naming_prefix'] = $appConfig['project_naming_prefix'] ?? '';
         $data['project_naming_adjectives'] = $appConfig['project_naming_adjectives'] ?? [];
         $data['project_naming_nouns'] = $appConfig['project_naming_nouns'] ?? [];
         $data['lagoon_custom_route_enabled'] = $appConfig['lagoon_custom_route_enabled'] ?? false;
@@ -113,6 +114,10 @@ class EditPolydockStoreApp extends EditRecord
             ?? $existingAppConfig['project_naming_mode']
             ?? PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN
         );
+        // array_key_exists, not ??: an emptied input dehydrates as null and must clear the prefix
+        $appConfig['project_naming_prefix'] = (string) (array_key_exists('project_naming_prefix', $data)
+            ? ($data['project_naming_prefix'] ?? '')
+            : ($existingAppConfig['project_naming_prefix'] ?? ''));
         $appConfig['project_naming_adjectives'] = array_values((array) (
             $data['project_naming_adjectives']
             ?? $existingAppConfig['project_naming_adjectives']
@@ -149,6 +154,7 @@ class EditPolydockStoreApp extends EditRecord
             $data['refresh_unallocated_instances'],
             $data['refresh_unallocated_instances_after_days'],
             $data['project_naming_mode'],
+            $data['project_naming_prefix'],
             $data['project_naming_adjectives'],
             $data['project_naming_nouns'],
             $data['lagoon_custom_route_enabled'],
