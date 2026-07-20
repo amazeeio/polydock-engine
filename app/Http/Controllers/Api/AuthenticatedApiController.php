@@ -214,20 +214,7 @@ class AuthenticatedApiController extends Controller
             ]);
         }
 
-        if ($request->filled('group_id') && $request->filled('group_slug')) {
-            throw ValidationException::withMessages([
-                'group_id' => ['Only one of group_id or group_slug may be provided.'],
-                'group_slug' => ['Only one of group_id or group_slug may be provided.'],
-            ]);
-        }
-
-        $targetGroup = null;
-
-        if (isset($validated['group_id'])) {
-            $targetGroup = UserGroup::findOrFail($validated['group_id']);
-        } elseif (isset($validated['group_slug'])) {
-            $targetGroup = UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
-        }
+        $targetGroup = $this->resolveExistingGroupFromRequest($request, required: false);
 
         /** @var User $actor */
         $actor = $request->user();
@@ -497,24 +484,9 @@ class AuthenticatedApiController extends Controller
             'group_slug' => 'nullable|string|exists:user_groups,slug',
         ]);
 
-        if (! $request->filled('group_id') && ! $request->filled('group_slug')) {
-            throw ValidationException::withMessages([
-                'group_id' => ['Either group_id or group_slug is required.'],
-            ]);
-        }
-
-        if ($request->filled('group_id') && $request->filled('group_slug')) {
-            throw ValidationException::withMessages([
-                'group_id' => ['Only one of group_id or group_slug may be provided.'],
-                'group_slug' => ['Only one of group_id or group_slug may be provided.'],
-            ]);
-        }
+        $group = $this->resolveExistingGroupFromRequest($request, required: true);
 
         $instance = PolydockAppInstance::where('uuid', $uuid)->firstOrFail();
-
-        $group = isset($validated['group_id'])
-            ? UserGroup::findOrFail($validated['group_id'])
-            : UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
 
         $this->authorize('assignToGroup', [$instance, $group]);
 
@@ -631,14 +603,41 @@ class AuthenticatedApiController extends Controller
         ]);
     }
 
-    private function resolveTargetGroup(Request $request, User $user): UserGroup
+    /**
+     * Resolve a group from the mutually-exclusive group_id / group_slug
+     * inputs — the shared read-path half of group resolution.
+     */
+    private function resolveExistingGroupFromRequest(Request $request, bool $required): ?UserGroup
     {
+        if ($request->filled('group_id') && $request->filled('group_slug')) {
+            throw ValidationException::withMessages([
+                'group_id' => ['Only one of group_id or group_slug may be provided.'],
+                'group_slug' => ['Only one of group_id or group_slug may be provided.'],
+            ]);
+        }
+
         if ($request->filled('group_id')) {
             return UserGroup::findOrFail($request->integer('group_id'));
         }
 
         if ($request->filled('group_slug')) {
             return UserGroup::where('slug', $request->string('group_slug')->toString())->firstOrFail();
+        }
+
+        if ($required) {
+            throw ValidationException::withMessages([
+                'group_id' => ['Either group_id or group_slug is required.'],
+            ]);
+        }
+
+        return null;
+    }
+
+    private function resolveTargetGroup(Request $request, User $user): UserGroup
+    {
+        $existing = $this->resolveExistingGroupFromRequest($request, required: false);
+        if ($existing) {
+            return $existing;
         }
 
         if ($request->filled('group_name')) {

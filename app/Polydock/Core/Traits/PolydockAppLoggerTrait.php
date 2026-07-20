@@ -4,9 +4,7 @@ namespace App\Polydock\Core\Traits;
 
 use App\Polydock\Core\Loggers\PolydockAppCacheLogger;
 use App\Polydock\Core\Loggers\PolydockAppEchoLogger;
-use App\Polydock\Core\PolydockAppBase;
 use App\Polydock\Core\PolydockAppLoggerInterface;
-use App\Polydock\Core\PolydockEngineBase;
 
 trait PolydockAppLoggerTrait
 {
@@ -46,7 +44,7 @@ trait PolydockAppLoggerTrait
      *
      * @param  string  $message  The message to log
      * @param  array  $context  Additional context data for the log entry
-     * @return PolydockAppBase|PolydockEngineBase|PolydockAppLoggerTrait Returns the instance for method chaining
+     * @return $this Returns the instance for method chaining
      */
     public function info(string $message, array $context = []): self
     {
@@ -60,7 +58,7 @@ trait PolydockAppLoggerTrait
      *
      * @param  string  $message  The message to log
      * @param  array  $context  Additional context data for the log entry
-     * @return PolydockAppBase|PolydockEngineBase|PolydockAppLoggerTrait Returns the instance for method chaining
+     * @return $this Returns the instance for method chaining
      */
     public function error(string $message, array $context = []): self
     {
@@ -74,7 +72,7 @@ trait PolydockAppLoggerTrait
      *
      * @param  string  $message  The message to log
      * @param  array  $context  Additional context data for the log entry
-     * @return PolydockAppBase|PolydockEngineBase|PolydockAppLoggerTrait Returns the instance for method chaining
+     * @return $this Returns the instance for method chaining
      */
     public function warning(string $message, array $context = []): self
     {
@@ -88,7 +86,7 @@ trait PolydockAppLoggerTrait
      *
      * @param  string  $message  The message to log
      * @param  array  $context  Additional context data for the log entry
-     * @return PolydockAppBase|PolydockEngineBase|PolydockAppLoggerTrait Returns the instance for method chaining
+     * @return $this Returns the instance for method chaining
      */
     public function debug(string $message, array $context = []): self
     {
