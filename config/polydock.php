@@ -58,8 +58,13 @@ return [
     ],
     'deploy' => [
         // Max instances a single scheduled-redeploy tick will trigger. Combined
-        // with the schedule frequency this bounds the rate of new Lagoon builds.
-        'max_per_run' => (int) env('POLYDOCK_DEPLOY_MAX_PER_RUN', 50),
+        // with the schedule frequency (hourly) this bounds the rate of new
+        // Lagoon builds — 50 every 10 minutes overloaded the Lagoon core.
+        'max_per_run' => (int) env('POLYDOCK_DEPLOY_MAX_PER_RUN', 10),
+        // Max pre-warm instances refreshed (removed + recreated) or created
+        // per store app per maintenance pass — refresh batches are also gated
+        // to one batch per hour globally. Same Lagoon-pressure rationale.
+        'prewarm_batch' => (int) env('POLYDOCK_PREWARM_BATCH', 10),
         // How often a run is re-polled for Lagoon deployment status.
         'poll_interval_minutes' => (int) env('POLYDOCK_DEPLOY_POLL_INTERVAL', 5),
         // Give up (mark the run failed) after this many polls without terminal state.
