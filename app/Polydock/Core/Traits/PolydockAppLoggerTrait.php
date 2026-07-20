@@ -16,7 +16,11 @@ trait PolydockAppLoggerTrait
      */
     public function setLogger(PolydockAppLoggerInterface $logger): self
     {
-        if ($this->logger instanceof PolydockAppCacheLogger && ! ($logger instanceof PolydockAppEchoLogger)) {
+        // isset() guard: consumers like the service providers call setLogger()
+        // from their constructor, before the typed property has ever been
+        // assigned — reading it unguarded fatals with "must not be accessed
+        // before initialization".
+        if (isset($this->logger) && $this->logger instanceof PolydockAppCacheLogger && ! ($logger instanceof PolydockAppEchoLogger)) {
             $logger->debug('Flushing cache logger...');
             foreach ($this->logger->getLogMessages() as $logMessage) {
                 $logger->{$logMessage['level']}($logMessage['message'], $logMessage['context']);
