@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -110,6 +111,37 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
                 continue;
             }
 
+            // Re-check under a row lock before writing: a retry or operator
+            // may have recovered the instance between the eligibility query
+            // and this write, and saving the stale snapshot would shove a
+            // live instance into removal/purge.
+            $sweptThisOne = DB::transaction(function () use ($instance, $cutoff, $target, $days) {
+                $fresh = PolydockAppInstance::query()
+                    ->whereKey($instance->id)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($fresh === null
+                    || $fresh->status !== $instance->status
+                    || $fresh->updated_at > $cutoff) {
+                    return false;
+                }
+
+                $fresh->force_purge_requested_at = $fresh->force_purge_requested_at ?? now();
+                // Status change fires PolydockAppInstanceStatusChanged, whose
+                // listener dispatches the stage job / purge transition.
+                $fresh->setStatus($target, "Stale failed instance swept after {$days} days");
+                $fresh->save();
+
+                return true;
+            });
+
+            if (! $sweptThisOne) {
+                $this->line(sprintf(' - %s (id=%d) skipped: state changed since selection', $instance->name, $instance->id));
+
+                continue;
+            }
+
             $this->line($line);
 
             Log::info('Sweeping stale failed instance into removal pipeline', [
@@ -117,12 +149,6 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
                 'previous_status' => $instance->status->value,
                 'target_status' => $target->value,
             ]);
-
-            $instance->force_purge_requested_at = $instance->force_purge_requested_at ?? now();
-            // Status change fires PolydockAppInstanceStatusChanged, whose
-            // listener dispatches the stage job / purge transition.
-            $instance->setStatus($target, "Stale failed instance swept after {$days} days");
-            $instance->save();
 
             $swept++;
         }
