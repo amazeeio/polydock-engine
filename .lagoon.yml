@@ -27,14 +27,14 @@ tasks:
         name: Run migrations
         # Pause horizon workers (broadcast via redis to all pods) so long
         # queue jobs can't hold metadata locks that stall migration DDL.
-        # Resume even when migrate fails — a failed deploy must not leave
-        # the queue paused.
+        # The EXIT/TERM/INT trap resumes horizon on every exit path —
+        # migrate failure, task cancellation, pod termination — so a dead
+        # deploy can't leave the queue paused. Migrate's exit status still
+        # propagates as the task result.
         command: |
           php artisan horizon:pause || true
+          trap 'php artisan horizon:continue || true' EXIT TERM INT
           php artisan -n migrate --force
-          status=$?
-          php artisan horizon:continue || true
-          exit $status
         service: cli
         shell: bash
     - run:
