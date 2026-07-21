@@ -103,188 +103,121 @@ class ProcessPolydockAppInstanceStatusChange
 
     public function switchOnStatus(PolydockAppInstanceStatusChanged $event)
     {
-        switch ($event->appInstance->status) {
-            case PolydockAppInstanceStatus::PENDING_PRE_CREATE:
-                Log::info('Dispatching PreCreateJob', [
+        $appInstance = $event->appInstance;
+
+        // The two statuses with real behavior beyond dispatching a stage job.
+        if ($appInstance->status === PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED) {
+            $this->handleRunningHealthyClaimed($event);
+
+            return;
+        }
+
+        if ($appInstance->status === PolydockAppInstanceStatus::REMOVED) {
+            $this->handleRemoved($event);
+
+            return;
+        }
+
+        // Every other handled status just dispatches its stage job on its queue.
+        [$job, $queue] = match ($appInstance->status) {
+            PolydockAppInstanceStatus::PENDING_PRE_CREATE => [PreCreateJob::class, 'polydock-app-instance-processing-create'],
+            PolydockAppInstanceStatus::PENDING_CREATE => [CreateJob::class, 'polydock-app-instance-processing-create'],
+            PolydockAppInstanceStatus::PENDING_POST_CREATE => [PostCreateJob::class, 'polydock-app-instance-processing-create'],
+            PolydockAppInstanceStatus::PENDING_PRE_DEPLOY => [PreDeployJob::class, 'polydock-app-instance-processing-deploy'],
+            PolydockAppInstanceStatus::PENDING_DEPLOY => [DeployJob::class, 'polydock-app-instance-processing-deploy'],
+            PolydockAppInstanceStatus::PENDING_POST_DEPLOY => [PostDeployJob::class, 'polydock-app-instance-processing-deploy'],
+            PolydockAppInstanceStatus::PENDING_PRE_REMOVE => [PreRemoveJob::class, 'polydock-app-instance-processing-remove'],
+            PolydockAppInstanceStatus::PENDING_REMOVE => [RemoveJob::class, 'polydock-app-instance-processing-remove'],
+            PolydockAppInstanceStatus::PENDING_POST_REMOVE => [PostRemoveJob::class, 'polydock-app-instance-processing-remove'],
+            PolydockAppInstanceStatus::PENDING_PURGE => [ProcessProjectPurgeJob::class, 'polydock-app-instance-processing-remove'],
+            PolydockAppInstanceStatus::PENDING_PRE_UPGRADE => [PreUpgradeJob::class, 'polydock-app-instance-processing-upgrade'],
+            PolydockAppInstanceStatus::PENDING_UPGRADE => [UpgradeJob::class, 'polydock-app-instance-processing-upgrade'],
+            PolydockAppInstanceStatus::PENDING_POST_UPGRADE => [PostUpgradeJob::class, 'polydock-app-instance-processing-upgrade'],
+            PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM => [ClaimJob::class, 'polydock-app-instance-processing-claim'],
+            default => [null, null],
+        };
+
+        if ($job === null) {
+            Log::warning('No job to dispatch for status '.$appInstance->status->value);
+
+            return;
+        }
+
+        Log::info('Dispatching '.class_basename($job), [
+            'app_instance_id' => $appInstance->id,
+        ]);
+
+        $job::dispatch($appInstance->id)->onQueue($queue);
+    }
+
+    private function handleRunningHealthyClaimed(PolydockAppInstanceStatusChanged $event): void
+    {
+        $manualHookRerun = data_get($event->appInstance->data, 'manual_hook_rerun');
+
+        if (($manualHookRerun['hook'] ?? null) === 'claim') {
+            $data = $event->appInstance->data ?? [];
+            unset($data['manual_hook_rerun']);
+            $event->appInstance->data = $data;
+            $event->appInstance->saveQuietly();
+
+            if (($manualHookRerun['skip_ready_notification'] ?? false) === true) {
+                Log::info('Skipping ready email flow after manual claim rerun', [
                     'app_instance_id' => $event->appInstance->id,
                 ]);
 
-                PreCreateJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-create');
-                break;
-            case PolydockAppInstanceStatus::PENDING_CREATE:
-                Log::info('Dispatching CreateJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
+                return;
+            }
+        }
 
-                CreateJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-create');
-                break;
-            case PolydockAppInstanceStatus::PENDING_POST_CREATE:
-                Log::info('Dispatching PostCreateJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
+        if ($event->appInstance->remoteRegistration) {
+            $appInstance = $event->appInstance;
+            $remoteRegistration = $appInstance->remoteRegistration;
+            $remoteRegistration->setResultValue('message', 'Your trial is ready.');
+            $remoteRegistration->setResultValue('app_url', $appInstance->app_one_time_login_url);
+            $remoteRegistration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
+            $remoteRegistration->save();
 
-                PostCreateJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-create');
-                break;
-            case PolydockAppInstanceStatus::PENDING_PRE_DEPLOY:
-                Log::info('Dispatching PreDeployJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
+            foreach ($appInstance->userGroup->owners as $owner) {
+                $mail = Mail::to($owner->email);
 
-                PreDeployJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-deploy');
-                break;
-            case PolydockAppInstanceStatus::PENDING_DEPLOY:
-                Log::info('Dispatching DeployJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                DeployJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-deploy');
-                break;
-            case PolydockAppInstanceStatus::PENDING_POST_DEPLOY:
-                Log::info('Dispatching PostDeployJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                PostDeployJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-deploy');
-                break;
-            case PolydockAppInstanceStatus::PENDING_PRE_REMOVE:
-                Log::info('Dispatching PreRemoveJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                PreRemoveJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-remove');
-                break;
-            case PolydockAppInstanceStatus::PENDING_REMOVE:
-                Log::info('Dispatching RemoveJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                RemoveJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-remove');
-                break;
-            case PolydockAppInstanceStatus::PENDING_POST_REMOVE:
-                Log::info('Dispatching PostRemoveJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                PostRemoveJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-remove');
-                break;
-            case PolydockAppInstanceStatus::PENDING_PURGE:
-                Log::info('Dispatching ProcessProjectPurgeJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                ProcessProjectPurgeJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-remove');
-                break;
-            case PolydockAppInstanceStatus::PENDING_PRE_UPGRADE:
-                Log::info('Dispatching PreUpgradeJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                PreUpgradeJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-upgrade');
-                break;
-            case PolydockAppInstanceStatus::PENDING_UPGRADE:
-                Log::info('Dispatching UpgradeJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                UpgradeJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-upgrade');
-                break;
-            case PolydockAppInstanceStatus::PENDING_POST_UPGRADE:
-                Log::info('Dispatching PostUpgradeJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                PostUpgradeJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-upgrade');
-                break;
-            case PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM:
-                Log::info('Dispatching ClaimJob', [
-                    'app_instance_id' => $event->appInstance->id,
-                ]);
-
-                ClaimJob::dispatch($event->appInstance->id)
-                    ->onQueue('polydock-app-instance-processing-claim');
-                break;
-            case PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED:
-                $manualHookRerun = data_get($event->appInstance->data, 'manual_hook_rerun');
-
-                if (($manualHookRerun['hook'] ?? null) === 'claim') {
-                    $data = $event->appInstance->data ?? [];
-                    unset($data['manual_hook_rerun']);
-                    $event->appInstance->data = $data;
-                    $event->appInstance->saveQuietly();
-
-                    if (($manualHookRerun['skip_ready_notification'] ?? false) === true) {
-                        Log::info('Skipping ready email flow after manual claim rerun', [
-                            'app_instance_id' => $event->appInstance->id,
-                        ]);
-
-                        break;
-                    }
+                if (config('mail.cc_all')) {
+                    $mail->cc(config('mail.cc_all'));
                 }
 
-                if ($event->appInstance->remoteRegistration) {
-                    $appInstance = $event->appInstance;
-                    $remoteRegistration = $appInstance->remoteRegistration;
-                    $remoteRegistration->setResultValue('message', 'Your trial is ready.');
-                    $remoteRegistration->setResultValue('app_url', $appInstance->app_one_time_login_url);
-                    $remoteRegistration->status = UserRemoteRegistrationStatusEnum::SUCCESS;
-                    $remoteRegistration->save();
+                $appInstance->info('Sending ready email to owner', [
+                    'owner_id' => $owner->id,
+                    'owner_email' => $owner->email,
+                ]);
 
-                    foreach ($appInstance->userGroup->owners as $owner) {
-                        $mail = Mail::to($owner->email);
+                Log::info('Sending ready email to owner', [
+                    'owner_id' => $owner->id,
+                    'owner_email' => $owner->email,
+                    'app_instance_id' => $appInstance->id,
+                ]);
 
-                        if (env('MAIL_CC_ALL', false)) {
-                            $mail->cc(env('MAIL_CC_ALL'));
-                        }
+                $mail->queue(new AppInstanceReadyMail($appInstance, $owner));
+            }
+        }
+    }
 
-                        $appInstance->info('Sending ready email to owner', [
-                            'owner_id' => $owner->id,
-                            'owner_email' => $owner->email,
-                        ]);
+    private function handleRemoved(PolydockAppInstanceStatusChanged $event): void
+    {
+        // If force-purge was requested and this is not a retry coming back
+        // from the purge job (which sets purge_last_attempted_at), immediately
+        // transition to PENDING_PURGE. Retries are handled by the scheduled
+        // DispatchProjectPurgeJobsCommand which enforces backoff.
+        if ($event->appInstance->force_purge_requested_at !== null
+            && $event->appInstance->purge_last_attempted_at === null) {
+            Log::info('Force purge requested, immediately dispatching PENDING_PURGE', [
+                'app_instance_id' => $event->appInstance->id,
+            ]);
 
-                        Log::info('Sending ready email to owner', [
-                            'owner_id' => $owner->id,
-                            'owner_email' => $owner->email,
-                            'app_instance_id' => $appInstance->id,
-                        ]);
-
-                        $mail->queue(new AppInstanceReadyMail($appInstance, $owner));
-                    }
-                }
-                break;
-            case PolydockAppInstanceStatus::REMOVED:
-                // If force-purge was requested and this is not a retry coming back
-                // from the purge job (which sets purge_last_attempted_at), immediately
-                // transition to PENDING_PURGE. Retries are handled by the scheduled
-                // DispatchProjectPurgeJobsCommand which enforces backoff.
-                if ($event->appInstance->force_purge_requested_at !== null
-                    && $event->appInstance->purge_last_attempted_at === null) {
-                    Log::info('Force purge requested, immediately dispatching PENDING_PURGE', [
-                        'app_instance_id' => $event->appInstance->id,
-                    ]);
-
-                    $event->appInstance->purge_eligible_at = now();
-                    $event->appInstance->setStatus(
-                        PolydockAppInstanceStatus::PENDING_PURGE,
-                        'Force purge: skipping grace period',
-                    );
-                    $event->appInstance->save();
-                }
-                break;
-            default:
-                Log::warning('No job to dispatch for status '.$event->appInstance->status->value);
+            $event->appInstance->purge_eligible_at = now();
+            $event->appInstance->setStatus(
+                PolydockAppInstanceStatus::PENDING_PURGE,
+                'Force purge: skipping grace period',
+            );
+            $event->appInstance->save();
         }
     }
 }

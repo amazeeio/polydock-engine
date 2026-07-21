@@ -4,68 +4,37 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Models\User;
 use Carbon\Carbon;
-use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
-class UserCreatedChart extends ChartWidget
+class UserCreatedChart extends WeeklyBarChartWidget
 {
     protected static ?int $sort = 100;
 
     protected static ?string $heading = 'New Users';
 
-    protected static ?string $maxHeight = '300px';
-
     #[\Override]
     protected function getData(): array
     {
-        $startDate = Carbon::now()->subWeeks(6)->startOfWeek();
-        $endDate = Carbon::now()->endOfWeek();
+        $bucket = $this->weekBucketSql();
 
-        // Get user creation counts grouped by week
-        $users = User::query()
-            ->where('created_at', '>=', $startDate)
-            ->where('created_at', '<=', $endDate)
+        $rows = User::query()
+            ->where('created_at', '>=', $this->startDate())
+            ->where('created_at', '<=', Carbon::now()->endOfWeek())
             ->select(
-                DB::raw('DATE(created_at - INTERVAL WEEKDAY(created_at) DAY) as week'),
+                DB::raw("{$bucket} as week"),
                 DB::raw('count(*) as count'),
             )
-            ->groupBy(
-                DB::raw('DATE(created_at - INTERVAL WEEKDAY(created_at) DAY)'),
-            )
+            ->groupBy(DB::raw($bucket))
             ->orderBy('week')
             ->get();
 
-        $weeks = [];
-        $counts = [];
-
-        // Fill in data for each week (now 7 weeks including current)
-        for ($i = 0; $i <= 6; $i++) {
-            $weekStart = $startDate->copy()->addWeeks($i);
-            $weekLabel = $weekStart->format('M d');
-            $weeks[] = $weekLabel;
-
-            $counts[] = $users
-                ->where('week', $weekStart->format('Y-m-d'))
-                ->first()
-                ?->count ?? 0;
-        }
-
-        return [
-            'datasets' => [
-                [
-                    'label' => 'New Users',
-                    'data' => $counts,
-                    'backgroundColor' => '#a78bfa', // Purple 400
-                    'borderColor' => '#8b5cf6', // Purple 500
-                ],
+        return $this->buildWeeklyData($rows, [
+            'users' => [
+                'label' => 'New Users',
+                'backgroundColor' => '#a78bfa', // Purple 400
+                'borderColor' => '#8b5cf6', // Purple 500
             ],
-            'labels' => $weeks,
-        ];
-    }
-
-    protected function getType(): string
-    {
-        return 'bar';
+        ], null);
     }
 
     #[\Override]

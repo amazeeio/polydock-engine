@@ -598,12 +598,6 @@ parameters:
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
 			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Health/PollHealthJob.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
 			path: app/Jobs/ProcessPolydockAppInstanceJobs/New/ProcessNewJob.php
 
 		-
@@ -1129,12 +1123,6 @@ parameters:
 			path: app/PolydockEngine/Helpers/LagoonHelper.php
 
 		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 1
-			path: app/PolydockEngine/Helpers/LagoonHelper.php
-
-		-
 			message: '#^Call to method getMessage\(\) on an unknown class App\\PolydockServiceProviders\\Throwable\.$#'
 			identifier: class.notFound
 			count: 1
@@ -1283,12 +1271,6 @@ parameters:
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Feature/Filament/CreatePolydockAppInstanceTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<App\\Polydock\\Apps\\PrivateGpt\\Generated\\Dto\\RegionResponse\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Apps/PrivateGpt/Client/AmazeeAiClientTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'

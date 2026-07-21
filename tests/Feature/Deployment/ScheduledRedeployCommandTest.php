@@ -111,6 +111,26 @@ class ScheduledRedeployCommandTest extends TestCase
         $this->assertCount(1, $this->client->bulkCalls[0]['environments']);
     }
 
+    public function test_most_outdated_instances_are_triggered_first(): void
+    {
+        config(['polydock.deploy.max_per_run' => 2]);
+        $app = $this->storeApp();
+
+        // never-redeployed counts as oldest, then oldest last deployment.
+        $recent = $this->makeInstance($app, ['name' => 'recent', 'last_deployed_at' => now()->subDays(2)]);
+        $ancient = $this->makeInstance($app, ['name' => 'ancient', 'last_deployed_at' => now()->subDays(30)]);
+        $never = $this->makeInstance($app, ['name' => 'never', 'last_deployed_at' => null]);
+
+        $this->runCommand();
+
+        $triggered = collect($this->client->bulkCalls[0]['environments'])
+            ->pluck('project')
+            ->all();
+
+        $this->assertSame(['never', 'ancient'], $triggered);
+        $this->assertNull($recent->fresh()->deployment_run_id);
+    }
+
     public function test_groups_by_store_app(): void
     {
         $app1 = $this->storeApp();

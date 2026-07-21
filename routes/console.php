@@ -68,8 +68,10 @@ Schedule::command('polydock:dispatch-project-purge')
     ->withoutOverlapping();
 
 // ///// Cadence-based redeploys (upgrade rollouts) ///////
+// Hourly, max 10 per run (polydock.deploy.max_per_run): 50 every 10 minutes
+// overloaded the Lagoon core with concurrent builds.
 Schedule::command('polydock:dispatch-scheduled-redeploys')
-    ->everyTenMinutes()
+    ->hourly()
     ->withoutOverlapping()
     ->onOneServer();
 
@@ -82,5 +84,17 @@ Schedule::command('polydock:deployments:poll')
 // ///// Audit Log Retention ///////
 Schedule::command('activitylog:clean')
     ->daily()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// ///// Operational Instance Log Retention ///////
+Schedule::command('polydock:prune-instance-logs')
+    ->daily()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// ///// Horizon queue metrics snapshots ///////
+Schedule::command('horizon:snapshot')
+    ->everyFiveMinutes()
     ->withoutOverlapping()
     ->onOneServer();

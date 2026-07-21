@@ -25,64 +25,68 @@ trait RemoveAppInstanceTrait
     public function removeAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $functionName = __FUNCTION__;
-        $logContext = $this->getLogContext($functionName);
-        $testLagoonPing = true;
-        $validateLagoonValues = true;
-        $validateLagoonProjectName = true;
-        $validateLagoonProjectId = true;
 
-        $this->info($functionName.': starting', $logContext);
+        // Adopted (claimed) projects are pre-existing environments Polydock did
+        // not create. Removing one means detaching: drop the Polydock record but
+        // leave the running Lagoon environment intact — never delete it, and
+        // never touch Lagoon. This guard runs before the Lagoon ping/validation
+        // below so a detach succeeds even when Lagoon is unreachable.
+        if ($appInstance->getKeyValue('adopted')) {
+            $logContext = $this->getLogContext($functionName);
+            $this->info($functionName.': starting', $logContext);
+            $this->validateAppInstanceStatusIsExpected($appInstance, PolydockAppInstanceStatus::PENDING_REMOVE);
+            $this->info($functionName.': adopted project — detaching, leaving Lagoon environment intact', $logContext);
+            $appInstance->setStatus(
+                PolydockAppInstanceStatus::REMOVE_COMPLETED,
+                'Adopted project detached (Lagoon environment left intact)'
+            )->save();
 
-        // Throws PolydockAppInstanceStatusFlowException
-        $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(
+            return $appInstance;
+        }
+
+        return $this->runLifecyclePhase(
             $appInstance,
+            $functionName,
             PolydockAppInstanceStatus::PENDING_REMOVE,
-            $logContext,
-            $testLagoonPing,
-            $validateLagoonValues,
-            $validateLagoonProjectName,
-            $validateLagoonProjectId
-        );
-
-        $projectName = $appInstance->getKeyValue('lagoon-project-name');
-        $deployEnvironment = $appInstance->getKeyValue('lagoon-deploy-branch');
-        $logContext['projectName'] = $projectName;
-        $logContext['deployEnvironment'] = $deployEnvironment;
-
-        $this->info($functionName.': starting for project: '.$projectName, $logContext);
-        $appInstance->setStatus(
             PolydockAppInstanceStatus::REMOVE_RUNNING,
-            PolydockAppInstanceStatus::REMOVE_RUNNING->getStatusMessage()
-        )->save();
+            PolydockAppInstanceStatus::REMOVE_COMPLETED,
+            PolydockAppInstanceStatus::REMOVE_FAILED,
+            function (PolydockAppInstanceInterface $appInstance, array $logContext) use ($functionName): ?PolydockAppInstanceInterface {
+                $projectName = $appInstance->getKeyValue('lagoon-project-name');
+                $deployEnvironment = $appInstance->getKeyValue('lagoon-deploy-branch');
+                $logContext['projectName'] = $projectName;
+                $logContext['deployEnvironment'] = $deployEnvironment;
 
-        $removedEnvironment = $this->lagoonClient->deleteProjectEnvironmentByName(
-            $projectName,
-            $deployEnvironment
+                $this->info($functionName.': starting for project: '.$projectName, $logContext);
+
+                $removedEnvironment = $this->lagoonClient->deleteProjectEnvironmentByName(
+                    $projectName,
+                    $deployEnvironment
+                );
+
+                if (isset($removedEnvironment['error'])) {
+                    // Handle both array errors (from GraphQL) and string errors (from not found)
+                    $errorMessage = is_array($removedEnvironment['error'])
+                        ? ($removedEnvironment['error'][0]['message'] ?? json_encode($removedEnvironment['error']))
+                        : $removedEnvironment['error'];
+                    $this->error($errorMessage, $logContext + ['error' => $removedEnvironment['error']]);
+                    $appInstance->setStatus(PolydockAppInstanceStatus::REMOVE_FAILED, 'Failed to remove Lagoon environment')->save();
+
+                    return $appInstance;
+                }
+
+                if (isset($removedEnvironment['deleteEnvironment']) && $removedEnvironment['deleteEnvironment'] === 'success') {
+                    $this->info('Environment deleted successfully', $logContext + ['removedEnvironment' => $removedEnvironment]);
+                } else {
+                    $this->error('No error, but failed to remove Lagoon environment', $logContext + ['error' => $removedEnvironment['error']]);
+                    $appInstance->setStatus(PolydockAppInstanceStatus::REMOVE_FAILED, 'No error, but failed to remove Lagoon environment')->save();
+
+                    return $appInstance;
+                }
+
+                return null;
+            },
+            'Remove completed',
         );
-
-        if (isset($removedEnvironment['error'])) {
-            // Handle both array errors (from GraphQL) and string errors (from not found)
-            $errorMessage = is_array($removedEnvironment['error'])
-                ? ($removedEnvironment['error'][0]['message'] ?? json_encode($removedEnvironment['error']))
-                : $removedEnvironment['error'];
-            $this->error($errorMessage, $logContext + ['error' => $removedEnvironment['error']]);
-            $appInstance->setStatus(PolydockAppInstanceStatus::REMOVE_FAILED, 'Failed to remove Lagoon environment')->save();
-
-            return $appInstance;
-        }
-
-        if (isset($removedEnvironment['deleteEnvironment']) && $removedEnvironment['deleteEnvironment'] === 'success') {
-            $this->info('Environment deleted successfully', $logContext + ['removedEnvironment' => $removedEnvironment]);
-        } else {
-            $this->error('No error, but failed to remove Lagoon environment', $logContext + ['error' => $removedEnvironment['error']]);
-            $appInstance->setStatus(PolydockAppInstanceStatus::REMOVE_FAILED, 'No error, but failed to remove Lagoon environment')->save();
-
-            return $appInstance;
-        }
-
-        $this->info($functionName.': completed', $logContext);
-        $appInstance->setStatus(PolydockAppInstanceStatus::REMOVE_COMPLETED, 'Remove completed')->save();
-
-        return $appInstance;
     }
 }

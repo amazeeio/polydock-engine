@@ -25,46 +25,33 @@ trait PreCreateAppInstanceTrait
     public function preCreateAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $functionName = __FUNCTION__;
-        $logContext = $this->getLogContext($functionName);
-        $testLagoonPing = true;
-        $validateLagoonValues = true;
-        $validateLagoonProjectName = true;
-        $validateLagoonProjectId = false;
 
-        $this->info($functionName.': starting', $logContext);
-
-        // Throws PolydockAppInstanceStatusFlowException
-        $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(
+        return $this->runLifecyclePhase(
             $appInstance,
+            $functionName,
             PolydockAppInstanceStatus::PENDING_PRE_CREATE,
-            $logContext,
-            $testLagoonPing,
-            $validateLagoonValues,
-            $validateLagoonProjectName,
-            $validateLagoonProjectId
-        );
-
-        // While we don't use this here, lets make sure we have it available for later
-        if ($this->getRequiresAiInfrastructure()) {
-            // Throws PolydockAppInstanceStatusFlowException
-            $this->setAmazeeAiBackendClientFromAppInstance($appInstance);
-        }
-
-        // Apps configured for custom naming may carry an externally supplied
-        // name - enforce the prefix, sanitize it, and dedupe against Lagoon.
-        $this->finalizeCustomProjectNameIfConfigured($appInstance);
-
-        $projectName = $appInstance->getKeyValue('lagoon-project-name');
-
-        $this->info($functionName.': starting for project: '.$projectName, $logContext);
-        $appInstance->setStatus(
             PolydockAppInstanceStatus::PRE_CREATE_RUNNING,
-            PolydockAppInstanceStatus::PRE_CREATE_RUNNING->getStatusMessage()
-        )->save();
+            PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
+            PolydockAppInstanceStatus::PRE_CREATE_FAILED,
+            function (PolydockAppInstanceInterface $appInstance, array $logContext) use ($functionName): ?PolydockAppInstanceInterface {
+                // While we don't use this here, lets make sure we have it available for later
+                if ($this->getRequiresAiInfrastructure()) {
+                    // Throws PolydockAppInstanceStatusFlowException
+                    $this->setAmazeeAiBackendClientFromAppInstance($appInstance);
+                }
 
-        $this->info($functionName.': completed', $logContext);
-        $appInstance->setStatus(PolydockAppInstanceStatus::PRE_CREATE_COMPLETED, 'Pre-create completed')->save();
+                // Apps configured for custom naming may carry an externally supplied
+                // name - enforce the prefix, sanitize it, and dedupe against Lagoon.
+                $this->finalizeCustomProjectNameIfConfigured($appInstance);
 
-        return $appInstance;
+                $projectName = $appInstance->getKeyValue('lagoon-project-name');
+
+                $this->info($functionName.': starting for project: '.$projectName, $logContext);
+
+                return null;
+            },
+            'Pre-create completed',
+            validateLagoonProjectId: false,
+        );
     }
 }

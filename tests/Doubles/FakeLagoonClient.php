@@ -31,9 +31,80 @@ class FakeLagoonClient extends Client
 
     public bool $throwOnPoll = false;
 
+    /** @var array<string, array<string, mixed>> Canned getProjectByName responses keyed by project name. */
+    public array $projects = [];
+
+    /** @var array<int, array{group: string, project: string}> Recorded addGroupToProject calls. */
+    public array $groupAdds = [];
+
+    public ?array $addGroupResponse = null;
+
     public function __construct()
     {
         // Intentionally bypass the real Client constructor (SSH/config setup).
+    }
+
+    public bool $throwOnGetProject = false;
+
+    /** @var array<int, array{project: string, environment: string}> Recorded environment deletions. */
+    public array $environmentDeletes = [];
+
+    public ?array $deleteEnvironmentResponse = null;
+
+    /** @var array<int, string> Recorded project deletions. */
+    public array $projectDeletes = [];
+
+    public ?array $deleteProjectResponse = null;
+
+    #[\Override]
+    public function getProjectByName(string $projectName): array
+    {
+        if ($this->throwOnGetProject) {
+            throw new \RuntimeException('getProjectByName failed');
+        }
+
+        if (! isset($this->projects[$projectName])) {
+            // Lagoon returns a null payload for unknown projects.
+            return ['projectByName' => null];
+        }
+
+        return ['projectByName' => $this->projects[$projectName]];
+    }
+
+    #[\Override]
+    public function deleteProjectEnvironmentByName(string $projectName, string $environmentName): array
+    {
+        $this->environmentDeletes[] = ['project' => $projectName, 'environment' => $environmentName];
+
+        return $this->deleteEnvironmentResponse ?? ['deleteEnvironment' => 'success'];
+    }
+
+    #[\Override]
+    public function deleteProjectByName(string $projectName): array
+    {
+        $this->projectDeletes[] = $projectName;
+
+        return $this->deleteProjectResponse ?? ['deleteProject' => 'success'];
+    }
+
+    #[\Override]
+    public function addGroupToProject(string $groupName, string $projectName): array
+    {
+        $this->groupAdds[] = ['group' => $groupName, 'project' => $projectName];
+
+        return $this->addGroupResponse ?? ['addGroupsToProject' => ['id' => 1]];
+    }
+
+    /** Register a canned project so getProjectByName finds it. */
+    public function registerProject(string $name, int $id = 1, string $productionEnvironment = 'main', ?int $openshiftId = 7, string $gitUrl = 'git@example.com:acme/site.git'): void
+    {
+        $this->projects[$name] = [
+            'id' => $id,
+            'name' => $name,
+            'productionEnvironment' => $productionEnvironment,
+            'gitUrl' => $gitUrl,
+            'openshift' => $openshiftId === null ? null : ['id' => $openshiftId],
+        ];
     }
 
     #[\Override]

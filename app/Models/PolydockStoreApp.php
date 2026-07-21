@@ -92,6 +92,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
  * @property Collection|PolydockVariable[] $variables
  * @property string $project_naming_mode
  * @property bool $supports_pre_warming
+ * @property string $project_naming_prefix
  * @property array<int, string> $project_naming_adjectives
  * @property array<int, string> $project_naming_nouns
  * @property array{domain_pattern: string, service: string, annotations: array<string, string>}|null $lagoon_custom_route_config
@@ -273,11 +274,19 @@ class PolydockStoreApp extends Model
     }
 
     /**
-     * Get the Lagoon project prefix attribute
+     * Get the Lagoon project prefix attribute.
+     *
+     * The store prefix (e.g. 'aio-saas-us3') is fixed per store; an optional
+     * app-level naming prefix is prepended when set:
+     * <app-prefix>-<store-prefix>.
      */
     public function getLagoonDeployProjectPrefixAttribute(): string
     {
-        return $this->store->lagoon_deploy_project_prefix;
+        $appPrefix = $this->project_naming_prefix;
+
+        return $appPrefix === ''
+            ? $this->store->lagoon_deploy_project_prefix
+            : $appPrefix.'-'.$this->store->lagoon_deploy_project_prefix;
     }
 
     /**
@@ -464,6 +473,15 @@ class PolydockStoreApp extends Model
     public function getSupportsPreWarmingAttribute(): bool
     {
         return $this->project_naming_mode !== self::PROJECT_NAMING_MODE_CUSTOM;
+    }
+
+    /**
+     * Optional app-level naming prefix, prepended to the store's fixed
+     * prefix when generating Lagoon project names.
+     */
+    public function getProjectNamingPrefixAttribute(): string
+    {
+        return trim((string) data_get($this->app_config, 'project_naming_prefix', ''), " \t\n\r\0\x0B-");
     }
 
     /**

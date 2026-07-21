@@ -37,30 +37,20 @@ foreach ($filterServiceProviders as $filterServiceProvider) {
     }
 }
 
-$aisettings = [
-    'amazee-ai-backend-token' => env('AMAZEE_AI_BACKEND_TOKEN', 'no-amazee-ai-backend-token-set'),
-    'amazee-ai-backend-url' => env('AMAZEE_AI_BACKEND_URL', 'no-amazee-ai-backend-url-set'),
-    'amazee-ai-admin-email' => env('AMAZEE_AI_ADMIN_EMAIL', 'no-amazee-ai-admin-email-set'),
-    'amazee-ai-in-dev-mode' => strtolower((string) env('AMAZEE_AI_IN_DEV_MODE', 'false')) == 'true' || env('AMAZEE_AI_IN_DEV_MODE') === true ? 'true' : 'false',
-    'amazee-ai-registry-ghcr-username' => env('REGISTRY_GHCR_USERNAME', 'no-ghcr-username-set'),
-    'amazee-ai-registry-ghcr-password' => env('REGISTRY_GHCR_TOKEN', 'no-ghcr-token-set'),
-    'amazee-ai-phoenix-api-key' => env('PHOENIX_API_KEY', 'no-phoenix-api-key-set'),
-    'amazee-ai-phoenix-collector-endpoint' => env('PHOENIX_COLLECTOR_ENDPOINT', 'no-phoenix-collector-endpoint-set'),
-    'amazee-ai-unleash-api-token' => env('UNLEASH_API_TOKEN', 'no-unleash-api-token-set'),
-    'amazee-ai-unleash-url' => env('UNLEASH_URL', 'no-unleash-url-set'),
-];
-
 return [
     'health_token' => env('POLYDOCK_HEALTH_TOKEN'),
     'trusted_ips' => array_filter(array_map('trim', explode(',', (string) env('POLYDOCK_TRUSTED_IPS', '')))),
     'lagoon_environment_type' => env('LAGOON_ENVIRONMENT_TYPE', 'development'),
     'default_user_group_id_for_unallocated_instances' => env('POLYDOCK_DEFAULT_USER_GROUP_ID_FOR_UNALLOCATED_INSTANCES', 1),
-    'amazee_ai_backend_private_gpt_settings' => $aisettings,
     'max_per_run_dispatch_midtrial_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_MIDTRIAL_EMAILS', 25),
     'max_per_run_dispatch_one_day_left_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_ONE_DAY_LEFT_EMAILS', 25),
     'max_per_run_dispatch_trial_complete_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_EMAILS', 25),
     'max_per_run_dispatch_trial_complete_stage_removal' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_TRIAL_COMPLETE_STAGE_REMOVAL', 5),
     'cleanup' => [
+        // Operational instance logs (health pings, stage chatter) are pruned
+        // after this many days; the durable who-did-what audit trail lives in
+        // activity_log with its own retention (activitylog:clean).
+        'instance_log_retention_days' => (int) env('POLYDOCK_INSTANCE_LOG_RETENTION_DAYS', 7),
         'project_grace_period_days' => (int) env('POLYDOCK_PROJECT_GRACE_DAYS', 14),
         'purge_poll_interval_minutes' => (int) env('POLYDOCK_PURGE_POLL_INTERVAL', 10),
         'purge_max_poll_attempts' => (int) env('POLYDOCK_PURGE_MAX_POLLS', 144),
@@ -68,8 +58,13 @@ return [
     ],
     'deploy' => [
         // Max instances a single scheduled-redeploy tick will trigger. Combined
-        // with the schedule frequency this bounds the rate of new Lagoon builds.
-        'max_per_run' => (int) env('POLYDOCK_DEPLOY_MAX_PER_RUN', 50),
+        // with the schedule frequency (hourly) this bounds the rate of new
+        // Lagoon builds — 50 every 10 minutes overloaded the Lagoon core.
+        'max_per_run' => (int) env('POLYDOCK_DEPLOY_MAX_PER_RUN', 10),
+        // Max pre-warm instances refreshed (removed + recreated) or created
+        // per store app per maintenance pass — refresh batches are also gated
+        // to one batch per hour globally. Same Lagoon-pressure rationale.
+        'prewarm_batch' => (int) env('POLYDOCK_PREWARM_BATCH', 10),
         // How often a run is re-polled for Lagoon deployment status.
         'poll_interval_minutes' => (int) env('POLYDOCK_DEPLOY_POLL_INTERVAL', 5),
         // Give up (mark the run failed) after this many polls without terminal state.

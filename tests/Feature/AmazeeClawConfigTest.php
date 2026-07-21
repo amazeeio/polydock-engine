@@ -2,174 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Polydock\Apps\AmazeeClaw\Enums\AmazeeAiKeyMode;
 use App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp;
-use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
-use App\Polydock\Core\PolydockAppInstanceInterface;
-use App\Polydock\Core\PolydockAppInterface;
-use App\Polydock\Core\PolydockAppLoggerInterface;
-use App\Polydock\Core\PolydockEngineInterface;
+use Tests\Doubles\DoublePolydockAppInstance;
 use Tests\TestCase;
-
-class DoublePolydockAppInstance implements PolydockAppInstanceInterface
-{
-    public $storeApp;
-
-    public $data = [];
-
-    public function __construct($storeApp = null, array $data = [])
-    {
-        $this->storeApp = $storeApp;
-        $this->data = $data;
-    }
-
-    public function getKeyValue(string $key): mixed
-    {
-        if ($key === 'secret') {
-            return $this->data['secret'] ?? [];
-        }
-        if ($key === 'amazee-ai-generated-credentials') {
-            return $this->data['amazee-ai-generated-credentials'] ?? null;
-        }
-
-        return $this->data[$key] ?? '';
-    }
-
-    public function getPolydockVariableValue(string $key, $default = '')
-    {
-        return $this->data[$key] ?? $default;
-    }
-
-    public function setApp(PolydockAppInterface $app): self
-    {
-        return $this;
-    }
-
-    public function getApp(): PolydockAppInterface
-    {
-        throw new \Exception;
-    }
-
-    public function setName(string $name): self
-    {
-        return $this;
-    }
-
-    public function getName(): string
-    {
-        return '';
-    }
-
-    public function setAppType(string $appType): self
-    {
-        return $this;
-    }
-
-    public function getAppType(): string
-    {
-        return '';
-    }
-
-    public function getStatus(): PolydockAppInstanceStatus
-    {
-        throw new \Exception;
-    }
-
-    public function setStatus(PolydockAppInstanceStatus $status, string $statusMessage = ''): self
-    {
-        return $this;
-    }
-
-    public function setStatusMessage(string $statusMessage): self
-    {
-        return $this;
-    }
-
-    public function getStatusMessage(): string
-    {
-        return '';
-    }
-
-    public function storeKeyValue(string $key, mixed $value): self
-    {
-        $this->data[$key] = $value;
-
-        return $this;
-    }
-
-    public function deleteKeyValue(string $key): self
-    {
-        unset($this->data[$key]);
-
-        return $this;
-    }
-
-    public function info(string $message, array $context = []): self
-    {
-        return $this;
-    }
-
-    public function error(string $message, array $context = []): self
-    {
-        return $this;
-    }
-
-    public function warning(string $message, array $context = []): self
-    {
-        return $this;
-    }
-
-    public function debug(string $message, array $context = []): self
-    {
-        return $this;
-    }
-
-    public function getLogger(): PolydockAppLoggerInterface
-    {
-        throw new \Exception;
-    }
-
-    public function setLogger(PolydockAppLoggerInterface $logger): self
-    {
-        return $this;
-    }
-
-    public function setEngine(PolydockEngineInterface $engine): self
-    {
-        return $this;
-    }
-
-    public function getEngine(): PolydockEngineInterface
-    {
-        throw new \Exception;
-    }
-
-    public function generateUniqueProjectName(string $prefix): string
-    {
-        return '';
-    }
-
-    public function save(array $options = []) {}
-
-    public function setAppUrl(string $url, ?string $oneTimeLoginUrl = null, ?int $numberOfHoursForOneTimeLoginUrl = 24): self
-    {
-        return $this;
-    }
-
-    public function setOneTimeLoginUrl(string $url, int $numberOfHours = 24, bool $setOnlyDontSave = false): self
-    {
-        return $this;
-    }
-
-    public function getGeneratedAppAdminUsername(): string
-    {
-        return '';
-    }
-
-    public function getGeneratedAppAdminPassword(): string
-    {
-        return '';
-    }
-}
 
 class TestablePolydockAmazeeClawAiApp extends PolydockAmazeeClawAiApp
 {
@@ -219,23 +55,38 @@ class AmazeeClawConfigTest extends TestCase
     {
         $app = new PolydockAmazeeClawAiApp('Test App', 'Description', 'Author', 'https://example.com', 'support@example.com');
 
-        // 1. Default fallback
+        // 1. Default fallback (legacy empty -> injected)
         $instanceDefault = $this->createAppInstance();
-        $this->assertEquals('manual', $app->resolveAmazeeAiKeyMode($instanceDefault));
+        $this->assertEquals(AmazeeAiKeyMode::Injected, $app->resolveAmazeeAiKeyMode($instanceDefault));
 
-        // 2. Resolve from app_config (store app level)
+        // 2. Resolve from app_config (store app level); legacy 'auto' -> anonymous
         $instanceStoreApp = $this->createAppInstance([
             'app_config' => ['amazeeai_key_mode' => 'auto'],
         ]);
-        $this->assertEquals('auto', $app->resolveAmazeeAiKeyMode($instanceStoreApp));
+        $this->assertEquals(AmazeeAiKeyMode::Anonymous, $app->resolveAmazeeAiKeyMode($instanceStoreApp));
 
-        // 3. Resolve from instance config
+        // 3. Resolve from instance config; new 'user' value
         $instanceConfig = $this->createAppInstance([
             'data' => [
-                'instance_config_amazeeai_key_mode' => 'auto',
+                'instance_config_amazeeai_key_mode' => 'user',
             ],
         ]);
-        $this->assertEquals('auto', $app->resolveAmazeeAiKeyMode($instanceConfig));
+        $this->assertEquals(AmazeeAiKeyMode::User, $app->resolveAmazeeAiKeyMode($instanceConfig));
+    }
+
+    public function test_key_mode_from_storage_maps_legacy_and_new_values()
+    {
+        $this->assertEquals(AmazeeAiKeyMode::Anonymous, AmazeeAiKeyMode::fromStorage('auto'));
+        $this->assertEquals(AmazeeAiKeyMode::Anonymous, AmazeeAiKeyMode::fromStorage('anonymous'));
+        $this->assertEquals(AmazeeAiKeyMode::Injected, AmazeeAiKeyMode::fromStorage('manual'));
+        $this->assertEquals(AmazeeAiKeyMode::Injected, AmazeeAiKeyMode::fromStorage('injected'));
+        $this->assertEquals(AmazeeAiKeyMode::Injected, AmazeeAiKeyMode::fromStorage(''));
+        $this->assertEquals(AmazeeAiKeyMode::Injected, AmazeeAiKeyMode::fromStorage(null));
+        $this->assertEquals(AmazeeAiKeyMode::User, AmazeeAiKeyMode::fromStorage('user'));
+
+        $this->assertTrue(AmazeeAiKeyMode::Anonymous->isAutoGenerated());
+        $this->assertTrue(AmazeeAiKeyMode::User->isAutoGenerated());
+        $this->assertFalse(AmazeeAiKeyMode::Injected->isAutoGenerated());
     }
 
     public function test_injects_manual_credentials()

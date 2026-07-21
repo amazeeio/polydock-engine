@@ -9,7 +9,6 @@ use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInterface;
 use App\Polydock\Core\PolydockAppLoggerInterface;
 use App\Polydock\Core\PolydockEngineInterface;
-use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Traits\HasWebhookSensitiveData;
@@ -426,11 +425,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'remove', 'remove'));
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'claim', 'claim'));
 
-                // This is a pre-launch hack for amazee.ai Private GPT
-                // TODO: Abstract this once the amazee.ai Private GPT
-                //   is launched and stable.
-                $data = array_merge($data, AmazeeAiBackendHelper::getDataForPrivateGPTSettings());
-
                 $model->data = $data;
             } catch (PolydockEngineAppNotFoundException $e) {
                 Log::error('Failed to set app type for new instance', [
@@ -820,19 +814,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $url;
     }
 
-    /**
-     * Delete a stored key-value pair
-     *
-     * @param  string  $key  The key to delete
-     * @return self Returns the instance for method chaining
-     */
-    public function deleteKeyValue(string $key): self
-    {
-        unset($this->data[$key]);
-
-        return $this;
-    }
-
     public function setLogger(PolydockAppLoggerInterface $logger): self
     {
         $this->logger = $logger;
@@ -1076,10 +1057,65 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the logs for this instance
+     *
+     * @return HasMany<PolydockAppInstanceLog, $this>
      */
     public function logs(): HasMany
     {
         return $this->hasMany(PolydockAppInstanceLog::class);
+    }
+
+    /**
+     * Status transitions in chronological order — the timing source of truth
+     * for per-stage durations.
+     *
+     * @return HasMany<PolydockAppInstanceStatusTransition, $this>
+     */
+    public function statusTransitions(): HasMany
+    {
+        return $this->hasMany(PolydockAppInstanceStatusTransition::class)->orderBy('created_at')->orderBy('id');
+    }
+
+    /**
+     * Seconds between first entering $from and first entering $to.
+     * Null when either transition was never observed (e.g. instances that
+     * predate transition recording).
+     */
+    public function secondsBetweenStatuses(PolydockAppInstanceStatus $from, PolydockAppInstanceStatus $to): ?int
+    {
+        $rows = $this->statusTransitions;
+        $enteredFrom = $rows->firstWhere('to_status', $from);
+        $enteredTo = $rows->firstWhere('to_status', $to);
+
+        return ($enteredFrom && $enteredTo && $enteredTo->created_at >= $enteredFrom->created_at)
+            ? (int) $enteredFrom->created_at->diffInSeconds($enteredTo->created_at)
+            : null;
+    }
+
+    /**
+     * Seconds the instance sat claimable in the pre-warm pool before a claim
+     * started; null if it was never unclaimed or never claimed.
+     */
+    public function secondsUnclaimedBeforeClaim(): ?int
+    {
+        return $this->secondsBetweenStatuses(
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+            PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
+        );
+    }
+
+    /**
+     * Seconds from instance creation until it first became claimed & healthy;
+     * null until that status is observed in the transition log.
+     */
+    public function secondsFromCreationToClaimed(): ?int
+    {
+        $claimed = $this->statusTransitions
+            ->firstWhere('to_status', PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED);
+
+        return ($claimed && $this->created_at)
+            ? (int) $this->created_at->diffInSeconds($claimed->created_at)
+            : null;
     }
 
     public function logLine(string $level, string $message, array $context = []): self
@@ -1100,16 +1136,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function remoteRegistration(): HasOne
     {
         return $this->hasOne(UserRemoteRegistration::class, 'polydock_app_instance_id');
-    }
-
-    // Helper method to check if trial is active
-    public function isTrialActive(): bool
-    {
-        if (! $this->is_trial || $this->trial_completed) {
-            return false;
-        }
-
-        return $this->trial_ends_at->isFuture();
     }
 
     // Helper method to check if trial is expired

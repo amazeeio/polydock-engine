@@ -39,9 +39,4 @@ enum PolydockStoreAppStatusEnum: string implements HasColor, HasIcon, HasLabel
             self::UNAVAILABLE => 'heroicon-o-x-circle',
         };
     }
-
-    public static function getValues(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
 }

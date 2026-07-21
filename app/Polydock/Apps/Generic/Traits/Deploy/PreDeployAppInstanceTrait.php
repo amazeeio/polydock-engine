@@ -23,39 +23,25 @@ trait PreDeployAppInstanceTrait
     public function preDeployAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $functionName = __FUNCTION__;
-        $logContext = $this->getLogContext($functionName);
-        $testLagoonPing = true;
-        $validateLagoonValues = true;
-        $validateLagoonProjectName = true;
-        $validateLagoonProjectId = true;
 
-        $this->info($functionName.': starting', $logContext);
-
-        // Throws PolydockAppInstanceStatusFlowException
-        $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(
+        return $this->runLifecyclePhase(
             $appInstance,
+            $functionName,
             PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
-            $logContext,
-            $testLagoonPing,
-            $validateLagoonValues,
-            $validateLagoonProjectName,
-            $validateLagoonProjectId
-        );
-
-        $projectName = $appInstance->getKeyValue('lagoon-project-name');
-        $projectId = $appInstance->getKeyValue('lagoon-project-id');
-
-        $this->info($functionName.': starting for project: '.$projectName.' ('.$projectId.')', $logContext);
-        $appInstance->setStatus(
             PolydockAppInstanceStatus::PRE_DEPLOY_RUNNING,
-            PolydockAppInstanceStatus::PRE_DEPLOY_RUNNING->getStatusMessage()
-        )->save();
+            PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED,
+            PolydockAppInstanceStatus::PRE_DEPLOY_FAILED,
+            function (PolydockAppInstanceInterface $appInstance, array $logContext) use ($functionName): ?PolydockAppInstanceInterface {
+                $projectName = $appInstance->getKeyValue('lagoon-project-name');
+                $projectId = $appInstance->getKeyValue('lagoon-project-id');
 
-        // There is nothing to do here beyond checking the name and ID above
+                $this->info($functionName.': starting for project: '.$projectName.' ('.$projectId.')', $logContext);
 
-        $this->info($functionName.': completed', $logContext);
-        $appInstance->setStatus(PolydockAppInstanceStatus::PRE_DEPLOY_COMPLETED, 'Pre-deploy completed')->save();
+                // There is nothing to do here beyond checking the name and ID above
 
-        return $appInstance;
+                return null;
+            },
+            'Pre-deploy completed',
+        );
     }
 }

@@ -50,6 +50,7 @@ class PolydockStoreAppResource extends Resource
                     ->label('Store')
                     ->options(PolydockStore::all()->pluck('name', 'id'))
                     ->required()
+                    ->live()
                     ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
                     ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
                 Forms\Components\Select::make('polydock_app_class')
@@ -145,6 +146,16 @@ class PolydockStoreAppResource extends Resource
                             ->default(PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN)
                             ->live()
                             ->columnSpanFull(),
+                        Forms\Components\TextInput::make('project_naming_prefix')
+                            ->label('App Prefix')
+                            ->regex('/^[a-z0-9]+(-[a-z0-9]+)*$/')
+                            ->maxLength(30)
+                            ->helperText('Optional. Prepended to the store prefix: <app-prefix>-<store-prefix>-<adjective>-<noun>-<id>. Leave empty to use the store prefix alone.')
+                            ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
+                        Forms\Components\Placeholder::make('store_project_prefix')
+                            ->label('Store Prefix (set on the store, not editable here)')
+                            ->content(fn (Get $get): string => PolydockStore::find($get('polydock_store_id'))->lagoon_deploy_project_prefix ?? '—')
+                            ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
                         Forms\Components\TagsInput::make('project_naming_adjectives')
                             ->label('Adjective Word List')
                             ->placeholder('e.g. snappy, zesty, jolly')
@@ -234,127 +245,7 @@ class PolydockStoreAppResource extends Resource
                     ->collapsible(),
                 Section::make('Lagoon Scripts')
                     ->description('Scripts to be executed at various stages of the application lifecycle.')
-                    ->schema([
-                        Section::make('Post Deploy')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Forms\Components\Textarea::make('lagoon_post_deploy_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('lagoon_post_deploy_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        Forms\Components\TextInput::make('lagoon_post_deploy_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Pre Upgrade')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Forms\Components\Textarea::make('lagoon_pre_upgrade_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('lagoon_pre_upgrade_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        Forms\Components\TextInput::make('lagoon_pre_upgrade_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Upgrade')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Forms\Components\Textarea::make('lagoon_upgrade_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('lagoon_upgrade_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        Forms\Components\TextInput::make('lagoon_upgrade_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Post Upgrade')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Forms\Components\Textarea::make('lagoon_post_upgrade_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('lagoon_post_upgrade_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        Forms\Components\TextInput::make('lagoon_post_upgrade_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Claim')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Forms\Components\Textarea::make('lagoon_claim_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('lagoon_claim_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        Forms\Components\TextInput::make('lagoon_claim_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Pre Remove')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Forms\Components\Textarea::make('lagoon_pre_remove_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('lagoon_pre_remove_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        Forms\Components\TextInput::make('lagoon_pre_remove_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Remove')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Forms\Components\Textarea::make('lagoon_remove_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('lagoon_remove_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        Forms\Components\TextInput::make('lagoon_remove_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                    ])
+                    ->schema(self::lagoonScriptFormSections())
                     ->collapsible()
                     ->collapsed(),
                 Section::make('App-Specific Configuration')
@@ -417,41 +308,7 @@ class PolydockStoreAppResource extends Resource
 
                         Grid::make(2)
                             ->schema([
-                                Section::make('Mid-trial Email')
-                                    ->schema([
-                                        Forms\Components\Toggle::make('send_midtrial_email')
-                                            ->label('Send Mid-trial Email'),
-                                        Forms\Components\TextInput::make('midtrial_email_subject')
-                                            ->label('Subject Line')
-                                            ->maxLength(255),
-                                        Forms\Components\MarkdownEditor::make('midtrial_email_markdown')
-                                            ->label('Email Content')
-                                            ->columnSpanFull(),
-                                    ]),
-
-                                Section::make('One Day Left Email')
-                                    ->schema([
-                                        Forms\Components\Toggle::make('send_one_day_left_email')
-                                            ->label('Send One Day Left Email'),
-                                        Forms\Components\TextInput::make('one_day_left_email_subject')
-                                            ->label('Subject Line')
-                                            ->maxLength(255),
-                                        Forms\Components\MarkdownEditor::make('one_day_left_email_markdown')
-                                            ->label('Email Content')
-                                            ->columnSpanFull(),
-                                    ]),
-
-                                Section::make('Trial Complete Email')
-                                    ->schema([
-                                        Forms\Components\Toggle::make('send_trial_complete_email')
-                                            ->label('Send Trial Complete Email'),
-                                        Forms\Components\TextInput::make('trial_complete_email_subject')
-                                            ->label('Subject Line')
-                                            ->maxLength(255),
-                                        Forms\Components\MarkdownEditor::make('trial_complete_email_markdown')
-                                            ->label('Email Content')
-                                            ->columnSpanFull(),
-                                    ]),
+                                ...self::trialEmailFormSections(),
                             ])
                             ->columnSpanFull(),
                     ])
@@ -643,7 +500,8 @@ class PolydockStoreAppResource extends Resource
                                     ->label('Pre-warm Refresh After (Days)'),
                                 TextEntry::make('allocatedInstances')
                                     ->label('Allocated Instances')
-                                    ->state(fn ($record) => $record->allocatedInstances()->count())
+                                    // getEloquentQuery() already eager-counts this.
+                                    ->state(fn ($record) => $record->allocated_instances_count)
                                     ->icon('heroicon-m-check-circle')
                                     ->iconColor('success'),
                                 TextEntry::make('lagoon_production_environment')
@@ -661,84 +519,7 @@ class PolydockStoreAppResource extends Resource
                 \Filament\Infolists\Components\Section::make('Lagoon Scripts')
                     ->schema([
                         \Filament\Infolists\Components\Grid::make(2)
-                            ->schema([
-                                TextEntry::make('lagoon_post_deploy_script')
-                                    ->label('Post Deploy Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_deploy_script)),
-                                TextEntry::make('lagoon_post_deploy_service')
-                                    ->label('Post Deploy Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_deploy_script)),
-                                TextEntry::make('lagoon_post_deploy_container')
-                                    ->label('Post Deploy Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_deploy_script)),
-
-                                TextEntry::make('lagoon_pre_upgrade_script')
-                                    ->label('Pre Upgrade Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_upgrade_script)),
-                                TextEntry::make('lagoon_pre_upgrade_service')
-                                    ->label('Pre Upgrade Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_upgrade_script)),
-                                TextEntry::make('lagoon_pre_upgrade_container')
-                                    ->label('Pre Upgrade Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_upgrade_script)),
-
-                                TextEntry::make('lagoon_upgrade_script')
-                                    ->label('Upgrade Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_upgrade_script)),
-                                TextEntry::make('lagoon_upgrade_service')
-                                    ->label('Upgrade Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_upgrade_script)),
-                                TextEntry::make('lagoon_upgrade_container')
-                                    ->label('Upgrade Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_upgrade_script)),
-
-                                TextEntry::make('lagoon_post_upgrade_script')
-                                    ->label('Post Upgrade Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_upgrade_script)),
-                                TextEntry::make('lagoon_post_upgrade_service')
-                                    ->label('Post Upgrade Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_upgrade_script)),
-                                TextEntry::make('lagoon_post_upgrade_container')
-                                    ->label('Post Upgrade Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_upgrade_script)),
-
-                                TextEntry::make('lagoon_claim_script')
-                                    ->label('Claim Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_claim_script)),
-                                TextEntry::make('lagoon_claim_service')
-                                    ->label('Claim Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_claim_script)),
-                                TextEntry::make('lagoon_claim_container')
-                                    ->label('Claim Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_claim_script)),
-
-                                TextEntry::make('lagoon_pre_remove_script')
-                                    ->label('Pre Remove Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_remove_script)),
-                                TextEntry::make('lagoon_pre_remove_service')
-                                    ->label('Pre Remove Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_remove_script)),
-                                TextEntry::make('lagoon_pre_remove_container')
-                                    ->label('Pre Remove Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_remove_script)),
-
-                                TextEntry::make('lagoon_remove_script')
-                                    ->label('Remove Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_remove_script)),
-                                TextEntry::make('lagoon_remove_service')
-                                    ->label('Remove Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_remove_script)),
-                                TextEntry::make('lagoon_remove_container')
-                                    ->label('Remove Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_remove_script)),
-                            ]),
+                            ->schema(self::lagoonScriptInfolistEntries()),
                     ])
                     ->collapsible()
                     ->columnSpanFull(),
@@ -785,52 +566,121 @@ class PolydockStoreAppResource extends Resource
                     ])
                     ->columnSpan(3),
 
-                \Filament\Infolists\Components\Section::make('Mid-trial Email')
-                    ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
-                            ->schema([
-                                IconEntry::make('send_midtrial_email')
-                                    ->label('Email Enabled')
-                                    ->boolean(),
-                                TextEntry::make('midtrial_email_subject')
-                                    ->label('Subject Line')
-                                    ->visible(fn ($record) => $record->send_midtrial_email)
-                                    ->placeholder('Not configured'),
-                            ]),
-                    ])
-                    ->columnSpan(3),
-
-                \Filament\Infolists\Components\Section::make('One Day Left Email')
-                    ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
-                            ->schema([
-                                IconEntry::make('send_one_day_left_email')
-                                    ->label('Email Enabled')
-                                    ->boolean(),
-                                TextEntry::make('one_day_left_email_subject')
-                                    ->label('Subject Line')
-                                    ->visible(fn ($record) => $record->send_one_day_left_email)
-                                    ->placeholder('Not configured'),
-                            ]),
-                    ])
-                    ->columnSpan(3),
-
-                \Filament\Infolists\Components\Section::make('Trial Complete Email')
-                    ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
-                            ->schema([
-                                IconEntry::make('send_trial_complete_email')
-                                    ->label('Email Enabled')
-                                    ->boolean(),
-                                TextEntry::make('trial_complete_email_subject')
-                                    ->label('Subject Line')
-                                    ->visible(fn ($record) => $record->send_trial_complete_email)
-                                    ->placeholder('Not configured'),
-                            ]),
-                    ])
-                    ->columnSpan(3),
+                ...self::trialEmailInfolistSections(),
             ])
             ->columns(3);
+    }
+
+    /** Lifecycle script prefixes shared by the form and infolist Lagoon Scripts sections. */
+    private const LAGOON_SCRIPT_STAGES = [
+        'post_deploy' => 'Post Deploy',
+        'pre_upgrade' => 'Pre Upgrade',
+        'upgrade' => 'Upgrade',
+        'post_upgrade' => 'Post Upgrade',
+        'claim' => 'Claim',
+        'pre_remove' => 'Pre Remove',
+        'remove' => 'Remove',
+    ];
+
+    /** Trial email prefixes shared by the form and infolist trial sections. */
+    private const TRIAL_EMAILS = [
+        'midtrial' => 'Mid-trial Email',
+        'one_day_left' => 'One Day Left Email',
+        'trial_complete' => 'Trial Complete Email',
+    ];
+
+    /**
+     * @return array<Section>
+     */
+    private static function lagoonScriptFormSections(): array
+    {
+        return collect(self::LAGOON_SCRIPT_STAGES)
+            ->map(fn (string $label, string $stage): Section => Section::make($label)
+                ->collapsed()
+                ->collapsible()
+                ->schema([
+                    Forms\Components\Textarea::make("lagoon_{$stage}_script")
+                        ->label('Script')
+                        ->rows(3),
+                    Grid::make(2)
+                        ->schema([
+                            Forms\Components\TextInput::make("lagoon_{$stage}_service")
+                                ->label('Service')
+                                ->placeholder('cli'),
+                            Forms\Components\TextInput::make("lagoon_{$stage}_container")
+                                ->label('Container')
+                                ->placeholder('cli'),
+                        ]),
+                ]))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<TextEntry>
+     */
+    private static function lagoonScriptInfolistEntries(): array
+    {
+        return collect(self::LAGOON_SCRIPT_STAGES)
+            ->flatMap(fn (string $label, string $stage): array => [
+                TextEntry::make("lagoon_{$stage}_script")
+                    ->label("{$label} Script")
+                    ->columnSpanFull()
+                    ->hidden(fn ($record) => blank($record->{"lagoon_{$stage}_script"})),
+                TextEntry::make("lagoon_{$stage}_service")
+                    ->label("{$label} Service")
+                    ->hidden(fn ($record) => blank($record->{"lagoon_{$stage}_script"})),
+                TextEntry::make("lagoon_{$stage}_container")
+                    ->label("{$label} Container")
+                    ->hidden(fn ($record) => blank($record->{"lagoon_{$stage}_script"})),
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<Section>
+     */
+    private static function trialEmailFormSections(): array
+    {
+        return collect(self::TRIAL_EMAILS)
+            ->map(fn (string $label, string $prefix): Section => Section::make($label)
+                ->schema([
+                    Forms\Components\Toggle::make("send_{$prefix}_email")
+                        ->label("Send {$label}"),
+                    Forms\Components\TextInput::make("{$prefix}_email_subject")
+                        ->label('Subject Line')
+                        ->maxLength(255),
+                    Forms\Components\MarkdownEditor::make("{$prefix}_email_markdown")
+                        ->label('Email Content')
+                        ->columnSpanFull(),
+                ]))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<\Filament\Infolists\Components\Section>
+     */
+    private static function trialEmailInfolistSections(): array
+    {
+        return collect(self::TRIAL_EMAILS)
+            ->map(fn (string $label, string $prefix): \Filament\Infolists\Components\Section => \Filament\Infolists\Components\Section::make($label)
+                ->schema([
+                    \Filament\Infolists\Components\Grid::make(2)
+                        ->schema([
+                            IconEntry::make("send_{$prefix}_email")
+                                ->label('Email Enabled')
+                                ->boolean(),
+                            TextEntry::make("{$prefix}_email_subject")
+                                ->label('Subject Line')
+                                ->visible(fn ($record) => $record->{"send_{$prefix}_email"})
+                                ->placeholder('Not configured'),
+                        ]),
+                ])
+                ->columnSpan(3))
+            ->values()
+            ->all();
     }
 
     #[\Override]

@@ -148,6 +148,33 @@ class PolydockApp extends PolydockAppBase
     }
 
     /**
+     * Grant the instance's deploy group access to its Lagoon project.
+     *
+     * @throws \Exception If Lagoon rejects the grant or returns no id
+     */
+    public function addDeployGroupToLagoonProject(PolydockAppInstanceInterface $appInstance): void
+    {
+        $result = $this->lagoonClient->addGroupToProject(
+            $appInstance->getKeyValue('lagoon-deploy-group-name'),
+            $appInstance->getKeyValue('lagoon-project-name')
+        );
+
+        if (isset($result['error'])) {
+            // Handle both array errors (from GraphQL) and string errors (from not found)
+            $errorMessage = is_array($result['error'])
+                ? ($result['error'][0]['message'] ?? json_encode($result['error']))
+                : $result['error'];
+            $this->error($errorMessage);
+            throw new \Exception($errorMessage);
+        }
+
+        if (! isset($result['addGroupsToProject']['id'])) {
+            $this->error('addGroupsToProject ID not found in data');
+            throw new \Exception('addGroupsToProject ID not found in data');
+        }
+    }
+
+    /**
      * Verifies that the lagoon values are available.
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
@@ -281,25 +308,6 @@ class PolydockApp extends PolydockAppBase
     }
 
     /**
-     * Verifies that the project name and id are available.
-     *
-     * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
-     * @return bool True if the project name and id are available, false otherwise
-     */
-    public function verifyLagoonProjectAndIdAreAvailable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
-    {
-        if (! $this->verifyLagoonProjectNameIsAvailable($appInstance, $logContext)) {
-            return false;
-        }
-
-        if (! $this->verifyLagoonProjectIdIsAvailable($appInstance, $logContext)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    /**
      * @throws PolydockAppInstanceStatusFlowException
      */
     public function validateLagoonPingAndThrowExceptionIfFailed(array $logContext = []): void
@@ -354,6 +362,62 @@ class PolydockApp extends PolydockAppBase
     }
 
     /**
+     * Shared skeleton of every lifecycle stage: validate the expected status
+     * (configuring the Lagoon client), mark *_RUNNING, run the stage body,
+     * and mark *_COMPLETED — mapping thrown exceptions to *_FAILED. The body
+     * may itself set a failure status and return non-null to short-circuit.
+     *
+     * @param  callable(PolydockAppInstanceInterface, array): ?PolydockAppInstanceInterface  $body
+     *                                                                                              Receives ($appInstance, $logContext). Return the instance to
+     *                                                                                              short-circuit (body already set a terminal status), or null to
+     *                                                                                              let the template mark the stage completed.
+     */
+    protected function runLifecyclePhase(
+        PolydockAppInstanceInterface $appInstance,
+        string $functionName,
+        PolydockAppInstanceStatus $expectedStatus,
+        PolydockAppInstanceStatus $runningStatus,
+        PolydockAppInstanceStatus $completedStatus,
+        PolydockAppInstanceStatus $failedStatus,
+        callable $body,
+        string $completedMessage,
+        bool $testLagoonPing = true,
+        bool $validateLagoonValues = true,
+        bool $validateLagoonProjectName = true,
+        bool $validateLagoonProjectId = true,
+    ): PolydockAppInstanceInterface {
+        $logContext = $this->getLogContext($functionName);
+        $this->info($functionName.': starting', $logContext);
+
+        $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(
+            $appInstance, $expectedStatus, $logContext,
+            $testLagoonPing, $validateLagoonValues,
+            $validateLagoonProjectName, $validateLagoonProjectId
+        );
+
+        $appInstance->setStatus($runningStatus, $runningStatus->getStatusMessage())->save();
+
+        try {
+            $shortCircuit = $body($appInstance, $logContext);
+            if ($shortCircuit !== null) {
+                return $shortCircuit;
+            }
+        } catch (\Exception $e) {
+            $this->error($functionName.' failed: '.$e->getMessage(), $logContext + [
+                'exception_class' => get_class($e),
+            ]);
+            $appInstance->setStatus($failedStatus, 'An exception occurred: '.$e->getMessage())->save();
+
+            return $appInstance;
+        }
+
+        $this->info($functionName.': completed', $logContext);
+        $appInstance->setStatus($completedStatus, $completedMessage)->save();
+
+        return $appInstance;
+    }
+
+    /**
      * Get the log context for a specific function.
      *
      * @param  string  $location  The location of the log context
@@ -402,10 +466,5 @@ class PolydockApp extends PolydockAppBase
     public function getRequiresAiInfrastructure(): bool
     {
         return $this->requiresAiInfrastructure;
-    }
-
-    public function setRequiresAiInfrastructure(bool $requiresAiInfrastructure): void
-    {
-        $this->requiresAiInfrastructure = $requiresAiInfrastructure;
     }
 }

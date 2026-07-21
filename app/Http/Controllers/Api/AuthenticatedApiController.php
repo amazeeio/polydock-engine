@@ -32,9 +32,7 @@ class AuthenticatedApiController extends Controller
      *
      * Retrieve all groups associated with a specific user's email address.
      *
-     * @group External API
-     *
-     * @subgroup Group Management
+     * @tags External API
      *
      * @queryParam email string required The email address of the user. Example: existing.user@example.com
      */
@@ -79,21 +77,10 @@ class AuthenticatedApiController extends Controller
      *
      * Create a group and optionally attach an owner by email. This supports workspace creation in upstream systems.
      *
-     * @group External API
-     *
-     * @subgroup Group Management
+     * @tags External API
      *
      * @bodyParam name string required Human-readable group name. Example: Acme Workspace
      * @bodyParam owner_email email optional Existing user email to attach as group owner. Example: owner@example.com
-     *
-     * @response 201 {
-     *  "message": "Group created",
-     *  "data": {
-     *    "id": 12,
-     *    "name": "Acme Workspace",
-     *    "slug": "acme-workspace"
-     *  }
-     * }
      */
     public function createGroup(Request $request): JsonResponse
     {
@@ -147,9 +134,7 @@ class AuthenticatedApiController extends Controller
      *
      * Retrieve a list of all available apps across all Polydock stores that can be provisioned.
      *
-     * @group External API
-     *
-     * @subgroup Store Management
+     * @tags External API
      */
     public function getStoreApps(): JsonResponse
     {
@@ -186,112 +171,7 @@ class AuthenticatedApiController extends Controller
      *
      * Retrieve a list of selected enums used in the Polydock API and their possible values/labels.
      *
-     * @group External API
-     *
-     * @subgroup Meta
-     *
-     * @response 200 {
-     *   "data": {
-     *     "PolydockAppInstanceStatus": {
-     *       "new": "New",
-     *       "pending-pre-create": "Pending pre-create",
-     *       "pre-create-running": "Pre-create running",
-     *       "pre-create-completed": "Pre-create completed",
-     *       "pre-create-failed": "Pre-create failed",
-     *       "pending-create": "Pending create",
-     *       "create-running": "Create running",
-     *       "create-completed": "Create completed",
-     *       "create-failed": "Create failed",
-     *       "pending-post-create": "Pending post-create",
-     *       "post-create-running": "Post-create running",
-     *       "post-create-completed": "Post-create completed",
-     *       "post-create-failed": "Post-create failed",
-     *       "pending-pre-deploy": "Pending pre-deploy",
-     *       "pre-deploy-running": "Pre-deploy running",
-     *       "pre-deploy-completed": "Pre-deploy completed",
-     *       "pre-deploy-failed": "Pre-deploy failed",
-     *       "pending-deploy": "Pending deploy",
-     *       "deploy-running": "Deploy running",
-     *       "deploy-completed": "Deploy completed",
-     *       "deploy-failed": "Deploy failed",
-     *       "pending-post-deploy": "Pending post-deploy",
-     *       "post-deploy-running": "Post-deploy running",
-     *       "post-deploy-completed": "Post-deploy completed",
-     *       "post-deploy-failed": "Post-deploy failed",
-     *       "running-healthy-unclaimed": "Running healthy (unclaimed)",
-     *       "running-healthy-claimed": "Running healthy (claimed)",
-     *       "running-unresponsive": "Running unresponsive",
-     *       "running-unhealthy": "Running unhealthy",
-     *       "pending-pre-upgrade": "Pending pre-upgrade",
-     *       "pre-upgrade-running": "Pre-upgrade running",
-     *       "pre-upgrade-completed": "Pre-upgrade completed",
-     *       "pre-upgrade-failed": "Pre-upgrade failed",
-     *       "pending-upgrade": "Pending upgrade",
-     *       "upgrade-running": "Upgrade running",
-     *       "upgrade-completed": "Upgrade completed",
-     *       "upgrade-failed": "Upgrade failed",
-     *       "pending-post-upgrade": "Pending post-upgrade",
-     *       "post-upgrade-running": "Post-upgrade running",
-     *       "post-upgrade-completed": "Post-upgrade completed",
-     *       "post-upgrade-failed": "Post-upgrade failed",
-     *       "pending-pre-remove": "Pending pre-remove",
-     *       "pre-remove-running": "Pre-remove running",
-     *       "pre-remove-completed": "Pre-remove completed",
-     *       "pre-remove-failed": "Pre-remove failed",
-     *       "pending-remove": "Pending remove",
-     *       "remove-running": "Remove running",
-     *       "remove-completed": "Remove completed",
-     *       "remove-failed": "Remove failed",
-     *       "pending-post-remove": "Pending post-remove",
-     *       "post-remove-running": "Post-remove running",
-     *       "post-remove-completed": "Post-remove completed",
-     *       "post-remove-failed": "Post-remove failed",
-     *       "pending-polydock-claim": "Pending polydock claim",
-     *       "polydock-claim-running": "Polydock claim running",
-     *       "polydock-claim-completed": "Polydock claim completed",
-     *       "polydock-claim-failed": "Polydock claim failed",
-     *       "removed": "Removed",
-     *       "pending-purge": "Pending purge",
-     *       "purge-running": "Purge running",
-     *       "purge-failed": "Purge failed"
-     *     },
-     *     "PolydockStoreAppStatus": {
-     *       "available": "Available",
-     *       "unavailable": "Unavailable"
-     *     },
-     *     "PolydockStoreStatus": {
-     *       "unavailable": "Unavailable",
-     *       "public": "Public",
-     *       "private": "Private"
-     *     },
-     *     "PolydockStoreWebhookCallStatus": {
-     *       "pending": "Pending",
-     *       "processing": "Processing",
-     *       "success": "Success",
-     *       "failed": "Failed"
-     *     },
-     *     "PolydockVariableScope": {
-     *       "global": "Global",
-     *       "store": "Store",
-     *       "store-app": "Store App",
-     *       "instance": "Instance"
-     *     },
-     *     "UserGroupRole": {
-     *       "admin": "Admin",
-     *       "member": "Member"
-     *     },
-     *     "UserRemoteRegistrationStatus": {
-     *       "pending": "Pending",
-     *       "processing": "Processing",
-     *       "completed": "Completed",
-     *       "failed": "Failed"
-     *     },
-     *     "UserRemoteRegistrationType": {
-     *       "new": "New",
-     *       "existing": "Existing"
-     *     }
-     *   }
-     * }
+     * @tags External API
      */
     public function getEnums(): JsonResponse
     {
@@ -314,9 +194,7 @@ class AuthenticatedApiController extends Controller
      *
      * Retrieve all provisioned instances tied to a specific user's email address.
      *
-     * @group External API
-     *
-     * @subgroup Instance Management
+     * @tags External API
      *
      * @queryParam email string optional Limit results to groups associated with this email address. Example: existing.user@example.com
      * @queryParam group_id integer optional Limit results to a specific group id the user belongs to. Example: 12
@@ -336,20 +214,7 @@ class AuthenticatedApiController extends Controller
             ]);
         }
 
-        if ($request->filled('group_id') && $request->filled('group_slug')) {
-            throw ValidationException::withMessages([
-                'group_id' => ['Only one of group_id or group_slug may be provided.'],
-                'group_slug' => ['Only one of group_id or group_slug may be provided.'],
-            ]);
-        }
-
-        $targetGroup = null;
-
-        if (isset($validated['group_id'])) {
-            $targetGroup = UserGroup::findOrFail($validated['group_id']);
-        } elseif (isset($validated['group_slug'])) {
-            $targetGroup = UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
-        }
+        $targetGroup = $this->resolveExistingGroupFromRequest($request, required: false);
 
         /** @var User $actor */
         $actor = $request->user();
@@ -411,9 +276,7 @@ class AuthenticatedApiController extends Controller
      *
      * Deploy a new PolydockStoreApp instance. If the user associated with the email does not exist, a new user account will automatically be created using the provided first and last names. For existing users, names will be updated only if current values are placeholders or empty.
      *
-     * @group External API
-     *
-     * @subgroup Instance Management
+     * @tags External API
      *
      * @bodyParam email email required The email address of the user. Example: new.user@example.com
      * @bodyParam first_name string optional The first name of the user. Example: Jane
@@ -435,16 +298,6 @@ class AuthenticatedApiController extends Controller
      * @bodyParam secret.vector.db_user string optional The database username. Example: admin
      * @bodyParam secret.vector.db_pass string optional The database password. Example: secret-pass
      * @bodyParam config object optional Key-value overrides or configurations for this individual deployment. Example: {"lagoon-auto-idle": "1"}
-     *
-     * @response 201 {
-     *  "message": "Instance provisioned",
-     *  "data": {
-     *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
-     *    "name": "My awesome instance",
-     *    "label": "Acme Corp trial",
-     *    "status": "new"
-     *  }
-     * }
      */
     public function createInstance(Request $request): JsonResponse
     {
@@ -617,9 +470,7 @@ class AuthenticatedApiController extends Controller
      *
      * Reassign an existing app instance to another group. Intended for migration and backfill workflows.
      *
-     * @group External API
-     *
-     * @subgroup Instance Management
+     * @tags External API
      *
      * @urlParam uuid string required The UUID of the instance. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
      *
@@ -633,24 +484,9 @@ class AuthenticatedApiController extends Controller
             'group_slug' => 'nullable|string|exists:user_groups,slug',
         ]);
 
-        if (! $request->filled('group_id') && ! $request->filled('group_slug')) {
-            throw ValidationException::withMessages([
-                'group_id' => ['Either group_id or group_slug is required.'],
-            ]);
-        }
-
-        if ($request->filled('group_id') && $request->filled('group_slug')) {
-            throw ValidationException::withMessages([
-                'group_id' => ['Only one of group_id or group_slug may be provided.'],
-                'group_slug' => ['Only one of group_id or group_slug may be provided.'],
-            ]);
-        }
+        $group = $this->resolveExistingGroupFromRequest($request, required: true);
 
         $instance = PolydockAppInstance::where('uuid', $uuid)->firstOrFail();
-
-        $group = isset($validated['group_id'])
-            ? UserGroup::findOrFail($validated['group_id'])
-            : UserGroup::where('slug', $validated['group_slug'])->firstOrFail();
 
         $this->authorize('assignToGroup', [$instance, $group]);
 
@@ -691,29 +527,9 @@ class AuthenticatedApiController extends Controller
      *
      * Retrieve the current provisioning or health status of a specific instance using its UUID.
      *
-     * @group External API
-     *
-     * @subgroup Instance Management
+     * @tags External API
      *
      * @urlParam uuid string required The UUID of the instance. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
-     *
-     * @response {
-     *  "data": {
-     *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
-     *    "name": "my-instance",
-     *    "status": "running-healthy-claimed",
-     *    "status_message": "Instance is running smoothly.",
-     *    "app_url": "https://my-instance.example.com",
-     *    "store_app": {
-     *      "uuid": "7b206eb2-1d98-54db-0bd9-83898gd6f426",
-     *      "name": "My App",
-     *      "git_url": "git@github.com:example/repo.git"
-     *    },
-     *    "created_at": "2025-01-01T00:00:00.000000Z",
-     *    "lagoon_claim_script": "/lagoon/polydock_claim.sh",
-     *    "lagoon_project_name": "example-project"
-     *  }
-     * }
      */
     public function getInstanceStatus(string $uuid): JsonResponse
     {
@@ -754,19 +570,9 @@ class AuthenticatedApiController extends Controller
      *
      * Remove an app instance via its Unique Identifier. This will asynchronously initiate the removal process.
      *
-     * @group External API
-     *
-     * @subgroup Instance Management
+     * @tags External API
      *
      * @urlParam uuid string required The UUID of the instance to delete. Example: 3a105da1-9c87-43ca-9ac8-72787fc5e315
-     *
-     * @response {
-     *  "message": "Instance removal initiated",
-     *  "data": {
-     *    "uuid": "3a105da1-9c87-43ca-9ac8-72787fc5e315",
-     *    "status": "pending-pre-remove"
-     *  }
-     * }
      */
     public function deleteInstance(Request $request, string $uuid): JsonResponse
     {
@@ -797,14 +603,41 @@ class AuthenticatedApiController extends Controller
         ]);
     }
 
-    private function resolveTargetGroup(Request $request, User $user): UserGroup
+    /**
+     * Resolve a group from the mutually-exclusive group_id / group_slug
+     * inputs — the shared read-path half of group resolution.
+     */
+    private function resolveExistingGroupFromRequest(Request $request, bool $required): ?UserGroup
     {
+        if ($request->filled('group_id') && $request->filled('group_slug')) {
+            throw ValidationException::withMessages([
+                'group_id' => ['Only one of group_id or group_slug may be provided.'],
+                'group_slug' => ['Only one of group_id or group_slug may be provided.'],
+            ]);
+        }
+
         if ($request->filled('group_id')) {
             return UserGroup::findOrFail($request->integer('group_id'));
         }
 
         if ($request->filled('group_slug')) {
             return UserGroup::where('slug', $request->string('group_slug')->toString())->firstOrFail();
+        }
+
+        if ($required) {
+            throw ValidationException::withMessages([
+                'group_id' => ['Either group_id or group_slug is required.'],
+            ]);
+        }
+
+        return null;
+    }
+
+    private function resolveTargetGroup(Request $request, User $user): UserGroup
+    {
+        $existing = $this->resolveExistingGroupFromRequest($request, required: false);
+        if ($existing) {
+            return $existing;
         }
 
         if ($request->filled('group_name')) {

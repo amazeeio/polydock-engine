@@ -45,9 +45,4 @@ enum UserRemoteRegistrationStatusEnum: string implements HasColor, HasIcon, HasL
             self::FAILED => 'heroicon-o-x-circle',
         };
     }
-
-    public static function getValues(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
 }

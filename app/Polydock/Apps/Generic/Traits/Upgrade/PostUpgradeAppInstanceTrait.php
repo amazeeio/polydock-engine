@@ -23,47 +23,33 @@ trait PostUpgradeAppInstanceTrait
     public function postUpgradeAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $functionName = __FUNCTION__;
-        $logContext = $this->getLogContext($functionName);
-        $testLagoonPing = true;
-        $validateLagoonValues = true;
-        $validateLagoonProjectName = true;
-        $validateLagoonProjectId = true;
 
-        $this->info($functionName.': starting', $logContext);
-
-        // Throws PolydockAppInstanceStatusFlowException
-        $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(
+        return $this->runLifecyclePhase(
             $appInstance,
+            $functionName,
             PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
-            $logContext,
-            $testLagoonPing,
-            $validateLagoonValues,
-            $validateLagoonProjectName,
-            $validateLagoonProjectId
-        );
-
-        $projectName = $appInstance->getKeyValue('lagoon-project-name');
-
-        $this->info($functionName.': starting for project: '.$projectName, $logContext);
-        $appInstance->setStatus(
             PolydockAppInstanceStatus::POST_UPGRADE_RUNNING,
-            PolydockAppInstanceStatus::POST_UPGRADE_RUNNING->getStatusMessage()
-        )->save();
+            PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED,
+            PolydockAppInstanceStatus::POST_UPGRADE_FAILED,
+            function (PolydockAppInstanceInterface $appInstance, array $logContext) use ($functionName): ?PolydockAppInstanceInterface {
+                $projectName = $appInstance->getKeyValue('lagoon-project-name');
 
-        $appInstance->warning('TODO: Implement post-upgrade logic', $logContext);
-        try {
-            $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_LAST_UPGRADED_DATE', date('Y-m-d'), 'GLOBAL');
-            $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_LAST_UPGRADED_TIME', date('H:i:s'), 'GLOBAL');
-        } catch (\Exception $e) {
-            $this->error($e->getMessage());
-            $appInstance->setStatus(PolydockAppInstanceStatus::POST_UPGRADE_FAILED, $e->getMessage())->save();
+                $this->info($functionName.': starting for project: '.$projectName, $logContext);
 
-            return $appInstance;
-        }
+                $appInstance->warning('TODO: Implement post-upgrade logic', $logContext);
+                try {
+                    $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_LAST_UPGRADED_DATE', date('Y-m-d'), 'GLOBAL');
+                    $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_APP_LAST_UPGRADED_TIME', date('H:i:s'), 'GLOBAL');
+                } catch (\Exception $e) {
+                    $this->error($e->getMessage());
+                    $appInstance->setStatus(PolydockAppInstanceStatus::POST_UPGRADE_FAILED, $e->getMessage())->save();
 
-        $this->info($functionName.': completed', $logContext);
-        $appInstance->setStatus(PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED, 'Post-upgrade completed')->save();
+                    return $appInstance;
+                }
 
-        return $appInstance;
+                return null;
+            },
+            'Post-upgrade completed',
+        );
     }
 }
