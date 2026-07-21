@@ -14,8 +14,10 @@ return new class extends Migration
         if (! Schema::hasTable(self::TABLE)) {
             Schema::create(self::TABLE, function (Blueprint $table) {
                 $table->id();
+                // Explicit short name: the auto-generated one exceeds MySQL's
+                // 64-char identifier limit.
                 $table->foreignId('polydock_app_instance_id')
-                    ->constrained('polydock_app_instances')
+                    ->constrained(table: 'polydock_app_instances', indexName: 'papist_instance_fk')
                     ->cascadeOnDelete();
                 // Null for the row recorded when an instance is created as NEW.
                 $table->string('from_status')->nullable();
@@ -49,7 +51,7 @@ return new class extends Migration
                 ->delete();
 
             Schema::table(self::TABLE, function (Blueprint $table) {
-                $table->foreign('polydock_app_instance_id')
+                $table->foreign('polydock_app_instance_id', 'papist_instance_fk')
                     ->references('id')
                     ->on('polydock_app_instances')
                     ->cascadeOnDelete();
