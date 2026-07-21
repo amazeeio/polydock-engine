@@ -55,6 +55,10 @@ return [
         'purge_poll_interval_minutes' => (int) env('POLYDOCK_PURGE_POLL_INTERVAL', 10),
         'purge_max_poll_attempts' => (int) env('POLYDOCK_PURGE_MAX_POLLS', 144),
         'purge_max_per_run' => (int) env('POLYDOCK_PURGE_MAX_PER_RUN', 25),
+        // Failed instances (create/deploy/claim/remove failures) are swept
+        // into the remove/purge pipeline after this many days.
+        'failed_instance_retention_days' => (int) env('POLYDOCK_FAILED_RETENTION_DAYS', 7),
+        'failed_sweep_max_per_run' => (int) env('POLYDOCK_FAILED_SWEEP_MAX_PER_RUN', 25),
     ],
     'deploy' => [
         // Max instances a single scheduled-redeploy tick will trigger. Combined
