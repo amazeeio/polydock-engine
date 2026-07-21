@@ -77,6 +77,7 @@ return [
     'register_simulate_round_robin' => env('POLYDOCK_REGISTER_SIMULATE_ROUND_ROBIN', false),
     'register_simulate_error' => env('POLYDOCK_REGISTER_SIMULATE_ERROR', false),
     'lagoon_deploy_private_key_file' => env('POLYDOCK_LAGOON_DEPLOY_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-deploy-private-key'),
+    'ftlagoon_private_key_content' => env('FTLAGOON_PRIVATE_KEY_CONTENT'),
     'service_providers_singletons' => $serviceProviderSingletons,
     'lagoon_cores' => [
         'http://lagoon-api.172.22.0.240.nip.io/graphql' => [
