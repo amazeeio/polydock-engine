@@ -51,6 +51,7 @@ class CreatePolydockStoreApp extends CreateRecord
             (int) ($data['refresh_unallocated_instances_after_days'] ?? 7),
         );
         $appConfig['project_naming_mode'] = (string) ($data['project_naming_mode'] ?? PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN);
+        $appConfig['project_naming_prefix'] = (string) ($data['project_naming_prefix'] ?? '');
         $appConfig['project_naming_adjectives'] = array_values((array) ($data['project_naming_adjectives'] ?? []));
         $appConfig['project_naming_nouns'] = array_values((array) ($data['project_naming_nouns'] ?? []));
         $appConfig['lagoon_custom_route_enabled'] = (bool) ($data['lagoon_custom_route_enabled'] ?? false);
@@ -63,6 +64,7 @@ class CreatePolydockStoreApp extends CreateRecord
             $data['refresh_unallocated_instances'],
             $data['refresh_unallocated_instances_after_days'],
             $data['project_naming_mode'],
+            $data['project_naming_prefix'],
             $data['project_naming_adjectives'],
             $data['project_naming_nouns'],
             $data['lagoon_custom_route_enabled'],

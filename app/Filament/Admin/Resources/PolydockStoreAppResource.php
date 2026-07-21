@@ -50,6 +50,7 @@ class PolydockStoreAppResource extends Resource
                     ->label('Store')
                     ->options(PolydockStore::all()->pluck('name', 'id'))
                     ->required()
+                    ->live()
                     ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
                     ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
                 Forms\Components\Select::make('polydock_app_class')
@@ -145,6 +146,16 @@ class PolydockStoreAppResource extends Resource
                             ->default(PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN)
                             ->live()
                             ->columnSpanFull(),
+                        Forms\Components\TextInput::make('project_naming_prefix')
+                            ->label('App Prefix')
+                            ->regex('/^[a-z0-9]+(-[a-z0-9]+)*$/')
+                            ->maxLength(30)
+                            ->helperText('Optional. Prepended to the store prefix: <app-prefix>-<store-prefix>-<adjective>-<noun>-<id>. Leave empty to use the store prefix alone.')
+                            ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
+                        Forms\Components\Placeholder::make('store_project_prefix')
+                            ->label('Store Prefix (set on the store, not editable here)')
+                            ->content(fn (Get $get): string => PolydockStore::find($get('polydock_store_id'))->lagoon_deploy_project_prefix ?? '—')
+                            ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
                         Forms\Components\TagsInput::make('project_naming_adjectives')
                             ->label('Adjective Word List')
                             ->placeholder('e.g. snappy, zesty, jolly')

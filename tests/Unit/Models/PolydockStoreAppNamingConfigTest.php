@@ -45,6 +45,19 @@ class PolydockStoreAppNamingConfigTest extends TestCase
         $this->assertFalse($app->needs_more_unallocated_instances);
     }
 
+    public function test_naming_prefix_is_prepended_to_store_prefix(): void
+    {
+        $app = $this->makeStoreApp(['project_naming_prefix' => 'aio-saas']);
+
+        $this->assertEquals('aio-saas-testapp', $app->lagoon_deploy_project_prefix);
+    }
+
+    public function test_empty_naming_prefix_falls_back_to_store_prefix(): void
+    {
+        $this->assertEquals('testapp', $this->makeStoreApp()->lagoon_deploy_project_prefix);
+        $this->assertEquals('testapp', $this->makeStoreApp(['project_naming_prefix' => ' - '])->lagoon_deploy_project_prefix);
+    }
+
     public function test_word_lists_are_cleaned(): void
     {
         $app = $this->makeStoreApp([
