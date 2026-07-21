@@ -62,6 +62,12 @@ Schedule::command('polydock:mark-stuck-instances-failed --threshold=30')
     ->everyFifteenMinutes()
     ->withoutOverlapping();
 
+// ///// Stale Failed Instance Sweep ///////
+Schedule::command('polydock:remove-stale-failed-instances')
+    ->hourlyAt(50)
+    ->withoutOverlapping()
+    ->onOneServer();
+
 // ///// Project Purge (full Lagoon project deletion after grace period) ///////
 Schedule::command('polydock:dispatch-project-purge')
     ->everyTenMinutes()

@@ -7,11 +7,18 @@ namespace App\Models;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 
 /**
  * One row per status change of an app instance — the timing source of truth
  * for per-stage durations (the activity log deliberately does not record
  * status). Rows are immutable and cascade-delete with the instance.
+ *
+ * @property int $id
+ * @property int $polydock_app_instance_id
+ * @property PolydockAppInstanceStatus|null $from_status
+ * @property PolydockAppInstanceStatus $to_status
+ * @property Carbon $created_at
  */
 class PolydockAppInstanceStatusTransition extends Model
 {
