@@ -40,7 +40,7 @@ class RemoveUnclaimedAppInstancesCommand extends BaseCommand
 
             // Build the query for unclaimed instances older than specified days
             $query = PolydockAppInstance::where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
-                ->whereDate('created_at', '<=', now()->subDay());
+                ->whereDate('created_at', '<=', now()->subDays($days));
 
             // Add app filter if specified
             if ($appId) {
