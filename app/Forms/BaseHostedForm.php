@@ -92,6 +92,17 @@ abstract class BaseHostedForm implements HostedFormInterface
     #[\Override]
     public function getRecaptchaEnabled(): bool
     {
+        // Non-production Lagoon environments (dev/PR) aren't registered
+        // domains for the reCAPTCHA site key, so the widget would only render
+        // "Invalid domain for site key" — skip it there entirely. Fail closed:
+        // only an EXPLICIT non-production type disables it; when the variable
+        // is absent, RECAPTCHA_ENABLED alone governs.
+        $lagoonEnvironmentType = config('services.recaptcha.lagoon_environment_type');
+
+        if ($lagoonEnvironmentType !== null && $lagoonEnvironmentType !== 'production') {
+            return false;
+        }
+
         return (bool) config('services.recaptcha.enabled', true);
     }
 

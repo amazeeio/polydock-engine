@@ -28,9 +28,9 @@
     }
 
     .notice-box {
-        background-color: rgba(216, 17, 89, 0.05);
-        border: 1px solid rgba(216, 17, 89, 0.2);
-        color: var(--color-accent);
+        background-color: rgba(59, 130, 246, 0.06);
+        border: 1px solid rgba(59, 130, 246, 0.25);
+        color: #1d4ed8;
         font-size: 0.9rem;
         font-weight: 500;
         padding: 0.75rem 1rem;
