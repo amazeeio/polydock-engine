@@ -6,6 +6,7 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
 use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Forms\DrupalAIDemoDrupalOrgForm;
+use App\Forms\DrupalAIInitiativePartnersDemoForm;
 use App\Forms\HostedFormInterface;
 use App\Models\PolydockStore;
 use App\Models\UserRemoteRegistration;
@@ -25,6 +26,7 @@ class FormController extends Controller
     {
         $forms = [
             'drupal-ai-demo' => DrupalAIDemoDrupalOrgForm::class,
+            'drupal-ai-partners-demo' => DrupalAIInitiativePartnersDemoForm::class,
         ];
 
         if (! isset($forms[$slug])) {

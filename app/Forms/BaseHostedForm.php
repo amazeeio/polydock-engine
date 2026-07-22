@@ -2,8 +2,43 @@
 
 namespace App\Forms;
 
+use App\Enums\PolydockStoreAppStatusEnum;
+use App\Enums\PolydockStoreStatusEnum;
+use App\Rules\BannedEmail;
+use Illuminate\Validation\Rule;
+
 abstract class BaseHostedForm implements HostedFormInterface
 {
+    /**
+     * Baseline rules shared by every hosted form: contact details and a
+     * publicly-available trial app. Concrete forms merge their extra fields
+     * on top via array_merge(parent::getValidationRules(), [...]).
+     */
+    #[\Override]
+    public function getValidationRules(): array
+    {
+        return [
+            'first_name' => ['required', 'string', 'max:100'],
+            'last_name' => ['required', 'string', 'max:100'],
+            'email' => ['required', 'email', new BannedEmail],
+            'trial_app' => [
+                'required',
+                'uuid',
+                Rule::exists('polydock_store_apps', 'uuid')
+                    ->where('status', PolydockStoreAppStatusEnum::AVAILABLE->value)
+                    ->where('available_for_trials', true)
+                    ->where(function ($query) {
+                        $query->whereExists(function ($subQuery) {
+                            $subQuery->selectRaw(1)
+                                ->from('polydock_stores')
+                                ->whereColumn('polydock_stores.id', 'polydock_store_apps.polydock_store_id')
+                                ->where('polydock_stores.status', PolydockStoreStatusEnum::PUBLIC->value);
+                        });
+                    }),
+            ],
+        ];
+    }
+
     #[\Override]
     public function getSeoTitle(): string
     {
