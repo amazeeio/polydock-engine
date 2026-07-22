@@ -44,7 +44,6 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
         $payload = parent::transformPayload($validatedData);
 
         // Add custom properties specific to the Drupal AI demo setup
-        $payload['company_name'] = $validatedData['organization'] ?? '';
         $payload['instance_config_stage_in_ai_adoption'] = $validatedData['stage_in_ai_adoption'] ?? '';
         $payload['instance_config_interest_in_drupal_ai'] = $validatedData['interest_in_drupal_ai'] ?? '';
         $payload['instance_config_country'] = $validatedData['country'] ?? '';

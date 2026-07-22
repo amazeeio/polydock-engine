@@ -144,6 +144,9 @@ abstract class BaseHostedForm implements HostedFormInterface
             'first_name' => $validatedData['first_name'] ?? '',
             'last_name' => $validatedData['last_name'] ?? '',
             'organization' => $validatedData['organization'] ?? '',
+            // ProcessUserRemoteRegistration stores the company on the
+            // allocated instance from this key, not 'organization'.
+            'company_name' => $validatedData['organization'] ?? '',
             'job_title' => $validatedData['job_title'] ?? '',
             'register_type' => 'REQUEST_TRIAL',
             'aup_and_privacy_acceptance' => 1,

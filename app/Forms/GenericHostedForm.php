@@ -48,6 +48,7 @@ class GenericHostedForm extends BaseHostedForm
     public function getValidationRules(): array
     {
         return array_merge(parent::getValidationRules(), [
+            'organization' => ['nullable', 'string', 'max:150'],
             'accept_terms' => ['accepted'],
         ]);
     }

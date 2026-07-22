@@ -160,6 +160,7 @@ class DrupalAIPartnersDemoFormTest extends TestCase
             'first_name' => 'John',
             'last_name' => 'Doe',
             'email' => 'john.doe@example.com',
+            'organization' => 'Acme Corp',
             'accept_terms' => '1',
             'trial_app' => $this->storeApp->uuid,
             'recaptcha' => 'valid-mock-token',
@@ -180,6 +181,8 @@ class DrupalAIPartnersDemoFormTest extends TestCase
         $registration = UserRemoteRegistration::first();
         $this->assertEquals('John', $registration->getRequestValue('first_name'));
         $this->assertEquals('Doe', $registration->getRequestValue('last_name'));
+        $this->assertEquals('Acme Corp', $registration->getRequestValue('organization'));
+        $this->assertEquals('Acme Corp', $registration->getRequestValue('company_name'));
         $this->assertEquals($this->storeApp->uuid, $registration->getRequestValue('trial_app'));
 
         Queue::assertPushed(ProcessUserRemoteRegistration::class);
