@@ -2,8 +2,15 @@
 
 namespace App\Forms;
 
+use App\Models\PolydockHostedForm;
+
 interface HostedFormInterface
 {
+    /**
+     * Get the database record this form instance is serving.
+     */
+    public function getHostedForm(): PolydockHostedForm;
+
     /**
      * Get the unique slug for the form.
      */
@@ -28,6 +35,12 @@ interface HostedFormInterface
      * Get the validation rules for the form payload.
      */
     public function getValidationRules(): array;
+
+    /**
+     * Get the store app UUIDs this form is allowed to provision.
+     * An empty list means the form cannot provision anything.
+     */
+    public function getAllowedTrialAppUuids(): array;
 
     /**
      * Get whitelisted parent domains allowed to iframe this form.
