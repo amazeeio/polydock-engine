@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
 use App\Enums\UserRemoteRegistrationStatusEnum;
-use App\Forms\DrupalAIDemoDrupalOrgForm;
-use App\Forms\DrupalAIInitiativePartnersDemoForm;
 use App\Forms\HostedFormInterface;
+use App\Models\PolydockHostedForm;
 use App\Models\PolydockStore;
 use App\Models\UserRemoteRegistration;
 use Illuminate\Http\JsonResponse;
@@ -20,20 +19,32 @@ use Symfony\Component\HttpFoundation\Response;
 class FormController extends Controller
 {
     /**
-     * Map slugs to their concrete HostedFormInterface classes.
+     * Resolve an enabled admin-managed form record by slug and instantiate
+     * its HostedFormInterface class around it.
      */
     private function getFormBySlug(string $slug): ?HostedFormInterface
     {
-        $forms = [
-            'drupal-ai-demo' => DrupalAIDemoDrupalOrgForm::class,
-            'drupal-ai-partners-demo' => DrupalAIInitiativePartnersDemoForm::class,
-        ];
+        $record = PolydockHostedForm::query()
+            ->where('slug', $slug)
+            ->where('enabled', true)
+            ->first();
 
-        if (! isset($forms[$slug])) {
+        if (! $record) {
             return null;
         }
 
-        return app($forms[$slug]);
+        $class = $record->form_class;
+
+        if (! class_exists($class) || ! is_subclass_of($class, HostedFormInterface::class)) {
+            Log::error('Hosted form record references an invalid form class', [
+                'slug' => $slug,
+                'form_class' => $class,
+            ]);
+
+            return null;
+        }
+
+        return new $class($record);
     }
 
     /**
@@ -47,13 +58,18 @@ class FormController extends Controller
             abort(404, 'Form not found.');
         }
 
-        // Fetch public stores with available trial apps
+        // Fetch public stores offering available trial apps this form may
+        // provision; stores with none of the form's apps are not listed.
+        $allowedApps = function ($query) use ($form) {
+            $query->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
+                ->where('available_for_trials', true)
+                ->whereIn('uuid', $form->getAllowedTrialAppUuids());
+        };
+
         $regions = PolydockStore::query()
             ->where('status', PolydockStoreStatusEnum::PUBLIC)
-            ->with(['apps' => function ($query) {
-                $query->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
-                    ->where('available_for_trials', true);
-            }])
+            ->whereHas('apps', $allowedApps)
+            ->with(['apps' => $allowedApps])
             ->get();
 
         $regionsData = $regions->map(fn ($store) => [

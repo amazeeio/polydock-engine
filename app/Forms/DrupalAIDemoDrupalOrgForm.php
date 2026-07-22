@@ -7,30 +7,6 @@ use Illuminate\Validation\Rule;
 class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
 {
     #[\Override]
-    public function getSlug(): string
-    {
-        return 'drupal-ai-demo';
-    }
-
-    #[\Override]
-    public function getTitle(): string
-    {
-        return 'Private Drupal AI Demo on drupal.org';
-    }
-
-    #[\Override]
-    public function getSeoTitle(): string
-    {
-        return 'Drupal AI Demo on drupal.org by amazee.ai';
-    }
-
-    #[\Override]
-    public function getSeoDescription(): string
-    {
-        return 'Try Drupal AI with our custom demo experiences designed for developers and content editors new to Drupal AI on drupal.org.';
-    }
-
-    #[\Override]
     public function getViewName(): string
     {
         return 'forms.drupal-ai-demo';

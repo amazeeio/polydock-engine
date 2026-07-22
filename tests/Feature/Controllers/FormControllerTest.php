@@ -5,7 +5,9 @@ namespace Tests\Feature\Controllers;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
 use App\Enums\UserRemoteRegistrationStatusEnum;
+use App\Forms\DrupalAIDemoDrupalOrgForm;
 use App\Jobs\ProcessUserRemoteRegistration;
+use App\Models\PolydockHostedForm;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
@@ -22,6 +24,8 @@ class FormControllerTest extends TestCase
     use RefreshDatabase;
 
     protected PolydockStoreApp $storeApp;
+
+    protected PolydockHostedForm $hostedForm;
 
     #[\Override]
     protected function setUp(): void
@@ -64,12 +68,32 @@ class FormControllerTest extends TestCase
             'author' => 'Test Author',
             'description' => 'Test Description',
         ]);
+
+        $this->hostedForm = PolydockHostedForm::create([
+            'slug' => 'drupal-ai-demo',
+            'form_class' => DrupalAIDemoDrupalOrgForm::class,
+            'enabled' => true,
+            'title' => 'Private Drupal AI Demo on drupal.org',
+            'seo_title' => 'Drupal AI Demo on drupal.org by amazee.ai',
+        ]);
+
+        $this->hostedForm->storeApps()->attach($this->storeApp);
     }
 
     #[Test]
     public function it_aborts_with_404_for_unknown_form_slugs()
     {
         $response = $this->get('/f/unknown-form-slug');
+
+        $response->assertStatus(404);
+    }
+
+    #[Test]
+    public function it_aborts_with_404_for_disabled_forms()
+    {
+        $this->hostedForm->update(['enabled' => false]);
+
+        $response = $this->get('/f/drupal-ai-demo');
 
         $response->assertStatus(404);
     }
@@ -287,6 +311,112 @@ class FormControllerTest extends TestCase
         $response->assertJson([
             'status' => 'pending',
         ]);
+    }
+
+    #[Test]
+    public function it_rejects_submitting_form_with_an_app_not_in_the_forms_allowlist()
+    {
+        // Available, trial-enabled app in a public store — but not allowed for this form
+        $otherApp = PolydockStoreApp::create([
+            'polydock_store_id' => $this->storeApp->polydock_store_id,
+            'name' => 'Internal Dependency Track',
+            'polydock_app_class' => PolydockApp::class,
+            'lagoon_deploy_git' => 'git@github.com:example/other-app.git',
+            'lagoon_deploy_branch' => 'main',
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
+            'available_for_trials' => true,
+            'support_email' => 'support@example.com',
+            'author' => 'Test Author',
+            'description' => 'Test Description',
+        ]);
+
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'trial_app' => $otherApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertStringContainsString('selected trial app is invalid', $response->json('message'));
+    }
+
+    #[Test]
+    public function it_does_not_expose_apps_outside_the_forms_allowlist_when_rendering()
+    {
+        PolydockStoreApp::create([
+            'polydock_store_id' => $this->storeApp->polydock_store_id,
+            'name' => 'Internal Dependency Track',
+            'polydock_app_class' => PolydockApp::class,
+            'lagoon_deploy_git' => 'git@github.com:example/other-app.git',
+            'lagoon_deploy_branch' => 'main',
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
+            'available_for_trials' => true,
+            'support_email' => 'support@example.com',
+            'author' => 'Test Author',
+            'description' => 'Test Description',
+        ]);
+
+        $response = $this->get('/f/drupal-ai-demo');
+
+        $response->assertStatus(200);
+        $response->assertSee('CKEditor Demo');
+        $response->assertDontSee('Internal Dependency Track');
+    }
+
+    #[Test]
+    public function it_hides_and_rejects_attached_apps_that_are_no_longer_available()
+    {
+        // Attached to the form, but the app itself was disabled afterwards
+        $this->storeApp->update(['status' => PolydockStoreAppStatusEnum::UNAVAILABLE]);
+
+        $this->get('/f/drupal-ai-demo')
+            ->assertStatus(200)
+            ->assertDontSee('CKEditor Demo');
+
+        $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ])->assertStatus(422);
+    }
+
+    #[Test]
+    public function it_hides_and_rejects_attached_apps_that_are_no_longer_available_for_trials()
+    {
+        $this->storeApp->update(['available_for_trials' => false]);
+
+        $this->get('/f/drupal-ai-demo')
+            ->assertStatus(200)
+            ->assertDontSee('CKEditor Demo');
+
+        $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ])->assertStatus(422);
+    }
+
+    #[Test]
+    public function it_rejects_all_submissions_when_the_form_has_no_allowed_apps()
+    {
+        $this->hostedForm->storeApps()->detach();
+
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'trial_app' => $this->storeApp->uuid,
+            'recaptcha' => 'valid-mock-token',
+        ]);
+
+        $response->assertStatus(422);
+        $this->assertStringContainsString('selected trial app is invalid', $response->json('message'));
     }
 
     #[Test]

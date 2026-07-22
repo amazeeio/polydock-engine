@@ -67,20 +67,24 @@
 </style>
 @endsection
 
+{{-- Description, notice, and disclaimer are admin-authored HTML from the PolydockHostedForm record --}}
 @section('intro')
 <h1 class="form-heading">{{ $form->getTitle() }}</h1>
-<p class="form-description">
-    You can spin up a new amazee.io hosted demo of the Drupal AI partners demo, it is based on the code at:
-    <a href="https://gitlab.com/drupal-infrastructure/ai/drupal-ai-starter-template" target="_blank" rel="noopener">https://gitlab.com/drupal-infrastructure/ai/drupal-ai-starter-template</a>
-</p>
-<div class="notice-box">
-    Please keep this private and only for the members of the Drupal AI initiative.
-</div>
+@if($form->getDescription())
+<div class="form-description">{!! $form->getDescription() !!}</div>
+@endif
+@if($form->getNotice())
+<div class="notice-box">{!! $form->getNotice() !!}</div>
+@endif
 @endsection
 
 @section('fields')
 @include('forms.partials.contact-fields')
 @include('forms.partials.region-app-fields')
+
+@if($form->getDisclaimer())
+<div class="disclaimer-text">{!! $form->getDisclaimer() !!}</div>
+@endif
 
 <div class="checkbox-group">
     <input type="checkbox" id="acceptTerms" name="accept_terms" value="1" required>

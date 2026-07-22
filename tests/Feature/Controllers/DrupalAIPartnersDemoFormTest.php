@@ -5,7 +5,9 @@ namespace Tests\Feature\Controllers;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
 use App\Enums\UserRemoteRegistrationStatusEnum;
+use App\Forms\GenericHostedForm;
 use App\Jobs\ProcessUserRemoteRegistration;
+use App\Models\PolydockHostedForm;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
@@ -55,6 +57,18 @@ class DrupalAIPartnersDemoFormTest extends TestCase
             'author' => 'Test Author',
             'description' => 'Test Description',
         ]);
+
+        $hostedForm = PolydockHostedForm::create([
+            'slug' => 'drupal-ai-partners-demo',
+            'form_class' => GenericHostedForm::class,
+            'enabled' => true,
+            'title' => 'Drupal AI Initiative - Partners Demo',
+            'description' => 'You can spin up a new amazee.io hosted demo of the Drupal AI partners demo, it is based on the code at: <a href="https://gitlab.com/drupal-infrastructure/ai/drupal-ai-starter-template" target="_blank" rel="noopener">https://gitlab.com/drupal-infrastructure/ai/drupal-ai-starter-template</a>',
+            'notice' => 'Please keep this private and only for the members of the Drupal AI initiative.',
+            'seo_title' => 'Drupal AI Initiative - Partners Demo by amazee.io',
+        ]);
+
+        $hostedForm->storeApps()->attach($this->storeApp);
     }
 
     #[Test]
@@ -63,7 +77,7 @@ class DrupalAIPartnersDemoFormTest extends TestCase
         $response = $this->get('/f/drupal-ai-partners-demo');
 
         $response->assertStatus(200);
-        $response->assertViewIs('forms.drupal-ai-partners-demo');
+        $response->assertViewIs('forms.generic');
         $response->assertViewHas('form');
         $response->assertViewHas('regions');
         $response->assertSee('Drupal AI Initiative - Partners Demo');
@@ -72,6 +86,33 @@ class DrupalAIPartnersDemoFormTest extends TestCase
 
         $response->assertHeaderMissing('X-Frame-Options');
         $response->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai http://localhost http://localhost:*");
+    }
+
+    #[Test]
+    public function it_sanitizes_admin_authored_html_before_rendering()
+    {
+        PolydockHostedForm::where('slug', 'drupal-ai-partners-demo')->firstOrFail()->update([
+            'title' => '<b>Partners</b> Demo',
+            'description' => '<script>alert(1)</script><a href="javascript:alert(1)" onclick="alert(1)">bad link</a><a href="https://example.com">good link</a><strong>kept</strong>',
+            'notice' => '<img src=x onerror=alert(1)>Notice text',
+        ]);
+
+        $response = $this->get('/f/drupal-ai-partners-demo');
+
+        $response->assertStatus(200);
+
+        // Title is stored as plain text
+        $response->assertSee('Partners Demo');
+        $response->assertDontSee('<b>Partners</b>', false);
+
+        // Disallowed tags/attributes/schemes are stripped, allowed ones survive
+        $response->assertDontSee('alert(1)', false);
+        $response->assertDontSee('onclick', false);
+        $response->assertDontSee('javascript:', false);
+        $response->assertDontSee('onerror', false);
+        $response->assertSee('<a href="https://example.com">good link</a>', false);
+        $response->assertSee('<strong>kept</strong>', false);
+        $response->assertSee('Notice text');
     }
 
     #[Test]
