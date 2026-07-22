@@ -80,6 +80,12 @@
 
 @section('fields')
 @include('forms.partials.contact-fields')
+
+<div class="form-group">
+    <label class="form-label" for="organization">Company</label>
+    <input type="text" id="organization" name="organization" class="form-control" autocomplete="organization">
+</div>
+
 @include('forms.partials.region-app-fields')
 
 @if($form->getDisclaimer())
