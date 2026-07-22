@@ -34,6 +34,11 @@ class FormControllerTest extends TestCase
 
         Queue::fake();
 
+        // reCAPTCHA is auto-disabled on explicit non-production Lagoon
+        // environments; pin production so the tests exercise it regardless
+        // of the local .env.
+        config(['services.recaptcha.lagoon_environment_type' => 'production']);
+
         // Prevent external reCAPTCHA API hits by default in tests
         Http::fake([
             'https://www.google.com/recaptcha/api/siteverify' => function ($request) {
@@ -288,6 +293,30 @@ class FormControllerTest extends TestCase
             'status' => 'error',
             'message' => 'Unable to verify reCAPTCHA. Please try again later.',
         ]);
+    }
+
+    #[Test]
+    public function it_skips_recaptcha_entirely_on_non_production_lagoon_environments()
+    {
+        config(['services.recaptcha.lagoon_environment_type' => 'development']);
+
+        // No recaptcha token at all — must still submit successfully on dev
+        $response = $this->postJson('/f/drupal-ai-demo', [
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'email' => 'john.doe@example.com',
+            'trial_app' => $this->storeApp->uuid,
+        ]);
+
+        $response->assertStatus(202);
+        $response->assertJson([
+            'status' => 'pending',
+        ]);
+
+        // And the rendered form must not load the recaptcha widget
+        $this->get('/f/drupal-ai-demo')
+            ->assertStatus(200)
+            ->assertDontSee('g-recaptcha', false);
     }
 
     #[Test]

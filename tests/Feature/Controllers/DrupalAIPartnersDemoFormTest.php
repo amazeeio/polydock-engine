@@ -31,6 +31,11 @@ class DrupalAIPartnersDemoFormTest extends TestCase
 
         Queue::fake();
 
+        // reCAPTCHA is auto-disabled on explicit non-production Lagoon
+        // environments; pin production so the tests exercise it regardless
+        // of the local .env.
+        config(['services.recaptcha.lagoon_environment_type' => 'production']);
+
         // Prevent external reCAPTCHA API hits by default in tests
         Http::fake([
             'https://www.google.com/recaptcha/api/siteverify' => Http::response(['success' => true]),
