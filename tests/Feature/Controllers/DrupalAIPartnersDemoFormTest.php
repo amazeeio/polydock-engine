@@ -182,6 +182,7 @@ class DrupalAIPartnersDemoFormTest extends TestCase
         $this->assertEquals('John', $registration->getRequestValue('first_name'));
         $this->assertEquals('Doe', $registration->getRequestValue('last_name'));
         $this->assertEquals('Acme Corp', $registration->getRequestValue('organization'));
+        $this->assertEquals('Acme Corp', $registration->getRequestValue('company_name'));
         $this->assertEquals($this->storeApp->uuid, $registration->getRequestValue('trial_app'));
 
         Queue::assertPushed(ProcessUserRemoteRegistration::class);
