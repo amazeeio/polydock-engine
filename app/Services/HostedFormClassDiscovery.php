@@ -18,6 +18,13 @@ class HostedFormClassDiscovery
      */
     public function getAvailableFormClasses(): array
     {
+        // ponytail: static memo — the class list can't change mid-process
+        static $cached = null;
+
+        if ($cached !== null) {
+            return $cached;
+        }
+
         $classes = [];
 
         foreach (File::files(app_path('Forms')) as $file) {
@@ -41,6 +48,6 @@ class HostedFormClassDiscovery
 
         ksort($classes);
 
-        return $classes;
+        return $cached = $classes;
     }
 }
