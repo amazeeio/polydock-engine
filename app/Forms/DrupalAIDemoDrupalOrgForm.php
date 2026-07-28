@@ -4,6 +4,7 @@ namespace App\Forms;
 
 use Illuminate\Validation\Rule;
 
+#[FormLabel('Drupal AI Demo (drupal.org)')]
 class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
 {
     #[\Override]
@@ -15,17 +16,19 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
     #[\Override]
     public function getAllowedEmbedDomains(): array
     {
-        return array_merge(parent::getAllowedEmbedDomains(), [
+        return [
+            ...parent::getAllowedEmbedDomains(),
             'drupal.org',
             'www.drupal.org',
             'new.drupal.org',
-        ]);
+        ];
     }
 
     #[\Override]
     public function getValidationRules(): array
     {
-        return array_merge(parent::getValidationRules(), [
+        return [
+            ...parent::getValidationRules(),
             'organization' => ['nullable', 'string', 'max:150'],
             'job_title' => ['nullable', 'string', 'max:150'],
             'country' => [
@@ -35,7 +38,7 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
             ],
             'stage_in_ai_adoption' => ['nullable', 'string', 'in:just-curious,specific-need,already-using'],
             'interest_in_drupal_ai' => ['nullable', 'string', 'max:255'],
-        ]);
+        ];
     }
 
     #[\Override]
