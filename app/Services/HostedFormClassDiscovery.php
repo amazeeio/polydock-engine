@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Forms\FormLabel;
 use App\Forms\HostedFormInterface;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
@@ -32,7 +33,10 @@ class HostedFormClassDiscovery
                 continue;
             }
 
-            $classes[$class] = Str::headline($reflection->getShortName());
+            $label = $reflection->getAttributes(FormLabel::class)[0] ?? null;
+
+            $classes[$class] = $label?->newInstance()->label
+                ?? Str::headline($reflection->getShortName());
         }
 
         ksort($classes);

@@ -94,7 +94,7 @@ class PolydockHostedFormResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('form_class')
                     ->label('Form type')
-                    ->formatStateUsing(fn (string $state) => class_basename($state))
+                    ->formatStateUsing(fn (string $state) => app(HostedFormClassDiscovery::class)->getAvailableFormClasses()[$state] ?? class_basename($state))
                     ->badge(),
                 Tables\Columns\TextColumn::make('storeApps_count')
                     ->label('Allowed apps')

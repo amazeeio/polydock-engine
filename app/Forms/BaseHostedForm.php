@@ -46,7 +46,7 @@ abstract class BaseHostedForm implements HostedFormInterface
     /**
      * Baseline rules shared by every hosted form: contact details and an
      * allowlisted, publicly-available trial app. Concrete forms merge their
-     * extra fields on top via array_merge(parent::getValidationRules(), [...]).
+     * extra fields on top via [...parent::getValidationRules(), ...].
      */
     #[\Override]
     public function getValidationRules(): array

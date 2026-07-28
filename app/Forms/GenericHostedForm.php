@@ -12,6 +12,7 @@ use App\Support\HostedFormHtml;
  * The HTML fields are rendered unescaped in the view, so they pass through
  * HostedFormHtml::sanitize() here — the single choke point before output.
  */
+#[FormLabel('Generic Hosted Form')]
 class GenericHostedForm extends BaseHostedForm
 {
     #[\Override]
@@ -47,9 +48,10 @@ class GenericHostedForm extends BaseHostedForm
     #[\Override]
     public function getValidationRules(): array
     {
-        return array_merge(parent::getValidationRules(), [
+        return [
+            ...parent::getValidationRules(),
             'organization' => ['nullable', 'string', 'max:150'],
             'accept_terms' => ['accepted'],
-        ]);
+        ];
     }
 }
