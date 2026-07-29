@@ -10,7 +10,7 @@ class UserCreatedChart extends WeeklyBarChartWidget
 {
     protected static ?int $sort = 100;
 
-    protected static ?string $heading = 'New Users';
+    protected ?string $heading = 'New Users';
 
     #[\Override]
     protected function getData(): array

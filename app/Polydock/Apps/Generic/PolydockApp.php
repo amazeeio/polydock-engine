@@ -30,6 +30,7 @@ use App\Polydock\Core\PolydockAppVariableDefinitionInterface;
 use App\Polydock\Core\PolydockEngineInterface;
 use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockServiceProviders\PolydockServiceProviderFTLagoon;
+use Exception;
 
 #[PolydockAppTitle('Generic Lagoon App')]
 class PolydockApp extends PolydockAppBase
@@ -109,7 +110,7 @@ class PolydockApp extends PolydockAppBase
             }
 
             return $ping;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
         }
     }
@@ -150,7 +151,7 @@ class PolydockApp extends PolydockAppBase
     /**
      * Grant the instance's deploy group access to its Lagoon project.
      *
-     * @throws \Exception If Lagoon rejects the grant or returns no id
+     * @throws Exception If Lagoon rejects the grant or returns no id
      */
     public function addDeployGroupToLagoonProject(PolydockAppInstanceInterface $appInstance): void
     {
@@ -165,12 +166,12 @@ class PolydockApp extends PolydockAppBase
                 ? ($result['error'][0]['message'] ?? json_encode($result['error']))
                 : $result['error'];
             $this->error($errorMessage);
-            throw new \Exception($errorMessage);
+            throw new Exception($errorMessage);
         }
 
         if (! isset($result['addGroupsToProject']['id'])) {
             $this->error('addGroupsToProject ID not found in data');
-            throw new \Exception('addGroupsToProject ID not found in data');
+            throw new Exception('addGroupsToProject ID not found in data');
         }
     }
 
@@ -402,7 +403,7 @@ class PolydockApp extends PolydockAppBase
             if ($shortCircuit !== null) {
                 return $shortCircuit;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error($functionName.' failed: '.$e->getMessage(), $logContext + [
                 'exception_class' => get_class($e),
             ]);
@@ -455,7 +456,7 @@ class PolydockApp extends PolydockAppBase
                     'error' => $variable['error'],
                     'parsed_error' => $errorMessage,
                 ]);
-            throw new \Exception("Failed to add or update {$variableName} variable: ".$errorMessage);
+            throw new Exception("Failed to add or update {$variableName} variable: ".$errorMessage);
         }
 
         if ($this->lagoonClient->getDebug()) {

@@ -5,6 +5,7 @@ namespace App\Polydock\Clients\Lagoon\ClientTraits;
 use App\Polydock\Clients\Lagoon\Enums\LagoonVariableScope;
 use App\Polydock\Clients\Lagoon\LagoonClientInitializeRequiredToInteractException;
 use App\Polydock\Clients\Lagoon\LagoonVariableScopeInvalidException;
+use Exception;
 
 trait ProjectTrait
 {
@@ -590,7 +591,7 @@ trait ProjectTrait
 
     /**
      * @throws LagoonClientInitializeRequiredToInteractException
-     * @throws \Exception
+     * @throws Exception
      */
     public function addProjectDeployTargetByProjectId(int $projectId, int $deployTargetId, int $weight,
         ?string $branches = null, ?string $pullrequests = null): array
@@ -600,7 +601,7 @@ trait ProjectTrait
         }
 
         if (empty($branches) && empty($pullrequests)) {
-            throw new \Exception('At least one of branches or pullrequests must be provided');
+            throw new Exception('At least one of branches or pullrequests must be provided');
         }
 
         $mutation = <<<'GQL'
@@ -730,7 +731,7 @@ trait ProjectTrait
 
     /**
      * @throws LagoonClientInitializeRequiredToInteractException
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateProjectDeployTargetByConfigId(int $deployTargetConfigId, int $deployTargetId, ?int $weight = null,
         ?string $branches = null, ?string $pullRequest = null): array
@@ -740,7 +741,7 @@ trait ProjectTrait
         }
 
         if (empty($branches) && empty($pullRequest)) {
-            throw new \Exception('At least one of branches or pullRequest must be provided');
+            throw new Exception('At least one of branches or pullRequest must be provided');
         }
 
         $mutation = <<<'GQL'

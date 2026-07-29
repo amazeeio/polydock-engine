@@ -12,6 +12,7 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Override;
 
 class BanEmailsCommand extends BaseCommand
 {
@@ -324,7 +325,7 @@ class BanEmailsCommand extends BaseCommand
         })->get();
     }
 
-    #[\Override]
+    #[Override]
     public function sensitiveInputs(): array
     {
         return ['patterns'];

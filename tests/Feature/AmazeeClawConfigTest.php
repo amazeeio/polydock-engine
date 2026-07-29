@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Polydock\Apps\AmazeeClaw\Enums\AmazeeAiKeyMode;
 use App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp;
+use Filament\Forms\Components\Field;
 use Tests\Doubles\DoublePolydockAppInstance;
 use Tests\TestCase;
 
@@ -35,14 +36,14 @@ class AmazeeClawConfigTest extends TestCase
 
         $hasKeyModeInStore = false;
         foreach ($storeSchema as $component) {
-            if ($component->getName() === 'amazeeai_key_mode') {
+            if ($component instanceof Field && $component->getName() === 'amazeeai_key_mode') {
                 $hasKeyModeInStore = true;
             }
         }
 
         $hasKeyModeInInstance = false;
         foreach ($instanceSchema as $component) {
-            if ($component->getName() === 'amazeeai_key_mode') {
+            if ($component instanceof Field && $component->getName() === 'amazeeai_key_mode') {
                 $hasKeyModeInInstance = true;
             }
         }

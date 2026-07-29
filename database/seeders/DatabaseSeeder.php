@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ServiceAccountRoleSeeder::class,
             SuperAdminRoleSeeder::class,
+            SupportRoleSeeder::class,
         ]);
 
         if (! app()->environment('production', 'prod')) {

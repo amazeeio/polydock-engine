@@ -7,24 +7,25 @@ use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\LagoonClientService;
 use Carbon\Carbon;
-use Filament\Actions;
+use Exception;
 use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\Facades\Cache;
+use Throwable;
 
 class ViewPolydockAppInstance extends ViewRecord
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
-    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            EditAction::make(),
             Action::make('rerun_claim_hook')
                 ->label('Re-run Claim Hook')
                 ->icon('heroicon-o-arrow-path')
@@ -89,7 +90,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->icon('heroicon-o-rocket-launch')
                 ->color('warning')
                 ->requiresConfirmation()
-                ->form([
+                ->schema([
                     Placeholder::make('environment')
                         ->label('Environment')
                         ->content(fn ($record) => $record->getKeyValue('lagoon-deploy-branch') ?: 'main'),
@@ -152,7 +153,7 @@ class ViewPolydockAppInstance extends ViewRecord
                                     ->first();
 
                                 return $lastDeployLog ? $lastDeployLog->created_at->toDateTimeString().' (Polydock DB)' : 'Never';
-                            } catch (\Throwable $e) {
+                            } catch (Throwable $e) {
                                 return 'Error loading: '.$e->getMessage();
                             }
                         }),
@@ -214,7 +215,7 @@ class ViewPolydockAppInstance extends ViewRecord
                                 ])
                                 ->log('Triggered Lagoon redeploy (admin UI)');
                         }
-                    } catch (\Throwable $e) {
+                    } catch (Throwable $e) {
                         Notification::make()
                             ->title('Deployment Failed')
                             ->danger()
@@ -314,7 +315,7 @@ class ViewPolydockAppInstance extends ViewRecord
                             ->send();
 
                         $this->refreshFormData(['status', 'status_message']);
-                    } catch (\Throwable $e) {
+                    } catch (Throwable $e) {
                         Notification::make()
                             ->title('Retry Failed')
                             ->danger()
@@ -325,7 +326,7 @@ class ViewPolydockAppInstance extends ViewRecord
             Action::make('extend_trial')
                 ->label('Extend Trial')
                 ->icon('heroicon-o-calendar')
-                ->form([
+                ->schema([
                     DatePicker::make('new_trial_end_date')
                         ->label('New Trial End Date')
                         ->required()
@@ -354,7 +355,7 @@ class ViewPolydockAppInstance extends ViewRecord
                             ->send();
 
                         $this->refreshFormData(['trial_ends_at']);
-                    } catch (\Exception $e) {
+                    } catch (Exception $e) {
                         Notification::make()
                             ->title('Update Failed')
                             ->danger()
@@ -379,7 +380,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->modalHeading('Delete this app instance?')
                 ->modalDescription('This will start the standard removal pipeline: the Lagoon environment will be deleted first, then the Lagoon project will be fully deleted after the grace period (or immediately if you tick "Skip grace period").')
                 ->modalSubmitActionLabel('Delete')
-                ->form([
+                ->schema([
                     Toggle::make('skip_grace_period')
                         ->label('Skip grace period and force-purge the Lagoon project as soon as the environment is gone')
                         ->helperText('Equivalent to clicking "Force Full Delete" the moment the instance reaches REMOVED.')

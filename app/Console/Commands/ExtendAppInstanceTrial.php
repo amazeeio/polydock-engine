@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 
@@ -39,7 +40,7 @@ class ExtendAppInstanceTrial extends BaseCommand
 
         try {
             $newEndDate = Carbon::parse($date);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error("Invalid date format: {$date}");
 
             return 1;
@@ -160,7 +161,7 @@ class ExtendAppInstanceTrial extends BaseCommand
                 $instance->calculateAndSetTrialDatesFromEndDate($newEndDate, true);
                 $instance->refresh();
                 $this->info('  -> New Trial Ends At: '.$instance->trial_ends_at->toDateTimeString());
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error("  -> Failed to update: {$e->getMessage()}");
             }
         }

@@ -6,8 +6,8 @@ namespace App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockStoreAppResource;
 use App\Jobs\EnsureUnallocatedAppInstancesJob;
-use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Actions\EditAction;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -17,18 +17,17 @@ class ViewPolydockStoreApp extends ViewRecord
 {
     protected static string $resource = PolydockStoreAppResource::class;
 
-    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
-            Actions\EditAction::make(),
+            EditAction::make(),
             Action::make('downscale_unallocated')
                 ->label('Downscale Pre-warm')
                 ->icon('heroicon-o-arrow-trending-down')
                 ->color('danger')
                 ->visible(fn (): bool => $this->record->removableUnallocatedInstancesQuery()->exists())
                 ->requiresConfirmation()
-                ->form([
+                ->schema([
                     Placeholder::make('current_unallocated')
                         ->label('Current Removable Unallocated Instances')
                         ->content(fn () => (string) $this->record->removableUnallocatedInstancesQuery()->count()),
@@ -151,7 +150,6 @@ class ViewPolydockStoreApp extends ViewRecord
         ];
     }
 
-    #[\Override]
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Load custom field values from app_config JSON column

@@ -24,7 +24,7 @@ enum PolydockStoreAppStatusEnum: string implements HasColor, HasIcon, HasLabel
         };
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): ?string
     {
         return match ($this) {
             self::AVAILABLE => 'success',

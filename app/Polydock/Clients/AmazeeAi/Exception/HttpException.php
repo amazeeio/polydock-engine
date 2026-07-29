@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Polydock\Clients\AmazeeAi\Exception;
 
-class HttpException extends \RuntimeException
+use RuntimeException;
+
+class HttpException extends RuntimeException
 {
     public function __construct(private readonly int $statusCode, string $message = '', private readonly ?array $response = null)
     {

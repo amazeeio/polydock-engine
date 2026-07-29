@@ -12,7 +12,7 @@ use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
 use App\Polydock\Apps\Generic\PolydockApp;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -265,7 +265,7 @@ class FormControllerTest extends TestCase
     #[Test]
     public function it_blocks_recaptcha_bypass_on_staging_environment_during_network_failure()
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->withoutMiddleware(PreventRequestForgery::class);
         $this->app->detectEnvironment(fn () => 'staging');
 
         Http::fake([

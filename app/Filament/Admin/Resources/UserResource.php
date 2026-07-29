@@ -3,32 +3,41 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\RelationManagers\ActivitiesRelationManager;
-use App\Filament\Admin\Resources\UserResource\Pages;
-use App\Filament\Admin\Resources\UserResource\RelationManagers;
+use App\Filament\Admin\Resources\UserResource\Pages\CreateUser;
+use App\Filament\Admin\Resources\UserResource\Pages\EditUser;
+use App\Filament\Admin\Resources\UserResource\Pages\ListUsers;
+use App\Filament\Admin\Resources\UserResource\Pages\ViewUser;
+use App\Filament\Admin\Resources\UserResource\RelationManagers\GroupsRelationManager;
 use App\Models\User;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Section;
+use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\CheckboxList;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
-    protected static ?string $navigationGroup = 'Users';
+    protected static string|UnitEnum|null $navigationGroup = 'Users';
 
     protected static ?int $navigationSort = 1;
 
-    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
@@ -46,26 +55,25 @@ class UserResource extends Resource
         return $query->whereKey($user->getKey());
     }
 
-    #[\Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('first_name')
+        return $schema
+            ->components([
+                TextInput::make('first_name')
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('last_name')
+                TextInput::make('last_name')
                     ->required()
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('email')
+                TextInput::make('email')
                     ->email()
                     ->required()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
 
-                Forms\Components\TextInput::make('password')
+                TextInput::make('password')
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
@@ -74,7 +82,7 @@ class UserResource extends Resource
                         ? 'Password'
                         : 'New Password (leave blank to keep current)'),
 
-                Forms\Components\CheckboxList::make('roles')
+                CheckboxList::make('roles')
                     ->relationship('roles', 'name')
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                     ->label('Roles')
@@ -83,7 +91,6 @@ class UserResource extends Resource
             ]);
     }
 
-    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -113,9 +120,9 @@ class UserResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                Tables\Filters\Filter::make('created_from')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from'),
+                Filter::make('created_from')
+                    ->schema([
+                        DatePicker::make('created_from'),
                     ])
                     ->query(function ($query, array $data) {
                         return $query->when(
@@ -124,42 +131,39 @@ class UserResource extends Resource
                         );
                     }),
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }
 
-    #[\Override]
     public static function getRelations(): array
     {
         return [
-            RelationManagers\GroupsRelationManager::class,
+            GroupsRelationManager::class,
             ActivitiesRelationManager::class,
         ];
     }
 
-    #[\Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'view' => Pages\ViewUser::route('/{record}'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'view' => ViewUser::route('/{record}'),
+            'edit' => EditUser::route('/{record}/edit'),
         ];
     }
 
-    #[\Override]
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
+        return $schema
+            ->components([
                 Section::make('User Details')
                     ->schema([
                         Grid::make(2)

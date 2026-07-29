@@ -16,7 +16,9 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\Polydock\Core\PolydockAppVariableDefinitionBase;
-use Filament\Forms\Components\Component;
+use Exception;
+use Filament\Schemas\Components\Component;
+use Override;
 
 #[PolydockAppTitle('AnythingLLM App')]
 #[PolydockAppStoreFields]
@@ -38,16 +40,16 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
     /**
      * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getStoreAppFormSchema(): array
     {
         return [];
     }
 
     /**
-     * @return array<\Filament\Infolists\Components\Component>
+     * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getStoreAppInfolistSchema(): array
     {
         return [];
@@ -56,16 +58,16 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
     /**
      * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getAppInstanceFormSchema(): array
     {
         return [];
     }
 
     /**
-     * @return array<\Filament\Infolists\Components\Component>
+     * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getAppInstanceInfolistSchema(): array
     {
         return [];
@@ -74,7 +76,7 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
     /**
      * @throws PolydockAppInstanceStatusFlowException
      */
-    #[\Override]
+    #[Override]
     public function claimAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $functionName = __FUNCTION__;
@@ -160,7 +162,7 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
                     ? ($variablesOnlyDeployment['error'][0]['message'] ?? json_encode($variablesOnlyDeployment['error']))
                     : (string) $variablesOnlyDeployment['error'];
 
-                throw new \Exception("Failed to trigger Lagoon variables-only deployment: {$errorMessage}");
+                throw new Exception("Failed to trigger Lagoon variables-only deployment: {$errorMessage}");
             }
 
             $latestDeploymentName = $variablesOnlyDeployment['deployEnvironmentBranch'] ?? null;
@@ -173,7 +175,7 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
                 'deployEnvironment' => $deployEnvironment,
                 'deploymentName' => $latestDeploymentName,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error($e->getMessage(), $logContext + [
                 'exception_class' => \get_class($e),
             ]);

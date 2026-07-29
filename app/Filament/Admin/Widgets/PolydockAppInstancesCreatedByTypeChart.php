@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\DB;
 
 class PolydockAppInstancesCreatedByTypeChart extends WeeklyBarChartWidget
 {
-    protected static ?string $heading = 'App Instances by Type';
+    protected ?string $heading = 'App Instances by Type';
 
     protected static ?int $sort = 400;
 

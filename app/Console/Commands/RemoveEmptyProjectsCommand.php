@@ -10,6 +10,7 @@ use App\Polydock\Core\PolydockAppLoggerInterface;
 use App\Services\LagoonProjectPurgeService;
 use App\Services\PurgeResult;
 use Illuminate\Console\Command;
+use Throwable;
 
 /**
  * Manual escape hatch for sweeping REMOVED instances and trying to fully
@@ -230,7 +231,7 @@ class RemoveEmptyProjectsCommand extends BaseCommand
             }
 
             return ['status' => 'has_environments', 'environment_count' => $activeEnvironmentCount];
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $this->error("Probe failed for {$projectName}: {$e->getMessage()}");
 
             return null;

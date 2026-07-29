@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Jobs\ProcessPolydockAppInstanceJobs\Upgrade;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Facades\Log;
 
@@ -18,7 +19,7 @@ class UpgradeJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
         $appInstance = $this->appInstance;
         if (! $appInstance) {
-            throw new \Exception(
+            throw new Exception(
                 'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
             );
         }

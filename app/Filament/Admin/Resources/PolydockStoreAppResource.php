@@ -5,8 +5,11 @@ namespace App\Filament\Admin\Resources;
 use App\Enums\PolydockDeploymentRunStatusEnum;
 use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
 use App\Enums\PolydockStoreAppStatusEnum;
-use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages;
-use App\Filament\Admin\Resources\PolydockStoreAppResource\RelationManagers;
+use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages\CreatePolydockStoreApp;
+use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages\EditPolydockStoreApp;
+use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages\ListPolydockStoreApps;
+use App\Filament\Admin\Resources\PolydockStoreAppResource\Pages\ViewPolydockStoreApp;
+use App\Filament\Admin\Resources\PolydockStoreAppResource\RelationManagers\PreWarmInstancesRelationManager;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockDeploymentRun;
 use App\Models\PolydockStore;
@@ -14,46 +17,60 @@ use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\PolydockAppClassDiscovery;
 use App\Services\PolydockDeploymentService;
-use Filament\Forms;
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Section;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
+use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\KeyValue;
+use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use UnitEnum;
 
 class PolydockStoreAppResource extends Resource
 {
     protected static ?string $model = PolydockStoreApp::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-squares-2x2';
 
-    protected static ?string $navigationGroup = 'Apps';
+    protected static string|UnitEnum|null $navigationGroup = 'Apps';
 
     protected static ?string $navigationLabel = 'Apps';
 
     protected static ?int $navigationSort = 5100;
 
-    #[\Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Select::make('polydock_store_id')
+        return $schema
+            ->components([
+                Select::make('polydock_store_id')
                     ->label('Store')
                     ->options(PolydockStore::all()->pluck('name', 'id'))
                     ->required()
                     ->live()
                     ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
                     ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
-                Forms\Components\Select::make('polydock_app_class')
+                Select::make('polydock_app_class')
                     ->label('Polydock App Class')
                     ->options(fn () => app(PolydockAppClassDiscovery::class)->getAvailableAppClasses())
                     ->required()
@@ -71,60 +88,60 @@ class PolydockStoreAppResource extends Resource
                     ->helperText('The application class that controls deployment and lifecycle behaviour.')
                     ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
                     ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Select::make('polydock_product_type_id')
+                Select::make('polydock_product_type_id')
                     ->label('Product Type')
                     ->relationship('productType', 'name')
                     ->searchable()
                     ->preload()
                     ->createOptionForm([
-                        Forms\Components\TextInput::make('name')
+                        TextInput::make('name')
                             ->required()
                             ->unique('polydock_product_types', 'name'),
                     ]),
-                Forms\Components\Textarea::make('description')
+                Textarea::make('description')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\TextInput::make('author')
+                TextInput::make('author')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('website')
+                TextInput::make('website')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('support_email')
+                TextInput::make('support_email')
                     ->email()
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('lagoon_deploy_git')
+                TextInput::make('lagoon_deploy_git')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('lagoon_deploy_branch')
+                TextInput::make('lagoon_deploy_branch')
                     ->required()
                     ->maxLength(255)
                     ->default('main'),
-                Forms\Components\Select::make('status')
+                Select::make('status')
                     ->options(PolydockStoreAppStatusEnum::class)
                     ->required(),
-                Forms\Components\TextInput::make('target_unallocated_app_instances')
+                TextInput::make('target_unallocated_app_instances')
                     ->required()
                     ->numeric()
                     ->minValue(0)
                     ->default(0)
                     ->helperText('Ignored when Project Naming is set to Custom - custom-named apps cannot be pre-warmed.'),
-                Forms\Components\Toggle::make('available_for_trials')
+                Toggle::make('available_for_trials')
                     ->label('Available for Trials')
                     ->required()
                     ->columnSpanFull(),
                 Section::make('Pre-warm Settings')
                     ->description('Controls how unallocated pre-warm instances are refreshed over time.')
                     ->schema([
-                        Forms\Components\Toggle::make('refresh_unallocated_instances')
+                        Toggle::make('refresh_unallocated_instances')
                             ->label('Refresh stale pre-warm instances')
                             ->default(false)
                             ->live(),
-                        Forms\Components\TextInput::make('refresh_unallocated_instances_after_days')
+                        TextInput::make('refresh_unallocated_instances_after_days')
                             ->label('Refresh After (Days)')
                             ->numeric()
                             ->minValue(1)
@@ -137,7 +154,7 @@ class PolydockStoreAppResource extends Resource
                 Section::make('Project Naming')
                     ->description('How Lagoon project names are generated for instances of this app.')
                     ->schema([
-                        Forms\Components\Select::make('project_naming_mode')
+                        Select::make('project_naming_mode')
                             ->label('Naming Mode')
                             ->options([
                                 PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN => 'Pattern - generated from word lists',
@@ -146,22 +163,22 @@ class PolydockStoreAppResource extends Resource
                             ->default(PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN)
                             ->live()
                             ->columnSpanFull(),
-                        Forms\Components\TextInput::make('project_naming_prefix')
+                        TextInput::make('project_naming_prefix')
                             ->label('App Prefix')
                             ->regex('/^[a-z0-9]+(-[a-z0-9]+)*$/')
                             ->maxLength(30)
                             ->helperText('Optional. Prepended to the store prefix: <app-prefix>-<store-prefix>-<adjective>-<noun>-<id>. Leave empty to use the store prefix alone.')
                             ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
-                        Forms\Components\Placeholder::make('store_project_prefix')
+                        Placeholder::make('store_project_prefix')
                             ->label('Store Prefix (set on the store, not editable here)')
                             ->content(fn (Get $get): string => PolydockStore::find($get('polydock_store_id'))->lagoon_deploy_project_prefix ?? '—')
                             ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
-                        Forms\Components\TagsInput::make('project_naming_adjectives')
+                        TagsInput::make('project_naming_adjectives')
                             ->label('Adjective Word List')
                             ->placeholder('e.g. snappy, zesty, jolly')
                             ->helperText('Optional. Names are <prefix>-<adjective>-<noun>-<id>. Leave empty to use the generic color list.')
                             ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
-                        Forms\Components\TagsInput::make('project_naming_nouns')
+                        TagsInput::make('project_naming_nouns')
                             ->label('Noun Word List')
                             ->placeholder('e.g. lobster, shrimp, crab')
                             ->helperText('Optional. Leave empty to use the generic animal list.')
@@ -172,24 +189,24 @@ class PolydockStoreAppResource extends Resource
                 Section::make('Custom Lagoon Route')
                     ->description('Registers a LAGOON_ROUTES_JSON custom route per instance before its first deploy. Use this to set ingress annotations (upload size, timeouts) that Lagoon does not support on autogenerated routes. The custom route becomes the primary route.')
                     ->schema([
-                        Forms\Components\Toggle::make('lagoon_custom_route_enabled')
+                        Toggle::make('lagoon_custom_route_enabled')
                             ->label('Enable custom route')
                             ->default(false)
                             ->live()
                             ->columnSpanFull(),
-                        Forms\Components\TextInput::make('lagoon_custom_route_domain_pattern')
+                        TextInput::make('lagoon_custom_route_domain_pattern')
                             ->label('Domain Pattern')
                             ->placeholder('{project}.example.amazee.io')
                             ->helperText('Placeholders: {project}, {environment}. Must resolve under the target cluster\'s wildcard DNS.')
                             ->required(fn (Get $get): bool => (bool) $get('lagoon_custom_route_enabled'))
                             ->visible(fn (Get $get): bool => (bool) $get('lagoon_custom_route_enabled')),
-                        Forms\Components\TextInput::make('lagoon_custom_route_service')
+                        TextInput::make('lagoon_custom_route_service')
                             ->label('Lagoon Service')
                             ->placeholder('anythingllm')
                             ->helperText('The docker-compose service the route points at.')
                             ->required(fn (Get $get): bool => (bool) $get('lagoon_custom_route_enabled'))
                             ->visible(fn (Get $get): bool => (bool) $get('lagoon_custom_route_enabled')),
-                        Forms\Components\KeyValue::make('lagoon_custom_route_annotations')
+                        KeyValue::make('lagoon_custom_route_annotations')
                             ->label('Ingress Annotations')
                             ->keyLabel('Annotation')
                             ->valueLabel('Value')
@@ -202,19 +219,19 @@ class PolydockStoreAppResource extends Resource
                 Section::make('Redeploy Schedule')
                     ->description('Automatically redeploy running instances of this app on a cadence (upgrade rollouts). Trials are never auto-redeployed.')
                     ->schema([
-                        Forms\Components\Toggle::make('redeploy_enabled')
+                        Toggle::make('redeploy_enabled')
                             ->label('Enable scheduled redeploys')
                             ->default(false)
                             ->live()
                             ->columnSpanFull(),
-                        Forms\Components\TextInput::make('redeploy_interval_days')
+                        TextInput::make('redeploy_interval_days')
                             ->label('Redeploy every (days)')
                             ->numeric()
                             ->minValue(1)
                             ->helperText('Default cadence for all instances of this app.')
                             ->required(fn (Get $get): bool => (bool) $get('redeploy_enabled'))
                             ->visible(fn (Get $get): bool => (bool) $get('redeploy_enabled')),
-                        Forms\Components\TextInput::make('beta_redeploy_interval_days')
+                        TextInput::make('beta_redeploy_interval_days')
                             ->label('Beta redeploy every (days)')
                             ->numeric()
                             ->minValue(1)
@@ -226,7 +243,7 @@ class PolydockStoreAppResource extends Resource
                 Section::make('Lagoon Runtime Settings')
                     ->description('Configuration used by app instance creation for Lagoon runtime behavior.')
                     ->schema([
-                        Forms\Components\Select::make('lagoon_auto_idle')
+                        Select::make('lagoon_auto_idle')
                             ->label('Lagoon Auto Idle')
                             ->options([
                                 0 => '0 - Off',
@@ -234,7 +251,7 @@ class PolydockStoreAppResource extends Resource
                             ])
                             ->default(0)
                             ->helperText('See https://docs.lagoon.sh/concepts-advanced/environment-idling/'),
-                        Forms\Components\TextInput::make('lagoon_production_environment')
+                        TextInput::make('lagoon_production_environment')
                             ->label('Lagoon Production Environment')
                             ->default('main')
                             ->required()
@@ -257,7 +274,7 @@ class PolydockStoreAppResource extends Resource
                     ->collapsible()
                     ->collapsed(false)
                     ->columnSpanFull(),
-                Forms\Components\Placeholder::make('no_app_specific_fields')
+                Placeholder::make('no_app_specific_fields')
                     ->label('')
                     ->content('The selected App Class does not define any app-specific configuration fields.')
                     ->visible(fn (Get $get): bool => ! empty($get('polydock_app_class')) &&
@@ -265,7 +282,7 @@ class PolydockStoreAppResource extends Resource
                     ->columnSpanFull(),
                 Section::make('Instance Ready Email Configuration')
                     ->schema([
-                        Forms\Components\Select::make('mail_theme')
+                        Select::make('mail_theme')
                             ->label('Email Theme')
                             ->options(fn (): array => collect(config('mail.mjml-config.themes', []))
                                 ->map(fn (array $theme, string $key): string => $theme['name'] ?? $key)
@@ -274,13 +291,13 @@ class PolydockStoreAppResource extends Resource
                             ->helperText('Leave blank to use the default email theme')
                             ->columnSpanFull(),
 
-                        Forms\Components\TextInput::make('email_subject_line')
+                        TextInput::make('email_subject_line')
                             ->label('Email Subject Line')
                             ->placeholder('Your {app name} Instance is Ready')
                             ->helperText('Leave blank to use default subject')
                             ->columnSpanFull(),
 
-                        Forms\Components\MarkdownEditor::make('email_body_markdown')
+                        MarkdownEditor::make('email_body_markdown')
                             ->label('Email Body Content')
                             ->placeholder('Enter custom content for the "What to Know About Your App" section')
                             ->helperText('This content will appear between the access details and signature')
@@ -300,7 +317,7 @@ class PolydockStoreAppResource extends Resource
                     ->collapsible(),
                 Section::make('Trial Settings')
                     ->schema([
-                        Forms\Components\TextInput::make('trial_duration_days')
+                        TextInput::make('trial_duration_days')
                             ->label('Trial Duration (Days)')
                             ->numeric()
                             ->minValue(1)
@@ -317,42 +334,41 @@ class PolydockStoreAppResource extends Resource
             ]);
     }
 
-    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('store.name')
+                TextColumn::make('store.name')
                     ->label('Store')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('productType.name')
+                TextColumn::make('productType.name')
                     ->label('Product Type')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\IconColumn::make('available_for_trials')
+                TextColumn::make('status'),
+                IconColumn::make('available_for_trials')
                     ->label('Trials')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
+                TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('target_unallocated_app_instances')
+                TextColumn::make('target_unallocated_app_instances')
                     ->label('Target Unallocated')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('unallocated_instances_count')
+                TextColumn::make('unallocated_instances_count')
                     ->label('Unallocated')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('allocated_instances_count')
+                TextColumn::make('allocated_instances_count')
                     ->label('Allocated')
                     ->numeric()
                     ->sortable(),
@@ -360,10 +376,10 @@ class PolydockStoreAppResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\Action::make('redeploy_all')
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                Action::make('redeploy_all')
                     ->label('Redeploy all')
                     ->icon('heroicon-o-arrow-path')
                     ->color('warning')
@@ -409,44 +425,41 @@ class PolydockStoreAppResource extends Resource
                             ->body("Triggered {$run->total_count} deployment(s).")
                             ->send();
                     }),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->hidden(fn (PolydockStoreApp $record): bool => $record->instances()->exists()),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make()
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make()
                         ->hidden(fn () => true), // Disable bulk delete entirely
                 ]),
             ]);
     }
 
-    #[\Override]
     public static function getRelations(): array
     {
         return [
-            RelationManagers\PreWarmInstancesRelationManager::class,
+            PreWarmInstancesRelationManager::class,
         ];
     }
 
-    #[\Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPolydockStoreApps::route('/'),
-            'create' => Pages\CreatePolydockStoreApp::route('/create'),
-            'view' => Pages\ViewPolydockStoreApp::route('/{record}'),
-            'edit' => Pages\EditPolydockStoreApp::route('/{record}/edit'),
+            'index' => ListPolydockStoreApps::route('/'),
+            'create' => CreatePolydockStoreApp::route('/create'),
+            'view' => ViewPolydockStoreApp::route('/{record}'),
+            'edit' => EditPolydockStoreApp::route('/{record}/edit'),
         ];
     }
 
-    #[\Override]
-    public static function infolist(Infolist $infolist): Infolist
+    public static function infolist(Schema $schema): Schema
     {
-        return $infolist
-            ->schema([
-                \Filament\Infolists\Components\Section::make('App Details')
+        return $schema
+            ->components([
+                Section::make('App Details')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(4)
+                        Grid::make(4)
                             ->schema([
                                 TextEntry::make('name')
                                     ->label('App Name'),
@@ -465,7 +478,7 @@ class PolydockStoreAppResource extends Resource
                             ->columnSpanFull()
                             ->hidden(fn ($record) => blank($record->description)),
 
-                        \Filament\Infolists\Components\Grid::make(3)
+                        Grid::make(3)
                             ->schema([
                                 TextEntry::make('lagoon_deploy_git')
                                     ->copyable()
@@ -481,9 +494,9 @@ class PolydockStoreAppResource extends Resource
                     ])
                     ->columnSpan(2),
 
-                \Filament\Infolists\Components\Section::make('Instance Management')
+                Section::make('Instance Management')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(1)
+                        Grid::make(1)
                             ->schema([
                                 TextEntry::make('unallocated_instances_count')
                                     ->label('Unallocated Instances')
@@ -516,15 +529,15 @@ class PolydockStoreAppResource extends Resource
                     ])
                     ->columnSpan(1),
 
-                \Filament\Infolists\Components\Section::make('Lagoon Scripts')
+                Section::make('Lagoon Scripts')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema(self::lagoonScriptInfolistEntries()),
                     ])
                     ->collapsible()
                     ->columnSpanFull(),
 
-                \Filament\Infolists\Components\Section::make('App-Specific Configuration')
+                Section::make('App-Specific Configuration')
                     ->schema(fn ($record): array => app(PolydockAppClassDiscovery::class)
                         ->getStoreAppInfolistSchema($record->polydock_app_class ?? ''))
                     ->visible(fn ($record): bool => ! empty(app(PolydockAppClassDiscovery::class)
@@ -532,9 +545,9 @@ class PolydockStoreAppResource extends Resource
                     ->collapsible()
                     ->columnSpan(3),
 
-                \Filament\Infolists\Components\Section::make('Support Information')
+                Section::make('Support Information')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
                                 TextEntry::make('author')
                                     ->icon('heroicon-m-user')
@@ -551,9 +564,9 @@ class PolydockStoreAppResource extends Resource
                     ])
                     ->columnSpan(3),
 
-                \Filament\Infolists\Components\Section::make('Trial Settings')
+                Section::make('Trial Settings')
                     ->schema([
-                        \Filament\Infolists\Components\Grid::make(2)
+                        Grid::make(2)
                             ->schema([
                                 IconEntry::make('available_for_trials')
                                     ->label('Available for Trials')
@@ -599,15 +612,15 @@ class PolydockStoreAppResource extends Resource
                 ->collapsed()
                 ->collapsible()
                 ->schema([
-                    Forms\Components\Textarea::make("lagoon_{$stage}_script")
+                    Textarea::make("lagoon_{$stage}_script")
                         ->label('Script')
                         ->rows(3),
                     Grid::make(2)
                         ->schema([
-                            Forms\Components\TextInput::make("lagoon_{$stage}_service")
+                            TextInput::make("lagoon_{$stage}_service")
                                 ->label('Service')
                                 ->placeholder('cli'),
-                            Forms\Components\TextInput::make("lagoon_{$stage}_container")
+                            TextInput::make("lagoon_{$stage}_container")
                                 ->label('Container')
                                 ->placeholder('cli'),
                         ]),
@@ -646,12 +659,12 @@ class PolydockStoreAppResource extends Resource
         return collect(self::TRIAL_EMAILS)
             ->map(fn (string $label, string $prefix): Section => Section::make($label)
                 ->schema([
-                    Forms\Components\Toggle::make("send_{$prefix}_email")
+                    Toggle::make("send_{$prefix}_email")
                         ->label("Send {$label}"),
-                    Forms\Components\TextInput::make("{$prefix}_email_subject")
+                    TextInput::make("{$prefix}_email_subject")
                         ->label('Subject Line')
                         ->maxLength(255),
-                    Forms\Components\MarkdownEditor::make("{$prefix}_email_markdown")
+                    MarkdownEditor::make("{$prefix}_email_markdown")
                         ->label('Email Content')
                         ->columnSpanFull(),
                 ]))
@@ -660,14 +673,14 @@ class PolydockStoreAppResource extends Resource
     }
 
     /**
-     * @return array<\Filament\Infolists\Components\Section>
+     * @return array<Section>
      */
     private static function trialEmailInfolistSections(): array
     {
         return collect(self::TRIAL_EMAILS)
-            ->map(fn (string $label, string $prefix): \Filament\Infolists\Components\Section => \Filament\Infolists\Components\Section::make($label)
+            ->map(fn (string $label, string $prefix): Section => Section::make($label)
                 ->schema([
-                    \Filament\Infolists\Components\Grid::make(2)
+                    Grid::make(2)
                         ->schema([
                             IconEntry::make("send_{$prefix}_email")
                                 ->label('Email Enabled')

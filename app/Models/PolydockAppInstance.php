@@ -13,6 +13,7 @@ use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Traits\HasWebhookSensitiveData;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,9 +23,10 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\LogOptions;
+use Override;
 use Spatie\Activitylog\Models\Activity;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property int $id
@@ -182,10 +184,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 'force_purge_requested_at',
             ])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontLogEmptyChanges();
     }
 
-    public function tapActivity(Activity $activity, string $eventName): void
+    public function beforeActivityLogged(Activity $activity, string $eventName): void
     {
         if ($eventName === 'created') {
             $activity->properties = $activity->properties->merge([
@@ -357,7 +359,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      *
      * @return string
      */
-    #[\Override]
+    #[Override]
     public function getRouteKeyName()
     {
         return 'uuid';
@@ -366,7 +368,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Boot the model.
      */
-    #[\Override]
+    #[Override]
     protected static function boot()
     {
         parent::boot();
@@ -1272,7 +1274,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Calculate and set trial dates based on end datetime
      *
-     * @param  \DateTime|Carbon  $trialEndDateTime  When the trial should end
+     * @param  DateTime|Carbon  $trialEndDateTime  When the trial should end
      * @param  bool  $saveModel  Whether to save the model after setting trial dates
      */
     public function calculateAndSetTrialDatesFromEndDate($trialEndDateTime, bool $saveModel = false): self

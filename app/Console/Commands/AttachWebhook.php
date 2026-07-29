@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreWebhook;
 use Illuminate\Console\Command;
+use Override;
 
 class AttachWebhook extends BaseCommand
 {
@@ -90,7 +91,7 @@ class AttachWebhook extends BaseCommand
         return 0;
     }
 
-    #[\Override]
+    #[Override]
     public function sensitiveInputs(): array
     {
         return ['url'];

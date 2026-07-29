@@ -6,7 +6,7 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\Traits\PolydockAppConfigurationTrait;
 use App\Polydock\Core\Traits\PolydockAppFundamentalsTrait;
 use App\Polydock\Core\Traits\PolydockAppLoggerTrait;
-use Filament\Forms\Components\Component;
+use Filament\Schemas\Components\Component;
 
 abstract class PolydockAppBase implements PolydockAppInterface
 {
@@ -257,7 +257,7 @@ abstract class PolydockAppBase implements PolydockAppInterface
      * - Add the #[PolydockAppStoreFields] attribute to the class
      * - Implement the HasStoreAppFormFields interface
      *
-     * @return array<\Filament\Infolists\Components\Component> Array of Filament infolist components
+     * @return array<Component> Array of Filament infolist components
      *
      * @example
      * ```php
@@ -341,7 +341,7 @@ abstract class PolydockAppBase implements PolydockAppInterface
      * - Add the #[PolydockAppInstanceFields] attribute to the class
      * - Implement the HasAppInstanceFormFields interface
      *
-     * @return array<\Filament\Infolists\Components\Component> Array of Filament infolist components
+     * @return array<Component> Array of Filament infolist components
      *
      * @example
      * ```php

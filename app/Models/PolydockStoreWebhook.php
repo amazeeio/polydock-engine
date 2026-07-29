@@ -7,8 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use RuntimeException;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property string $secret
@@ -58,7 +59,7 @@ class PolydockStoreWebhook extends Model
         // creating hook and existing rows are backfilled by migration, so this is
         // a defensive guard against raw inserts / unexpected null secrets.
         if (empty($this->secret)) {
-            throw new \RuntimeException("Webhook {$this->id} has no signing secret; refusing to deliver.");
+            throw new RuntimeException("Webhook {$this->id} has no signing secret; refusing to deliver.");
         }
 
         return 'sha256='.hash_hmac('sha256', $body, (string) $this->secret);
@@ -69,7 +70,7 @@ class PolydockStoreWebhook extends Model
         return LogOptions::defaults()
             ->logOnly(['url', 'active'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontLogEmptyChanges();
     }
 
     public function store(): BelongsTo

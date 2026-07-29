@@ -4,12 +4,15 @@ declare(strict_types=1);
 
 namespace App\PolydockEngine;
 
-class PolydockEngineServiceProviderInitializationException extends \Exception
+use Exception;
+use Throwable;
+
+class PolydockEngineServiceProviderInitializationException extends Exception
 {
     public function __construct(
         string $message = 'ServiceProvider initialization failed',
         int $code = 0,
-        ?\Throwable $previous = null,
+        ?Throwable $previous = null,
     ) {
         parent::__construct($message, $code, $previous);
     }

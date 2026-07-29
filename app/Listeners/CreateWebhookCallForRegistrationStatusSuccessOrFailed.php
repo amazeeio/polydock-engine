@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Events\UserRemoteRegistrationStatusChanged;
 use App\Models\PolydockStoreWebhookCall;
+use Exception;
 use Illuminate\Support\Facades\Log;
 
 class CreateWebhookCallForRegistrationStatusSuccessOrFailed
@@ -78,7 +79,7 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
                             'updated_at' => $event->registration->updated_at,
                         ],
                     ]);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Log::error('Failed to create webhook call for registration status change', [
                         'webhook_id' => $webhook->id,
                         'registration_id' => $event->registration->id,

@@ -10,24 +10,23 @@ use App\Models\PolydockStoreApp;
 use App\Models\UserGroup;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\ClaimExistingProjectService;
-use Filament\Actions;
 use Filament\Actions\Action;
+use Filament\Actions\CreateAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
 class ListPolydockAppInstances extends ListRecords
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
-    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
-            Actions\CreateAction::make(),
+            CreateAction::make(),
             Action::make('claim_existing_project')
                 ->label('Claim existing Lagoon project')
                 ->icon('heroicon-o-link')
@@ -36,7 +35,7 @@ class ListPolydockAppInstances extends ListRecords
                 ->modalHeading('Claim an existing Lagoon project')
                 ->modalDescription('Adopt a project that already exists on Lagoon so Polydock auto-updates it with scheduled deployments. Polydock grants its deploy group access to the project and will never delete a project it did not create.')
                 ->modalSubmitActionLabel('Claim')
-                ->form([
+                ->schema([
                     TextInput::make('project_name')
                         ->label('Lagoon project name')
                         ->required()

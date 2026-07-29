@@ -13,7 +13,7 @@ use Illuminate\Support\Collection;
  */
 abstract class WeeklyBarChartWidget extends ChartWidget
 {
-    protected static ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '300px';
 
     protected function getType(): string
     {

@@ -13,7 +13,9 @@ use App\Polydock\Core\PolydockEngineInterface;
 use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockEngine\Traits\PolydockEngineFunctionCallerTrait;
 use App\Services\LagoonClientService;
+use Exception;
 use Illuminate\Database\Eloquent\Model;
+use Override;
 
 class Engine extends PolydockEngineBase implements PolydockEngineInterface
 {
@@ -54,7 +56,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  PolydockAppLoggerInterface  $logger  The logger to set
      * @return self Returns the instance for method chaining
      */
-    #[\Override]
+    #[Override]
     public function setLogger(PolydockAppLoggerInterface $logger): self
     {
         $this->logger = $logger;
@@ -67,7 +69,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      *
      * @return PolydockAppLoggerInterface The logger
      */
-    #[\Override]
+    #[Override]
     public function getLogger(): PolydockAppLoggerInterface
     {
         return $this->logger;
@@ -420,7 +422,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  array<string, mixed>  $context  The context for the message
      * @return self Returns the instance for method chaining
      */
-    #[\Override]
+    #[Override]
     public function info(string $message, array $context = []): self
     {
         $this->logger->info($message, $context);
@@ -435,7 +437,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  array<string, mixed>  $context  The context for the message
      * @return self Returns the instance for method chaining
      */
-    #[\Override]
+    #[Override]
     public function error(string $message, array $context = []): self
     {
         $this->logger->error($message, $context);
@@ -450,7 +452,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  array<string, mixed>  $context  The context for the message
      * @return self Returns the instance for method chaining
      */
-    #[\Override]
+    #[Override]
     public function warning(string $message, array $context = []): self
     {
         $this->logger->warning($message, $context);
@@ -465,7 +467,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  array<string, mixed>  $context  The context for the message
      * @return self Returns the instance for method chaining
      */
-    #[\Override]
+    #[Override]
     public function debug(string $message, array $context = []): self
     {
         $this->logger->debug($message, $context);
@@ -492,7 +494,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                 'timeout' => 30.0,
                 'connect_timeout' => 5.0,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->warning('Failed to authenticate Lagoon client for metadata push: '.$e->getMessage());
 
             return;
@@ -537,7 +539,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                     $existingMetadata = \json_decode($projectData['metadata'], true) ?: [];
                 }
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->warning(\sprintf('Failed to fetch existing project metadata from Lagoon: %s. Proceeding with safety writes.', $e->getMessage()));
         }
 
@@ -556,7 +558,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
                 } else {
                     $this->info(\sprintf('Set metadata: %s => %s', $key, $value));
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->warning(\sprintf('Exception writing metadata "%s": %s', $key, $e->getMessage()));
             }
         }

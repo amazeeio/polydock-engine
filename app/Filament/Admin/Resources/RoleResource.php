@@ -2,18 +2,26 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\RoleResource\Pages;
+use App\Filament\Admin\Resources\RoleResource\Pages\CreateRole;
+use App\Filament\Admin\Resources\RoleResource\Pages\EditRole;
+use App\Filament\Admin\Resources\RoleResource\Pages\ListRoles;
+use App\Filament\Admin\Resources\RoleResource\Pages\ViewRole;
 use App\Models\Role;
+use BackedEnum;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use BezhanSalleh\FilamentShield\Forms\ShieldSelectAllToggle;
 use BezhanSalleh\FilamentShield\Support\Utils;
 use BezhanSalleh\FilamentShield\Traits\HasShieldFormComponents;
-use Filament\Forms;
-use Filament\Forms\Form;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
+use UnitEnum;
 
 class RoleResource extends Resource implements HasShieldPermissions
 {
@@ -21,9 +29,9 @@ class RoleResource extends Resource implements HasShieldPermissions
 
     protected static ?string $model = Role::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shield-check';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-shield-check';
 
-    protected static ?string $navigationGroup = 'System';
+    protected static string|UnitEnum|null $navigationGroup = 'System';
 
     protected static ?int $navigationSort = 1;
 
@@ -43,16 +51,15 @@ class RoleResource extends Resource implements HasShieldPermissions
         ];
     }
 
-    #[\Override]
-    public static function form(Form $form): Form
+    public static function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\Grid::make()
+        return $schema
+            ->components([
+                Grid::make()
                     ->schema([
-                        Forms\Components\Section::make()
+                        Section::make()
                             ->schema([
-                                Forms\Components\TextInput::make('name')
+                                TextInput::make('name')
                                     ->label('Machine ID')
                                     ->helperText('Unique identifier used in code. Cannot be changed after creation.')
                                     ->required()
@@ -66,12 +73,12 @@ class RoleResource extends Resource implements HasShieldPermissions
                                         modifyRuleUsing: fn ($rule, $get) => $rule->where('guard_name', $get('guard_name') ?? Utils::getFilamentAuthGuard()),
                                     ),
 
-                                Forms\Components\TextInput::make('label')
+                                TextInput::make('label')
                                     ->label('Display Name')
                                     ->helperText('Human-readable name for this role. Can be changed freely.')
                                     ->maxLength(255),
 
-                                Forms\Components\TextInput::make('guard_name')
+                                TextInput::make('guard_name')
                                     ->label(__('filament-shield::filament-shield.field.guard_name'))
                                     ->default(Utils::getFilamentAuthGuard())
                                     ->nullable()
@@ -79,12 +86,7 @@ class RoleResource extends Resource implements HasShieldPermissions
                                     ->disabled(fn (string $operation): bool => $operation === 'edit')
                                     ->dehydrated(fn (string $operation): bool => $operation === 'create'),
 
-                                ShieldSelectAllToggle::make('select_all')
-                                    ->onIcon('heroicon-s-shield-check')
-                                    ->offIcon('heroicon-s-shield-exclamation')
-                                    ->label(__('filament-shield::filament-shield.field.select_all.name'))
-                                    ->helperText(fn (): HtmlString => new HtmlString(__('filament-shield::filament-shield.field.select_all.message')))
-                                    ->dehydrated(fn (bool $state): bool => $state),
+                                static::getSelectAllFormComponent(),
                             ])
                             ->columns([
                                 'sm' => 2,
@@ -95,65 +97,62 @@ class RoleResource extends Resource implements HasShieldPermissions
             ]);
     }
 
-    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Machine ID')
                     ->badge()
                     ->color('gray')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('label')
+                TextColumn::make('label')
                     ->label('Display Name')
                     ->getStateUsing(fn ($record): string => $record->display_name)
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('guard_name')
+                TextColumn::make('guard_name')
                     ->badge()
                     ->color('warning')
                     ->label(__('filament-shield::filament-shield.column.guard_name')),
-                Tables\Columns\TextColumn::make('permissions_count')
+                TextColumn::make('permissions_count')
                     ->badge()
                     ->label(__('filament-shield::filament-shield.column.permissions'))
                     ->counts('permissions')
                     ->colors(['success']),
-                Tables\Columns\TextColumn::make('updated_at')
+                TextColumn::make('updated_at')
                     ->label(__('filament-shield::filament-shield.column.updated_at'))
                     ->dateTime(),
             ])
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make()
+            ->recordActions([
+                EditAction::make(),
+                DeleteAction::make()
                     ->hidden(fn ($record): bool => in_array($record->name, ['super_admin', 'service-account'])),
             ])
             ->checkIfRecordIsSelectableUsing(
                 fn ($record): bool => ! in_array($record->name, ['super_admin', 'service-account']),
             )
-            ->bulkActions([
-                Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                DeleteBulkAction::make(),
             ]);
     }
 
-    #[\Override]
     public static function getRelations(): array
     {
         return [];
     }
 
-    #[\Override]
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListRoles::route('/'),
-            'create' => Pages\CreateRole::route('/create'),
-            'view' => Pages\ViewRole::route('/{record}'),
-            'edit' => Pages\EditRole::route('/{record}/edit'),
+            'index' => ListRoles::route('/'),
+            'create' => CreateRole::route('/create'),
+            'view' => ViewRole::route('/{record}'),
+            'edit' => EditRole::route('/{record}/edit'),
         ];
     }
 

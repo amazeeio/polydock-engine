@@ -15,9 +15,10 @@ use App\Polydock\Core\Contracts\HasStoreAppFormFields;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
-use Filament\Forms\Components\Component;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Component;
+use Override;
 
 #[PolydockAppTitle('Dependency Track App')]
 #[PolydockAppStoreFields]
@@ -32,16 +33,16 @@ class PolydockDependencyTrackApp extends GenericPolydockApp implements HasAppIns
     /**
      * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getStoreAppFormSchema(): array
     {
         return [];
     }
 
     /**
-     * @return array<\Filament\Infolists\Components\Component>
+     * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getStoreAppInfolistSchema(): array
     {
         return [];
@@ -50,7 +51,7 @@ class PolydockDependencyTrackApp extends GenericPolydockApp implements HasAppIns
     /**
      * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getAppInstanceFormSchema(): array
     {
         return [
@@ -63,9 +64,9 @@ class PolydockDependencyTrackApp extends GenericPolydockApp implements HasAppIns
     }
 
     /**
-     * @return array<\Filament\Infolists\Components\Component>
+     * @return array<Component>
      */
-    #[\Override]
+    #[Override]
     public static function getAppInstanceInfolistSchema(): array
     {
         return [
@@ -78,7 +79,7 @@ class PolydockDependencyTrackApp extends GenericPolydockApp implements HasAppIns
     /**
      * @throws PolydockAppInstanceStatusFlowException
      */
-    #[\Override]
+    #[Override]
     public function claimAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $functionName = __FUNCTION__;
