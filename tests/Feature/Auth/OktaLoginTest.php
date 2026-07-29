@@ -101,6 +101,23 @@ class OktaLoginTest extends TestCase
         $this->assertAuthenticatedAs($user);
     }
 
+    public function test_callback_refuses_to_link_existing_user_outside_okta_domains(): void
+    {
+        $user = User::factory()->create([
+            'email' => 'customer@example.com',
+            'password' => Hash::make('secret-password'),
+        ]);
+
+        $this->fakeOktaUser('okta-sub-9', 'customer@example.com');
+
+        $this->get('/auth/okta/callback')->assertForbidden();
+
+        $user->refresh();
+        $this->assertNull($user->okta_sub);
+        $this->assertNotNull($user->password);
+        $this->assertGuest();
+    }
+
     public function test_callback_jit_creates_user_with_no_roles(): void
     {
         $this->fakeOktaUser('okta-sub-3', 'newstaff@amazee.io', [

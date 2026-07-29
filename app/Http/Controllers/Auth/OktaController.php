@@ -70,6 +70,16 @@ class OktaController extends Controller
         $user = User::whereRaw('LOWER(email) = ?', [$email])->first();
 
         if ($user) {
+            // A verified email proves Okta vouches for the address, not that
+            // this local account agreed to be linked. Only emails on the
+            // Okta-forced domains (IT-controlled mailboxes) may bind to an
+            // existing account; anything else needs pre-provisioned okta_sub.
+            abort_unless(
+                in_array(strtolower(Str::after($email, '@')), config('okta.domains', []), true),
+                403,
+                'Only Okta-managed domains may link to an existing account.',
+            );
+
             // Lazy account linking: no password path remains for Okta users.
             $user->forceFill(['okta_sub' => $sub, 'password' => null])->save();
             activity()->performedOn($user)->log('Okta account linked to existing user');

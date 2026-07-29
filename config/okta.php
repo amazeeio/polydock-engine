@@ -45,8 +45,13 @@ return [
     | for a local fake IdP form so the full SSO flow can be exercised without
     | a real Okta app. Requires OKTA_CLIENT_ID to be set to any value.
     |
+    | The fake IdP grants roles from query input, so it must never run on a
+    | deployed environment: Lagoon sets LAGOON_ENVIRONMENT_TYPE on every
+    | deployed environment, and its presence hard-disables the fake driver
+    | regardless of APP_ENV.
+    |
     */
 
-    'fake' => (bool) env('OKTA_FAKE', false),
+    'fake' => (bool) env('OKTA_FAKE', false) && ! env('LAGOON_ENVIRONMENT_TYPE'),
 
 ];
