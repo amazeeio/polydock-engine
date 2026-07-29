@@ -115,6 +115,18 @@ return [
         'name' => env('MAIL_FROM_NAME', 'Example'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | CC All Outgoing Application Emails
+    |--------------------------------------------------------------------------
+    |
+    | When set to an address, trial/lifecycle emails are CC'd to it. Read via
+    | config (not env()) so it keeps working under `config:cache`.
+    |
+    */
+
+    'cc_all' => env('MAIL_CC_ALL'),
+
     'mjml-config' => [
         /*
     |--------------------------------------------------------------------------

@@ -24,9 +24,11 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -65,6 +67,7 @@ class PolydockStoreAppResource extends Resource
                     ->label('Store')
                     ->options(PolydockStore::all()->pluck('name', 'id'))
                     ->required()
+                    ->live()
                     ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
                     ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
                 Select::make('polydock_app_class')
@@ -125,7 +128,8 @@ class PolydockStoreAppResource extends Resource
                     ->required()
                     ->numeric()
                     ->minValue(0)
-                    ->default(0),
+                    ->default(0)
+                    ->helperText('Ignored when Project Naming is set to Custom - custom-named apps cannot be pre-warmed.'),
                 Toggle::make('available_for_trials')
                     ->label('Available for Trials')
                     ->required()
@@ -144,6 +148,71 @@ class PolydockStoreAppResource extends Resource
                             ->default(7)
                             ->required(fn (Get $get): bool => (bool) $get('refresh_unallocated_instances'))
                             ->visible(fn (Get $get): bool => (bool) $get('refresh_unallocated_instances')),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
+                Section::make('Project Naming')
+                    ->description('How Lagoon project names are generated for instances of this app.')
+                    ->schema([
+                        Select::make('project_naming_mode')
+                            ->label('Naming Mode')
+                            ->options([
+                                PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN => 'Pattern - generated from word lists',
+                                PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM => 'Custom - name supplied at registration (no pre-warming)',
+                            ])
+                            ->default(PolydockStoreApp::PROJECT_NAMING_MODE_PATTERN)
+                            ->live()
+                            ->columnSpanFull(),
+                        TextInput::make('project_naming_prefix')
+                            ->label('App Prefix')
+                            ->regex('/^[a-z0-9]+(-[a-z0-9]+)*$/')
+                            ->maxLength(30)
+                            ->helperText('Optional. Prepended to the store prefix: <app-prefix>-<store-prefix>-<adjective>-<noun>-<id>. Leave empty to use the store prefix alone.')
+                            ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
+                        Placeholder::make('store_project_prefix')
+                            ->label('Store Prefix (set on the store, not editable here)')
+                            ->content(fn (Get $get): string => PolydockStore::find($get('polydock_store_id'))->lagoon_deploy_project_prefix ?? '—')
+                            ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
+                        TagsInput::make('project_naming_adjectives')
+                            ->label('Adjective Word List')
+                            ->placeholder('e.g. snappy, zesty, jolly')
+                            ->helperText('Optional. Names are <prefix>-<adjective>-<noun>-<id>. Leave empty to use the generic color list.')
+                            ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
+                        TagsInput::make('project_naming_nouns')
+                            ->label('Noun Word List')
+                            ->placeholder('e.g. lobster, shrimp, crab')
+                            ->helperText('Optional. Leave empty to use the generic animal list.')
+                            ->visible(fn (Get $get): bool => $get('project_naming_mode') !== PolydockStoreApp::PROJECT_NAMING_MODE_CUSTOM),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
+                Section::make('Custom Lagoon Route')
+                    ->description('Registers a LAGOON_ROUTES_JSON custom route per instance before its first deploy. Use this to set ingress annotations (upload size, timeouts) that Lagoon does not support on autogenerated routes. The custom route becomes the primary route.')
+                    ->schema([
+                        Toggle::make('lagoon_custom_route_enabled')
+                            ->label('Enable custom route')
+                            ->default(false)
+                            ->live()
+                            ->columnSpanFull(),
+                        TextInput::make('lagoon_custom_route_domain_pattern')
+                            ->label('Domain Pattern')
+                            ->placeholder('{project}.example.amazee.io')
+                            ->helperText('Placeholders: {project}, {environment}. Must resolve under the target cluster\'s wildcard DNS.')
+                            ->required(fn (Get $get): bool => (bool) $get('lagoon_custom_route_enabled'))
+                            ->visible(fn (Get $get): bool => (bool) $get('lagoon_custom_route_enabled')),
+                        TextInput::make('lagoon_custom_route_service')
+                            ->label('Lagoon Service')
+                            ->placeholder('anythingllm')
+                            ->helperText('The docker-compose service the route points at.')
+                            ->required(fn (Get $get): bool => (bool) $get('lagoon_custom_route_enabled'))
+                            ->visible(fn (Get $get): bool => (bool) $get('lagoon_custom_route_enabled')),
+                        KeyValue::make('lagoon_custom_route_annotations')
+                            ->label('Ingress Annotations')
+                            ->keyLabel('Annotation')
+                            ->valueLabel('Value')
+                            ->helperText('e.g. nginx.ingress.kubernetes.io/proxy-body-size => 0, nginx.ingress.kubernetes.io/proxy-read-timeout => 600')
+                            ->visible(fn (Get $get): bool => (bool) $get('lagoon_custom_route_enabled'))
+                            ->columnSpanFull(),
                     ])
                     ->columns(2)
                     ->collapsible(),
@@ -193,127 +262,7 @@ class PolydockStoreAppResource extends Resource
                     ->collapsible(),
                 Section::make('Lagoon Scripts')
                     ->description('Scripts to be executed at various stages of the application lifecycle.')
-                    ->schema([
-                        Section::make('Post Deploy')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Textarea::make('lagoon_post_deploy_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        TextInput::make('lagoon_post_deploy_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        TextInput::make('lagoon_post_deploy_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Pre Upgrade')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Textarea::make('lagoon_pre_upgrade_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        TextInput::make('lagoon_pre_upgrade_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        TextInput::make('lagoon_pre_upgrade_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Upgrade')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Textarea::make('lagoon_upgrade_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        TextInput::make('lagoon_upgrade_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        TextInput::make('lagoon_upgrade_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Post Upgrade')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Textarea::make('lagoon_post_upgrade_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        TextInput::make('lagoon_post_upgrade_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        TextInput::make('lagoon_post_upgrade_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Claim')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Textarea::make('lagoon_claim_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        TextInput::make('lagoon_claim_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        TextInput::make('lagoon_claim_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Pre Remove')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Textarea::make('lagoon_pre_remove_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        TextInput::make('lagoon_pre_remove_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        TextInput::make('lagoon_pre_remove_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                        Section::make('Remove')
-                            ->collapsed()
-                            ->collapsible()
-                            ->schema([
-                                Textarea::make('lagoon_remove_script')
-                                    ->label('Script')
-                                    ->rows(3),
-                                Grid::make(2)
-                                    ->schema([
-                                        TextInput::make('lagoon_remove_service')
-                                            ->label('Service')
-                                            ->placeholder('cli'),
-                                        TextInput::make('lagoon_remove_container')
-                                            ->label('Container')
-                                            ->placeholder('cli'),
-                                    ]),
-                            ]),
-                    ])
+                    ->schema(self::lagoonScriptFormSections())
                     ->collapsible()
                     ->collapsed(),
                 Section::make('App-Specific Configuration')
@@ -333,6 +282,15 @@ class PolydockStoreAppResource extends Resource
                     ->columnSpanFull(),
                 Section::make('Instance Ready Email Configuration')
                     ->schema([
+                        Select::make('mail_theme')
+                            ->label('Email Theme')
+                            ->options(fn (): array => collect(config('mail.mjml-config.themes', []))
+                                ->map(fn (array $theme, string $key): string => $theme['name'] ?? $key)
+                                ->all())
+                            ->placeholder('Default theme')
+                            ->helperText('Leave blank to use the default email theme')
+                            ->columnSpanFull(),
+
                         TextInput::make('email_subject_line')
                             ->label('Email Subject Line')
                             ->placeholder('Your {app name} Instance is Ready')
@@ -367,41 +325,7 @@ class PolydockStoreAppResource extends Resource
 
                         Grid::make(2)
                             ->schema([
-                                Section::make('Mid-trial Email')
-                                    ->schema([
-                                        Toggle::make('send_midtrial_email')
-                                            ->label('Send Mid-trial Email'),
-                                        TextInput::make('midtrial_email_subject')
-                                            ->label('Subject Line')
-                                            ->maxLength(255),
-                                        MarkdownEditor::make('midtrial_email_markdown')
-                                            ->label('Email Content')
-                                            ->columnSpanFull(),
-                                    ]),
-
-                                Section::make('One Day Left Email')
-                                    ->schema([
-                                        Toggle::make('send_one_day_left_email')
-                                            ->label('Send One Day Left Email'),
-                                        TextInput::make('one_day_left_email_subject')
-                                            ->label('Subject Line')
-                                            ->maxLength(255),
-                                        MarkdownEditor::make('one_day_left_email_markdown')
-                                            ->label('Email Content')
-                                            ->columnSpanFull(),
-                                    ]),
-
-                                Section::make('Trial Complete Email')
-                                    ->schema([
-                                        Toggle::make('send_trial_complete_email')
-                                            ->label('Send Trial Complete Email'),
-                                        TextInput::make('trial_complete_email_subject')
-                                            ->label('Subject Line')
-                                            ->maxLength(255),
-                                        MarkdownEditor::make('trial_complete_email_markdown')
-                                            ->label('Email Content')
-                                            ->columnSpanFull(),
-                                    ]),
+                                ...self::trialEmailFormSections(),
                             ])
                             ->columnSpanFull(),
                     ])
@@ -589,7 +513,8 @@ class PolydockStoreAppResource extends Resource
                                     ->label('Pre-warm Refresh After (Days)'),
                                 TextEntry::make('allocatedInstances')
                                     ->label('Allocated Instances')
-                                    ->state(fn ($record) => $record->allocatedInstances()->count())
+                                    // getEloquentQuery() already eager-counts this.
+                                    ->state(fn ($record) => $record->allocated_instances_count)
                                     ->icon('heroicon-m-check-circle')
                                     ->iconColor('success'),
                                 TextEntry::make('lagoon_production_environment')
@@ -607,84 +532,7 @@ class PolydockStoreAppResource extends Resource
                 Section::make('Lagoon Scripts')
                     ->schema([
                         Grid::make(2)
-                            ->schema([
-                                TextEntry::make('lagoon_post_deploy_script')
-                                    ->label('Post Deploy Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_deploy_script)),
-                                TextEntry::make('lagoon_post_deploy_service')
-                                    ->label('Post Deploy Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_deploy_script)),
-                                TextEntry::make('lagoon_post_deploy_container')
-                                    ->label('Post Deploy Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_deploy_script)),
-
-                                TextEntry::make('lagoon_pre_upgrade_script')
-                                    ->label('Pre Upgrade Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_upgrade_script)),
-                                TextEntry::make('lagoon_pre_upgrade_service')
-                                    ->label('Pre Upgrade Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_upgrade_script)),
-                                TextEntry::make('lagoon_pre_upgrade_container')
-                                    ->label('Pre Upgrade Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_upgrade_script)),
-
-                                TextEntry::make('lagoon_upgrade_script')
-                                    ->label('Upgrade Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_upgrade_script)),
-                                TextEntry::make('lagoon_upgrade_service')
-                                    ->label('Upgrade Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_upgrade_script)),
-                                TextEntry::make('lagoon_upgrade_container')
-                                    ->label('Upgrade Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_upgrade_script)),
-
-                                TextEntry::make('lagoon_post_upgrade_script')
-                                    ->label('Post Upgrade Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_upgrade_script)),
-                                TextEntry::make('lagoon_post_upgrade_service')
-                                    ->label('Post Upgrade Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_upgrade_script)),
-                                TextEntry::make('lagoon_post_upgrade_container')
-                                    ->label('Post Upgrade Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_post_upgrade_script)),
-
-                                TextEntry::make('lagoon_claim_script')
-                                    ->label('Claim Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_claim_script)),
-                                TextEntry::make('lagoon_claim_service')
-                                    ->label('Claim Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_claim_script)),
-                                TextEntry::make('lagoon_claim_container')
-                                    ->label('Claim Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_claim_script)),
-
-                                TextEntry::make('lagoon_pre_remove_script')
-                                    ->label('Pre Remove Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_remove_script)),
-                                TextEntry::make('lagoon_pre_remove_service')
-                                    ->label('Pre Remove Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_remove_script)),
-                                TextEntry::make('lagoon_pre_remove_container')
-                                    ->label('Pre Remove Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_pre_remove_script)),
-
-                                TextEntry::make('lagoon_remove_script')
-                                    ->label('Remove Script')
-                                    ->columnSpanFull()
-                                    ->hidden(fn ($record) => blank($record->lagoon_remove_script)),
-                                TextEntry::make('lagoon_remove_service')
-                                    ->label('Remove Service')
-                                    ->hidden(fn ($record) => blank($record->lagoon_remove_script)),
-                                TextEntry::make('lagoon_remove_container')
-                                    ->label('Remove Container')
-                                    ->hidden(fn ($record) => blank($record->lagoon_remove_script)),
-                            ]),
+                            ->schema(self::lagoonScriptInfolistEntries()),
                     ])
                     ->collapsible()
                     ->columnSpanFull(),
@@ -731,54 +579,124 @@ class PolydockStoreAppResource extends Resource
                     ])
                     ->columnSpan(3),
 
-                Section::make('Mid-trial Email')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                IconEntry::make('send_midtrial_email')
-                                    ->label('Email Enabled')
-                                    ->boolean(),
-                                TextEntry::make('midtrial_email_subject')
-                                    ->label('Subject Line')
-                                    ->visible(fn ($record) => $record->send_midtrial_email)
-                                    ->placeholder('Not configured'),
-                            ]),
-                    ])
-                    ->columnSpan(3),
-
-                Section::make('One Day Left Email')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                IconEntry::make('send_one_day_left_email')
-                                    ->label('Email Enabled')
-                                    ->boolean(),
-                                TextEntry::make('one_day_left_email_subject')
-                                    ->label('Subject Line')
-                                    ->visible(fn ($record) => $record->send_one_day_left_email)
-                                    ->placeholder('Not configured'),
-                            ]),
-                    ])
-                    ->columnSpan(3),
-
-                Section::make('Trial Complete Email')
-                    ->schema([
-                        Grid::make(2)
-                            ->schema([
-                                IconEntry::make('send_trial_complete_email')
-                                    ->label('Email Enabled')
-                                    ->boolean(),
-                                TextEntry::make('trial_complete_email_subject')
-                                    ->label('Subject Line')
-                                    ->visible(fn ($record) => $record->send_trial_complete_email)
-                                    ->placeholder('Not configured'),
-                            ]),
-                    ])
-                    ->columnSpan(3),
+                ...self::trialEmailInfolistSections(),
             ])
             ->columns(3);
     }
 
+    /** Lifecycle script prefixes shared by the form and infolist Lagoon Scripts sections. */
+    private const LAGOON_SCRIPT_STAGES = [
+        'post_deploy' => 'Post Deploy',
+        'pre_upgrade' => 'Pre Upgrade',
+        'upgrade' => 'Upgrade',
+        'post_upgrade' => 'Post Upgrade',
+        'claim' => 'Claim',
+        'pre_remove' => 'Pre Remove',
+        'remove' => 'Remove',
+    ];
+
+    /** Trial email prefixes shared by the form and infolist trial sections. */
+    private const TRIAL_EMAILS = [
+        'midtrial' => 'Mid-trial Email',
+        'one_day_left' => 'One Day Left Email',
+        'trial_complete' => 'Trial Complete Email',
+    ];
+
+    /**
+     * @return array<Section>
+     */
+    private static function lagoonScriptFormSections(): array
+    {
+        return collect(self::LAGOON_SCRIPT_STAGES)
+            ->map(fn (string $label, string $stage): Section => Section::make($label)
+                ->collapsed()
+                ->collapsible()
+                ->schema([
+                    Textarea::make("lagoon_{$stage}_script")
+                        ->label('Script')
+                        ->rows(3),
+                    Grid::make(2)
+                        ->schema([
+                            TextInput::make("lagoon_{$stage}_service")
+                                ->label('Service')
+                                ->placeholder('cli'),
+                            TextInput::make("lagoon_{$stage}_container")
+                                ->label('Container')
+                                ->placeholder('cli'),
+                        ]),
+                ]))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<TextEntry>
+     */
+    private static function lagoonScriptInfolistEntries(): array
+    {
+        return collect(self::LAGOON_SCRIPT_STAGES)
+            ->flatMap(fn (string $label, string $stage): array => [
+                TextEntry::make("lagoon_{$stage}_script")
+                    ->label("{$label} Script")
+                    ->columnSpanFull()
+                    ->hidden(fn ($record) => blank($record->{"lagoon_{$stage}_script"})),
+                TextEntry::make("lagoon_{$stage}_service")
+                    ->label("{$label} Service")
+                    ->hidden(fn ($record) => blank($record->{"lagoon_{$stage}_script"})),
+                TextEntry::make("lagoon_{$stage}_container")
+                    ->label("{$label} Container")
+                    ->hidden(fn ($record) => blank($record->{"lagoon_{$stage}_script"})),
+            ])
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<Section>
+     */
+    private static function trialEmailFormSections(): array
+    {
+        return collect(self::TRIAL_EMAILS)
+            ->map(fn (string $label, string $prefix): Section => Section::make($label)
+                ->schema([
+                    Toggle::make("send_{$prefix}_email")
+                        ->label("Send {$label}"),
+                    TextInput::make("{$prefix}_email_subject")
+                        ->label('Subject Line')
+                        ->maxLength(255),
+                    MarkdownEditor::make("{$prefix}_email_markdown")
+                        ->label('Email Content')
+                        ->columnSpanFull(),
+                ]))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * @return array<Section>
+     */
+    private static function trialEmailInfolistSections(): array
+    {
+        return collect(self::TRIAL_EMAILS)
+            ->map(fn (string $label, string $prefix): Section => Section::make($label)
+                ->schema([
+                    Grid::make(2)
+                        ->schema([
+                            IconEntry::make("send_{$prefix}_email")
+                                ->label('Email Enabled')
+                                ->boolean(),
+                            TextEntry::make("{$prefix}_email_subject")
+                                ->label('Subject Line')
+                                ->visible(fn ($record) => $record->{"send_{$prefix}_email"})
+                                ->placeholder('Not configured'),
+                        ]),
+                ])
+                ->columnSpan(3))
+            ->values()
+            ->all();
+    }
+
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

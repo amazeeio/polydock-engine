@@ -22,6 +22,7 @@ use App\Services\PolydockAppClassDiscovery;
 use App\Services\PolydockDeploymentService;
 use App\Support\SensitiveDataRedactor;
 use BackedEnum;
+use Carbon\CarbonInterval;
 use Filament\Actions\BulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
@@ -31,6 +32,7 @@ use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Component;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -387,8 +389,65 @@ class PolydockAppInstanceResource extends Resource
                     ->schema(self::getRenderedSafeDataForRecord(...))
                     ->columnSpan(3)
                     ->collapsible(),
+
+                Section::make('Stage Timings')
+                    ->description('Time spent in each lifecycle stage, from the status transition log.')
+                    ->schema(self::getStageTimingEntriesForRecord(...))
+                    ->visible(fn (PolydockAppInstance $record): bool => $record->statusTransitions()->exists())
+                    ->columnSpan(3)
+                    ->collapsible()
+                    ->collapsed(),
             ])
             ->columns(3);
+    }
+
+    /**
+     * Build the stage-timing entries: two headline durations, then each
+     * transition with its timestamp and delta from the previous one.
+     *
+     * @return array<Component>
+     */
+    public static function getStageTimingEntriesForRecord(PolydockAppInstance $record): array
+    {
+        $headlines = [
+            TextEntry::make('timing_new_to_claimed')
+                ->label('New → Claimed')
+                ->state(self::humanSeconds($record->secondsFromCreationToClaimed())),
+            TextEntry::make('timing_time_unclaimed')
+                ->label('Time unclaimed (pool wait)')
+                ->state(self::humanSeconds($record->secondsUnclaimedBeforeClaim())),
+        ];
+
+        $rows = [];
+        $previous = null;
+        foreach ($record->statusTransitions as $index => $transition) {
+            $delta = $previous
+                ? (int) $previous->created_at->diffInSeconds($transition->created_at)
+                : null;
+
+            $rows[] = TextEntry::make("timing_transition_{$index}")
+                ->label(($transition->from_status?->getLabel() ?? 'Created').' → '.$transition->to_status->getLabel())
+                ->state($transition->created_at->format('Y-m-d H:i:s')
+                    .($delta !== null ? ' (+'.self::humanSeconds($delta).')' : ''));
+
+            $previous = $transition;
+        }
+
+        return [
+            Grid::make(2)->schema($headlines),
+            Grid::make(2)->schema($rows),
+        ];
+    }
+
+    private static function humanSeconds(?int $seconds): string
+    {
+        if ($seconds === null) {
+            return '—';
+        }
+
+        return $seconds === 0
+            ? '0s'
+            : CarbonInterval::seconds($seconds)->cascade()->forHumans(short: true);
     }
 
     public static function getRenderedSafeDataForRecord(PolydockAppInstance $record): array

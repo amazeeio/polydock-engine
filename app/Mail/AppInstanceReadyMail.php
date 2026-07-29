@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
+use App\Mail\Traits\AppliesMailTheme;
 use App\Models\PolydockAppInstance;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Config;
 
 class AppInstanceReadyMail extends Mailable
 {
+    use AppliesMailTheme;
     use Queueable;
     use SerializesModels;
 
@@ -50,25 +50,11 @@ class AppInstanceReadyMail extends Mailable
      */
     public function content(): Content
     {
-        // dd(Config::get('mail.mjml-config'));
-        $mjmlConfig = Config::get('mail.mjml-config');
-
-        // $mjmlConfig['theme'] = $mjmlConfig['themes']['dark'];
+        $mjmlConfig = $this->mjmlConfig();
 
         return new Content(
-            // markdown: 'emails.app-instance.ready',
             view: 'emails.app-instance.ready',
             with: ['config' => $mjmlConfig],
         );
-    }
-
-    /**
-     * Get the attachments for the message.
-     *
-     * @return array<int, Attachment>
-     */
-    public function attachments(): array
-    {
-        return [];
     }
 }

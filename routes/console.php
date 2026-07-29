@@ -3,10 +3,18 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
+use Illuminate\Support\Facades\Schema;
+use Spatie\Health\Commands\RunHealthChecksCommand;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+// ///// Health Checks (Horizon) ///////
+Schedule::command(RunHealthChecksCommand::class)
+    ->everyFiveMinutes()
+    ->withoutOverlapping()
+    ->when(fn () => Schema::hasTable('health_check_result_history_items'));
 
 // ///// Midtrial Emails ///////
 Schedule::command('polydock:dispatch-midtrial-emails')
@@ -54,14 +62,22 @@ Schedule::command('polydock:mark-stuck-instances-failed --threshold=30')
     ->everyFifteenMinutes()
     ->withoutOverlapping();
 
+// ///// Stale Failed Instance Sweep ///////
+Schedule::command('polydock:remove-stale-failed-instances')
+    ->hourlyAt(50)
+    ->withoutOverlapping()
+    ->onOneServer();
+
 // ///// Project Purge (full Lagoon project deletion after grace period) ///////
 Schedule::command('polydock:dispatch-project-purge')
     ->everyTenMinutes()
     ->withoutOverlapping();
 
 // ///// Cadence-based redeploys (upgrade rollouts) ///////
+// Hourly, max 10 per run (polydock.deploy.max_per_run): 50 every 10 minutes
+// overloaded the Lagoon core with concurrent builds.
 Schedule::command('polydock:dispatch-scheduled-redeploys')
-    ->everyTenMinutes()
+    ->hourly()
     ->withoutOverlapping()
     ->onOneServer();
 
@@ -74,5 +90,17 @@ Schedule::command('polydock:deployments:poll')
 // ///// Audit Log Retention ///////
 Schedule::command('activitylog:clean')
     ->daily()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// ///// Operational Instance Log Retention ///////
+Schedule::command('polydock:prune-instance-logs')
+    ->daily()
+    ->withoutOverlapping()
+    ->onOneServer();
+
+// ///// Horizon queue metrics snapshots ///////
+Schedule::command('horizon:snapshot')
+    ->everyFiveMinutes()
     ->withoutOverlapping()
     ->onOneServer();

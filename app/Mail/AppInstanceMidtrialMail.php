@@ -4,49 +4,11 @@ declare(strict_types=1);
 
 namespace App\Mail;
 
-use App\Models\PolydockAppInstance;
-use App\Models\User;
-use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
-use Illuminate\Mail\Mailables\Content;
-use Illuminate\Mail\Mailables\Envelope;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\Config;
-
-class AppInstanceMidtrialMail extends Mailable
+class AppInstanceMidtrialMail extends TrialEmailMail
 {
-    use Queueable;
-    use SerializesModels;
+    protected string $subjectField = 'midtrial_email_subject';
 
-    public function __construct(
-        public PolydockAppInstance $appInstance,
-        public User $toUser,
-    ) {}
+    protected string $defaultSubject = 'Halfway Through Your Trial';
 
-    /**
-     * Get the message envelope.
-     */
-    public function envelope(): Envelope
-    {
-        $subject = $this->appInstance->storeApp->midtrial_email_subject ?? 'Halfway Through Your Trial';
-        $subject .= ' ['.$this->appInstance->name.']';
-
-        return new Envelope(
-            subject: $subject,
-        );
-    }
-
-    /**
-     * Get the message content definition.
-     */
-    public function content(): Content
-    {
-        $mjmlConfig = Config::get('mail.mjml-config');
-        $mjmlConfig['appInstance'] = $this->appInstance;
-
-        return new Content(
-            view: 'emails.app-instance.midtrial',
-            with: ['config' => $mjmlConfig],
-        );
-    }
+    protected string $mailView = 'emails.app-instance.midtrial';
 }

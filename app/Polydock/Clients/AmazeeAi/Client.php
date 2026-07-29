@@ -34,11 +34,6 @@ class Client
         ]);
     }
 
-    public function logout(): array
-    {
-        return $this->post('/auth/logout');
-    }
-
     public function register(string $email, string $password): array
     {
         return $this->post('/auth/register', [
@@ -52,11 +47,6 @@ class Client
         return $this->get('/auth/me');
     }
 
-    public function updateMe(array $data): array
-    {
-        return $this->put('/auth/me/update', $data);
-    }
-
     public function createToken(string $name, int $userId = 0): array
     {
         $data = ['name' => $name];
@@ -65,16 +55,6 @@ class Client
         }
 
         return $this->post('/auth/token', $data);
-    }
-
-    public function listTokens(): array
-    {
-        return $this->get('/auth/token');
-    }
-
-    public function deleteToken(string $tokenId): array
-    {
-        return $this->delete("/auth/token/{$tokenId}");
     }
 
     public function createPrivateAIKeys(int $regionId, string $name, int $userId = 0): array
@@ -91,101 +71,9 @@ class Client
         return $this->post('/private-ai-keys', $data);
     }
 
-    public function createPrivateAIKeyToken(int $regionId, string $name, int $userId = 0, int $teamId = 0): array
-    {
-        $data = [
-            'region_id' => $regionId,
-            'name' => $name,
-        ];
-
-        if ($userId > 0) {
-            $data['owner_id'] = $userId;
-        }
-
-        if ($teamId > 0) {
-            $data['team_id'] = $teamId;
-        }
-
-        return $this->post('/private-ai-keys/token', $data);
-    }
-
-    public function listTeams(bool $includeDeleted = false): array
-    {
-        return $this->get('/teams', ['include_deleted' => $includeDeleted ? 'true' : 'false']);
-    }
-
-    public function getTeam(int $teamId, bool $includeDeleted = false): array
-    {
-        return $this->get("/teams/{$teamId}", ['include_deleted' => $includeDeleted ? 'true' : 'false']);
-    }
-
-    public function createTeam(string $name, string $adminEmail, ?string $phone = null, ?string $billingAddress = null, bool $forceUserKeys = false): array
-    {
-        $data = [
-            'name' => $name,
-            'admin_email' => $adminEmail,
-            'force_user_keys' => $forceUserKeys,
-        ];
-
-        if ($phone !== null && $phone !== '') {
-            $data['phone'] = $phone;
-        }
-
-        if ($billingAddress !== null && $billingAddress !== '') {
-            $data['billing_address'] = $billingAddress;
-        }
-
-        return $this->post('/teams', $data);
-    }
-
-    public function listPrivateAIKeys(): array
-    {
-        return $this->get('/private-ai-keys');
-    }
-
-    public function deletePrivateAIKeys(string $keyName): array
-    {
-        return $this->delete("/private-ai-keys/{$keyName}");
-    }
-
-    public function listRegions(): array
-    {
-        return $this->get('/regions');
-    }
-
     public function getRegion(int $regionId): array
     {
         return $this->get("/regions/{$regionId}");
-    }
-
-    public function createRegion(array $data): array
-    {
-        return $this->post('/regions', $data);
-    }
-
-    public function updateRegion(int $regionId, array $data): array
-    {
-        return $this->put("/regions/{$regionId}", $data);
-    }
-
-    public function deleteRegion(int $regionId): array
-    {
-        return $this->delete("/regions/{$regionId}");
-    }
-
-    public function listAdminRegions(): array
-    {
-        return $this->get('/regions/admin');
-    }
-
-    public function listUsers(): array
-    {
-        return $this->get('/users');
-    }
-
-    public function getUser(int $userId): array
-    {
-        return $this->get("/users/{$userId}");
     }
 
     public function createUser(string $email, string $password): array
@@ -193,34 +81,9 @@ class Client
         return $this->post('/users', ['email' => $email, 'password' => $password]);
     }
 
-    public function updateUser(int $userId, array $data): array
-    {
-        return $this->put("/users/{$userId}", $data);
-    }
-
-    public function deleteUser(int $userId): array
-    {
-        return $this->delete("/users/{$userId}");
-    }
-
     public function searchUsers(string $email): array
     {
         return $this->get('/users/search', ['email' => $email]);
-    }
-
-    public function addUserToTeam(int $userId, int $teamId): array
-    {
-        return $this->post("/users/{$userId}/add-to-team", ['team_id' => $teamId]);
-    }
-
-    public function getAuditLogs(): array
-    {
-        return $this->get('/audit/logs');
-    }
-
-    public function getAuditLogsMetadata(): array
-    {
-        return $this->get('/audit/logs/metadata');
     }
 
     public function health(): array
@@ -236,16 +99,6 @@ class Client
     private function post(string $path, array $data = []): array
     {
         return $this->request('POST', $path, $data);
-    }
-
-    private function put(string $path, array $data = []): array
-    {
-        return $this->request('PUT', $path, $data);
-    }
-
-    private function delete(string $path): array
-    {
-        return $this->request('DELETE', $path);
     }
 
     private function request(string $method, string $path, array $data = [], array $query = []): array

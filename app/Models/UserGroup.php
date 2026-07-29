@@ -38,6 +38,8 @@ class UserGroup extends Model
 
     /**
      * Get the users associated with the group.
+     *
+     * @return BelongsToMany<User, $this>
      */
     public function users(): BelongsToMany
     {
@@ -48,6 +50,8 @@ class UserGroup extends Model
 
     /**
      * Get the users who are owners of the group.
+     *
+     * @return BelongsToMany<User, $this>
      */
     public function owners(): BelongsToMany
     {

@@ -43,9 +43,4 @@ enum UserRemoteRegistrationType: string implements HasColor, HasIcon, HasLabel
             self::REQUEST_TRIAL_UNLISTED_REGION => 'heroicon-o-globe-alt',
         };
     }
-
-    public static function getValues(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Middleware\EnsureInstancesReadAbility;
 use App\Http\Middleware\EnsureInstancesWriteAbility;
+use App\Http\Middleware\XRobotsTagNoIndex;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -20,6 +21,13 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $trustedProxies = env('TRUSTED_PROXIES', '*');
         $middleware->trustProxies(at: $trustedProxies);
+
+        $middleware->append(XRobotsTagNoIndex::class);
+
+        // Public hosted forms are embedded cross-origin in iframes, where the
+        // SameSite session cookie isn't sent, so CSRF tokens can't match.
+        // These endpoints are guarded by reCAPTCHA + throttling instead.
+        $middleware->validateCsrfTokens(except: ['f/*']);
 
         $middleware->alias([
             'instances.read.ability' => EnsureInstancesReadAbility::class,

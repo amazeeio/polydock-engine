@@ -91,12 +91,22 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property Collection|PolydockAppInstance[] $unallocatedInstances
  * @property Collection|PolydockAppInstance[] $allocatedInstances
  * @property Collection|PolydockVariable[] $variables
+ * @property string $project_naming_mode
+ * @property bool $supports_pre_warming
+ * @property string $project_naming_prefix
+ * @property array<int, string> $project_naming_adjectives
+ * @property array<int, string> $project_naming_nouns
+ * @property array{domain_pattern: string, service: string, annotations: array<string, string>}|null $lagoon_custom_route_config
  */
 class PolydockStoreApp extends Model
 {
     use HasFactory;
     use HasPolydockVariables;
     use LogsActivity;
+
+    public const PROJECT_NAMING_MODE_PATTERN = 'pattern';
+
+    public const PROJECT_NAMING_MODE_CUSTOM = 'custom';
 
     protected $fillable = [
         'polydock_store_id',
@@ -118,6 +128,7 @@ class PolydockStoreApp extends Model
         'lagoon_remove_script',
         'email_subject_line',
         'email_body_markdown',
+        'mail_theme',
         'status',
         'uuid',
         'available_for_trials',
@@ -264,11 +275,19 @@ class PolydockStoreApp extends Model
     }
 
     /**
-     * Get the Lagoon project prefix attribute
+     * Get the Lagoon project prefix attribute.
+     *
+     * The store prefix (e.g. 'aio-saas-us3') is fixed per store; an optional
+     * app-level naming prefix is prepended when set:
+     * <app-prefix>-<store-prefix>.
      */
     public function getLagoonDeployProjectPrefixAttribute(): string
     {
-        return $this->store->lagoon_deploy_project_prefix;
+        $appPrefix = $this->project_naming_prefix;
+
+        return $appPrefix === ''
+            ? $this->store->lagoon_deploy_project_prefix
+            : $appPrefix.'-'.$this->store->lagoon_deploy_project_prefix;
     }
 
     /**
@@ -322,7 +341,8 @@ class PolydockStoreApp extends Model
      */
     public function getNeedsMoreUnallocatedInstancesAttribute(): bool
     {
-        return $this->unallocated_instances_count < $this->target_unallocated_app_instances;
+        return $this->supports_pre_warming
+            && $this->unallocated_instances_count < $this->target_unallocated_app_instances;
     }
 
     public function getRefreshUnallocatedInstancesAttribute(): bool
@@ -439,6 +459,101 @@ class PolydockStoreApp extends Model
     public function getLagoonProductionEnvironmentAttribute(): ?string
     {
         return data_get($this->app_config, 'lagoon_production_environment', 'main');
+    }
+
+    /**
+     * How Lagoon project names are chosen for instances of this app.
+     * 'pattern' (default): generated from word lists. 'custom': supplied
+     * externally (registration/hook) - pre-warming is not possible.
+     */
+    public function getProjectNamingModeAttribute(): string
+    {
+        return data_get($this->app_config, 'project_naming_mode', self::PROJECT_NAMING_MODE_PATTERN);
+    }
+
+    public function getSupportsPreWarmingAttribute(): bool
+    {
+        return $this->project_naming_mode !== self::PROJECT_NAMING_MODE_CUSTOM;
+    }
+
+    /**
+     * Optional app-level naming prefix, prepended to the store's fixed
+     * prefix when generating Lagoon project names.
+     */
+    public function getProjectNamingPrefixAttribute(): string
+    {
+        return trim((string) data_get($this->app_config, 'project_naming_prefix', ''), " \t\n\r\0\x0B-");
+    }
+
+    /**
+     * Optional app-specific adjective word list for pattern naming.
+     *
+     * @return array<int, string>
+     */
+    public function getProjectNamingAdjectivesAttribute(): array
+    {
+        return $this->cleanWordList(data_get($this->app_config, 'project_naming_adjectives', []));
+    }
+
+    /**
+     * Optional app-specific noun word list for pattern naming.
+     *
+     * @return array<int, string>
+     */
+    public function getProjectNamingNounsAttribute(): array
+    {
+        return $this->cleanWordList(data_get($this->app_config, 'project_naming_nouns', []));
+    }
+
+    /**
+     * Custom Lagoon route (LAGOON_ROUTES_JSON) config from app_config.
+     * Returns null when disabled or incomplete.
+     *
+     * @return array{domain_pattern: string, service: string, annotations: array<string, string>}|null
+     */
+    public function getLagoonCustomRouteConfigAttribute(): ?array
+    {
+        if (! data_get($this->app_config, 'lagoon_custom_route_enabled', false)) {
+            return null;
+        }
+
+        $domainPattern = trim((string) data_get($this->app_config, 'lagoon_custom_route_domain_pattern', ''));
+        $service = trim((string) data_get($this->app_config, 'lagoon_custom_route_service', ''));
+
+        if ($domainPattern === '' || $service === '') {
+            return null;
+        }
+
+        $annotations = [];
+        foreach ((array) data_get($this->app_config, 'lagoon_custom_route_annotations', []) as $key => $value) {
+            $key = trim((string) $key);
+            $value = trim((string) $value);
+            if ($key !== '' && $value !== '') {
+                $annotations[$key] = $value;
+            }
+        }
+
+        return [
+            'domain_pattern' => $domainPattern,
+            'service' => $service,
+            'annotations' => $annotations,
+        ];
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function cleanWordList(mixed $words): array
+    {
+        $clean = [];
+        foreach ((array) $words as $word) {
+            $word = strtolower(trim((string) preg_replace('/[^a-zA-Z0-9-]+/', '-', (string) $word), '-'));
+            if ($word !== '') {
+                $clean[] = $word;
+            }
+        }
+
+        return $clean;
     }
 
     /**

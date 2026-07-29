@@ -14,6 +14,12 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Override;
 
+/**
+ * @property-read User|null $user
+ * @property-read UserGroup|null $userGroup
+ * @property-read PolydockStoreApp|null $storeApp
+ * @property-read PolydockAppInstance|null $appInstance
+ */
 class UserRemoteRegistration extends Model
 {
     use HasWebhookSensitiveData;

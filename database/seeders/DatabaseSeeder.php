@@ -234,5 +234,8 @@ class DatabaseSeeder extends Seeder
                 )
                 ->create();
         }
+
+        // After stores/apps exist, so the drupal-org form picks them up
+        $this->call(HostedFormsSeeder::class);
     }
 }

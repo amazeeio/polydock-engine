@@ -12,7 +12,12 @@ enum PurgeResult: string
     /** Lagoon project was successfully deleted in this attempt. */
     case Purged = 'purged';
 
-    /** Lagoon reported the project does not exist (treated as success). */
+    /**
+     * Treated as success: nothing on Lagoon left for Polydock to delete.
+     * Either Lagoon reported the project does not exist, or the instance is
+     * adopted — the project pre-exists Polydock and is deliberately left
+     * intact while the Polydock record is cleaned up.
+     */
     case AlreadyGone = 'already_gone';
 
     /** Lagoon project still has environments — caller should retry later. */

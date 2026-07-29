@@ -9,7 +9,6 @@ use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInterface;
 use App\Polydock\Core\PolydockAppLoggerInterface;
 use App\Polydock\Core\PolydockEngineInterface;
-use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Traits\HasWebhookSensitiveData;
@@ -386,7 +385,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $model->setAppType($storeApp->polydock_app_class);
 
                 if (empty($model->name)) {
-                    $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix);
+                    $model->name = $model->generateUniqueProjectName($storeApp->lagoon_deploy_project_prefix, $storeApp);
                 }
 
                 // Ensure name uniqueness
@@ -427,11 +426,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'pre_remove', 'pre-remove'));
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'remove', 'remove'));
                 $data = array_merge($data, self::getDataForLagoonScript($storeApp, 'claim', 'claim'));
-
-                // This is a pre-launch hack for amazee.ai Private GPT
-                // TODO: Abstract this once the amazee.ai Private GPT
-                //   is launched and stable.
-                $data = array_merge($data, AmazeeAiBackendHelper::getDataForPrivateGPTSettings());
 
                 $model->data = $data;
             } catch (PolydockEngineAppNotFoundException $e) {
@@ -822,19 +816,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $url;
     }
 
-    /**
-     * Delete a stored key-value pair
-     *
-     * @param  string  $key  The key to delete
-     * @return self Returns the instance for method chaining
-     */
-    public function deleteKeyValue(string $key): self
-    {
-        unset($this->data[$key]);
-
-        return $this;
-    }
-
     public function setLogger(PolydockAppLoggerInterface $logger): self
     {
         $this->logger = $logger;
@@ -906,7 +887,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Pick a random animal name
      */
-    private function pickAnimal(): string
+    public static function pickAnimal(): string
     {
         $animals = [
             'Lion', 'Tiger', 'Bear', 'Wolf', 'Fox', 'Eagle', 'Hawk', 'Dolphin', 'Whale', 'Elephant',
@@ -948,7 +929,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Pick a random color
      */
-    private function pickColor(): string
+    public static function pickColor(): string
     {
         $colors = [
             'Red', 'Blue', 'Green', 'Yellow', 'Purple',
@@ -965,13 +946,19 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * @param  string  $prefix  The prefix for the project name
      * @return string The generated unique name
      */
-    public function generateUniqueProjectName(string $prefix): string
+    public function generateUniqueProjectName(string $prefix, ?PolydockStoreApp $storeApp = null): string
     {
+        $adjectives = $storeApp?->project_naming_adjectives ?: [];
+        $nouns = $storeApp?->project_naming_nouns ?: [];
+
+        $adjective = $adjectives === [] ? self::pickColor() : $adjectives[array_rand($adjectives)];
+        $noun = $nouns === [] ? self::pickAnimal() : $nouns[array_rand($nouns)];
+
         return strtolower(
             $prefix.'-'.
             // $this->pickVerb() . '-' . // we're removing the verb for now, it's not necessary
-            $this->pickColor().'-'.
-            $this->pickAnimal().'-'.
+            $adjective.'-'.
+            $noun.'-'.
             uniqid()
         );
     }
@@ -1036,9 +1023,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         // Randomly choose between color-animal or verb-animal pattern
         if (random_int(0, 1) === 0) {
-            return strtolower($this->pickColor().$this->pickAnimal());
+            return strtolower(self::pickColor().self::pickAnimal());
         } else {
-            return strtolower($this->pickVerb().$this->pickAnimal());
+            return strtolower($this->pickVerb().self::pickAnimal());
         }
     }
 
@@ -1072,10 +1059,65 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the logs for this instance
+     *
+     * @return HasMany<PolydockAppInstanceLog, $this>
      */
     public function logs(): HasMany
     {
         return $this->hasMany(PolydockAppInstanceLog::class);
+    }
+
+    /**
+     * Status transitions in chronological order — the timing source of truth
+     * for per-stage durations.
+     *
+     * @return HasMany<PolydockAppInstanceStatusTransition, $this>
+     */
+    public function statusTransitions(): HasMany
+    {
+        return $this->hasMany(PolydockAppInstanceStatusTransition::class)->orderBy('created_at')->orderBy('id');
+    }
+
+    /**
+     * Seconds between first entering $from and first entering $to.
+     * Null when either transition was never observed (e.g. instances that
+     * predate transition recording).
+     */
+    public function secondsBetweenStatuses(PolydockAppInstanceStatus $from, PolydockAppInstanceStatus $to): ?int
+    {
+        $rows = $this->statusTransitions;
+        $enteredFrom = $rows->firstWhere('to_status', $from);
+        $enteredTo = $rows->firstWhere('to_status', $to);
+
+        return ($enteredFrom && $enteredTo && $enteredTo->created_at >= $enteredFrom->created_at)
+            ? (int) $enteredFrom->created_at->diffInSeconds($enteredTo->created_at)
+            : null;
+    }
+
+    /**
+     * Seconds the instance sat claimable in the pre-warm pool before a claim
+     * started; null if it was never unclaimed or never claimed.
+     */
+    public function secondsUnclaimedBeforeClaim(): ?int
+    {
+        return $this->secondsBetweenStatuses(
+            PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+            PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
+        );
+    }
+
+    /**
+     * Seconds from instance creation until it first became claimed & healthy;
+     * null until that status is observed in the transition log.
+     */
+    public function secondsFromCreationToClaimed(): ?int
+    {
+        $claimed = $this->statusTransitions
+            ->firstWhere('to_status', PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED);
+
+        return ($claimed && $this->created_at)
+            ? (int) $this->created_at->diffInSeconds($claimed->created_at)
+            : null;
     }
 
     public function logLine(string $level, string $message, array $context = []): self
@@ -1096,16 +1138,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     public function remoteRegistration(): HasOne
     {
         return $this->hasOne(UserRemoteRegistration::class, 'polydock_app_instance_id');
-    }
-
-    // Helper method to check if trial is active
-    public function isTrialActive(): bool
-    {
-        if (! $this->is_trial || $this->trial_completed) {
-            return false;
-        }
-
-        return $this->trial_ends_at->isFuture();
     }
 
     // Helper method to check if trial is expired

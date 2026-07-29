@@ -25,66 +25,54 @@ trait DeployAppInstanceTrait
     public function deployAppInstance(PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface
     {
         $functionName = __FUNCTION__;
-        $logContext = $this->getLogContext($functionName);
-        $testLagoonPing = true;
-        $validateLagoonValues = true;
-        $validateLagoonProjectName = true;
-        $validateLagoonProjectId = true;
 
-        $this->info($functionName.': starting', $logContext);
-
-        // Throws PolydockAppInstanceStatusFlowException
-        $this->validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues(
+        // Note: deploy hands off to the poll trait, so its "completed" state
+        // is DEPLOY_RUNNING (not a *_COMPLETED status).
+        return $this->runLifecyclePhase(
             $appInstance,
+            $functionName,
             PolydockAppInstanceStatus::PENDING_DEPLOY,
-            $logContext,
-            $testLagoonPing,
-            $validateLagoonValues,
-            $validateLagoonProjectName,
-            $validateLagoonProjectId
-        );
-
-        $projectName = $appInstance->getKeyValue('lagoon-project-name');
-        $deployEnvironment = $appInstance->getKeyValue('lagoon-deploy-branch');
-        $logContext['projectName'] = $projectName;
-        $logContext['deployEnvironment'] = $deployEnvironment;
-
-        $this->info($functionName.': starting for project: '.$projectName.' and environment: '.$deployEnvironment, $logContext);
-        $appInstance->setStatus(
             PolydockAppInstanceStatus::DEPLOY_RUNNING,
-            PolydockAppInstanceStatus::DEPLOY_RUNNING->getStatusMessage()
-        )->save();
+            PolydockAppInstanceStatus::DEPLOY_RUNNING,
+            PolydockAppInstanceStatus::DEPLOY_FAILED,
+            function (PolydockAppInstanceInterface $appInstance, array $logContext) use ($functionName): ?PolydockAppInstanceInterface {
+                $projectName = $appInstance->getKeyValue('lagoon-project-name');
+                $deployEnvironment = $appInstance->getKeyValue('lagoon-deploy-branch');
+                $logContext['projectName'] = $projectName;
+                $logContext['deployEnvironment'] = $deployEnvironment;
 
-        $createdDeployment = $this->lagoonClient->deployProjectEnvironmentByName(
-            $projectName,
-            $deployEnvironment
+                $this->info($functionName.': starting for project: '.$projectName.' and environment: '.$deployEnvironment, $logContext);
+
+                $createdDeployment = $this->lagoonClient->deployProjectEnvironmentByName(
+                    $projectName,
+                    $deployEnvironment
+                );
+
+                if (isset($createdDeployment['error'])) {
+                    // Handle both array errors (from GraphQL) and string errors (from not found)
+                    $errorMessage = is_array($createdDeployment['error'])
+                        ? ($createdDeployment['error'][0]['message'] ?? json_encode($createdDeployment['error']))
+                        : $createdDeployment['error'];
+                    $this->error($errorMessage, $logContext + ['error' => $createdDeployment['error']]);
+                    $appInstance->setStatus(PolydockAppInstanceStatus::DEPLOY_FAILED, 'Failed to create Lagoon project')->save();
+
+                    return $appInstance;
+                }
+
+                $latestDeploymentName = $createdDeployment['deployEnvironmentBranch'] ?? null;
+
+                if (empty($latestDeploymentName)) {
+                    $this->error('Failed to create Lagoon project: Missing deployment name', $logContext);
+                    $appInstance->setStatus(PolydockAppInstanceStatus::DEPLOY_FAILED, 'Failed to create Lagoon project')->save();
+
+                    return $appInstance;
+                }
+
+                $appInstance->storeKeyValue('lagoon-latest-deployment-name', $latestDeploymentName);
+
+                return null;
+            },
+            'Deploy running',
         );
-
-        if (isset($createdDeployment['error'])) {
-            // Handle both array errors (from GraphQL) and string errors (from not found)
-            $errorMessage = is_array($createdDeployment['error'])
-                ? ($createdDeployment['error'][0]['message'] ?? json_encode($createdDeployment['error']))
-                : $createdDeployment['error'];
-            $this->error($errorMessage, $logContext + ['error' => $createdDeployment['error']]);
-            $appInstance->setStatus(PolydockAppInstanceStatus::DEPLOY_FAILED, 'Failed to create Lagoon project')->save();
-
-            return $appInstance;
-        }
-
-        $latestDeploymentName = $createdDeployment['deployEnvironmentBranch'] ?? null;
-
-        if (empty($latestDeploymentName)) {
-            $this->error('Failed to create Lagoon project: Missing deployment name', $logContext);
-            $appInstance->setStatus(PolydockAppInstanceStatus::DEPLOY_FAILED, 'Failed to create Lagoon project')->save();
-
-            return $appInstance;
-        }
-
-        $appInstance->storeKeyValue('lagoon-latest-deployment-name', $latestDeploymentName);
-
-        $this->info($functionName.': completed', $logContext);
-        $appInstance->setStatus(PolydockAppInstanceStatus::DEPLOY_RUNNING, 'Deploy running')->save();
-
-        return $appInstance;
     }
 }

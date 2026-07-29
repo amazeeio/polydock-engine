@@ -4,9 +4,8 @@ namespace App\Services;
 
 use App\Polydock\Clients\Lagoon\Client;
 use App\Polydock\Clients\Lagoon\Ssh;
-use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use RuntimeException;
 use Symfony\Component\Process\Process;
 
 class LagoonClientService
@@ -14,7 +13,7 @@ class LagoonClientService
     /**
      * Build and configure a Client using the project's standard lagoon configuration
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function getAuthenticatedClient(array $overrides = []): Client
     {
@@ -26,14 +25,14 @@ class LagoonClientService
         if (! $clientConfig['ssh_private_key_file'] || ! file_exists($clientConfig['ssh_private_key_file'])) {
             $msg = 'Global SSH private key not found at: '.($clientConfig['ssh_private_key_file'] ?: 'not set');
             Log::error($msg);
-            throw new Exception($msg);
+            throw new \Exception($msg);
         }
 
         $token = $this->getLagoonToken($clientConfig);
         if (empty($token)) {
             $msg = 'Failed to retrieve Lagoon API token. Ensure the SSH key at '.$clientConfig['ssh_private_key_file'].' is valid and authorized in Lagoon.';
             Log::error($msg);
-            throw new Exception($msg);
+            throw new \Exception($msg);
         }
 
         return $this->buildClientWithToken($clientConfig, $token);
@@ -42,7 +41,7 @@ class LagoonClientService
     /**
      * Build a Client using a pre-fetched token (useful when the token is cached externally)
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function buildClientWithToken(array $clientConfig, string $token): Client
     {
@@ -100,7 +99,7 @@ class LagoonClientService
             $dir = dirname($tempKeyFile);
             if (! is_dir($dir)) {
                 if (! @mkdir($dir, 0700, true) && ! is_dir($dir)) {
-                    throw new RuntimeException('Failed to create SSH key directory: '.$dir);
+                    throw new \RuntimeException('Failed to create SSH key directory: '.$dir);
                 }
             }
 
@@ -110,17 +109,17 @@ class LagoonClientService
                 $bytesWritten = @file_put_contents($tmpFile, $keyContent, LOCK_EX);
                 if ($bytesWritten === false) {
                     @unlink($tmpFile);
-                    throw new RuntimeException('Failed to write SSH private key to temporary file: '.$tmpFile);
+                    throw new \RuntimeException('Failed to write SSH private key to temporary file: '.$tmpFile);
                 }
 
                 if (! @chmod($tmpFile, 0600)) {
                     @unlink($tmpFile);
-                    throw new RuntimeException('Failed to set permissions on SSH private key file: '.$tmpFile);
+                    throw new \RuntimeException('Failed to set permissions on SSH private key file: '.$tmpFile);
                 }
 
                 if (! @rename($tmpFile, $tempKeyFile)) {
                     @unlink($tmpFile);
-                    throw new RuntimeException('Failed to move SSH private key file into place: '.$tempKeyFile);
+                    throw new \RuntimeException('Failed to move SSH private key file into place: '.$tempKeyFile);
                 }
             }
             $keyFile = $tempKeyFile;
@@ -138,7 +137,29 @@ class LagoonClientService
     }
 
     /**
+     * Cache key for a config's token — public static so tests and the
+     * implementation can never drift on the derivation.
+     */
+    public static function tokenCacheKey(array $config): string
+    {
+        return 'lagoon-client-service-token:'.sha1(implode('|', [
+            $config['ssh_user'] ?? '',
+            $config['ssh_server'] ?? '',
+            (string) ($config['ssh_port'] ?? ''),
+            $config['ssh_private_key_file'] ?? '',
+            // Endpoint included so configs sharing SSH credentials but
+            // targeting different Lagoon cores never share a token.
+            $config['endpoint'] ?? '',
+        ]));
+    }
+
+    /**
      * Helper to get a token either from a bound fetcher or directly via SSH.
+     *
+     * Successful tokens are cached briefly (mirroring the FTLagoon provider
+     * stack's 2-minute max token age) so redeploy/poll bursts don't pay an
+     * SSH round-trip per job. Failures ('' return) are never cached — one
+     * SSH blip must not poison every caller for the TTL.
      */
     public function getLagoonToken(?array $config = null): string
     {
@@ -148,6 +169,27 @@ class LagoonClientService
             return app('polydock.lagoon.token_fetcher')($config);
         }
 
+        $cacheKey = self::tokenCacheKey($config);
+
+        $cached = Cache::get($cacheKey);
+        if (is_string($cached) && $cached !== '') {
+            return $cached;
+        }
+
+        $token = $this->fetchLagoonTokenOverSsh($config);
+
+        if ($token !== '') {
+            Cache::put($cacheKey, $token, now()->addSeconds(110));
+        }
+
+        return $token;
+    }
+
+    /**
+     * Mint a fresh token over SSH.
+     */
+    private function fetchLagoonTokenOverSsh(array $config): string
+    {
         $ssh = Ssh::createLagoonConfigured(
             user: $config['ssh_user'],
             server: $config['ssh_server'],

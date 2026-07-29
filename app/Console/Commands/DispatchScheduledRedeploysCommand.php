@@ -16,8 +16,9 @@ use Illuminate\Support\Collection;
  * cadence, with a shorter cadence for beta groups), triggers them in batches
  * grouped by store app, and advances each instance's next_redeploy_at.
  *
- * Throttling is a per-run cap plus a frequent schedule: a large backlog drains
- * smoothly over many ticks rather than in one spike. Trials are never included.
+ * Throttling is a small per-run cap (default 10) on an hourly schedule: a
+ * large backlog drains smoothly, oldest deployments first, rather than in a
+ * spike of concurrent Lagoon builds. Trials are never included.
  */
 class DispatchScheduledRedeploysCommand extends BaseCommand
 {
@@ -27,7 +28,7 @@ class DispatchScheduledRedeploysCommand extends BaseCommand
 
     public function handle(PolydockDeploymentService $service): int
     {
-        $maxPerRun = (int) config('polydock.deploy.max_per_run', 50);
+        $maxPerRun = (int) config('polydock.deploy.max_per_run', 10);
 
         $due = $this->dueInstances($maxPerRun);
 
@@ -89,7 +90,12 @@ class DispatchScheduledRedeploysCommand extends BaseCommand
                 $query->whereNull('next_redeploy_at')
                     ->orWhere('next_redeploy_at', '<=', now());
             })
-            ->orderByRaw('next_redeploy_at is null desc')
+            // Most-outdated first: instances never redeployed through this
+            // pipeline (adopted projects, newly enabled cadence) count as
+            // oldest, then by oldest last deployment. The small per-run cap
+            // stages any backlog across hourly ticks instead of one burst.
+            ->orderByRaw('last_deployed_at is null desc')
+            ->orderBy('last_deployed_at')
             ->orderBy('next_redeploy_at')
             ->limit($limit)
             ->get();

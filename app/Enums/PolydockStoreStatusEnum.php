@@ -43,9 +43,4 @@ enum PolydockStoreStatusEnum: string implements HasColor, HasIcon, HasLabel
             self::PRIVATE => 'heroicon-o-lock-closed',
         };
     }
-
-    public static function getValues(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
 }

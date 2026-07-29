@@ -46,8 +46,12 @@ return [
 
     'recaptcha' => [
         'enabled' => (bool) env('RECAPTCHA_ENABLED', true),
-        'sitekey' => env('NOCAPTCHA_SITEKEY') ?? env('RECAPTCHA_SITEKEY'),
-        'secret' => env('NOCAPTCHA_SECRET') ?? env('RECAPTCHA_SECRET'),
+        'sitekey' => env('RECAPTCHA_SITEKEY'),
+        'secret' => env('RECAPTCHA_SECRET'),
+        // Lagoon sets LAGOON_ENVIRONMENT_TYPE on every deployed environment.
+        // Deliberately no default: when absent (non-Lagoon/local), reCAPTCHA
+        // stays governed by RECAPTCHA_ENABLED alone (fail closed).
+        'lagoon_environment_type' => env('LAGOON_ENVIRONMENT_TYPE'),
     ],
 
 ];

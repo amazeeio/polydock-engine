@@ -47,9 +47,4 @@ enum PolydockVariableScopeEnum: string implements HasColor, HasIcon, HasLabel
             self::POLYDOCK => 'heroicon-o-cog',
         };
     }
-
-    public static function getValues(): array
-    {
-        return array_column(self::cases(), 'value');
-    }
 }
