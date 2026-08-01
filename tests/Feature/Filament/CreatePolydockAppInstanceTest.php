@@ -9,6 +9,8 @@ use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\User;
 use App\Models\UserRemoteRegistration;
+use App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp;
+use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
@@ -79,6 +81,47 @@ class CreatePolydockAppInstanceTest extends TestCase
         // Verify job was dispatched exactly once
         Queue::assertPushed(ProcessUserRemoteRegistration::class);
         Queue::assertPushedTimes(ProcessUserRemoteRegistration::class, 1);
+    }
+
+    /**
+     * create() harvests instance config by scanning submitted keys for the
+     * 'instance_config_' prefix. That only works if the prefixed name reaches
+     * the state path too — when it did not, the fields rendered but their
+     * values were silently dropped on submit and never reached request_data.
+     */
+    public function test_instance_config_values_reach_the_registration(): void
+    {
+        Queue::fake();
+
+        $storeApp = PolydockStoreApp::factory()
+            ->availableForTrials()
+            ->create([
+                'polydock_store_id' => $this->storeApp->polydock_store_id,
+                'status' => PolydockStoreAppStatusEnum::AVAILABLE,
+                'polydock_app_class' => PolydockAmazeeClawAiApp::class,
+            ]);
+
+        $field = PolydockAppInstanceFields::FIELD_PREFIX.'openclaw_default_model';
+
+        $this->actingAs($this->admin);
+
+        Livewire::test(CreatePolydockAppInstance::class)
+            ->fillForm([
+                'email' => 'configured@example.com',
+                'first_name' => 'Jane',
+                'last_name' => 'Roe',
+                'trial_app' => $storeApp->uuid,
+                'is_trial' => true,
+                'aup_and_privacy_acceptance' => true,
+                'opt_in_to_product_updates' => true,
+            ])
+            ->fillForm([$field => 'claude-opus-4'])
+            ->call('create')
+            ->assertHasNoFormErrors();
+
+        $registration = UserRemoteRegistration::where('email', 'configured@example.com')->sole();
+
+        $this->assertSame('claude-opus-4', $registration->request_data[$field] ?? null);
     }
 
     public function test_create_form_validates_required_fields(): void

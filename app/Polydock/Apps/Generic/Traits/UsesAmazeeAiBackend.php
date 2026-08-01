@@ -100,7 +100,10 @@ trait UsesAmazeeAiBackend
     {
         $logContext = $this->getLogContext(__FUNCTION__);
 
-        if (! $this->amazeeAiBackendClient) {
+        // isset(), not a truthiness check: $amazeeAiBackendClient is a
+        // non-nullable typed property, so pinging before the client is
+        // initialized raised an Error rather than the exception below.
+        if (! isset($this->amazeeAiBackendClient)) {
             throw new PolydockAppInstanceStatusFlowException('amazeeAI backend client not found for ping');
         }
 

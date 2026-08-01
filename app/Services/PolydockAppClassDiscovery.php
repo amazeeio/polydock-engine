@@ -447,6 +447,52 @@ class PolydockAppClassDiscovery
     }
 
     /**
+     * Child components of a schema component, or none if they cannot be resolved.
+     *
+     * Filament resolves child components through the component's container, and
+     * schemas built by calling an app class's static method have no container —
+     * getChildComponents() raises an Error for every component, leaf or not.
+     * Unguarded, that Error escaped into getAppInstanceFormSchema()'s catch-all
+     * and silently returned [], so app-specific instance fields never rendered.
+     *
+     * ponytail: nested Sections/Grids are therefore not walked — every app class
+     * currently returns a flat field list. If one needs nesting, resolve the
+     * schema against a real Livewire container rather than deepening this.
+     *
+     * @return array<mixed>
+     */
+    private function childComponentsOf(mixed $component): array
+    {
+        if (! is_object($component) || ! method_exists($component, 'getChildComponents')) {
+            return [];
+        }
+
+        try {
+            return $component->getChildComponents();
+        } catch (\Error) {
+            return [];
+        }
+    }
+
+    /**
+     * Rename a schema component, keeping its state path in step.
+     *
+     * name() and statePath() are independent setters: a field built as
+     * TextInput::make('foo') answers getName() === 'foo' and submits under
+     * 'foo'. Renaming alone moved the label but left the submitted key as
+     * 'foo', so the prefixed values never matched the 'instance_config_'
+     * scan in CreatePolydockAppInstance::create() and were dropped.
+     */
+    private function renameComponent(object $component, string $name): void
+    {
+        $component->name($name);
+
+        if (method_exists($component, 'statePath')) {
+            $component->statePath($name);
+        }
+    }
+
+    /**
      * Recursively prefix field names in Filament schema components for App Instance.
      *
      * @return array<mixed>
@@ -460,13 +506,13 @@ class PolydockAppClassDiscovery
             if (method_exists($component, 'getName') && method_exists($component, 'name')) {
                 $name = $component->getName();
                 if ($name !== null && ! str_starts_with($name, $prefix)) {
-                    $component->name($prefix.$name);
+                    $this->renameComponent($component, $prefix.$name);
                 }
             }
 
             // Recursively process child schema (for Sections, Grids, etc.)
-            if (method_exists($component, 'getChildComponents') && method_exists($component, 'schema')) {
-                $children = $component->getChildComponents();
+            if (method_exists($component, 'schema')) {
+                $children = $this->childComponentsOf($component);
                 if (! empty($children)) {
                     $component->schema($this->prefixAppInstanceSchemaFieldNames($children));
                 }
@@ -490,13 +536,13 @@ class PolydockAppClassDiscovery
             if (method_exists($component, 'getName') && method_exists($component, 'name')) {
                 $name = $component->getName();
                 if ($name !== null && ! str_starts_with($name, $prefix)) {
-                    $component->name($prefix.$name);
+                    $this->renameComponent($component, $prefix.$name);
                 }
             }
 
             // Recursively process child schema (for Sections, Grids, etc.)
-            if (method_exists($component, 'getChildComponents') && method_exists($component, 'schema')) {
-                $children = $component->getChildComponents();
+            if (method_exists($component, 'schema')) {
+                $children = $this->childComponentsOf($component);
                 if (! empty($children)) {
                     $component->schema($this->prefixSchemaFieldNames($children));
                 }
@@ -525,11 +571,9 @@ class PolydockAppClassDiscovery
             }
 
             // Recursively check child schema (for Sections, Grids, etc.)
-            if (method_exists($component, 'getChildComponents')) {
-                $children = $component->getChildComponents();
-                if (! empty($children)) {
-                    $names = array_merge($names, $this->extractFieldNamesFromSchema($children));
-                }
+            $children = $this->childComponentsOf($component);
+            if (! empty($children)) {
+                $names = array_merge($names, $this->extractFieldNamesFromSchema($children));
             }
         }
 
@@ -569,11 +613,9 @@ class PolydockAppClassDiscovery
                 }
             }
 
-            if (method_exists($component, 'getChildComponents')) {
-                $children = $component->getChildComponents();
-                if (! empty($children)) {
-                    $map = array_merge($map, $this->getFieldEncryptionMap($children));
-                }
+            $children = $this->childComponentsOf($component);
+            if (! empty($children)) {
+                $map = array_merge($map, $this->getFieldEncryptionMap($children));
             }
         }
 

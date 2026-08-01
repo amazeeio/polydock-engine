@@ -304,7 +304,11 @@ abstract class BaseJob implements ShouldQueue
 
     public function polydockJobDone()
     {
-        if (! $this->appInstance) {
+        // isset(), not a truthiness check: $appInstance is a non-nullable typed
+        // property, so reading it before polydockJobStart() has assigned it
+        // raises an Error instead of yielding null — which would escape this
+        // guard entirely. Matches shouldSkipBecauseStatusAdvanced() above.
+        if (! isset($this->appInstance)) {
             Log::error('Failed to process PolydockAppInstance - not found', [
                 'app_instance_id' => $this->appInstanceId,
                 'job_type' => class_basename(static::class),

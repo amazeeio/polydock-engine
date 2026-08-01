@@ -54,6 +54,13 @@ class TokenAbilityEnforcementTest extends TestCase
         Sanctum::actingAs(User::factory()->create(), ['*']);
 
         $this->getJson(self::READ_ROUTE)->assertOk();
+
+        // The write check lives in a separate middleware class, so it has to be
+        // asserted independently — a wildcard regression there would not show
+        // up on the read route. Only the ability gate is under test here, so
+        // any non-403 means the middleware let the request through to the
+        // controller's own validation.
+        $this->postJson(self::WRITE_ROUTE, [])->assertStatus(422);
     }
 
     public function test_unauthenticated_requests_are_rejected(): void
@@ -72,5 +79,6 @@ class TokenAbilityEnforcementTest extends TestCase
         $this->actingAs(User::factory()->create());
 
         $this->getJson(self::READ_ROUTE)->assertOk();
+        $this->postJson(self::WRITE_ROUTE, [])->assertStatus(422);
     }
 }

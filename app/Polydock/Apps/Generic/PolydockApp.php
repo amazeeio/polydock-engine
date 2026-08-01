@@ -98,7 +98,10 @@ class PolydockApp extends PolydockAppBase
      */
     public function pingLagoonAPI(): bool
     {
-        if (! $this->lagoonClient) {
+        // isset(), not a truthiness check: $lagoonClient is a non-nullable typed
+        // property, so pinging before initializeLagoonClient() raised an Error
+        // rather than the documented exception below.
+        if (! isset($this->lagoonClient)) {
             throw new PolydockAppInstanceStatusFlowException('Lagoon client not found for ping');
         }
 

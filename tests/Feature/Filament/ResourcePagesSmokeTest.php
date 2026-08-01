@@ -4,7 +4,13 @@ declare(strict_types=1);
 
 namespace Tests\Feature\Filament;
 
+use App\Enums\PolydockStoreAppStatusEnum;
+use App\Filament\Admin\Resources\PolydockAppInstanceResource\Pages\CreatePolydockAppInstance;
+use App\Models\PolydockStore;
+use App\Models\PolydockStoreApp;
 use App\Models\User;
+use App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp;
+use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
@@ -64,5 +70,36 @@ class ResourcePagesSmokeTest extends TestCase
 
         $this->assertSame([], $failures, "Filament pages failed to render:\n".implode("\n", $failures));
         $this->assertGreaterThan(0, $rendered);
+    }
+
+    /**
+     * The create-instance form hides its app-specific section until an app is
+     * chosen, so the pass above never reaches that schema. Selecting an app
+     * whose class declares instance fields is the only way to render it.
+     */
+    public function test_conditional_instance_config_section_renders_once_an_app_is_selected(): void
+    {
+        Queue::fake();
+
+        Role::findOrCreate('super_admin', config('auth.defaults.guard'));
+        $admin = User::factory()->create();
+        $admin->assignRole('super_admin');
+
+        $store = PolydockStore::factory()->create();
+        $storeApp = PolydockStoreApp::factory()
+            ->availableForTrials()
+            ->create([
+                'polydock_store_id' => $store->id,
+                'status' => PolydockStoreAppStatusEnum::AVAILABLE,
+                'polydock_app_class' => PolydockAmazeeClawAiApp::class,
+            ]);
+
+        Filament::setCurrentPanel(Filament::getPanel('admin'));
+        $this->actingAs($admin);
+
+        Livewire::test(CreatePolydockAppInstance::class)
+            ->fillForm(['trial_app' => $storeApp->uuid])
+            ->assertSuccessful()
+            ->assertFormFieldExists(PolydockAppInstanceFields::FIELD_PREFIX.'openclaw_default_model');
     }
 }

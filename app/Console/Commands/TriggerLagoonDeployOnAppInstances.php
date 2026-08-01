@@ -40,7 +40,7 @@ class TriggerLagoonDeployOnAppInstances extends BaseCommand
         $variablesOnly = $this->option(key: 'variables-only');
         $concurrency = max(1, (int) $this->option(key: 'concurrency'));
 
-        /** @var PolydockStoreApp $storeApp */
+        /** @var PolydockStoreApp|null $storeApp */
         $storeApp = PolydockStoreApp::where(column: 'uuid', operator: '=', value: $appUuid)->first();
         if (! $storeApp) {
             $this->error(string: "Store App with UUID {$appUuid} not found.");
