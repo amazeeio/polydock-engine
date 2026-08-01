@@ -13,6 +13,9 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
         return 'forms.drupal-ai-demo';
     }
 
+    /**
+     * @return array<mixed>
+     */
     #[\Override]
     public function getAllowedEmbedDomains(): array
     {
@@ -24,6 +27,9 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function getValidationRules(): array
     {
@@ -41,6 +47,10 @@ class DrupalAIDemoDrupalOrgForm extends BaseHostedForm
         ];
     }
 
+    /**
+     * @param  array<string, mixed>  $validatedData
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function transformPayload(array $validatedData): array
     {

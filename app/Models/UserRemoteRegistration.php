@@ -44,7 +44,7 @@ class UserRemoteRegistration extends Model
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'status' => UserRemoteRegistrationStatusEnum::class,
@@ -57,7 +57,7 @@ class UserRemoteRegistration extends Model
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array
+     * @var list<string>
      */
     protected $appends = [
         'register_only_captures',
@@ -198,6 +198,9 @@ class UserRemoteRegistration extends Model
         return $this->belongsTo(PolydockAppInstance::class, 'polydock_app_instance_id');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getDataAttribute(): array
     {
         return [

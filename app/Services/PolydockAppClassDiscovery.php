@@ -495,6 +495,7 @@ class PolydockAppClassDiscovery
     /**
      * Recursively prefix field names in Filament schema components for App Instance.
      *
+     * @param  array<string, mixed>  $components
      * @return array<mixed>
      */
     private function prefixAppInstanceSchemaFieldNames(array $components): array
@@ -525,6 +526,7 @@ class PolydockAppClassDiscovery
     /**
      * Recursively prefix field names in Filament schema components.
      *
+     * @param  array<string, mixed>  $components
      * @return array<mixed>
      */
     private function prefixSchemaFieldNames(array $components): array
@@ -555,6 +557,7 @@ class PolydockAppClassDiscovery
     /**
      * Recursively extract field names from Filament schema components.
      *
+     * @param  array<string, mixed>  $components
      * @return array<string>
      */
     private function extractFieldNamesFromSchema(array $components): array
@@ -599,6 +602,7 @@ class PolydockAppClassDiscovery
     /**
      * Get encryption map for all fields in a schema.
      *
+     * @param  array<string, mixed>  $components
      * @return array<string, bool> fieldName => isEncrypted
      */
     public function getFieldEncryptionMap(array $components): array

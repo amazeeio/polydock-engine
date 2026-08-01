@@ -39,6 +39,9 @@ class RoleResource extends Resource implements HasShieldPermissions
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    /**
+     * @return array<int, string>
+     */
     public static function getPermissionPrefixes(): array
     {
         return [

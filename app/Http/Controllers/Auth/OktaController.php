@@ -137,6 +137,8 @@ class OktaController extends Controller
      * Sync roles in okta.group_role_map from the token's groups claim:
      * grant when the group is present, revoke when absent. Roles outside
      * the map (e.g. manually granted) are never touched.
+     *
+     * @param  array<string, mixed>  $groups
      */
     private function syncMappedRoles(User $user, array $groups): void
     {

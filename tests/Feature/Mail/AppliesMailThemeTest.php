@@ -11,6 +11,9 @@ use Tests\TestCase;
 
 class AppliesMailThemeTest extends TestCase
 {
+    /**
+     * @return array<string, mixed>
+     */
     private function mailConfigForTheme(?string $mailTheme): array
     {
         $instance = new PolydockAppInstance;

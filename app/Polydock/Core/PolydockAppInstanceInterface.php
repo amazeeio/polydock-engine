@@ -103,7 +103,7 @@ interface PolydockAppInstanceInterface
      * Log an informational message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function info(string $message, array $context = []): self;
@@ -112,7 +112,7 @@ interface PolydockAppInstanceInterface
      * Log an error message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function error(string $message, array $context = []): self;
@@ -121,7 +121,7 @@ interface PolydockAppInstanceInterface
      * Log a warning message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function warning(string $message, array $context = []): self;
@@ -130,7 +130,7 @@ interface PolydockAppInstanceInterface
      * Log a debug message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function debug(string $message, array $context = []): self;
@@ -176,7 +176,7 @@ interface PolydockAppInstanceInterface
     /**
      * Save the app instance
      *
-     * @param  array  $options  Additional options for the save operation
+     * @param  array<string, mixed>  $options  Additional options for the save operation
      * @return mixed True if the save operation was successful, false otherwise
      */
     public function save(array $options = []);

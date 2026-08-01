@@ -13,6 +13,9 @@ class LagoonHelper
 
     public static $cacheTTL = 60;
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function getLagoonCoreDataForRegion(string $regionId): ?array
     {
         $cacheKey = self::$cacheKeyPrefix.$regionId;

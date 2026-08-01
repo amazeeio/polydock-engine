@@ -179,7 +179,7 @@ class PolydockStoreApp extends Model
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'lagoon_deploy_private_key',
@@ -206,7 +206,7 @@ class PolydockStoreApp extends Model
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array
+     * @var list<string>
      */
     protected $appends = [
         'lagoon_deploy_region_id_ext',

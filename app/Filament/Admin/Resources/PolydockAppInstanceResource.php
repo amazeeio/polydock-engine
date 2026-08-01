@@ -450,6 +450,9 @@ class PolydockAppInstanceResource extends Resource
             : CarbonInterval::seconds($seconds)->cascade()->forHumans(short: true);
     }
 
+    /**
+     * @return array<int, Grid>
+     */
     public static function getRenderedSafeDataForRecord(PolydockAppInstance $record): array
     {
         return [
@@ -513,6 +516,8 @@ class PolydockAppInstanceResource extends Resource
      * Get rendered infolist components for instance configuration fields.
      *
      * Values are loaded from PolydockVariables associated with the app instance.
+     *
+     * @return list<TextEntry>
      */
     public static function getRenderedInstanceConfigForRecord(PolydockAppInstance $record): array
     {

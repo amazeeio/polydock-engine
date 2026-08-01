@@ -11,6 +11,8 @@ trait AppliesMailTheme
     /**
      * Get the mjml config, with the store app's mail theme applied when one
      * is configured and defined in mail.mjml-config.themes.
+     *
+     * @return array<string, mixed>
      */
     protected function mjmlConfig(): array
     {

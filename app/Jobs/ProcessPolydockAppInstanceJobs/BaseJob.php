@@ -120,7 +120,7 @@ abstract class BaseJob implements ShouldQueue
     /**
      * Get the middleware the job should pass through.
      *
-     * @return array
+     * @return array<int, WithoutOverlapping>
      */
     public function middleware()
     {

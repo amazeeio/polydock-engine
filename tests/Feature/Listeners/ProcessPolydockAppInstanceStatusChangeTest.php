@@ -46,6 +46,9 @@ class ProcessPolydockAppInstanceStatusChangeTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private function makeInstance(PolydockAppInstanceStatus $status, array $data = []): PolydockAppInstance
     {
         $storeApp = PolydockStoreApp::factory()->create([

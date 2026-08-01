@@ -7,6 +7,8 @@ use App\Polydock\Clients\Lagoon\LagoonClientInitializeRequiredToInteractExceptio
 trait OrganizationTrait
 {
     /**
+     * @return array<string, mixed>
+     *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
     public function removeUserFromOrganizationGroups(int $orgId, string $userEmail): array

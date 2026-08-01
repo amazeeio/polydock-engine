@@ -55,32 +55,8 @@ parameters:
 			path: app/Console/Commands/BanEmailsCommand.php
 
 		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingAppInstances\(\) has parameter \$groupIds with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingAppInstances\(\) has parameter \$patterns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
 			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingAppInstances\(\) return type with generic class Illuminate\\Database\\Eloquent\\Collection does not specify its types\: TKey, TModel$#'
 			identifier: missingType.generics
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingRegistrations\(\) has parameter \$patterns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingRegistrations\(\) has parameter \$userIds with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Console/Commands/BanEmailsCommand.php
 
@@ -91,26 +67,8 @@ parameters:
 			path: app/Console/Commands/BanEmailsCommand.php
 
 		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingUsers\(\) has parameter \$patterns with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
 			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingUsers\(\) return type with generic class Illuminate\\Database\\Eloquent\\Collection does not specify its types\: TKey, TModel$#'
 			identifier: missingType.generics
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:normalizePatterns\(\) has parameter \$inputs with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:normalizePatterns\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Console/Commands/BanEmailsCommand.php
 
@@ -169,38 +127,8 @@ parameters:
 			path: app/Console/Commands/PolydockCloneStoreAppCommand.php
 
 		-
-			message: '#^Method App\\Console\\Commands\\RemoveEmptyProjectsCommand\:\:probeEnvironments\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/RemoveEmptyProjectsCommand.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/app/Console/Commands/RemoveEmptyProjectsCommand\.php\:243\:\:__construct\(\) has parameter \$command with no type specified\.$#'
+			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/app/Console/Commands/RemoveEmptyProjectsCommand\.php\:245\:\:__construct\(\) has parameter \$command with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: app/Console/Commands/RemoveEmptyProjectsCommand.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/app/Console/Commands/RemoveEmptyProjectsCommand\.php\:243\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/RemoveEmptyProjectsCommand.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/app/Console/Commands/RemoveEmptyProjectsCommand\.php\:243\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/RemoveEmptyProjectsCommand.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/app/Console/Commands/RemoveEmptyProjectsCommand\.php\:243\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/RemoveEmptyProjectsCommand.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/app/Console/Commands/RemoveEmptyProjectsCommand\.php\:243\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Console/Commands/RemoveEmptyProjectsCommand.php
 
@@ -229,26 +157,8 @@ parameters:
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
-			message: '#^Property App\\Console\\Commands\\RunLagoonCommandOnAppInstances\:\:\$allowedCommands type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\SendAppInstanceMail\:\:getRecipients\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
 			message: '#^Method App\\Console\\Commands\\SendAppInstanceMail\:\:handle\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
-			message: '#^Property App\\Console\\Commands\\SendAppInstanceMail\:\:\$availableMailTypes type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Console/Commands/SendAppInstanceMail.php
 
@@ -283,38 +193,8 @@ parameters:
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
 
 		-
-			message: '#^Method App\\Enums\\PolydockDeploymentRunStatusEnum\:\:getEnumOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/PolydockDeploymentRunStatusEnum.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockDeploymentRunStatusEnum\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/PolydockDeploymentRunStatusEnum.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockDeploymentRunTriggerSourceEnum\:\:getEnumOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/PolydockDeploymentRunTriggerSourceEnum.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockDeploymentRunTriggerSourceEnum\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/PolydockDeploymentRunTriggerSourceEnum.php
-
-		-
 			message: '#^Method App\\Enums\\PolydockStoreAppStatusEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
-			count: 1
-			path: app/Enums/PolydockStoreAppStatusEnum.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockStoreAppStatusEnum\:\:getEnumOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Enums/PolydockStoreAppStatusEnum.php
 
@@ -325,20 +205,8 @@ parameters:
 			path: app/Enums/PolydockStoreAppStatusEnum.php
 
 		-
-			message: '#^Method App\\Enums\\PolydockStoreAppStatusEnum\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/PolydockStoreAppStatusEnum.php
-
-		-
 			message: '#^Method App\\Enums\\PolydockStoreStatusEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
-			count: 1
-			path: app/Enums/PolydockStoreStatusEnum.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockStoreStatusEnum\:\:getEnumOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Enums/PolydockStoreStatusEnum.php
 
@@ -349,20 +217,8 @@ parameters:
 			path: app/Enums/PolydockStoreStatusEnum.php
 
 		-
-			message: '#^Method App\\Enums\\PolydockStoreStatusEnum\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/PolydockStoreStatusEnum.php
-
-		-
 			message: '#^Method App\\Enums\\PolydockStoreWebhookCallStatusEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
-			count: 1
-			path: app/Enums/PolydockStoreWebhookCallStatusEnum.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockStoreWebhookCallStatusEnum\:\:getEnumOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Enums/PolydockStoreWebhookCallStatusEnum.php
 
@@ -373,20 +229,8 @@ parameters:
 			path: app/Enums/PolydockStoreWebhookCallStatusEnum.php
 
 		-
-			message: '#^Method App\\Enums\\PolydockStoreWebhookCallStatusEnum\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/PolydockStoreWebhookCallStatusEnum.php
-
-		-
 			message: '#^Method App\\Enums\\PolydockVariableScopeEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
-			count: 1
-			path: app/Enums/PolydockVariableScopeEnum.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockVariableScopeEnum\:\:getEnumOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Enums/PolydockVariableScopeEnum.php
 
@@ -397,20 +241,8 @@ parameters:
 			path: app/Enums/PolydockVariableScopeEnum.php
 
 		-
-			message: '#^Method App\\Enums\\PolydockVariableScopeEnum\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/PolydockVariableScopeEnum.php
-
-		-
 			message: '#^Method App\\Enums\\UserGroupRoleEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
-			count: 1
-			path: app/Enums/UserGroupRoleEnum.php
-
-		-
-			message: '#^Method App\\Enums\\UserGroupRoleEnum\:\:getEnumOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Enums/UserGroupRoleEnum.php
 
@@ -421,20 +253,8 @@ parameters:
 			path: app/Enums/UserGroupRoleEnum.php
 
 		-
-			message: '#^Method App\\Enums\\UserGroupRoleEnum\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/UserGroupRoleEnum.php
-
-		-
 			message: '#^Method App\\Enums\\UserRemoteRegistrationStatusEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
-			count: 1
-			path: app/Enums/UserRemoteRegistrationStatusEnum.php
-
-		-
-			message: '#^Method App\\Enums\\UserRemoteRegistrationStatusEnum\:\:getEnumOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Enums/UserRemoteRegistrationStatusEnum.php
 
@@ -445,20 +265,8 @@ parameters:
 			path: app/Enums/UserRemoteRegistrationStatusEnum.php
 
 		-
-			message: '#^Method App\\Enums\\UserRemoteRegistrationStatusEnum\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/UserRemoteRegistrationStatusEnum.php
-
-		-
 			message: '#^Method App\\Enums\\UserRemoteRegistrationType\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
-			count: 1
-			path: app/Enums/UserRemoteRegistrationType.php
-
-		-
-			message: '#^Method App\\Enums\\UserRemoteRegistrationType\:\:getEnumOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Enums/UserRemoteRegistrationType.php
 
@@ -467,24 +275,6 @@ parameters:
 			identifier: return.unusedType
 			count: 1
 			path: app/Enums/UserRemoteRegistrationType.php
-
-		-
-			message: '#^Method App\\Enums\\UserRemoteRegistrationType\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Enums/UserRemoteRegistrationType.php
-
-		-
-			message: '#^Method App\\Filament\\Admin\\Resources\\PolydockAppInstanceResource\:\:getRenderedInstanceConfigForRecord\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
-
-		-
-			message: '#^Method App\\Filament\\Admin\\Resources\\PolydockAppInstanceResource\:\:getRenderedSafeDataForRecord\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
 
 		-
 			message: '#^Negated boolean expression is always false\.$#'
@@ -496,18 +286,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Filament\\Admin\\Resources\\PolydockAppInstanceResource\\Pages\\CreatePolydockAppInstance\:\:\$form\.$#'
 			identifier: property.notFound
 			count: 2
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/CreatePolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Filament\\Admin\\Resources\\PolydockAppInstanceResource\\Pages\\CreatePolydockAppInstance\:\:getFormActions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/CreatePolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Filament\\Admin\\Resources\\PolydockAppInstanceResource\\Pages\\CreatePolydockAppInstance\:\:\$data type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/CreatePolydockAppInstance.php
 
 		-
@@ -655,12 +433,6 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockStoreWebhookResource.php
 
 		-
-			message: '#^Method App\\Filament\\Admin\\Resources\\RoleResource\:\:getPermissionPrefixes\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Admin/Resources/RoleResource.php
-
-		-
 			message: '#^Property App\\Filament\\Admin\\Resources\\RoleResource\\Pages\\CreateRole\:\:\$permissions with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
@@ -681,24 +453,6 @@ parameters:
 		-
 			message: '#^Method App\\Filament\\Admin\\Resources\\UserRemoteRegistrationResource\\Pages\\ViewUserRemoteRegistration\:\:getRenderedSafeDataForRecord\(\) has parameter \$safeData with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: app/Filament/Admin/Resources/UserRemoteRegistrationResource/Pages/ViewUserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Filament\\Admin\\Resources\\UserRemoteRegistrationResource\\Pages\\ViewUserRemoteRegistration\:\:getRenderedSafeDataForRecord\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Admin/Resources/UserRemoteRegistrationResource/Pages/ViewUserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Filament\\Admin\\Resources\\UserRemoteRegistrationResource\\Pages\\ViewUserRemoteRegistration\:\:getRenderedSafeRequestDataForRecord\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Admin/Resources/UserRemoteRegistrationResource/Pages/ViewUserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Filament\\Admin\\Resources\\UserRemoteRegistrationResource\\Pages\\ViewUserRemoteRegistration\:\:getRenderedSafeResultDataForRecord\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Filament/Admin/Resources/UserRemoteRegistrationResource/Pages/ViewUserRemoteRegistration.php
 
@@ -727,18 +481,6 @@ parameters:
 			path: app/Filament/Admin/Widgets/WeeklyBarChartWidget.php
 
 		-
-			message: '#^Method App\\Filament\\Admin\\Widgets\\WeeklyBarChartWidget\:\:buildWeeklyData\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Admin/Widgets/WeeklyBarChartWidget.php
-
-		-
-			message: '#^Method App\\Filament\\Admin\\Widgets\\WeeklyBarChartWidget\:\:paletteSeries\(\) has parameter \$colors with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Filament/Admin/Widgets/WeeklyBarChartWidget.php
-
-		-
 			message: '#^Method App\\Filament\\Admin\\Widgets\\WeeklyBarChartWidget\:\:paletteSeries\(\) has parameter \$names with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
 			identifier: missingType.generics
 			count: 1
@@ -761,108 +503,6 @@ parameters:
 			identifier: missingType.parameter
 			count: 1
 			path: app/Filament/Exports/UserRemoteRegistrationExporter.php
-
-		-
-			message: '#^Method App\\Forms\\BaseHostedForm\:\:getAllowedEmbedDomains\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/BaseHostedForm.php
-
-		-
-			message: '#^Method App\\Forms\\BaseHostedForm\:\:getAllowedEmbedOrigins\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/BaseHostedForm.php
-
-		-
-			message: '#^Method App\\Forms\\BaseHostedForm\:\:getAllowedTrialAppUuids\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/BaseHostedForm.php
-
-		-
-			message: '#^Method App\\Forms\\BaseHostedForm\:\:getValidationRules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/BaseHostedForm.php
-
-		-
-			message: '#^Method App\\Forms\\BaseHostedForm\:\:transformPayload\(\) has parameter \$validatedData with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/BaseHostedForm.php
-
-		-
-			message: '#^Method App\\Forms\\BaseHostedForm\:\:transformPayload\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/BaseHostedForm.php
-
-		-
-			message: '#^Method App\\Forms\\DrupalAIDemoDrupalOrgForm\:\:getAllowedEmbedDomains\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/DrupalAIDemoDrupalOrgForm.php
-
-		-
-			message: '#^Method App\\Forms\\DrupalAIDemoDrupalOrgForm\:\:getValidationRules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/DrupalAIDemoDrupalOrgForm.php
-
-		-
-			message: '#^Method App\\Forms\\DrupalAIDemoDrupalOrgForm\:\:transformPayload\(\) has parameter \$validatedData with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/DrupalAIDemoDrupalOrgForm.php
-
-		-
-			message: '#^Method App\\Forms\\DrupalAIDemoDrupalOrgForm\:\:transformPayload\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/DrupalAIDemoDrupalOrgForm.php
-
-		-
-			message: '#^Method App\\Forms\\GenericHostedForm\:\:getValidationRules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/GenericHostedForm.php
-
-		-
-			message: '#^Method App\\Forms\\HostedFormInterface\:\:getAllowedEmbedDomains\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/HostedFormInterface.php
-
-		-
-			message: '#^Method App\\Forms\\HostedFormInterface\:\:getAllowedEmbedOrigins\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/HostedFormInterface.php
-
-		-
-			message: '#^Method App\\Forms\\HostedFormInterface\:\:getAllowedTrialAppUuids\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/HostedFormInterface.php
-
-		-
-			message: '#^Method App\\Forms\\HostedFormInterface\:\:getValidationRules\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/HostedFormInterface.php
-
-		-
-			message: '#^Method App\\Forms\\HostedFormInterface\:\:transformPayload\(\) has parameter \$validatedData with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/HostedFormInterface.php
-
-		-
-			message: '#^Method App\\Forms\\HostedFormInterface\:\:transformPayload\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Forms/HostedFormInterface.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\UserGroup\:\:\$pivot\.$#'
@@ -943,12 +583,6 @@ parameters:
 			path: app/Http/Controllers/Api/RegionsController.php
 
 		-
-			message: '#^Method App\\Http\\Controllers\\Auth\\OktaController\:\:syncMappedRoles\(\) has parameter \$groups with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Http/Controllers/Auth/OktaController.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
 			identifier: property.notFound
 			count: 1
@@ -981,12 +615,6 @@ parameters:
 		-
 			message: '#^Method App\\Jobs\\ProcessPolydockAppInstanceJobs\\BaseJob\:\:getPolydockJobId\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/BaseJob.php
-
-		-
-			message: '#^Method App\\Jobs\\ProcessPolydockAppInstanceJobs\\BaseJob\:\:middleware\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Jobs/ProcessPolydockAppInstanceJobs/BaseJob.php
 
@@ -1087,25 +715,7 @@ parameters:
 			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
 
 		-
-			message: '#^Method App\\Mail\\AppInstanceReadyMail\:\:mjmlConfig\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Mail/AppInstanceReadyMail.php
-
-		-
-			message: '#^Method App\\Mail\\TrialEmailMail\:\:mjmlConfig\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Mail/TrialEmailMail.php
-
-		-
 			message: '#^Class App\\Models\\PolydockAppInstance has PHPDoc tag @property for property \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/PolydockAppInstance.php
@@ -1117,50 +727,14 @@ parameters:
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
 			message: '#^Method App\\Models\\PolydockAppInstance\:\:getDataForLagoonScript\(\) has no return type specified\.$#'
 			identifier: missingType.return
 			count: 1
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:getSensitiveDataKeys\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
 			message: '#^Method App\\Models\\PolydockAppInstance\:\:getWebhookSafeData\(\) has parameter \$attribute with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:getWebhookSafeData\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:logLine\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:registerSensitiveDataKeys\(\) has parameter \$keys with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/PolydockAppInstance.php
 
@@ -1173,12 +747,6 @@ parameters:
 		-
 			message: '#^Method App\\Models\\PolydockAppInstance\:\:setStatusMessageAttribute\(\) has parameter \$value with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:shouldFilterKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/PolydockAppInstance.php
 
@@ -1201,110 +769,8 @@ parameters:
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^PHPDoc type array of property App\\Models\\PolydockAppInstance\:\:\$casts is not covariant with PHPDoc type array\<string, string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$casts\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^PHPDoc type array of property App\\Models\\PolydockAppInstance\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$casts type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$completedStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$failedStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$fillable type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$pendingStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$pollingStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$sensitiveDataKeys \(array\) on left side of \?\? is not nullable\.$#'
+			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$sensitiveDataKeys \(list\<string\>\) on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.property
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$sensitiveDataKeys type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$stageClaimStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$stageCreateStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$stageDeployStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$stagePurgeStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$stageRemoveStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$stageRunningStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$stageUpgradeStatuses type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/PolydockAppInstance.php
 
@@ -1329,12 +795,6 @@ parameters:
 		-
 			message: '#^Class App\\Models\\PolydockBannedPattern uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockBannedPattern.php
-
-		-
-			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\PolydockBannedPattern\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
-			identifier: property.phpDocType
 			count: 1
 			path: app/Models/PolydockBannedPattern.php
 
@@ -1489,24 +949,6 @@ parameters:
 			path: app/Models/PolydockStoreApp.php
 
 		-
-			message: '#^PHPDoc type array of property App\\Models\\PolydockStoreApp\:\:\$appends is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$appends\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\PolydockStoreApp\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Property App\\Models\\PolydockStoreApp\:\:\$appends type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
 			message: '#^Class App\\Models\\PolydockStoreWebhook uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -1575,12 +1017,6 @@ parameters:
 		-
 			message: '#^Method App\\Models\\User\:\:viewerGroups\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
 			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\:\:\$appends is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$appends\.$#'
-			identifier: property.phpDocType
 			count: 1
 			path: app/Models/User.php
 
@@ -1669,38 +1105,8 @@ parameters:
 			path: app/Models/UserRemoteRegistration.php
 
 		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:getDataAttribute\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:getSensitiveDataKeys\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
 			message: '#^Method App\\Models\\UserRemoteRegistration\:\:getWebhookSafeData\(\) has parameter \$attribute with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:getWebhookSafeData\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:registerSensitiveDataKeys\(\) has parameter \$keys with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:shouldFilterKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/UserRemoteRegistration.php
 
@@ -1723,32 +1129,8 @@ parameters:
 			path: app/Models/UserRemoteRegistration.php
 
 		-
-			message: '#^PHPDoc type array of property App\\Models\\UserRemoteRegistration\:\:\$appends is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$appends\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^PHPDoc type array of property App\\Models\\UserRemoteRegistration\:\:\$casts is not covariant with PHPDoc type array\<string, string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$casts\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Relations\\BelongsTo\<App\\Models\\PolydockStoreApp,\$this\(App\\Models\\UserRemoteRegistration\)\>\:\:withDefault\(\) expects array\|bool\|Closure, null given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Property App\\Models\\UserRemoteRegistration\:\:\$appends type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Property App\\Models\\UserRemoteRegistration\:\:\$casts type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/UserRemoteRegistration.php
 
@@ -1759,49 +1141,19 @@ parameters:
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
 		-
-			message: '#^Method App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\:\:extractAiCredentialsFromHookData\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\:\:extractAndStoreAiCredentialsFromHookData\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\:\:generateAndStoreAmazeeAiCredentials\(\) has parameter \$logContext with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\:\:provisionAndInjectManualAmazeeAiCredentials\(\) has parameter \$logContext with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
-			message: '#^Offset ''result'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			message: '#^Offset ''result'' on non\-empty\-array\<string, mixed\> on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
 		-
-			message: '#^Method App\\Polydock\\Apps\\AnythingLlm\\PolydockAnythingLLMApp\:\:getAppDefaultVariableDefinitions\(\) should return array\<App\\Polydock\\Core\\PolydockAppVariableDefinitionBase\> but returns array\<App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Polydock/Apps/AnythingLlm/PolydockAnythingLLMApp.php
-
-		-
-			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 2
 			path: app/Polydock/Apps/Generic/PolydockAiApp.php
 
 		-
-			message: '#^Call to function is_array\(\) with non\-empty\-array will always evaluate to true\.$#'
+			message: '#^Call to function is_array\(\) with non\-empty\-array\<string, mixed\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Polydock/Apps/Generic/PolydockAiApp.php
@@ -1809,12 +1161,6 @@ parameters:
 		-
 			message: '#^Instanceof between App\\Polydock\\Clients\\AmazeeAi\\Client and App\\Polydock\\Clients\\AmazeeAi\\Client will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockAiApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockAiApp\:\:getPrivateAICredentialsFromBackend\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/Polydock/Apps/Generic/PolydockAiApp.php
 
@@ -1879,18 +1225,6 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:getLogContext\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:resolveClaimUrlFromLagoonRoutes\(\) has parameter \$logContext with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
 			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:runLifecyclePhase\(\) has parameter \$body with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1903,454 +1237,10 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:validateLagoonPingAndThrowExceptionIfFailed\(\) has parameter \$logContext with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:verifyLagoonProjectIdIsAvailable\(\) has parameter \$logContext with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:verifyLagoonProjectNameIsAvailable\(\) has parameter \$logContext with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:verifyLagoonValuesAreAvailable\(\) has parameter \$logContext with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
 			count: 1
 			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:createPrivateAIKeys\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:createToken\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:createUser\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:get\(\) has parameter \$query with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:get\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:getMe\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:getRegion\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:health\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:login\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:post\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:post\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:register\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:request\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:request\(\) has parameter \$query with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:request\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:searchUsers\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Property App\\Polydock\\Clients\\AmazeeAi\\Client\:\:\$headers type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Exception\\HttpException\:\:__construct\(\) has parameter \$response with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Exception/HttpException.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Exception\\HttpException\:\:getResponse\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Exception/HttpException.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:addGroupToProject\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:addOrUpdateGlobalVariableForOrganization\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:addOrUpdateGlobalVariableForProject\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:addOrUpdateScopedVariableForOrganization\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:addOrUpdateScopedVariableForProject\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:addOrUpdateScopedVariableForProjectEnvironment\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:addProjectDeployTargetByProjectId\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:addProjectMutation\(\) has parameter \$addProjectInput with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:addProjectMutation\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:bulkDeployEnvironments\(\) has parameter \$buildVariables with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:bulkDeployEnvironments\(\) has parameter \$environments with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:bulkDeployEnvironments\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:createLagoonProject\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:createLagoonProjectInOrganization\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:deleteProjectByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:deleteProjectDeployTargetByConfigId\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:deleteProjectEnvironmentByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:deleteProjectVariableByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:deleteProjectVariableByNameForEnvironment\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:deployProjectEnvironmentByName\(\) has parameter \$buildVariables with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:deployProjectEnvironmentByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:executeCommandOnProjectEnvironment\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getAllGroups\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getAllProjects\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getDeploymentsByBulkId\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getEnvironmentDeploymentsByProjectId\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getGroupUsers\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectDeployTargetByConfigId\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectDeployTargetsByProjectId\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectDeploymentByProjectIdDeploymentName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectEnvironmentByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectEnvironmentDeployments\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectEnvironmentsByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectVariableByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectVariableByNameForEnvironment\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectVariablesByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectVariablesByNameForEnvironment\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:removeUserFromGroup\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:removeUserFromOrganizationGroups\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:updateProjectDeployTargetByConfigId\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:updateProjectMetadata\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Client\:\:whoAmI\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Client.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Enums\\LagoonVariableScope\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Enums/LagoonVariableScope.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\GraphQLClient\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/GraphQLClient.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\GraphQLClient\:\:query\(\) has parameter \$variables with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/GraphQLClient.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\GraphQLResponse\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/GraphQLResponse.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\GraphQLResponse\:\:__construct\(\) has parameter \$errors with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/GraphQLResponse.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\GraphQLResponse\:\:getData\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/GraphQLResponse.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\GraphQLResponse\:\:getErrors\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/GraphQLResponse.php
 
 		-
 			message: '#^Method App\\Polydock\\Clients\\Lagoon\\LagoonClientPrivateKeyNotFoundException\:\:__construct\(\) has parameter \$code with no type specified\.$#'
@@ -2383,298 +1273,16 @@ parameters:
 			path: app/Polydock/Clients/Lagoon/Ssh.php
 
 		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Ssh\:\:executeSShCommand\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Clients/Lagoon/Ssh.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Enums\\PolydockAppInstanceStatus\:\:getOptions\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Enums/PolydockAppInstanceStatus.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Enums\\PolydockAppInstanceStatus\:\:getValues\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Enums/PolydockAppInstanceStatus.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppCacheLogger\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppCacheLogger.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppCacheLogger\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppCacheLogger.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppCacheLogger\:\:getLogMessages\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppCacheLogger.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppCacheLogger\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppCacheLogger.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppCacheLogger\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppCacheLogger.php
-
-		-
-			message: '#^Property App\\Polydock\\Core\\Loggers\\PolydockAppCacheLogger\:\:\$logMessages type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppCacheLogger.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppEchoLogger\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppEchoLogger.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppEchoLogger\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppEchoLogger.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppEchoLogger\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppEchoLogger.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppEchoLogger\:\:output\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppEchoLogger.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\Loggers\\PolydockAppEchoLogger\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppEchoLogger.php
-
-		-
 			message: '#^Instanceof between App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface and App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
 			path: app/Polydock/Core/PolydockAppBase.php
 
 		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppBase\:\:__construct\(\) has parameter \$variableDefinitions with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppBase\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppBase\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppBase\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppBase\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Property App\\Polydock\\Core\\PolydockAppBase\:\:\$appConfiguration type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInstanceInterface\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInstanceInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInstanceInterface\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInstanceInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInstanceInterface\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInstanceInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInstanceInterface\:\:save\(\) has parameter \$options with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInstanceInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInstanceInterface\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInstanceInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInterface\:\:__construct\(\) has parameter \$variableDefinitions with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInterface\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInterface\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInterface\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppInterface\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppLoggerInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppLoggerInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppLoggerInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockAppLoggerInterface.php
-
-		-
 			message: '#^Access to an undefined property App\\Polydock\\Core\\PolydockEngineBase\:\:\$logger\.$#'
 			identifier: property.notFound
 			count: 7
 			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineBase\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineBase\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineBase\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineBase\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineInterface\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockEngineInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineInterface\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockEngineInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineInterface\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockEngineInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineInterface\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockEngineInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockServiceProviderInterface\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockServiceProviderInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockServiceProviderInterface\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockServiceProviderInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockServiceProviderInterface\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockServiceProviderInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockServiceProviderInterface\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockServiceProviderInterface.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockServiceProviderInterface\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Core/PolydockServiceProviderInterface.php
 
 		-
 			message: '#^Access to an undefined property App\\Polydock\\Core\\PolydockAppInstanceInterface&Illuminate\\Database\\Eloquent\\Model\:\:\$storeApp\.$#'
@@ -2686,18 +1294,6 @@ parameters:
 			message: '#^Access to an undefined property App\\Polydock\\Core\\PolydockAppInstanceInterface\:\:\$storeApp\.$#'
 			identifier: property.notFound
 			count: 6
-			path: app/PolydockEngine/Engine.php
-
-		-
-			message: '#^Method App\\PolydockEngine\\Engine\:\:processPolydockAppPollUpdateUsingFunction\(\) has parameter \$expectedStatuses with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockEngine/Engine.php
-
-		-
-			message: '#^Method App\\PolydockEngine\\Engine\:\:resolveAppFunction\(\) has parameter \$outputContext with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
 			path: app/PolydockEngine/Engine.php
 
 		-
@@ -2755,12 +1351,6 @@ parameters:
 			path: app/PolydockEngine/Helpers/LagoonHelper.php
 
 		-
-			message: '#^Method App\\PolydockEngine\\Helpers\\LagoonHelper\:\:getLagoonCoreDataForRegion\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockEngine/Helpers/LagoonHelper.php
-
-		-
 			message: '#^Property App\\PolydockEngine\\Helpers\\LagoonHelper\:\:\$cacheKeyPrefix has no type specified\.$#'
 			identifier: missingType.property
 			count: 1
@@ -2773,68 +1363,8 @@ parameters:
 			path: app/PolydockEngine/Helpers/LagoonHelper.php
 
 		-
-			message: '#^Method App\\PolydockEngine\\PolydockLogger\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockEngine/PolydockLogger.php
-
-		-
-			message: '#^Method App\\PolydockEngine\\PolydockLogger\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockEngine/PolydockLogger.php
-
-		-
-			message: '#^Method App\\PolydockEngine\\PolydockLogger\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockEngine/PolydockLogger.php
-
-		-
-			message: '#^Method App\\PolydockEngine\\PolydockLogger\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockEngine/PolydockLogger.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderAmazeeAiBackend\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderAmazeeAiBackend.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderAmazeeAiBackend\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderAmazeeAiBackend.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderAmazeeAiBackend\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderAmazeeAiBackend.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderAmazeeAiBackend\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderAmazeeAiBackend.php
-
-		-
 			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderAmazeeAiBackend\:\:initAmazeeAiBackendClient\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderAmazeeAiBackend.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderAmazeeAiBackend\:\:initAmazeeAiBackendClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderAmazeeAiBackend.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderAmazeeAiBackend\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/PolydockServiceProviders/PolydockServiceProviderAmazeeAiBackend.php
 
@@ -2851,44 +1381,8 @@ parameters:
 			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
 
 		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderFTLagoon\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderFTLagoon\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderFTLagoon\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderFTLagoon\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
-
-		-
 			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderFTLagoon\:\:initLagoonClient\(\) has no return type specified\.$#'
 			identifier: missingType.return
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderFTLagoon\:\:initLagoonClient\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
-
-		-
-			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderFTLagoon\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
 
@@ -2905,100 +1399,10 @@ parameters:
 			path: app/Providers/AuthServiceProvider.php
 
 		-
-			message: '#^Method App\\Services\\EmailBlockerService\:\:getDomainHierarchy\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/EmailBlockerService.php
-
-		-
-			message: '#^Method App\\Services\\EmailBlockerService\:\:loadDisposableDomains\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/EmailBlockerService.php
-
-		-
-			message: '#^Method App\\Services\\EmailBlockerService\:\:saveDisposableDomains\(\) has parameter \$domains with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/EmailBlockerService.php
-
-		-
-			message: '#^Property App\\Services\\EmailBlockerService\:\:\$disposableDomainsCache type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/EmailBlockerService.php
-
-		-
-			message: '#^Method App\\Services\\LagoonClientService\:\:buildClientWithToken\(\) has parameter \$clientConfig with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/LagoonClientService.php
-
-		-
-			message: '#^Method App\\Services\\LagoonClientService\:\:fetchLagoonTokenOverSsh\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/LagoonClientService.php
-
-		-
-			message: '#^Method App\\Services\\LagoonClientService\:\:getAuthenticatedClient\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/LagoonClientService.php
-
-		-
-			message: '#^Method App\\Services\\LagoonClientService\:\:getClientConfig\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/LagoonClientService.php
-
-		-
-			message: '#^Method App\\Services\\LagoonClientService\:\:getLagoonToken\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/LagoonClientService.php
-
-		-
-			message: '#^Method App\\Services\\LagoonClientService\:\:tokenCacheKey\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/LagoonClientService.php
-
-		-
 			message: '#^Call to function is_array\(\) with non\-empty\-array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Services/LagoonProjectPurgeService.php
-
-		-
-			message: '#^Method App\\Services\\LagoonProjectPurgeService\:\:isActiveEnvironment\(\) has parameter \$env with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/LagoonProjectPurgeService.php
-
-		-
-			message: '#^Method App\\Services\\PolydockAppClassDiscovery\:\:extractFieldNamesFromSchema\(\) has parameter \$components with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/PolydockAppClassDiscovery.php
-
-		-
-			message: '#^Method App\\Services\\PolydockAppClassDiscovery\:\:getFieldEncryptionMap\(\) has parameter \$components with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/PolydockAppClassDiscovery.php
-
-		-
-			message: '#^Method App\\Services\\PolydockAppClassDiscovery\:\:prefixAppInstanceSchemaFieldNames\(\) has parameter \$components with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/PolydockAppClassDiscovery.php
-
-		-
-			message: '#^Method App\\Services\\PolydockAppClassDiscovery\:\:prefixSchemaFieldNames\(\) has parameter \$components with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Services/PolydockAppClassDiscovery.php
 
 		-
 			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
@@ -3079,62 +1483,8 @@ parameters:
 			path: database/seeders/AmazeeTrialSeeder.php
 
 		-
-			message: '#^Method Tests\\Doubles\\BaseTestPolydockServiceProvider\:\:__construct\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/BaseTestPolydockServiceProvider.php
-
-		-
-			message: '#^Method Tests\\Doubles\\BaseTestPolydockServiceProvider\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/BaseTestPolydockServiceProvider.php
-
-		-
-			message: '#^Method Tests\\Doubles\\BaseTestPolydockServiceProvider\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/BaseTestPolydockServiceProvider.php
-
-		-
-			message: '#^Method Tests\\Doubles\\BaseTestPolydockServiceProvider\:\:getConfig\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/BaseTestPolydockServiceProvider.php
-
-		-
-			message: '#^Method Tests\\Doubles\\BaseTestPolydockServiceProvider\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/BaseTestPolydockServiceProvider.php
-
-		-
-			message: '#^Method Tests\\Doubles\\BaseTestPolydockServiceProvider\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/BaseTestPolydockServiceProvider.php
-
-		-
-			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:__construct\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/DoublePolydockAppInstance.php
-
-		-
 			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:__construct\(\) has parameter \$storeApp with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: tests/Doubles/DoublePolydockAppInstance.php
-
-		-
-			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/DoublePolydockAppInstance.php
-
-		-
-			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Doubles/DoublePolydockAppInstance.php
 
@@ -3151,24 +1501,6 @@ parameters:
 			path: tests/Doubles/DoublePolydockAppInstance.php
 
 		-
-			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/DoublePolydockAppInstance.php
-
-		-
-			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:save\(\) has parameter \$options with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/DoublePolydockAppInstance.php
-
-		-
-			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/DoublePolydockAppInstance.php
-
-		-
 			message: '#^Property Tests\\Doubles\\DoublePolydockAppInstance\:\:\$data has no type specified\.$#'
 			identifier: missingType.property
 			count: 1
@@ -3179,84 +1511,6 @@ parameters:
 			identifier: missingType.property
 			count: 1
 			path: tests/Doubles/DoublePolydockAppInstance.php
-
-		-
-			message: '#^Method Tests\\Doubles\\FakeLagoonClient\:\:addGroupToProject\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Method Tests\\Doubles\\FakeLagoonClient\:\:bulkDeployEnvironments\(\) has parameter \$buildVariables with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Method Tests\\Doubles\\FakeLagoonClient\:\:bulkDeployEnvironments\(\) has parameter \$environments with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Method Tests\\Doubles\\FakeLagoonClient\:\:bulkDeployEnvironments\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Method Tests\\Doubles\\FakeLagoonClient\:\:deleteProjectByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Method Tests\\Doubles\\FakeLagoonClient\:\:deleteProjectEnvironmentByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Method Tests\\Doubles\\FakeLagoonClient\:\:getDeploymentsByBulkId\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Method Tests\\Doubles\\FakeLagoonClient\:\:getProjectByName\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Property Tests\\Doubles\\FakeLagoonClient\:\:\$addGroupResponse type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Property Tests\\Doubles\\FakeLagoonClient\:\:\$deleteEnvironmentResponse type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Property Tests\\Doubles\\FakeLagoonClient\:\:\$deleteProjectResponse type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Method Tests\\Doubles\\FakeLagoonClientService\:\:getAuthenticatedClient\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Doubles/FakeLagoonClientService.php
-
-		-
-			message: '#^Method Tests\\Feature\\AmazeeClawConfigTest\:\:createAppInstance\(\) has parameter \$config with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/AmazeeClawConfigTest.php
 
 		-
 			message: '#^Method Tests\\Feature\\AmazeeClawConfigTest\:\:test_build_claim_script_with_secure_stdin_variables\(\) has no return type specified\.$#'
@@ -3319,12 +1573,6 @@ parameters:
 			path: tests/Feature/AmazeeClawConfigTest.php
 
 		-
-			message: '#^Property Tests\\Feature\\TestablePolydockAmazeeClawAiApp\:\:\$injectedVariables type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/AmazeeClawConfigTest.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$id\.$#'
 			identifier: property.notFound
 			count: 1
@@ -3373,24 +1621,6 @@ parameters:
 			path: tests/Feature/Api/RegionsApiTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Auth\\OktaLoginTest\:\:fakeIdToken\(\) has parameter \$claims with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Auth/OktaLoginTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Auth\\OktaLoginTest\:\:fakeOktaUser\(\) has parameter \$idTokenClaims with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Auth/OktaLoginTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Auth\\OktaLoginTest\:\:fakeOktaUser\(\) has parameter \$raw with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Auth/OktaLoginTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with false and ''Validation failed…'' will always evaluate to false\.$#'
 			identifier: method.impossibleType
 			count: 1
@@ -3409,21 +1639,9 @@ parameters:
 			path: tests/Feature/Console/Commands/MarkStuckInstancesFailedCommandTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Console\\Commands\\MarkStuckInstancesFailedCommandTest\:\:statusTransitionProvider\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Console/Commands/MarkStuckInstancesFailedCommandTest.php
-
-		-
 			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
 			identifier: method.notFound
 			count: 7
-			path: tests/Feature/Console/Commands/RemoveEmptyProjectsCommandTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Console\\Commands\\RemoveEmptyProjectsCommandTest\:\:createInstance\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
 			path: tests/Feature/Console/Commands/RemoveEmptyProjectsCommandTest.php
 
 		-
@@ -3637,30 +1855,6 @@ parameters:
 			path: tests/Feature/Database/HostedFormsSeederTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Deployment\\DeploymentModelTest\:\:makeInstance\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Deployment/DeploymentModelTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Deployment\\RedeployServiceTest\:\:makeInstance\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Deployment/RedeployServiceTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Deployment\\ScheduledRedeployCommandTest\:\:makeInstance\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Deployment/ScheduledRedeployCommandTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Deployment\\ScheduledRedeployCommandTest\:\:storeApp\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Deployment/ScheduledRedeployCommandTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 2
@@ -3721,42 +1915,6 @@ parameters:
 			path: tests/Feature/GeneralApplicationTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Jobs\\EnsureUnallocatedThrottlingTest\:\:storeApp\(\) has parameter \$appConfig with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Jobs/EnsureUnallocatedThrottlingTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Listeners\\ProcessPolydockAppInstanceStatusChangeTest\:\:makeInstance\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Listeners/ProcessPolydockAppInstanceStatusChangeTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Mail\\AppliesMailThemeTest\:\:mailConfigForTheme\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Mail/AppliesMailThemeTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Polydock\\AmazeeAiBackendCredentialsTest\:\:fakeBackend\(\) has parameter \$overrides with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Polydock/AmazeeAiBackendCredentialsTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Polydock\\AmazeeAiBackendCredentialsTest\:\:makeInstanceDouble\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Polydock/AmazeeAiBackendCredentialsTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Polydock\\AmazeeAiBackendCredentialsTest\:\:validKeysResponse\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Polydock/AmazeeAiBackendCredentialsTest.php
-
-		-
 			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:getName\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -3769,82 +1927,22 @@ parameters:
 			path: tests/Feature/Polydock/RunLifecyclePhaseTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Security\\OneTimeLoginRouteSecurityTest\:\:createAppInstance\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Security/OneTimeLoginRouteSecurityTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Services\\LagoonClientServiceTokenCacheTest\:\:unusableConfig\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Services/LagoonClientServiceTokenCacheTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Services\\LagoonProjectPurgeServiceTest\:\:makeInstance\(\) has parameter \$data with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Feature/Services/LagoonProjectPurgeServiceTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Apps\\Generic\\LagoonCustomRouteVariableTest\:\:makeInstance\(\) has parameter \$appConfig with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:43\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableName with no type specified\.$#'
+			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:46\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableName with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest.php
 
 		-
-			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:43\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableScope with no type specified\.$#'
+			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:46\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableScope with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest.php
 
 		-
-			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:43\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableValue with no type specified\.$#'
+			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:46\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableValue with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
 			path: tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:43\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Apps\\Generic\\ResolvesCustomProjectNameHarness\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Apps/Generic/ResolvesCustomProjectNameTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Apps\\Generic\\ResolvesCustomProjectNameHarness\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Apps/Generic/ResolvesCustomProjectNameTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Apps\\Generic\\ResolvesCustomProjectNameTest\:\:makeInstance\(\) has parameter \$appConfig with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Apps/Generic/ResolvesCustomProjectNameTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Models\\PolydockStoreAppNamingConfigTest\:\:makeStoreApp\(\) has parameter \$appConfig with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Models/PolydockStoreAppNamingConfigTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Models\\PolydockStoreAppNamingConfigTest\:\:makeStoreApp\(\) has parameter \$attributes with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Models/PolydockStoreAppNamingConfigTest.php
 
 		-
 			message: '#^Method Tests\\Unit\\Models\\PolydockStoreTest\:\:test_can_set_and_get_lagoon_deploy_private_key\(\) has no return type specified\.$#'
@@ -3863,60 +1961,6 @@ parameters:
 			identifier: missingType.return
 			count: 1
 			path: tests/Unit/Models/PolydockStoreTest.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/tests/Unit/PolydockAppLoggerTraitTest\.php\:70\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockAppLoggerTraitTest.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/tests/Unit/PolydockAppLoggerTraitTest\.php\:70\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockAppLoggerTraitTest.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/tests/Unit/PolydockAppLoggerTraitTest\.php\:70\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockAppLoggerTraitTest.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/tests/Unit/PolydockAppLoggerTraitTest\.php\:70\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockAppLoggerTraitTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/PolydockAppLoggerTraitTest\.php\:59\:\:debug\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockAppLoggerTraitTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/PolydockAppLoggerTraitTest\.php\:59\:\:error\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockAppLoggerTraitTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/PolydockAppLoggerTraitTest\.php\:59\:\:info\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockAppLoggerTraitTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/PolydockAppLoggerTraitTest\.php\:59\:\:warning\(\) has parameter \$context with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockAppLoggerTraitTest.php
-
-		-
-			message: '#^Property App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/tests/Unit/PolydockAppLoggerTraitTest\.php\:70\:\:\$lines type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockAppLoggerTraitTest.php
 
 		-
 			message: '#^Method Tests\\Unit\\PolydockEngine\\Helpers\\LagoonHelperTest\:\:test_get_public_key_from_private_key_returns_correct_public_key\(\) has no return type specified\.$#'
@@ -4009,12 +2053,6 @@ parameters:
 			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
 
 		-
-			message: '#^Property Tests\\Unit\\PolydockEngine\\PolydockEngineTest\:\:\$testConfig type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, bool\> will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
@@ -4075,32 +2113,8 @@ parameters:
 			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
 
 		-
-			message: '#^Method class@anonymous/tests/Unit/Traits/HasWebhookSensitiveDataTest\.php\:14\:\:getSensitiveDataKeys\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
 			message: '#^Method class@anonymous/tests/Unit/Traits/HasWebhookSensitiveDataTest\.php\:14\:\:getWebhookSafeData\(\) has parameter \$attribute with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/Traits/HasWebhookSensitiveDataTest\.php\:14\:\:getWebhookSafeData\(\) return type has no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/Traits/HasWebhookSensitiveDataTest\.php\:14\:\:registerSensitiveDataKeys\(\) has parameter \$keys with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/Traits/HasWebhookSensitiveDataTest\.php\:14\:\:shouldFilterKey\(\) has parameter \$sensitiveKeys with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
 			count: 1
 			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
 

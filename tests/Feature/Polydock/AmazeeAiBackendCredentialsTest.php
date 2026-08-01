@@ -29,6 +29,9 @@ class AmazeeAiBackendCredentialsTest extends TestCase
 {
     private const BASE = 'http://amazee-ai.test';
 
+    /**
+     * @return array<string, mixed>
+     */
     private function validKeysResponse(): array
     {
         return [
@@ -51,6 +54,9 @@ class AmazeeAiBackendCredentialsTest extends TestCase
         return $app;
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private function makeInstanceDouble(array $data = []): DoublePolydockAppInstance
     {
         return new DoublePolydockAppInstance(null, $data + [
@@ -59,6 +65,9 @@ class AmazeeAiBackendCredentialsTest extends TestCase
         ]);
     }
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     private function fakeBackend(array $overrides = []): void
     {
         Http::fake($overrides + [

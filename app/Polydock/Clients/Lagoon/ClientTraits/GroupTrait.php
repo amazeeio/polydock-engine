@@ -9,6 +9,8 @@ trait GroupTrait
     /**
      * Get all groups
      *
+     * @return array<string, mixed>
+     *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
     public function getAllGroups(): array
@@ -40,6 +42,8 @@ trait GroupTrait
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
     public function addGroupToProject(string $groupName, string $projectName): array
@@ -80,6 +84,8 @@ trait GroupTrait
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
     public function removeUserFromGroup(string $groupName, string $userEmail): array
@@ -123,7 +129,7 @@ trait GroupTrait
      * Gets users for a group
      *
      * @param  string  $groupName  The name of the group
-     * @return array Emails of users in group
+     * @return array<mixed> list<string>} Emails of users in group
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */

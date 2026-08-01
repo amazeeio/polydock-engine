@@ -37,6 +37,9 @@ class EnsureUnallocatedThrottlingTest extends TestCase
         config(['polydock.default_user_group_id_for_unallocated_instances' => $group->id]);
     }
 
+    /**
+     * @param  array<string, mixed>  $appConfig
+     */
     private function storeApp(array $appConfig = [], int $target = 0): PolydockStoreApp
     {
         return PolydockStoreApp::factory()->create([

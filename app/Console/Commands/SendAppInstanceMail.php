@@ -34,6 +34,9 @@ class SendAppInstanceMail extends BaseCommand
      */
     protected $description = 'Send a specific mailable to a specified email address based on a user remote registration UUID';
 
+    /**
+     * @var array<string, mixed>
+     */
     private array $availableMailTypes = [
         'ready' => AppInstanceReadyMail::class,
         'midtrial' => AppInstanceMidtrialMail::class,
@@ -162,6 +165,8 @@ class SendAppInstanceMail extends BaseCommand
 
     /**
      * Get recipients for the email
+     *
+     * @return array<int, array<string, User|string>>
      */
     private function getRecipients(UserRemoteRegistration $registration, string $email): array
     {

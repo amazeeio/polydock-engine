@@ -10,6 +10,9 @@ use Tests\TestCase;
 
 class TestablePolydockAmazeeClawAiApp extends PolydockAmazeeClawAiApp
 {
+    /**
+     * @var array<string, mixed>
+     */
     public array $injectedVariables = [];
 
     #[\Override]
@@ -21,6 +24,9 @@ class TestablePolydockAmazeeClawAiApp extends PolydockAmazeeClawAiApp
 
 class AmazeeClawConfigTest extends TestCase
 {
+    /**
+     * @param  array<string, mixed>  $config
+     */
     private function createAppInstance(array $config = []): DoublePolydockAppInstance
     {
         $storeApp = new \stdClass;

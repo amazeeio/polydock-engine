@@ -18,6 +18,8 @@ class PolydockLogger implements PolydockAppLoggerInterface
 
     /**
      * Log an error message
+     *
+     * @param  array<string, mixed>  $context
      */
     public function error(string $message, array $context = []): void
     {
@@ -26,6 +28,8 @@ class PolydockLogger implements PolydockAppLoggerInterface
 
     /**
      * Log a warning message
+     *
+     * @param  array<string, mixed>  $context
      */
     public function warning(string $message, array $context = []): void
     {
@@ -34,6 +38,8 @@ class PolydockLogger implements PolydockAppLoggerInterface
 
     /**
      * Log an info message
+     *
+     * @param  array<string, mixed>  $context
      */
     public function info(string $message, array $context = []): void
     {
@@ -42,6 +48,8 @@ class PolydockLogger implements PolydockAppLoggerInterface
 
     /**
      * Log a debug message
+     *
+     * @param  array<string, mixed>  $context
      */
     public function debug(string $message, array $context = []): void
     {

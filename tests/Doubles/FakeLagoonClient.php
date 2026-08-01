@@ -37,6 +37,9 @@ class FakeLagoonClient extends Client
     /** @var array<int, array{group: string, project: string}> Recorded addGroupToProject calls. */
     public array $groupAdds = [];
 
+    /**
+     * @var array<string, mixed>
+     */
     public ?array $addGroupResponse = null;
 
     public function __construct()
@@ -49,13 +52,22 @@ class FakeLagoonClient extends Client
     /** @var array<int, array{project: string, environment: string}> Recorded environment deletions. */
     public array $environmentDeletes = [];
 
+    /**
+     * @var array<string, mixed>
+     */
     public ?array $deleteEnvironmentResponse = null;
 
     /** @var array<int, string> Recorded project deletions. */
     public array $projectDeletes = [];
 
+    /**
+     * @var array<string, mixed>
+     */
     public ?array $deleteProjectResponse = null;
 
+    /**
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function getProjectByName(string $projectName): array
     {
@@ -71,6 +83,9 @@ class FakeLagoonClient extends Client
         return ['projectByName' => $this->projects[$projectName]];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function deleteProjectEnvironmentByName(string $projectName, string $environmentName): array
     {
@@ -79,6 +94,9 @@ class FakeLagoonClient extends Client
         return $this->deleteEnvironmentResponse ?? ['deleteEnvironment' => 'success'];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function deleteProjectByName(string $projectName): array
     {
@@ -87,6 +105,9 @@ class FakeLagoonClient extends Client
         return $this->deleteProjectResponse ?? ['deleteProject' => 'success'];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function addGroupToProject(string $groupName, string $projectName): array
     {
@@ -107,6 +128,11 @@ class FakeLagoonClient extends Client
         ];
     }
 
+    /**
+     * @param  list<int|array<string, mixed>>  $environments
+     * @param  array<string, mixed>  $buildVariables
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function bulkDeployEnvironments(array $environments, ?string $name = null, array $buildVariables = []): array
     {
@@ -119,6 +145,9 @@ class FakeLagoonClient extends Client
         return $this->bulkResponse ?? ['bulkDeployEnvironmentLatest' => $this->bulkId];
     }
 
+    /**
+     * @return array<mixed>
+     */
     #[\Override]
     public function getDeploymentsByBulkId(string $bulkId): array
     {

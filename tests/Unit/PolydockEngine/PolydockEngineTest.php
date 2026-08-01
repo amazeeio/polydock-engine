@@ -20,6 +20,9 @@ class PolydockEngineTest extends TestCase
 
     private PolydockAppLoggerInterface $logger;
 
+    /**
+     * @var array<string, mixed>
+     */
     private array $testConfig;
 
     protected function setUp(): void

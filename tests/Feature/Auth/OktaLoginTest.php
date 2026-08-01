@@ -32,6 +32,10 @@ class OktaLoginTest extends TestCase
         ]);
     }
 
+    /**
+     * @param  array<string, mixed>  $raw
+     * @param  array<string, mixed>  $idTokenClaims
+     */
     private function fakeOktaUser(string $sub, string $email, array $raw = [], ?array $idTokenClaims = null): void
     {
         $socialiteUser = (new SocialiteUser)
@@ -49,6 +53,9 @@ class OktaLoginTest extends TestCase
         );
     }
 
+    /**
+     * @param  array<string, mixed>  $claims
+     */
     private function fakeIdToken(array $claims): string
     {
         return 'header.'.rtrim(strtr(base64_encode((string) json_encode($claims)), '+/', '-_'), '=').'.signature';

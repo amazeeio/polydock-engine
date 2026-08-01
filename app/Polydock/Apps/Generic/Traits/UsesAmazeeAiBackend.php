@@ -132,6 +132,8 @@ trait UsesAmazeeAiBackend
     }
 
     /**
+     * @return array<mixed>
+     *
      * @throws PolydockAppInstanceStatusFlowException
      */
     public function getPrivateAICredentialsFromBackend(PolydockAppInstanceInterface $appInstance): array

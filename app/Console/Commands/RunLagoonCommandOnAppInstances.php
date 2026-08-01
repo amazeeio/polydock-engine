@@ -33,6 +33,8 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
 
     /**
      * Allowed commands list
+     *
+     * @var array<int, string>
      */
     protected array $allowedCommands = [
         'drush cr',

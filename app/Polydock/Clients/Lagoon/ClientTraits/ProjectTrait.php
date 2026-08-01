@@ -19,7 +19,7 @@ trait ProjectTrait
      * @param  int  $clusterId  The Kubernetes cluster ID
      * @param  string|null  $privateKey  The private key for Git access
      * @param  int|null  $autoIdle  Whether to enable autoIdle (0 = disabled, 1 = enabled)
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
@@ -57,7 +57,7 @@ trait ProjectTrait
      * @param  int  $orgId  The organization ID
      * @param  bool  $addOrgOwnerToProject  Whether to add organization owner to project
      * @param  int|null  $autoIdle  Whether to enable autoIdle (0 = disabled, 1 = enabled)
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
@@ -94,8 +94,8 @@ trait ProjectTrait
     /**
      * Provides a generic runner for explicit addProject implementations
      *
-     * @param  array  $addProjectInput  Project configuration array
-     * @return array Response from the API
+     * @param  array<string, mixed>  $addProjectInput  Project configuration array
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -151,7 +151,7 @@ trait ProjectTrait
      * Gets detailed information about a project
      *
      * @param  string  $projectName  The name of the project
-     * @return array Project data including environments, variables, and metadata
+     * @return array<string, mixed> Project data including environments, variables, and metadata
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -225,7 +225,7 @@ trait ProjectTrait
      * @param  int|string  $projectIdOrName  The ID or name of the project
      * @param  string  $key  The metadata key
      * @param  string  $value  The metadata value
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -276,7 +276,7 @@ trait ProjectTrait
      * Gets all variables for a project
      *
      * @param  string  $projectName  The name of the project
-     * @return array Associative array of variables with their values and scopes
+     * @return array<string, mixed> Associative array of variables with their values and scopes
      *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
@@ -301,7 +301,7 @@ trait ProjectTrait
      *
      * @param  string  $projectName  The name of the project
      * @param  string  $variableName  The name of the variable to retrieve
-     * @return array Variable data including value and scope, or empty array if not found
+     * @return array<string, mixed> Variable data including value and scope, or empty array if not found
      *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
@@ -320,7 +320,7 @@ trait ProjectTrait
      * @param  string  $value  The variable value
      * @param  string  $scope  The scope of the variable (GLOBAL, RUNTIME, BUILD, CONTAINER_REGISTRY)
      * @param  string|null  $environment  Optional environment name
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException|LagoonVariableScopeInvalidException if client not initialized
      */
@@ -377,7 +377,7 @@ trait ProjectTrait
      * @param  string  $projectName  The name of the project
      * @param  string  $key  The variable key/name
      * @param  string  $value  The variable value
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException|LagoonVariableScopeInvalidException if client not initialized
      */
@@ -396,7 +396,7 @@ trait ProjectTrait
      * @param  string  $key  The variable key/name
      * @param  string  $value  The variable value
      * @param  string  $scope  The scope of the variable (GLOBAL, RUNTIME, BUILD, CONTAINER_REGISTRY)
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException|LagoonVariableScopeInvalidException if client not initialized
      */
@@ -448,7 +448,7 @@ trait ProjectTrait
      * @param  string  $organizationName  The organization name
      * @param  string  $key  The variable key/name
      * @param  string  $value  The variable value
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException|LagoonVariableScopeInvalidException if client not initialized
      */
@@ -463,7 +463,7 @@ trait ProjectTrait
     /**
      * Gets all projects from the API
      *
-     * @return array Array of all projects and their details
+     * @return array<string, mixed> Array of all projects and their details
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -518,7 +518,7 @@ trait ProjectTrait
      * @param  string  $projectName  The name of the project
      * @param  string  $variableName  The name of the variable to delete
      * @param  string|null  $environment  Optional environment name
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -560,7 +560,7 @@ trait ProjectTrait
      * Deletes a project environment
      *
      * @param  string  $projectName  The name of the project
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -590,6 +590,8 @@ trait ProjectTrait
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws LagoonClientInitializeRequiredToInteractException
      * @throws Exception
      */
@@ -650,6 +652,8 @@ trait ProjectTrait
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
     public function getProjectDeployTargetsByProjectId(int $projectId): array
@@ -690,6 +694,8 @@ trait ProjectTrait
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
     public function getProjectDeployTargetByConfigId(int $deployTargetConfigId): array
@@ -730,6 +736,8 @@ trait ProjectTrait
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws LagoonClientInitializeRequiredToInteractException
      * @throws Exception
      */
@@ -797,6 +805,8 @@ trait ProjectTrait
     }
 
     /**
+     * @return array<string, mixed>
+     *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
     public function deleteProjectDeployTargetByConfigId(int $deployTargetConfigId, int $projectId): array

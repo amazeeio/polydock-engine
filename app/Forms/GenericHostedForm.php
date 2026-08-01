@@ -45,6 +45,9 @@ class GenericHostedForm extends BaseHostedForm
         return HostedFormHtml::sanitize($this->hostedForm->disclaimer);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     #[\Override]
     public function getValidationRules(): array
     {

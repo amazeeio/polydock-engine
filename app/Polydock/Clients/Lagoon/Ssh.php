@@ -51,6 +51,9 @@ class Ssh extends SpatieSsh
         return "ssh {$extraOptions} {$target} service={$serviceName} container={$containerName} ".escapeshellarg($execute);
     }
 
+    /**
+     * @return array<mixed>
+     */
     public function executeSShCommand(string $command, string $serviceName = 'cli', string $containerName = 'cli', ?string $input = null): array
     {
         $execute = $this->getCommandForExecute($command, $serviceName, $containerName);

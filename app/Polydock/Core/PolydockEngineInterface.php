@@ -27,7 +27,7 @@ interface PolydockEngineInterface
      * Log an informational message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function info(string $message, array $context = []): self;
@@ -36,7 +36,7 @@ interface PolydockEngineInterface
      * Log an error message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function error(string $message, array $context = []): self;
@@ -45,7 +45,7 @@ interface PolydockEngineInterface
      * Log a warning message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function warning(string $message, array $context = []): self;
@@ -54,7 +54,7 @@ interface PolydockEngineInterface
      * Log a debug message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function debug(string $message, array $context = []): self;
