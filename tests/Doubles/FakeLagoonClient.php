@@ -65,6 +65,25 @@ class FakeLagoonClient extends Client
      */
     public ?array $deleteProjectResponse = null;
 
+    /** @var array<int, array{project: string, key: string, value: string}> Recorded metadata writes. */
+    public array $metadataWrites = [];
+
+    /**
+     * @var array<string, mixed>|null
+     */
+    public ?array $updateMetadataResponse = null;
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[\Override]
+    public function updateProjectMetadata(int|string $projectIdOrName, string $key, string $value): array
+    {
+        $this->metadataWrites[] = ['project' => (string) $projectIdOrName, 'key' => $key, 'value' => $value];
+
+        return $this->updateMetadataResponse ?? ['updateProjectMetadata' => ['id' => 1]];
+    }
+
     /**
      * @return array<string, mixed>
      */
