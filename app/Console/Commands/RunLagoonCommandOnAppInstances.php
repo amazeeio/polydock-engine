@@ -52,7 +52,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $appUuid = $this->argument(key: 'app_uuid');
         $commandName = $this->argument(key: 'command_name');

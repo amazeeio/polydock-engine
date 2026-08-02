@@ -139,7 +139,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     /**
      * Get all user groups this user belongs to
      *
-     * @return BelongsToMany
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function groups()
     {
@@ -151,7 +151,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     /**
      * Get all primary groups this user belongs to
      *
-     * @return BelongsToMany
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function primaryGroups()
     {
@@ -161,6 +161,8 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     /**
      * Get all admin groups this user belongs to.
+     *
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function adminGroups()
     {
@@ -171,7 +173,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     /**
      * Get all member groups this user belongs to
      *
-     * @return BelongsToMany
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function memberGroups()
     {
@@ -182,7 +184,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     /**
      * Get all viewer groups this user belongs to
      *
-     * @return BelongsToMany
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function viewerGroups()
     {
@@ -218,6 +220,8 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
 
     /**
      * Get all remote registration requests for this user
+     *
+     * @return HasMany<UserRemoteRegistration, $this>
      */
     public function remoteRegistrations(): HasMany
     {

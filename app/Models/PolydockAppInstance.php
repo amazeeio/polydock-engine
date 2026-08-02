@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
@@ -497,7 +498,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         });
     }
 
-    public static function getDataForLagoonScript(PolydockStoreApp $storeApp, string $fieldKeyPart, string $dataKeyPart)
+    /**
+     * @return array<string, string>
+     */
+    public static function getDataForLagoonScript(PolydockStoreApp $storeApp, string $fieldKeyPart, string $dataKeyPart): array
     {
         $data = [];
         $fieldKeyScript = 'lagoon_'.$fieldKeyPart.'_script';
@@ -679,7 +683,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Eloquent mutator to safely truncate status messages before writing to DB.
      */
-    public function setStatusMessageAttribute($value): void
+    public function setStatusMessageAttribute(?string $value): void
     {
         if ($value === null) {
             $this->attributes['status_message'] = null;
@@ -1013,6 +1017,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the store app that this instance belongs to
+     *
+     * @return BelongsTo<PolydockStoreApp, $this>
      */
     public function storeApp(): BelongsTo
     {
@@ -1021,6 +1027,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the user group that owns this instance
+     *
+     * @return BelongsTo<UserGroup, $this>
      */
     public function userGroup(): BelongsTo
     {
@@ -1029,6 +1037,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the deployment run that most recently redeployed this instance.
+     *
+     * @return BelongsTo<PolydockDeploymentRun, $this>
      */
     public function deploymentRun(): BelongsTo
     {
@@ -1057,7 +1067,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Get all variables for this app instance
      */
-    public function variables()
+    /**
+     * @return MorphMany<PolydockVariable, $this>
+     */
+    public function variables(): MorphMany
     {
         return $this->morphMany(PolydockVariable::class, 'variabled');
     }
@@ -1185,6 +1198,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the remote registration associated with this instance
+     *
+     * @return HasOne<UserRemoteRegistration, $this>
      */
     public function remoteRegistration(): HasOne
     {

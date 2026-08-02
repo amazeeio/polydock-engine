@@ -439,7 +439,7 @@ class PolydockApp extends PolydockAppBase
     /**
      * @throws LagoonClientInitializeRequiredToInteractException
      */
-    public function addOrUpdateLagoonProjectVariable(PolydockAppInstanceInterface $appInstance, $variableName, $variableValue, $variableScope): void
+    public function addOrUpdateLagoonProjectVariable(PolydockAppInstanceInterface $appInstance, string $variableName, string $variableValue, string $variableScope): void
     {
         $projectName = $appInstance->getKeyValue('lagoon-project-name');
         $projectId = $appInstance->getKeyValue('lagoon-project-id');

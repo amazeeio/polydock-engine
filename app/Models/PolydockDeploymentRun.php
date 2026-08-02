@@ -85,11 +85,17 @@ class PolydockDeploymentRun extends Model
         return 'uuid';
     }
 
+    /**
+     * @return BelongsTo<PolydockStoreApp, $this>
+     */
     public function storeApp(): BelongsTo
     {
         return $this->belongsTo(PolydockStoreApp::class, 'polydock_store_app_id');
     }
 
+    /**
+     * @return BelongsTo<User, $this>
+     */
     public function triggeredByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'triggered_by_user_id');

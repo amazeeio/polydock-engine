@@ -95,6 +95,8 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the user that the remote registration belongs to.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -103,6 +105,8 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the user group that the remote registration belongs to.
+     *
+     * @return BelongsTo<UserGroup, $this>
      */
     public function userGroup(): BelongsTo
     {
@@ -111,6 +115,8 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the store app that the remote registration belongs to.
+     *
+     * @return BelongsTo<PolydockStoreApp, $this>
      */
     public function storeApp(): BelongsTo
     {
@@ -192,6 +198,8 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the app instance associated with this registration
+     *
+     * @return BelongsTo<PolydockAppInstance, $this>
      */
     public function appInstance(): BelongsTo
     {

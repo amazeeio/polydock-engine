@@ -12,7 +12,7 @@ class PolydockStoreTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_can_set_and_get_lagoon_deploy_private_key()
+    public function test_can_set_and_get_lagoon_deploy_private_key(): void
     {
         $store = PolydockStore::factory()->create();
         $privateKey = 'test-private-key';
@@ -22,7 +22,7 @@ class PolydockStoreTest extends TestCase
         $this->assertEquals($privateKey, $store->lagoon_deploy_private_key);
     }
 
-    public function test_lagoon_deploy_private_key_is_encrypted_in_database()
+    public function test_lagoon_deploy_private_key_is_encrypted_in_database(): void
     {
         $store = PolydockStore::factory()->create();
         $privateKey = 'test-private-key';
@@ -40,7 +40,7 @@ class PolydockStoreTest extends TestCase
         $this->assertEquals($privateKey, Crypt::decryptString($variable->value));
     }
 
-    public function test_lagoon_deploy_private_key_returns_null_when_not_set()
+    public function test_lagoon_deploy_private_key_returns_null_when_not_set(): void
     {
         $store = PolydockStore::factory()->create();
 

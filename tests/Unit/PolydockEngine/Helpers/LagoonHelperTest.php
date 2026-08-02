@@ -24,14 +24,14 @@ EOD;
     // The raw public key string without comment
     private string $publicKey = 'ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAEQB2dUPTspdkUOYqSMEy4SX+e9MICM1rX+i0iiMF0o';
 
-    public function test_get_public_key_from_private_key_returns_correct_public_key()
+    public function test_get_public_key_from_private_key_returns_correct_public_key(): void
     {
         $derivedPublicKey = LagoonHelper::getPublicKeyFromPrivateKey($this->privateKey);
 
         $this->assertStringContainsString($this->publicKey, $derivedPublicKey);
     }
 
-    public function test_get_public_key_from_private_key_returns_null_for_invalid_key()
+    public function test_get_public_key_from_private_key_returns_null_for_invalid_key(): void
     {
         $invalidKey = 'invalid-key-content';
         $derivedPublicKey = LagoonHelper::getPublicKeyFromPrivateKey($invalidKey);
@@ -39,7 +39,7 @@ EOD;
         $this->assertNull($derivedPublicKey);
     }
 
-    public function test_get_public_key_from_private_key_returns_null_for_empty_key()
+    public function test_get_public_key_from_private_key_returns_null_for_empty_key(): void
     {
         $derivedPublicKey = LagoonHelper::getPublicKeyFromPrivateKey('');
 

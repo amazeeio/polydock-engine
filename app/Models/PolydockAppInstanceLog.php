@@ -21,6 +21,8 @@ class PolydockAppInstanceLog extends Model
 
     /**
      * Get the instance that owns this log entry
+     *
+     * @return BelongsTo<PolydockAppInstance, $this>
      */
     public function instance(): BelongsTo
     {

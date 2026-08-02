@@ -47,7 +47,7 @@ class SendAppInstanceMail extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $registrationUuid = $this->argument('registration');
         $mailType = $this->argument('mail-type');

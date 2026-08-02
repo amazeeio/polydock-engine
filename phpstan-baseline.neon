@@ -1,130 +1,10 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Method App\\Console\\Commands\\AttachWebhook\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/AttachWebhook.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$force_purge_requested_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getUserEmail\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:groups\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setStatus\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingAppInstances\(\) return type with generic class Illuminate\\Database\\Eloquent\\Collection does not specify its types\: TKey, TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingRegistrations\(\) return type with generic class Illuminate\\Database\\Eloquent\\Collection does not specify its types\: TKey, TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BanEmailsCommand\:\:findMatchingUsers\(\) return type with generic class Illuminate\\Database\\Eloquent\\Collection does not specify its types\: TKey, TModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BulkDeployStatus\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/BulkDeployStatus.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\CreateStore\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/CreateStore.php
-
-		-
 			message: '#^Access to undefined constant App\\Enums\\PolydockStoreAppStatusEnum\:\:DEPRECATED\.$#'
 			identifier: classConstant.notFound
 			count: 1
 			path: app/Console/Commands/CreateStoreApp.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\DispatchMidtrialEmailJobsCommand\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/DispatchMidtrialEmailJobsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\DispatchOneDayLeftEmailJobsCommand\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/DispatchOneDayLeftEmailJobsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\DispatchTrialCompleteEmailJobsCommand\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/DispatchTrialCompleteEmailJobsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\DispatchTrialCompleteStageRemovalJobsCommand\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/DispatchTrialCompleteStageRemovalJobsCommand.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\ExtendAppInstanceTrial\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/ExtendAppInstanceTrial.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\PolydockCloneStoreAppCommand\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/PolydockCloneStoreAppCommand.php
 
 		-
 			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/app/Console/Commands/RemoveEmptyProjectsCommand\.php\:245\:\:__construct\(\) has parameter \$command with no type specified\.$#'
@@ -145,22 +25,10 @@ parameters:
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
-			message: '#^Method App\\Console\\Commands\\RunLagoonCommandOnAppInstances\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
 			message: '#^Parameter \#1 \$key of method Illuminate\\Process\\Pool\:\:as\(\) expects string, int given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\SendAppInstanceMail\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getDriverName\(\)\.$#'
@@ -175,22 +43,10 @@ parameters:
 			path: app/Console/Commands/SyncLagoonMetadata.php
 
 		-
-			message: '#^Method App\\Console\\Commands\\TriggerLagoonDeployOnAppInstance\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/TriggerLagoonDeployOnAppInstance.php
-
-		-
 			message: '#^Part \$instance\-\>status \(App\\Polydock\\Core\\Enums\\PolydockAppInstanceStatus\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
 			count: 1
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstance.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\TriggerLagoonDeployOnAppInstances\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
 
 		-
 			message: '#^Method App\\Enums\\PolydockStoreAppStatusEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
@@ -305,18 +161,6 @@ parameters:
 			identifier: match.unhandled
 			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/RelationManagers/LogsRelationManager.php
-
-		-
-			message: '#^Method App\\Filament\\Admin\\Resources\\PolydockDeploymentRunResource\:\:canDelete\(\) has parameter \$record with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockDeploymentRunResource.php
-
-		-
-			message: '#^Method App\\Filament\\Admin\\Resources\\PolydockDeploymentRunResource\:\:canEdit\(\) has parameter \$record with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockDeploymentRunResource.php
 
 		-
 			message: '#^Called ''pluck'' on Laravel collection, but could have been retrieved as a query\.$#'
@@ -487,24 +331,6 @@ parameters:
 			path: app/Filament/Admin/Widgets/WeeklyBarChartWidget.php
 
 		-
-			message: '#^Method App\\Filament\\Exports\\UserRemoteRegistrationExporter\:\:getValueFromData\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Filament/Exports/UserRemoteRegistrationExporter.php
-
-		-
-			message: '#^Method App\\Filament\\Exports\\UserRemoteRegistrationExporter\:\:getValueFromData\(\) has parameter \$data with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Filament/Exports/UserRemoteRegistrationExporter.php
-
-		-
-			message: '#^Method App\\Filament\\Exports\\UserRemoteRegistrationExporter\:\:getValueFromData\(\) has parameter \$key with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Filament/Exports/UserRemoteRegistrationExporter.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\UserGroup\:\:\$pivot\.$#'
 			identifier: property.notFound
 			count: 1
@@ -514,18 +340,6 @@ parameters:
 			message: '#^Call to function is_null\(\) with string will always evaluate to false\.$#'
 			identifier: function.impossibleType
 			count: 2
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\AuthenticatedApiController\:\:resolveTargetGroup\(\) should return App\\Models\\UserGroup but returns Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: array\{id\: int, name\: string, slug\: string, role\: mixed\}, Closure\(App\\Models\\UserGroup\)\: array\{id\: int, name\: string, slug\: string, role\: mixed\} given\.$#'
-			identifier: argument.type
-			count: 1
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
 
 		-
@@ -547,88 +361,16 @@ parameters:
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
 
 		-
-			message: '#^Method App\\Http\\Controllers\\Api\\PolydockInstanceHealthController\:\:__invoke\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Http/Controllers/Api/PolydockInstanceHealthController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/RegionsController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/RegionsController.php
-
-		-
 			message: '#^Anonymous function should return array\{id\: int, label\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, label\: mixed\}\>\} but returns array\{id\: int, label\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, label\: string\}\>\}\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Http/Controllers/Api/RegionsController.php
 
 		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Api/RegionsController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Http/Controllers/Api/RegionsController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
 			message: '#^Anonymous function should return array\{id\: int, name\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, name\: mixed\}\>\} but returns array\{id\: int, name\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, name\: string\}\>\}\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Http/Controllers/FormController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
-			message: '#^Method App\\Jobs\\ProcessPolydockAppInstanceJobs\\BaseJob\:\:getPolydockJobId\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/BaseJob.php
-
-		-
-			message: '#^Method App\\Jobs\\ProcessPolydockAppInstanceJobs\\BaseJob\:\:polydockJobDone\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/BaseJob.php
-
-		-
-			message: '#^Method App\\Jobs\\ProcessPolydockAppInstanceJobs\\BaseJob\:\:polydockJobStart\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/BaseJob.php
 
 		-
 			message: '#^Property App\\Jobs\\ProcessPolydockAppInstanceJobs\\BaseJob\:\:\$appInstanceId on left side of \?\? is not nullable nor uninitialized\.$#'
@@ -655,18 +397,6 @@ parameters:
 			path: app/Jobs/ProcessPolydockAppInstanceJobs/Purge/ProcessProjectPurgeJob.php
 
 		-
-			message: '#^Method App\\Jobs\\ProcessPolydockAppInstanceJobs\\Trial\\ProcessTrialCompleteStageRemovalJob\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessTrialCompleteStageRemovalJob.php
-
-		-
-			message: '#^Method App\\Jobs\\ProcessPolydockAppInstanceJobs\\Trial\\TrialEmailJob\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/TrialEmailJob.php
-
-		-
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
 			count: 1
@@ -691,80 +421,8 @@ parameters:
 			path: app/Jobs/ProcessPolydockAppInstanceJobs/Upgrade/UpgradeJob.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Jobs/ProcessUserRemoteRegistration.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setResultValue\(\)\.$#'
-			identifier: method.notFound
-			count: 9
-			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
-
-		-
-			message: '#^Method App\\Listeners\\ProcessPolydockAppInstanceStatusChange\:\:switchOnStatus\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
-
-		-
 			message: '#^Class App\\Models\\PolydockAppInstance has PHPDoc tag @property for property \$data with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:deploymentRun\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:getDataForLagoonScript\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:getWebhookSafeData\(\) has parameter \$attribute with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:remoteRegistration\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasOne does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:setStatusMessageAttribute\(\) has parameter \$value with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:storeApp\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:userGroup\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstance\:\:variables\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: app/Models/PolydockAppInstance.php
 
@@ -781,18 +439,6 @@ parameters:
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^Method App\\Models\\PolydockAppInstanceLog\:\:instance\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockAppInstanceLog.php
-
-		-
-			message: '#^Method App\\Models\\PolydockAppInstanceStatusTransition\:\:instance\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockAppInstanceStatusTransition.php
-
-		-
 			message: '#^Class App\\Models\\PolydockBannedPattern uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
@@ -800,18 +446,6 @@ parameters:
 
 		-
 			message: '#^Class App\\Models\\PolydockDeploymentRun uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockDeploymentRun.php
-
-		-
-			message: '#^Method App\\Models\\PolydockDeploymentRun\:\:storeApp\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockDeploymentRun.php
-
-		-
-			message: '#^Method App\\Models\\PolydockDeploymentRun\:\:triggeredByUser\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/PolydockDeploymentRun.php
@@ -829,80 +463,14 @@ parameters:
 			path: app/Models/PolydockProductType.php
 
 		-
-			message: '#^Method App\\Models\\PolydockProductType\:\:storeApps\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockProductType.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getDecryptedValue\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/PolydockStore.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setEncryptedValue\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/PolydockStore.php
-
-		-
 			message: '#^Class App\\Models\\PolydockStore uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
 			identifier: missingType.generics
 			count: 1
 			path: app/Models/PolydockStore.php
 
 		-
-			message: '#^Method App\\Models\\PolydockStore\:\:apps\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStore.php
-
-		-
-			message: '#^Method App\\Models\\PolydockStore\:\:variables\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\MorphMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStore.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_group_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getDecryptedValue\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setEncryptedValue\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setStatus\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
 			message: '#^Class App\\Models\\PolydockStoreApp has PHPDoc tag @property for property \$app_config with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Class App\\Models\\PolydockStoreApp uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Method App\\Models\\PolydockStoreApp\:\:allocatedInstances\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Models/PolydockStoreApp.php
 
@@ -913,218 +481,14 @@ parameters:
 			path: app/Models/PolydockStoreApp.php
 
 		-
-			message: '#^Method App\\Models\\PolydockStoreApp\:\:productType\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Method App\\Models\\PolydockStoreApp\:\:refreshableUnallocatedInstancesQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Method App\\Models\\PolydockStoreApp\:\:removableUnallocatedInstancesQuery\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Method App\\Models\\PolydockStoreApp\:\:store\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Method App\\Models\\PolydockStoreApp\:\:unallocatedInstances\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Method App\\Models\\PolydockStoreApp\:\:variables\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\MorphMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Class App\\Models\\PolydockStoreWebhook uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreWebhook.php
-
-		-
-			message: '#^Method App\\Models\\PolydockStoreWebhook\:\:calls\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreWebhook.php
-
-		-
-			message: '#^Method App\\Models\\PolydockStoreWebhook\:\:store\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreWebhook.php
-
-		-
-			message: '#^Class App\\Models\\PolydockStoreWebhookCall uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockStoreWebhookCall.php
-
-		-
-			message: '#^Method App\\Models\\PolydockVariable\:\:variabled\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\MorphTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockVariable.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$role\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Models/User.php
 
 		-
-			message: '#^Method App\\Models\\User\:\:adminGroups\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:groups\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:memberGroups\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:primaryGroups\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:remoteRegistrations\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Method App\\Models\\User\:\:viewerGroups\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setResultValue\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Class App\\Models\\UserGroup uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:admins\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:appInstances\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:appInstancesFailed\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:appInstancesStageCreate\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:appInstancesStageDeploy\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:appInstancesStageRemove\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:appInstancesStageRunning\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:appInstancesStageUpgrade\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\HasMany does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:members\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Method App\\Models\\UserGroup\:\:viewers\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\UserRemoteRegistration\:\:\$sensitiveDataKeys\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:appInstance\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:getWebhookSafeData\(\) has parameter \$attribute with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:storeApp\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:user\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^Method App\\Models\\UserRemoteRegistration\:\:userGroup\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsTo does not specify its types\: TRelatedModel, TDeclaringModel$#'
-			identifier: missingType.generics
 			count: 1
 			path: app/Models/UserRemoteRegistration.php
 
@@ -1207,24 +571,6 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableName with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableScope with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableValue with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
 			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:runLifecyclePhase\(\) has parameter \$body with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -1243,30 +589,6 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\LagoonClientPrivateKeyNotFoundException\:\:__construct\(\) has parameter \$code with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Polydock/Clients/Lagoon/LagoonClientPrivateKeyNotFoundException.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\LagoonClientPrivateKeyNotFoundException\:\:__construct\(\) has parameter \$sshPrivateKeyFile with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Polydock/Clients/Lagoon/LagoonClientPrivateKeyNotFoundException.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\LagoonVariableScopeInvalidException\:\:__construct\(\) has parameter \$code with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Polydock/Clients/Lagoon/LagoonVariableScopeInvalidException.php
-
-		-
-			message: '#^Method App\\Polydock\\Clients\\Lagoon\\LagoonVariableScopeInvalidException\:\:__construct\(\) has parameter \$message with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/Polydock/Clients/Lagoon/LagoonVariableScopeInvalidException.php
-
-		-
 			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Ssh\:\:createLagoonConfigured\(\) should return static\(App\\Polydock\\Clients\\Lagoon\\Ssh\) but returns Spatie\\Ssh\\Ssh\.$#'
 			identifier: return.type
 			count: 1
@@ -1277,12 +599,6 @@ parameters:
 			identifier: instanceof.alwaysTrue
 			count: 1
 			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Access to an undefined property App\\Polydock\\Core\\PolydockEngineBase\:\:\$logger\.$#'
-			identifier: property.notFound
-			count: 7
-			path: app/Polydock/Core/PolydockEngineBase.php
 
 		-
 			message: '#^Access to an undefined property App\\Polydock\\Core\\PolydockAppInstanceInterface&Illuminate\\Database\\Eloquent\\Model\:\:\$storeApp\.$#'
@@ -1321,44 +637,14 @@ parameters:
 			path: app/PolydockEngine/Engine.php
 
 		-
-			message: '#^Method App\\PolydockEngine\\Helpers\\AmazeeAiBackendHelper\:\:getAmazeeAiBackendRegion\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: app/PolydockEngine/Helpers/AmazeeAiBackendHelper.php
-
-		-
-			message: '#^Method App\\PolydockEngine\\Helpers\\AmazeeAiBackendHelper\:\:getAmazeeAiBackendRegion\(\) has parameter \$regionId with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
-			path: app/PolydockEngine/Helpers/AmazeeAiBackendHelper.php
-
-		-
-			message: '#^Property App\\PolydockEngine\\Helpers\\AmazeeAiBackendHelper\:\:\$cacheKeyPrefix has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: app/PolydockEngine/Helpers/AmazeeAiBackendHelper.php
-
-		-
-			message: '#^Property App\\PolydockEngine\\Helpers\\AmazeeAiBackendHelper\:\:\$cacheTTL has no type specified\.$#'
-			identifier: missingType.property
+			message: '#^Parameter \#1 \$regionId of method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:getRegion\(\) expects int, string given\.$#'
+			identifier: argument.type
 			count: 1
 			path: app/PolydockEngine/Helpers/AmazeeAiBackendHelper.php
 
 		-
 			message: '#^Call to an undefined method phpseclib3\\Crypt\\Common\\AsymmetricKey\:\:getPublicKey\(\)\.$#'
 			identifier: method.notFound
-			count: 1
-			path: app/PolydockEngine/Helpers/LagoonHelper.php
-
-		-
-			message: '#^Property App\\PolydockEngine\\Helpers\\LagoonHelper\:\:\$cacheKeyPrefix has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: app/PolydockEngine/Helpers/LagoonHelper.php
-
-		-
-			message: '#^Property App\\PolydockEngine\\Helpers\\LagoonHelper\:\:\$cacheTTL has no type specified\.$#'
-			identifier: missingType.property
 			count: 1
 			path: app/PolydockEngine/Helpers/LagoonHelper.php
 
@@ -1393,12 +679,6 @@ parameters:
 			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
 
 		-
-			message: '#^Property App\\Providers\\AuthServiceProvider\:\:\$policies has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: app/Providers/AuthServiceProvider.php
-
-		-
 			message: '#^Call to function is_array\(\) with non\-empty\-array will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -1411,12 +691,6 @@ parameters:
 			path: bootstrap/app.php
 
 		-
-			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppCKEditor\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: database/seeders/AmazeeTrialSeeder.php
-
-		-
 			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppCKEditor\(\) has parameter \$namePrefix with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
@@ -1425,12 +699,6 @@ parameters:
 		-
 			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppCKEditor\(\) has parameter \$store with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: database/seeders/AmazeeTrialSeeder.php
-
-		-
-			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppCategorizePages\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: database/seeders/AmazeeTrialSeeder.php
 
@@ -1447,12 +715,6 @@ parameters:
 			path: database/seeders/AmazeeTrialSeeder.php
 
 		-
-			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppGeneric\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: database/seeders/AmazeeTrialSeeder.php
-
-		-
 			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppGeneric\(\) has parameter \$namePrefix with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
@@ -1461,12 +723,6 @@ parameters:
 		-
 			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppGeneric\(\) has parameter \$store with no type specified\.$#'
 			identifier: missingType.parameter
-			count: 1
-			path: database/seeders/AmazeeTrialSeeder.php
-
-		-
-			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppSearch\(\) has no return type specified\.$#'
-			identifier: missingType.return
 			count: 1
 			path: database/seeders/AmazeeTrialSeeder.php
 
@@ -1513,42 +769,6 @@ parameters:
 			path: tests/Doubles/DoublePolydockAppInstance.php
 
 		-
-			message: '#^Method Tests\\Feature\\AmazeeClawConfigTest\:\:test_build_claim_script_with_secure_stdin_variables\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/AmazeeClawConfigTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\AmazeeClawConfigTest\:\:test_form_schemas_contain_key_mode\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/AmazeeClawConfigTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\AmazeeClawConfigTest\:\:test_injects_auto_generated_credentials\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/AmazeeClawConfigTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\AmazeeClawConfigTest\:\:test_injects_manual_credentials\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/AmazeeClawConfigTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\AmazeeClawConfigTest\:\:test_key_mode_from_storage_maps_legacy_and_new_values\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/AmazeeClawConfigTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\AmazeeClawConfigTest\:\:test_key_mode_resolution\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/AmazeeClawConfigTest.php
-
-		-
 			message: '#^Method Tests\\Feature\\TestablePolydockAmazeeClawAiApp\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$appInstance with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
@@ -1573,12 +793,6 @@ parameters:
 			path: tests/Feature/AmazeeClawConfigTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/Api/AuthenticatedApiTest.php
-
-		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
 			identifier: argument.templateType
 			count: 2
@@ -1589,36 +803,6 @@ parameters:
 			identifier: argument.templateType
 			count: 2
 			path: tests/Feature/Api/AuthenticatedApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Api\\RegionsApiTest\:\:test_can_get_public_regions_with_available_apps\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Api/RegionsApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Api\\RegionsApiTest\:\:test_empty_regions_are_still_included\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Api/RegionsApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Api\\RegionsApiTest\:\:test_private_stores_are_not_included\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Api/RegionsApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Api\\RegionsApiTest\:\:test_stores_not_listed_in_marketplace_are_not_included\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Api/RegionsApiTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Api\\RegionsApiTest\:\:test_unavailable_stores_are_not_included\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Api/RegionsApiTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with false and ''Validation failed…'' will always evaluate to false\.$#'
@@ -1639,220 +823,16 @@ parameters:
 			path: tests/Feature/Console/Commands/MarkStuckInstancesFailedCommandTest.php
 
 		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Feature/Console/Commands/RemoveEmptyProjectsCommandTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Console\\Commands\\RunLagoonCommandOnAppInstancesTest\:\:test_it_runs_concurrently\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Console\\Commands\\RunLagoonCommandOnAppInstancesTest\:\:test_it_runs_serially_by_default\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Console\\Commands\\RunLagoonCommandOnAppInstancesTest\:\:test_it_skips_instances_missing_metadata\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
-			identifier: method.notFound
-			count: 9
-			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 44
-			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Feature/Console/Commands/TriggerLagoonDeployOnAppInstancesTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Feature/Console/Commands/TriggerLagoonDeployOnAppInstancesTest.php
-
-		-
 			message: '#^Call to an undefined static method Illuminate\\Support\\Facades\\Log\:\:shouldHaveReceived\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 3
 			path: tests/Feature/Controllers/Api/RegisterControllerTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Controllers\\DrupalAIPartnersDemoFormTest\:\:it_fails_submitting_form_with_missing_fields\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/DrupalAIPartnersDemoFormTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\DrupalAIPartnersDemoFormTest\:\:it_fails_submitting_form_without_accepting_terms\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/DrupalAIPartnersDemoFormTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\DrupalAIPartnersDemoFormTest\:\:it_renders_the_partners_demo_form_with_security_headers\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/DrupalAIPartnersDemoFormTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\DrupalAIPartnersDemoFormTest\:\:it_sanitizes_admin_authored_html_before_rendering\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/DrupalAIPartnersDemoFormTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\DrupalAIPartnersDemoFormTest\:\:it_successfully_submits_and_registers_user_trial\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/DrupalAIPartnersDemoFormTest.php
-
-		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with string will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_aborts_with_404_for_disabled_forms\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_aborts_with_404_for_unknown_form_slugs\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_allows_recaptcha_bypass_on_testing_environment_during_network_failure\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_allows_submitting_without_recaptcha_when_recaptcha_is_disabled\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_blocks_recaptcha_bypass_on_staging_environment_during_network_failure\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_does_not_expose_apps_outside_the_forms_allowlist_when_rendering\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_fails_if_recaptcha_verification_fails\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_fails_submitting_form_with_invalid_country\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_fails_submitting_form_with_missing_fields\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_hides_and_rejects_attached_apps_that_are_no_longer_available\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_hides_and_rejects_attached_apps_that_are_no_longer_available_for_trials\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_rejects_all_submissions_when_the_form_has_no_allowed_apps\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_rejects_submitting_form_with_an_app_not_in_the_forms_allowlist\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_rejects_submitting_form_with_app_uuid_from_a_private_store\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_rejects_submitting_form_with_invalid_trial_app_uuid\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_renders_the_hosted_form_correctly_with_security_headers\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_skips_recaptcha_entirely_on_non_production_lagoon_environments\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Controllers\\FormControllerTest\:\:it_successfully_submits_and_registers_user_trial\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Database\\HostedFormsSeederTest\:\:it_seeds_both_forms_and_attaches_previously_offered_apps_to_the_drupal_org_form\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Database/HostedFormsSeederTest.php
 
 		-
 			message: '#^Unable to resolve the template type TKey in call to function collect$#'
@@ -1885,34 +865,10 @@ parameters:
 			path: tests/Feature/Filament/CreatePolydockAppInstanceTest.php
 
 		-
-			message: '#^Method Tests\\Feature\\Filament\\PolydockHostedFormResourceTest\:\:it_creates_a_hosted_form_with_allowed_apps\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Filament/PolydockHostedFormResourceTest.php
-
-		-
-			message: '#^Method Tests\\Feature\\Filament\\PolydockHostedFormResourceTest\:\:it_lists_hosted_forms\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/Filament/PolydockHostedFormResourceTest.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Testing\\TestResponse\:\:assertFormFieldExists\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: tests/Feature/Filament/ResourcePagesSmokeTest.php
-
-		-
-			message: '#^Method App\\Console\\Commands\\BaseCommand@anonymous/tests/Feature/GeneralApplicationTest\.php\:235\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/GeneralApplicationTest.php
-
-		-
-			message: '#^Method Illuminate\\Console\\Command@anonymous/tests/Feature/GeneralApplicationTest\.php\:183\:\:handle\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Feature/GeneralApplicationTest.php
 
 		-
 			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:getName\(\)\.$#'
@@ -1925,6 +881,18 @@ parameters:
 			identifier: missingType.parameter
 			count: 1
 			path: tests/Feature/Polydock/RunLifecyclePhaseTest.php
+
+		-
+			message: '#^Dead catch \- App\\Polydock\\Core\\PolydockAppInstanceStatusFlowException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 2
+			path: tests/Feature/PolydockEngine/EngineDispatchTest.php
+
+		-
+			message: '#^Parameter \#1 \$logger of class App\\PolydockEngine\\Engine constructor expects App\\Polydock\\Core\\PolydockAppLoggerInterface, Mockery\\LegacyMockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/PolydockEngine/EngineDispatchTest.php
 
 		-
 			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:46\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableName with no type specified\.$#'
@@ -1943,102 +911,6 @@ parameters:
 			identifier: missingType.parameter
 			count: 1
 			path: tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Models\\PolydockStoreTest\:\:test_can_set_and_get_lagoon_deploy_private_key\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/Models/PolydockStoreTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Models\\PolydockStoreTest\:\:test_lagoon_deploy_private_key_is_encrypted_in_database\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/Models/PolydockStoreTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Models\\PolydockStoreTest\:\:test_lagoon_deploy_private_key_returns_null_when_not_set\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/Models/PolydockStoreTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\Helpers\\LagoonHelperTest\:\:test_get_public_key_from_private_key_returns_correct_public_key\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/Helpers/LagoonHelperTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\Helpers\\LagoonHelperTest\:\:test_get_public_key_from_private_key_returns_null_for_empty_key\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/Helpers/LagoonHelperTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\Helpers\\LagoonHelperTest\:\:test_get_public_key_from_private_key_returns_null_for_invalid_key\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/Helpers/LagoonHelperTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\PolydockEngineTest\:\:it_creates_service_provider_with_config\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\PolydockEngineTest\:\:it_logs_debug_messages\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\PolydockEngineTest\:\:it_logs_error_messages\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\PolydockEngineTest\:\:it_logs_info_messages\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\PolydockEngineTest\:\:it_logs_warning_messages\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\PolydockEngineTest\:\:it_returns_different_service_provider_instances_for_different_keys\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\PolydockEngineTest\:\:it_returns_same_service_provider_instance_for_same_key\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\PolydockEngine\\PolydockEngineTest\:\:it_returns_service_provider_instance\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
 
 		-
 			message: '#^Parameter \#1 \$appInstance of method App\\Polydock\\Core\\PolydockEngineBase\:\:validateAppInstanceHasAllRequiredVariables\(\) expects App\\Polydock\\Core\\PolydockAppInstanceInterface, Mockery\\MockInterface given\.$#'
@@ -2074,48 +946,6 @@ parameters:
 			message: '#^Access to an undefined property class@anonymous/tests/Unit/Traits/HasWebhookSensitiveDataTest\.php\:14\:\:\$data\.$#'
 			identifier: property.notFound
 			count: 5
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Traits\\HasWebhookSensitiveDataTest\:\:test_get_sensitive_data_keys_returns_defaults\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Traits\\HasWebhookSensitiveDataTest\:\:test_register_sensitive_data_keys_merges_new_keys\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Traits\\HasWebhookSensitiveDataTest\:\:test_register_sensitive_data_keys_with_array\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Traits\\HasWebhookSensitiveDataTest\:\:test_should_filter_key_case_insensitive_regex\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Traits\\HasWebhookSensitiveDataTest\:\:test_should_filter_key_exact_match\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method Tests\\Unit\\Traits\\HasWebhookSensitiveDataTest\:\:test_should_filter_key_regex_match\(\) has no return type specified\.$#'
-			identifier: missingType.return
-			count: 1
-			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
-
-		-
-			message: '#^Method class@anonymous/tests/Unit/Traits/HasWebhookSensitiveDataTest\.php\:14\:\:getWebhookSafeData\(\) has parameter \$attribute with no type specified\.$#'
-			identifier: missingType.parameter
-			count: 1
 			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
 
 		-

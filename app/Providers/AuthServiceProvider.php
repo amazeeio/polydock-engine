@@ -27,6 +27,9 @@ use Spatie\Activitylog\Models\Activity;
 
 class AuthServiceProvider extends ServiceProvider
 {
+    /**
+     * @var array<class-string, class-string>
+     */
     protected $policies = [
         PolydockStore::class => PolydockStorePolicy::class,
         UserGroup::class => UserGroupPolicy::class,

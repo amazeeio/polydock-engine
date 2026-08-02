@@ -32,7 +32,7 @@ abstract class TrialEmailJob extends BaseJob
     /** Whether an already-expired trial skips the send (but still marks sent). */
     protected bool $skipWhenExpired = true;
 
-    public function handle()
+    public function handle(): void
     {
         $this->polydockJobStart();
 

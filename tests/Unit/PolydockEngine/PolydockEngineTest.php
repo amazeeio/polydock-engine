@@ -56,7 +56,7 @@ class PolydockEngineTest extends TestCase
     }
 
     #[Test]
-    public function it_logs_info_messages()
+    public function it_logs_info_messages(): void
     {
         $result = $this->engine->info('Test info message', ['context' => 'test']);
         $this->assertInstanceOf(Engine::class, $result);
@@ -64,7 +64,7 @@ class PolydockEngineTest extends TestCase
     }
 
     #[Test]
-    public function it_logs_error_messages()
+    public function it_logs_error_messages(): void
     {
         $result = $this->engine->error('Test error message', ['context' => 'test']);
         $this->assertInstanceOf(Engine::class, $result);
@@ -72,7 +72,7 @@ class PolydockEngineTest extends TestCase
     }
 
     #[Test]
-    public function it_logs_debug_messages()
+    public function it_logs_debug_messages(): void
     {
         $result = $this->engine->debug('Test debug message', ['context' => 'test']);
         $this->assertInstanceOf(Engine::class, $result);
@@ -80,7 +80,7 @@ class PolydockEngineTest extends TestCase
     }
 
     #[Test]
-    public function it_logs_warning_messages()
+    public function it_logs_warning_messages(): void
     {
         $result = $this->engine->warning('Test warning message', ['context' => 'test']);
         $this->assertInstanceOf(Engine::class, $result);
@@ -88,7 +88,7 @@ class PolydockEngineTest extends TestCase
     }
 
     #[Test]
-    public function it_creates_service_provider_with_config()
+    public function it_creates_service_provider_with_config(): void
     {
         $provider = new AlphaTestPolydockServiceProvider(
             $this->testConfig[AlphaTestPolydockServiceProvider::class],
@@ -100,7 +100,7 @@ class PolydockEngineTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_service_provider_instance()
+    public function it_returns_service_provider_instance(): void
     {
         $provider = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class);
 
@@ -109,7 +109,7 @@ class PolydockEngineTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_same_service_provider_instance_for_same_key()
+    public function it_returns_same_service_provider_instance_for_same_key(): void
     {
         $firstInstance = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class);
         $secondInstance = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class);
@@ -118,7 +118,7 @@ class PolydockEngineTest extends TestCase
     }
 
     #[Test]
-    public function it_returns_different_service_provider_instances_for_different_keys()
+    public function it_returns_different_service_provider_instances_for_different_keys(): void
     {
         $firstInstance = $this->engine->getPolydockServiceProviderSingletonInstance(AlphaTestPolydockServiceProvider::class);
         $secondInstance = $this->engine->getPolydockServiceProviderSingletonInstance(BetaTestPolydockServiceProvider::class);

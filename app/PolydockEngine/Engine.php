@@ -38,9 +38,10 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
      * @param  array<string, array<string, mixed>>  $serviceProviderSingletonConfig  The config for the polydock service providers
      */
     public function __construct(
-        protected PolydockAppLoggerInterface $logger,
+        PolydockAppLoggerInterface $logger,
         $serviceProviderSingletonConfig = [],
     ) {
+        $this->logger = $logger;
         if (\count($serviceProviderSingletonConfig) > 0) {
             $this->polydockServiceProviderSingletonConfig = $serviceProviderSingletonConfig;
         } else {

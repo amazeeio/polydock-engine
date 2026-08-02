@@ -43,7 +43,7 @@ class PolydockHostedFormResourceTest extends TestCase
     }
 
     #[Test]
-    public function it_lists_hosted_forms()
+    public function it_lists_hosted_forms(): void
     {
         PolydockHostedForm::create([
             'slug' => 'some-form',
@@ -57,7 +57,7 @@ class PolydockHostedFormResourceTest extends TestCase
     }
 
     #[Test]
-    public function it_creates_a_hosted_form_with_allowed_apps()
+    public function it_creates_a_hosted_form_with_allowed_apps(): void
     {
         Livewire::test(CreatePolydockHostedForm::class)
             ->fillForm([

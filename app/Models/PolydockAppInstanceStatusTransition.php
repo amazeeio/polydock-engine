@@ -36,6 +36,9 @@ class PolydockAppInstanceStatusTransition extends Model
         'created_at' => 'datetime',
     ];
 
+    /**
+     * @return BelongsTo<PolydockAppInstance, $this>
+     */
     public function instance(): BelongsTo
     {
         return $this->belongsTo(PolydockAppInstance::class, 'polydock_app_instance_id');

@@ -27,7 +27,7 @@ class PolydockProductType extends Model
         'slug',
     ];
 
-    public static function boot()
+    public static function boot(): void
     {
         parent::boot();
 
@@ -48,6 +48,8 @@ class PolydockProductType extends Model
 
     /**
      * Get the store apps that have this product type.
+     *
+     * @return HasMany<PolydockStoreApp, $this>
      */
     public function storeApps(): HasMany
     {

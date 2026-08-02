@@ -9,9 +9,9 @@ use Throwable;
 
 class LagoonHelper
 {
-    public static $cacheKeyPrefix = 'lagoon_core_data_for_region_';
+    public static string $cacheKeyPrefix = 'lagoon_core_data_for_region_';
 
-    public static $cacheTTL = 60;
+    public static int $cacheTTL = 60;
 
     /**
      * @return array<string, mixed>

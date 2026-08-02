@@ -28,7 +28,7 @@ class PolydockCloneStoreAppCommand extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $appId = $this->argument('app_id');
 

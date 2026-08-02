@@ -47,7 +47,7 @@ trait HasWebhookSensitiveData
      *
      * @return array<string, mixed>
      */
-    public function getWebhookSafeData($attribute = 'data'): array
+    public function getWebhookSafeData(string $attribute = 'data'): array
     {
         $data = $this->{$attribute} ?? [];
         $sensitiveKeys = $this->getSensitiveDataKeys();

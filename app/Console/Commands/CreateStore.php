@@ -34,7 +34,7 @@ class CreateStore extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $this->info('Creating a new Polydock Store...');
 

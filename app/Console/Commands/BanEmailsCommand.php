@@ -265,6 +265,7 @@ class BanEmailsCommand extends BaseCommand
      * Find existing users matching any of the normalized patterns.
      *
      * @param  list<string>  $patterns
+     * @return Collection<int, User>
      */
     protected function findMatchingUsers(array $patterns): Collection
     {
@@ -285,6 +286,7 @@ class BanEmailsCommand extends BaseCommand
      *
      * @param  list<int>  $userIds
      * @param  list<string>  $patterns
+     * @return Collection<int, UserRemoteRegistration>
      */
     protected function findMatchingRegistrations(array $patterns, array $userIds): Collection
     {
@@ -308,6 +310,7 @@ class BanEmailsCommand extends BaseCommand
      *
      * @param  list<string>  $patterns
      * @param  list<int>  $groupIds
+     * @return Collection<int, PolydockAppInstance>
      */
     protected function findMatchingAppInstances(array $patterns, array $groupIds): Collection
     {

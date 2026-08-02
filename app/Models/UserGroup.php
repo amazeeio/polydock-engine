@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\UserGroupRoleEnum;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Database\Factories\UserGroupFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -15,7 +16,9 @@ use Spatie\Activitylog\Support\LogOptions;
 
 class UserGroup extends Model
 {
+    /** @use HasFactory<UserGroupFactory> */
     use HasFactory;
+
     use LogsActivity;
 
     protected $fillable = [
@@ -60,6 +63,8 @@ class UserGroup extends Model
 
     /**
      * Get the users who are members of the group.
+     *
+     * @return BelongsToMany<User, $this>
      */
     public function members(): BelongsToMany
     {
@@ -68,6 +73,8 @@ class UserGroup extends Model
 
     /**
      * Get the users who are admins of the group.
+     *
+     * @return BelongsToMany<User, $this>
      */
     public function admins(): BelongsToMany
     {
@@ -76,6 +83,8 @@ class UserGroup extends Model
 
     /**
      * Get the users who are viewers of the group.
+     *
+     * @return BelongsToMany<User, $this>
      */
     public function viewers(): BelongsToMany
     {
@@ -84,37 +93,57 @@ class UserGroup extends Model
 
     /**
      * Get the app instances associated with the group.
+     *
+     * @return HasMany<PolydockAppInstance, $this>
      */
     public function appInstances(): HasMany
     {
         return $this->hasMany(PolydockAppInstance::class);
     }
 
+    /**
+     * @return HasMany<PolydockAppInstance, $this>
+     */
     public function appInstancesStageCreate(): HasMany
     {
         return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageCreateStatuses);
     }
 
+    /**
+     * @return HasMany<PolydockAppInstance, $this>
+     */
     public function appInstancesStageDeploy(): HasMany
     {
         return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageDeployStatuses);
     }
 
+    /**
+     * @return HasMany<PolydockAppInstance, $this>
+     */
     public function appInstancesStageUpgrade(): HasMany
     {
         return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageUpgradeStatuses);
     }
 
+    /**
+     * @return HasMany<PolydockAppInstance, $this>
+     */
     public function appInstancesStageRemove(): HasMany
     {
         return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageRemoveStatuses);
     }
 
+    /**
+     * @return HasMany<PolydockAppInstance, $this>
+     */
     public function appInstancesStageRunning(): HasMany
     {
         return $this->appInstances()->whereIn('status', PolydockAppInstance::$stageRunningStatuses);
     }
 
+    /**
+     * @return HasMany<PolydockAppInstance, $this>
+     */
     public function appInstancesFailed(): HasMany
     {
         return $this->appInstances()->whereIn('status', PolydockAppInstance::$failedStatuses);

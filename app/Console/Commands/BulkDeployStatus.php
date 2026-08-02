@@ -25,7 +25,7 @@ class BulkDeployStatus extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $bulkId = $this->argument('bulk_id');
 

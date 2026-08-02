@@ -4,8 +4,15 @@ declare(strict_types=1);
 
 namespace App\Polydock\Core;
 
+use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 
+/**
+ * Every implementation (the Eloquent model, test doubles) carries its store
+ * app as a public/virtual property that the engine reads directly.
+ *
+ * @property-read PolydockStoreApp|null $storeApp
+ */
 interface PolydockAppInstanceInterface
 {
     /**

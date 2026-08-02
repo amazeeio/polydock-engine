@@ -13,7 +13,7 @@ class RegionsApiTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function test_can_get_public_regions_with_available_apps()
+    public function test_can_get_public_regions_with_available_apps(): void
     {
         // Create a public store with marketplace listing
         $publicStore = PolydockStore::factory()->create([
@@ -82,7 +82,7 @@ class RegionsApiTest extends TestCase
         $this->assertCount(1, $responseData['data']['regions'][0]['apps']);
     }
 
-    public function test_private_stores_are_not_included()
+    public function test_private_stores_are_not_included(): void
     {
         // Create a private store
         $privateStore = PolydockStore::factory()->create([
@@ -104,7 +104,7 @@ class RegionsApiTest extends TestCase
         $this->assertCount(0, $responseData['data']['regions']);
     }
 
-    public function test_stores_not_listed_in_marketplace_are_not_included()
+    public function test_stores_not_listed_in_marketplace_are_not_included(): void
     {
         // Create a public store not listed in marketplace
         $store = PolydockStore::factory()->create([
@@ -126,7 +126,7 @@ class RegionsApiTest extends TestCase
         $this->assertCount(0, $responseData['data']['regions']);
     }
 
-    public function test_unavailable_stores_are_not_included()
+    public function test_unavailable_stores_are_not_included(): void
     {
         // Create an unavailable store
         $store = PolydockStore::factory()->create([
@@ -148,7 +148,7 @@ class RegionsApiTest extends TestCase
         $this->assertCount(0, $responseData['data']['regions']);
     }
 
-    public function test_empty_regions_are_still_included()
+    public function test_empty_regions_are_still_included(): void
     {
         // Create a public store with no apps
         $store = PolydockStore::factory()->create([

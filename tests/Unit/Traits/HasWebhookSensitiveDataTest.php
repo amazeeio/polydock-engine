@@ -19,7 +19,7 @@ class HasWebhookSensitiveDataTest extends TestCase
         };
     }
 
-    public function test_get_sensitive_data_keys_returns_defaults()
+    public function test_get_sensitive_data_keys_returns_defaults(): void
     {
         $keys = $this->traitObject->getSensitiveDataKeys();
 
@@ -28,7 +28,7 @@ class HasWebhookSensitiveDataTest extends TestCase
         $this->assertContains('secret', $keys);
     }
 
-    public function test_register_sensitive_data_keys_merges_new_keys()
+    public function test_register_sensitive_data_keys_merges_new_keys(): void
     {
         $this->traitObject->registerSensitiveDataKeys('new_key');
         $keys = $this->traitObject->getSensitiveDataKeys();
@@ -37,7 +37,7 @@ class HasWebhookSensitiveDataTest extends TestCase
         $this->assertContains('private_key', $keys);
     }
 
-    public function test_register_sensitive_data_keys_with_array()
+    public function test_register_sensitive_data_keys_with_array(): void
     {
         $this->traitObject->registerSensitiveDataKeys(['key1', 'key2']);
         $keys = $this->traitObject->getSensitiveDataKeys();
@@ -47,7 +47,7 @@ class HasWebhookSensitiveDataTest extends TestCase
         $this->assertContains('private_key', $keys);
     }
 
-    public function test_should_filter_key_exact_match()
+    public function test_should_filter_key_exact_match(): void
     {
         $sensitiveKeys = ['password'];
         $this->assertTrue($this->traitObject->shouldFilterKey('password', $sensitiveKeys));
@@ -55,7 +55,7 @@ class HasWebhookSensitiveDataTest extends TestCase
         $this->assertFalse($this->traitObject->shouldFilterKey('username', $sensitiveKeys));
     }
 
-    public function test_should_filter_key_regex_match()
+    public function test_should_filter_key_regex_match(): void
     {
         $sensitiveKeys = ['/^.*_key.*$/'];
         $this->assertTrue($this->traitObject->shouldFilterKey('api_key', $sensitiveKeys));
@@ -63,7 +63,7 @@ class HasWebhookSensitiveDataTest extends TestCase
         $this->assertFalse($this->traitObject->shouldFilterKey('token', $sensitiveKeys));
     }
 
-    public function test_should_filter_key_case_insensitive_regex()
+    public function test_should_filter_key_case_insensitive_regex(): void
     {
         $sensitiveKeys = ['/^.*_key.*$/'];
         $this->assertTrue($this->traitObject->shouldFilterKey('AMAZEEAI_API_KEY', $sensitiveKeys));
