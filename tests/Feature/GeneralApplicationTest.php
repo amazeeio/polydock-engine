@@ -184,7 +184,7 @@ class GeneralApplicationTest extends TestCase
         {
             protected $signature = 'test:redact-positional-command {secret-token} {safe-arg} {--t|testdox-filter=}';
 
-            public function handle() {}
+            public function handle(): void {}
         };
         $this->app->make(Kernel::class)->registerCommand($command);
 
@@ -236,7 +236,7 @@ class GeneralApplicationTest extends TestCase
         {
             protected $signature = 'test:explicit-sensitive-command {sensitive-arg} {normal-arg} {--sensitive-opt=} {--normal-opt=}';
 
-            public function handle() {}
+            public function handle(): void {}
 
             #[\Override]
             public function sensitiveInputs(): array

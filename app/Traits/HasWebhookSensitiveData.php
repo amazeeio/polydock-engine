@@ -8,6 +8,8 @@ trait HasWebhookSensitiveData
 {
     /**
      * Get the list of sensitive data keys that should be filtered from webhooks
+     *
+     * @return array<mixed>
      */
     public function getSensitiveDataKeys(): array
     {
@@ -16,6 +18,8 @@ trait HasWebhookSensitiveData
 
     /**
      * Register additional sensitive data keys
+     *
+     * @param  list<string>  $keys
      */
     public function registerSensitiveDataKeys(array|string $keys): self
     {
@@ -30,6 +34,8 @@ trait HasWebhookSensitiveData
 
     /**
      * Check if a key should be filtered
+     *
+     * @param  list<string>  $sensitiveKeys
      */
     public function shouldFilterKey(string $key, array $sensitiveKeys): bool
     {
@@ -38,8 +44,10 @@ trait HasWebhookSensitiveData
 
     /**
      * Get webhook safe data by filtering sensitive information
+     *
+     * @return array<string, mixed>
      */
-    public function getWebhookSafeData($attribute = 'data'): array
+    public function getWebhookSafeData(string $attribute = 'data'): array
     {
         $data = $this->{$attribute} ?? [];
         $sensitiveKeys = $this->getSensitiveDataKeys();

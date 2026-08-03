@@ -33,6 +33,9 @@ class CreatePolydockAppInstance extends Page
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-plus-circle';
 
+    /**
+     * @var array<string, mixed>
+     */
     public ?array $data = [];
 
     public function mount(): void
@@ -239,6 +242,9 @@ class CreatePolydockAppInstance extends Page
         }
     }
 
+    /**
+     * @return array<int, Action>
+     */
     protected function getFormActions(): array
     {
         return [

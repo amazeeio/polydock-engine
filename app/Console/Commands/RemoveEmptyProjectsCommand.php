@@ -190,6 +190,8 @@ class RemoveEmptyProjectsCommand extends BaseCommand
      *  - ['status' => 'empty', 'environment_count' => 0] for existing empty projects
      *  - ['status' => 'has_environments', 'environment_count' => N]
      *  - null on probe failure
+     *
+     * @return array<string, mixed>
      */
     protected function probeEnvironments(LagoonProjectPurgeService $service, string $projectName): ?array
     {
@@ -244,21 +246,33 @@ class RemoveEmptyProjectsCommand extends BaseCommand
         {
             public function __construct(private $command) {}
 
+            /**
+             * @param  array<string, mixed>  $context
+             */
             public function info(string $message, array $context = []): void
             {
                 $this->command->info($message);
             }
 
+            /**
+             * @param  array<string, mixed>  $context
+             */
             public function error(string $message, array $context = []): void
             {
                 $this->command->error($message);
             }
 
+            /**
+             * @param  array<string, mixed>  $context
+             */
             public function warning(string $message, array $context = []): void
             {
                 $this->command->warn($message);
             }
 
+            /**
+             * @param  array<string, mixed>  $context
+             */
             public function debug(string $message, array $context = []): void
             {
                 $this->command->info('debug - '.$message);

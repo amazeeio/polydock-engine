@@ -26,7 +26,6 @@ use App\Polydock\Core\PolydockAppBase;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\Polydock\Core\PolydockAppVariableDefinitionBase;
-use App\Polydock\Core\PolydockAppVariableDefinitionInterface;
 use App\Polydock\Core\PolydockEngineInterface;
 use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockServiceProviders\PolydockServiceProviderFTLagoon;
@@ -65,7 +64,7 @@ class PolydockApp extends PolydockAppBase
     /**
      * Get the default variable definitions for this app specifically
      *
-     * @return array<PolydockAppVariableDefinitionInterface>
+     * @return array<mixed>
      */
     public static function getAppDefaultVariableDefinitions(): array
     {
@@ -98,7 +97,10 @@ class PolydockApp extends PolydockAppBase
      */
     public function pingLagoonAPI(): bool
     {
-        if (! $this->lagoonClient) {
+        // isset(), not a truthiness check: $lagoonClient is a non-nullable typed
+        // property, so pinging before initializeLagoonClient() raised an Error
+        // rather than the documented exception below.
+        if (! isset($this->lagoonClient)) {
             throw new PolydockAppInstanceStatusFlowException('Lagoon client not found for ping');
         }
 
@@ -179,6 +181,7 @@ class PolydockApp extends PolydockAppBase
      * Verifies that the lagoon values are available.
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
+     * @param  array<string, mixed>  $logContext
      * @return bool True if the lagoon values are available, false otherwise
      */
     public function verifyLagoonValuesAreAvailable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
@@ -272,6 +275,7 @@ class PolydockApp extends PolydockAppBase
      * Verifies that the project name is available.
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
+     * @param  array<string, mixed>  $logContext
      * @return bool True if the project name is available, false otherwise
      */
     public function verifyLagoonProjectNameIsAvailable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
@@ -292,6 +296,7 @@ class PolydockApp extends PolydockAppBase
      * Verifies that the project id is available.
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
+     * @param  array<string, mixed>  $logContext
      * @return bool True if the project id is available, false otherwise
      */
     public function verifyLagoonProjectIdIsAvailable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
@@ -309,6 +314,8 @@ class PolydockApp extends PolydockAppBase
     }
 
     /**
+     * @param  array<string, mixed>  $logContext
+     *
      * @throws PolydockAppInstanceStatusFlowException
      */
     public function validateLagoonPingAndThrowExceptionIfFailed(array $logContext = []): void
@@ -422,7 +429,7 @@ class PolydockApp extends PolydockAppBase
      * Get the log context for a specific function.
      *
      * @param  string  $location  The location of the log context
-     * @return array The log context
+     * @return array<string, mixed> The log context
      */
     public function getLogContext(string $location): array
     {
@@ -432,7 +439,7 @@ class PolydockApp extends PolydockAppBase
     /**
      * @throws LagoonClientInitializeRequiredToInteractException
      */
-    public function addOrUpdateLagoonProjectVariable(PolydockAppInstanceInterface $appInstance, $variableName, $variableValue, $variableScope): void
+    public function addOrUpdateLagoonProjectVariable(PolydockAppInstanceInterface $appInstance, string $variableName, string $variableValue, string $variableScope): void
     {
         $projectName = $appInstance->getKeyValue('lagoon-project-name');
         $projectId = $appInstance->getKeyValue('lagoon-project-id');

@@ -33,6 +33,8 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
 
     /**
      * Allowed commands list
+     *
+     * @var array<int, string>
      */
     protected array $allowedCommands = [
         'drush cr',
@@ -50,7 +52,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $appUuid = $this->argument(key: 'app_uuid');
         $commandName = $this->argument(key: 'command_name');

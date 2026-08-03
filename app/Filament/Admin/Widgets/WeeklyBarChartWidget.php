@@ -77,6 +77,7 @@ abstract class WeeklyBarChartWidget extends ChartWidget
     /**
      * Series metadata for dynamic series names, colored from a palette.
      *
+     * @param  list<string>  $colors
      * @return array<string, array{label: string, backgroundColor: string}>
      */
     protected function paletteSeries(Collection $names, array $colors): array
@@ -95,6 +96,7 @@ abstract class WeeklyBarChartWidget extends ChartWidget
      * @param  Collection  $rows  Aggregated rows with a `week` (Y-m-d) and `count`
      * @param  array<string|int, array>  $seriesMeta  series key => dataset metadata (label, colors, ...)
      * @param  string|null  $seriesField  Row column holding the series key; null for a single series
+     * @return array<string, mixed>
      */
     protected function buildWeeklyData(Collection $rows, array $seriesMeta, ?string $seriesField): array
     {

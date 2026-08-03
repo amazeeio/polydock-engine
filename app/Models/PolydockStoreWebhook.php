@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\PolydockStoreWebhookFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -16,7 +17,9 @@ use Spatie\Activitylog\Support\LogOptions;
  */
 class PolydockStoreWebhook extends Model
 {
+    /** @use HasFactory<PolydockStoreWebhookFactory> */
     use HasFactory;
+
     use LogsActivity;
 
     protected $fillable = [
@@ -73,6 +76,9 @@ class PolydockStoreWebhook extends Model
             ->dontLogEmptyChanges();
     }
 
+    /**
+     * @return BelongsTo<PolydockStore, $this>
+     */
     public function store(): BelongsTo
     {
         return $this->belongsTo(PolydockStore::class, 'polydock_store_id');
@@ -80,6 +86,8 @@ class PolydockStoreWebhook extends Model
 
     /**
      * Get the calls for this webhook
+     *
+     * @return HasMany<PolydockStoreWebhookCall, $this>
      */
     public function calls(): HasMany
     {

@@ -56,7 +56,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         @rmdir($directory);
     }
 
-    public function test_it_runs_serially_by_default()
+    public function test_it_runs_serially_by_default(): void
     {
         $this->lagoonKeyDir = storage_path('framework/testing/lagoon-key-'.uniqid('', true));
 
@@ -138,7 +138,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
             ->assertExitCode(0);
     }
 
-    public function test_it_runs_concurrently()
+    public function test_it_runs_concurrently(): void
     {
         $this->lagoonKeyDir = storage_path('framework/testing/lagoon-key-'.uniqid('', true));
 
@@ -235,7 +235,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         });
     }
 
-    public function test_it_skips_instances_missing_metadata()
+    public function test_it_skips_instances_missing_metadata(): void
     {
         // Arrange
         $store = PolydockStore::factory()->create();

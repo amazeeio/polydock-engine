@@ -19,7 +19,10 @@ class UserRemoteRegistrationExporter extends Exporter
         return false;
     }
 
-    public static function getValueFromData($data, $key)
+    /**
+     * @param  array<string, mixed>|null  $data
+     */
+    public static function getValueFromData(?array $data, string $key): mixed
     {
         if (! empty($data[$key])) {
             return $data[$key];

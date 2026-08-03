@@ -43,6 +43,9 @@ class RemoveEmptyProjectsCommandTest extends TestCase
         ]);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private function createInstance(
         PolydockStoreApp $storeApp,
         PolydockAppInstanceStatus $status,

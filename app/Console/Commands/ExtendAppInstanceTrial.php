@@ -32,7 +32,7 @@ class ExtendAppInstanceTrial extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $identifier = $this->argument('identifier');
         $date = $this->argument('date');

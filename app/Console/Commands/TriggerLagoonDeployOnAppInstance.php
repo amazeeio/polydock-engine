@@ -26,7 +26,7 @@ class TriggerLagoonDeployOnAppInstance extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $instanceUuid = $this->argument(key: 'instance_uuid');
         $envOverride = $this->option(key: 'environment');

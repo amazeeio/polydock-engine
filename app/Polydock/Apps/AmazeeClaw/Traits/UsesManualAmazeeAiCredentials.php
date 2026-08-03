@@ -9,6 +9,8 @@ trait UsesManualAmazeeAiCredentials
 {
     /**
      * Hook called when an app instance is being created.
+     *
+     * @param  array<string, mixed>  $data
      */
     public function extractAiCredentialsFromHookData(PolydockAppInstanceInterface $appInstance, array $data = []): PolydockAppInstanceInterface
     {
@@ -20,6 +22,8 @@ trait UsesManualAmazeeAiCredentials
 
     /**
      * Extract AI credentials from hook data and store them in the app instance secret.
+     *
+     * @param  array<string, mixed>  $data
      */
     protected function extractAndStoreAiCredentialsFromHookData(PolydockAppInstanceInterface $appInstance, array $data): void
     {
@@ -76,6 +80,7 @@ trait UsesManualAmazeeAiCredentials
      * inline these values directly into shell commands, logs, or any user-visible
      * output, and should pass them only via secure environment mechanisms.
      *
+     * @param  array<string, mixed>  $logContext
      * @return array<string, string> Environment variables containing sensitive values
      */
     public function provisionAndInjectManualAmazeeAiCredentials(PolydockAppInstanceInterface $appInstance, array $logContext = []): array
@@ -211,6 +216,8 @@ trait UsesManualAmazeeAiCredentials
      *
      * When $ownerEmail is set it becomes the backend user (user mode); otherwise
      * the backend falls back to an anonymous project-scoped user.
+     *
+     * @param  array<string, mixed>  $logContext
      */
     protected function generateAndStoreAmazeeAiCredentials(PolydockAppInstanceInterface $appInstance, array $logContext = [], string $ownerEmail = ''): void
     {

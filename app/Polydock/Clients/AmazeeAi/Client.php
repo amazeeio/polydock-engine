@@ -11,6 +11,9 @@ class Client
 {
     private readonly string $baseUrl;
 
+    /**
+     * @var array<string, mixed>
+     */
     private array $headers;
 
     public function __construct(string $baseUrl, private readonly ?string $accessToken = null, private readonly bool $debug = false)
@@ -26,6 +29,9 @@ class Client
         }
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function login(string $email, string $password): array
     {
         return $this->post('/auth/login', [
@@ -34,6 +40,9 @@ class Client
         ]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function register(string $email, string $password): array
     {
         return $this->post('/auth/register', [
@@ -42,11 +51,17 @@ class Client
         ]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getMe(): array
     {
         return $this->get('/auth/me');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function createToken(string $name, int $userId = 0): array
     {
         $data = ['name' => $name];
@@ -57,6 +72,9 @@ class Client
         return $this->post('/auth/token', $data);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function createPrivateAIKeys(int $regionId, string $name, int $userId = 0): array
     {
         $data = [
@@ -71,36 +89,64 @@ class Client
         return $this->post('/private-ai-keys', $data);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getRegion(int $regionId): array
     {
         return $this->get("/regions/{$regionId}");
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function createUser(string $email, string $password): array
     {
         return $this->post('/users', ['email' => $email, 'password' => $password]);
     }
 
+    /**
+     * A list of matching user records, not a keyed map — callers index it by
+     * position. array<mixed> because the shared get() helper is untyped.
+     *
+     * @return array<mixed>
+     */
     public function searchUsers(string $email): array
     {
         return $this->get('/users/search', ['email' => $email]);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function health(): array
     {
         return $this->get('/health');
     }
 
+    /**
+     * @param  array<string, mixed>  $query
+     * @return array<string, mixed>
+     */
     private function get(string $path, array $query = []): array
     {
         return $this->request('GET', $path, [], $query);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
     private function post(string $path, array $data = []): array
     {
         return $this->request('POST', $path, $data);
     }
 
+    /**
+     * @param  array<string, mixed>  $query
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
     private function request(string $method, string $path, array $data = [], array $query = []): array
     {
         $this->printDebug("Method: {$method}");

@@ -44,7 +44,7 @@ class UserRemoteRegistration extends Model
     /**
      * The attributes that should be cast.
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'status' => UserRemoteRegistrationStatusEnum::class,
@@ -57,7 +57,7 @@ class UserRemoteRegistration extends Model
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array
+     * @var list<string>
      */
     protected $appends = [
         'register_only_captures',
@@ -95,6 +95,8 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the user that the remote registration belongs to.
+     *
+     * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo
     {
@@ -103,6 +105,8 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the user group that the remote registration belongs to.
+     *
+     * @return BelongsTo<UserGroup, $this>
      */
     public function userGroup(): BelongsTo
     {
@@ -111,6 +115,8 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the store app that the remote registration belongs to.
+     *
+     * @return BelongsTo<PolydockStoreApp, $this>
      */
     public function storeApp(): BelongsTo
     {
@@ -192,12 +198,17 @@ class UserRemoteRegistration extends Model
 
     /**
      * Get the app instance associated with this registration
+     *
+     * @return BelongsTo<PolydockAppInstance, $this>
      */
     public function appInstance(): BelongsTo
     {
         return $this->belongsTo(PolydockAppInstance::class, 'polydock_app_instance_id');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getDataAttribute(): array
     {
         return [

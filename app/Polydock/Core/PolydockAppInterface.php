@@ -16,6 +16,7 @@ interface PolydockAppInterface
      * @param  string  $appAuthor  Name of the author/creator
      * @param  string  $appWebsite  Website URL for the app
      * @param  string  $appSupportEmail  Support email address
+     * @param  array<string, mixed>  $variableDefinitions
      */
     public function __construct(string $appName, string $appDescription, string $appAuthor, string $appWebsite, string $appSupportEmail, array $variableDefinitions = []);
 
@@ -253,7 +254,7 @@ interface PolydockAppInterface
      * Log an informational message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function info(string $message, array $context = []): self;
@@ -262,7 +263,7 @@ interface PolydockAppInterface
      * Log an error message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function error(string $message, array $context = []): self;
@@ -271,7 +272,7 @@ interface PolydockAppInterface
      * Log a warning message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function warning(string $message, array $context = []): self;
@@ -280,7 +281,7 @@ interface PolydockAppInterface
      * Log a debug message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function debug(string $message, array $context = []): self;

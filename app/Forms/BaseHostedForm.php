@@ -47,6 +47,8 @@ abstract class BaseHostedForm implements HostedFormInterface
      * Baseline rules shared by every hosted form: contact details and an
      * allowlisted, publicly-available trial app. Concrete forms merge their
      * extra fields on top via [...parent::getValidationRules(), ...].
+     *
+     * @return array<string, mixed>
      */
     #[\Override]
     public function getValidationRules(): array
@@ -74,6 +76,9 @@ abstract class BaseHostedForm implements HostedFormInterface
         ];
     }
 
+    /**
+     * @return array<mixed>
+     */
     #[\Override]
     public function getAllowedEmbedDomains(): array
     {
@@ -106,6 +111,9 @@ abstract class BaseHostedForm implements HostedFormInterface
         return (bool) config('services.recaptcha.enabled', true);
     }
 
+    /**
+     * @return array<mixed>
+     */
     #[\Override]
     public function getAllowedEmbedOrigins(): array
     {
@@ -126,6 +134,8 @@ abstract class BaseHostedForm implements HostedFormInterface
      * Store app UUIDs this form may offer and provision, managed per form
      * record in the admin panel. Empty means the form cannot provision
      * anything, so new forms stay locked until apps are explicitly attached.
+     *
+     * @return array<string, mixed>
      */
     #[\Override]
     public function getAllowedTrialAppUuids(): array
@@ -135,6 +145,9 @@ abstract class BaseHostedForm implements HostedFormInterface
 
     /**
      * Map form submission fields to the schema required by UserRemoteRegistration
+     *
+     * @param  array<string, mixed>  $validatedData
+     * @return array<string, mixed>
      */
     #[\Override]
     public function transformPayload(array $validatedData): array

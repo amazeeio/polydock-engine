@@ -33,14 +33,14 @@ class TriggerLagoonDeployOnAppInstances extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $appUuid = $this->argument(key: 'app_uuid');
         $envOverride = $this->option(key: 'environment');
         $variablesOnly = $this->option(key: 'variables-only');
         $concurrency = max(1, (int) $this->option(key: 'concurrency'));
 
-        /** @var PolydockStoreApp $storeApp */
+        /** @var PolydockStoreApp|null $storeApp */
         $storeApp = PolydockStoreApp::where(column: 'uuid', operator: '=', value: $appUuid)->first();
         if (! $storeApp) {
             $this->error(string: "Store App with UUID {$appUuid} not found.");

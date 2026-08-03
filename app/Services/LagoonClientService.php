@@ -13,6 +13,8 @@ class LagoonClientService
     /**
      * Build and configure a Client using the project's standard lagoon configuration
      *
+     * @param  array<string, mixed>  $overrides
+     *
      * @throws \Exception
      */
     public function getAuthenticatedClient(array $overrides = []): Client
@@ -41,6 +43,8 @@ class LagoonClientService
     /**
      * Build a Client using a pre-fetched token (useful when the token is cached externally)
      *
+     * @param  array<string, mixed>  $clientConfig
+     *
      * @throws \Exception
      */
     public function buildClientWithToken(array $clientConfig, string $token): Client
@@ -59,6 +63,8 @@ class LagoonClientService
 
     /**
      * Get the standard client configuration array
+     *
+     * @return array<string, mixed>
      */
     public function getClientConfig(): array
     {
@@ -139,6 +145,8 @@ class LagoonClientService
     /**
      * Cache key for a config's token — public static so tests and the
      * implementation can never drift on the derivation.
+     *
+     * @param  array<string, mixed>  $config
      */
     public static function tokenCacheKey(array $config): string
     {
@@ -160,6 +168,8 @@ class LagoonClientService
      * stack's 2-minute max token age) so redeploy/poll bursts don't pay an
      * SSH round-trip per job. Failures ('' return) are never cached — one
      * SSH blip must not poison every caller for the TTL.
+     *
+     * @param  array<string, mixed>  $config
      */
     public function getLagoonToken(?array $config = null): string
     {
@@ -187,6 +197,8 @@ class LagoonClientService
 
     /**
      * Mint a fresh token over SSH.
+     *
+     * @param  array<string, mixed>  $config
      */
     private function fetchLagoonTokenOverSsh(array $config): string
     {

@@ -16,6 +16,7 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\Polydock\Core\PolydockAppVariableDefinitionBase;
+use App\Polydock\Core\PolydockAppVariableDefinitionInterface;
 use Exception;
 use Filament\Schemas\Components\Component;
 use Override;
@@ -28,7 +29,7 @@ class PolydockAnythingLLMApp extends GenericPolydockAiApp implements HasAppInsta
     public static string $version = '0.1.3';
 
     /**
-     * @return array<PolydockAppVariableDefinitionBase>
+     * @return array<PolydockAppVariableDefinitionInterface>
      */
     public static function getAppDefaultVariableDefinitions(): array
     {

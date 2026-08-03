@@ -84,6 +84,9 @@ class ViewUserRemoteRegistration extends ViewRecord
             ]);
     }
 
+    /**
+     * @return list<TextEntry>
+     */
     public static function getRenderedSafeRequestDataForRecord(UserRemoteRegistration $record): array
     {
         $fullSafeData = $record->request_data ?? [];
@@ -91,6 +94,9 @@ class ViewUserRemoteRegistration extends ViewRecord
         return self::getRenderedSafeDataForRecord($record, $fullSafeData);
     }
 
+    /**
+     * @return list<TextEntry>
+     */
     public static function getRenderedSafeResultDataForRecord(UserRemoteRegistration $record): array
     {
         $fullSafeData = $record->result_data ?? [];
@@ -98,6 +104,9 @@ class ViewUserRemoteRegistration extends ViewRecord
         return self::getRenderedSafeDataForRecord($record, $fullSafeData);
     }
 
+    /**
+     * @return list<TextEntry>
+     */
     public static function getRenderedSafeDataForRecord(UserRemoteRegistration $record, $safeData): array
     {
         $sensitiveKeys = $record->getSensitiveDataKeys();

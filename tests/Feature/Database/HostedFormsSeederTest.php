@@ -45,7 +45,7 @@ class HostedFormsSeederTest extends TestCase
     }
 
     #[Test]
-    public function it_seeds_both_forms_and_attaches_previously_offered_apps_to_the_drupal_org_form()
+    public function it_seeds_both_forms_and_attaches_previously_offered_apps_to_the_drupal_org_form(): void
     {
         $publicTrialApp = $this->makeStoreApp(PolydockStoreStatusEnum::PUBLIC, true);
         $privateApp = $this->makeStoreApp(PolydockStoreStatusEnum::PRIVATE, true);

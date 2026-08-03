@@ -36,6 +36,9 @@ class LagoonProjectPurgeServiceTest extends TestCase
         return new LagoonProjectPurgeService(new PolydockLogger, $this->client);
     }
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     private function makeInstance(string $name = 'purge-me', array $data = []): PolydockAppInstance
     {
         $storeApp = PolydockStoreApp::factory()->create([

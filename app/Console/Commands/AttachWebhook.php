@@ -29,7 +29,7 @@ class AttachWebhook extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $this->info('Attaching webhook to Polydock Store...');
 

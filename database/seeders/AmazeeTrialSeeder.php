@@ -145,7 +145,7 @@ class AmazeeTrialSeeder extends Seeder
         $this->getStoreAppGeneric($deStore, 'DE');
     }
 
-    public function getStoreAppCKEditor($store, $namePrefix)
+    public function getStoreAppCKEditor($store, $namePrefix): void
     {
         PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
@@ -165,7 +165,7 @@ class AmazeeTrialSeeder extends Seeder
         ]);
     }
 
-    public function getStoreAppCategorizePages($store, $namePrefix)
+    public function getStoreAppCategorizePages($store, $namePrefix): void
     {
         PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
@@ -185,7 +185,7 @@ class AmazeeTrialSeeder extends Seeder
         ]);
     }
 
-    public function getStoreAppSearch($store, $namePrefix)
+    public function getStoreAppSearch($store, $namePrefix): void
     {
         PolydockStoreApp::create([
             'polydock_store_id' => $store->id,
@@ -205,7 +205,7 @@ class AmazeeTrialSeeder extends Seeder
         ]);
     }
 
-    public function getStoreAppGeneric($store, $namePrefix)
+    public function getStoreAppGeneric($store, $namePrefix): void
     {
         PolydockStoreApp::create([
             'polydock_store_id' => $store->id,

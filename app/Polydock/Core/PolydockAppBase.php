@@ -44,6 +44,8 @@ abstract class PolydockAppBase implements PolydockAppInterface
 
     /**
      * Configuration settings for the app
+     *
+     * @var array<string, mixed>
      */
     protected array $appConfiguration;
 
@@ -71,7 +73,7 @@ abstract class PolydockAppBase implements PolydockAppInterface
      * @param  string  $appAuthor  Name of the author/creator
      * @param  string  $appWebsite  Website URL for the app
      * @param  string  $appSupportEmail  Support email address
-     * @param  array  $variableDefinitions  Array of variable definitions
+     * @param  array<string, mixed>  $variableDefinitions  Array of variable definitions
      */
     final public function __construct(string $appName, string $appDescription, string $appAuthor, string $appWebsite, string $appSupportEmail, array $variableDefinitions = [])
     {

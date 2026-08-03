@@ -46,6 +46,9 @@ class PolydockStore extends Model
         return $this->getPolydockVariableValue('lagoon_deploy_private_key');
     }
 
+    /**
+     * @return HasMany<PolydockStoreApp, $this>
+     */
     public function apps(): HasMany
     {
         return $this->hasMany(PolydockStoreApp::class);
@@ -63,6 +66,8 @@ class PolydockStore extends Model
 
     /**
      * Get all variables for this store
+     *
+     * @return MorphMany<PolydockVariable, $this>
      */
     public function variables(): MorphMany
     {

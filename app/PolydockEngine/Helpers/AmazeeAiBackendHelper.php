@@ -10,11 +10,14 @@ use Illuminate\Support\Facades\Log;
 
 class AmazeeAiBackendHelper
 {
-    public static $cacheKeyPrefix = 'amazee_ai_backend_region_';
+    public static string $cacheKeyPrefix = 'amazee_ai_backend_region_';
 
-    public static $cacheTTL = 60;
+    public static int $cacheTTL = 60;
 
-    public static function getAmazeeAiBackendRegion($regionId)
+    /**
+     * @return array<string, mixed>|null
+     */
+    public static function getAmazeeAiBackendRegion(string $regionId): ?array
     {
         $cacheKey = self::$cacheKeyPrefix.$regionId;
         if (Cache::has($cacheKey)) {

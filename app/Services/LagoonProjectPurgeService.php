@@ -87,6 +87,8 @@ class LagoonProjectPurgeService
 
     /**
      * Check if a Lagoon environment is considered active (not deleted).
+     *
+     * @param  array<string, mixed>  $env
      */
     public static function isActiveEnvironment(array $env): bool
     {
