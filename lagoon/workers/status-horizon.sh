@@ -20,7 +20,7 @@ if [ -f "config/horizon.php" ]; then
   if [ $COUNT -gt 0 ]; then
 	  echo "[INFO] - Horizon is running"
     if [ ! -z "$POLYDOCK_SRE_HORIZON_HEARTBEAT" ]; then
-      curl -XGET $POLYDOCK_SRE_HORIZON_HEARTBEAT
+      curl --max-time 10 -XGET $POLYDOCK_SRE_HORIZON_HEARTBEAT
       echo "--"
       echo "[INFO] - Horizon heartbeat sent"
     fi
@@ -29,7 +29,7 @@ if [ -f "config/horizon.php" ]; then
 
     if [ ! -z "$POLYDOCK_SRE_SLACK_WEBHOOK_URL" ]; then
       RUN_CONTEXT=$SERVICE_NAME.$LAGOON_GIT_SAFE_BRANCH.$LAGOON_PROJECT
-      curl -X POST -H 'Content-type: application/json' --data '{"text":":rotating_light: ['$RUN_CONTEXT'] Horizon is NOT running - attempting supervisorctl restart"}' $POLYDOCK_SRE_SLACK_WEBHOOK_URL
+      curl --max-time 10 -X POST -H 'Content-type: application/json' --data '{"text":":rotating_light: ['$RUN_CONTEXT'] Horizon is NOT running - attempting supervisorctl restart"}' $POLYDOCK_SRE_SLACK_WEBHOOK_URL
     fi
 
     # Self-heal: kick the program if supervisord gave up on it (FATAL).
