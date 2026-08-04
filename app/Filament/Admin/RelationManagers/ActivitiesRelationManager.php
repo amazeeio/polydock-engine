@@ -19,7 +19,8 @@ use Spatie\Activitylog\Models\Activity;
  */
 class ActivitiesRelationManager extends RelationManager
 {
-    protected static string $relationship = 'activities';
+    // activitylog v5 renamed LogsActivity's `activities()` to `activitiesAsSubject()`.
+    protected static string $relationship = 'activitiesAsSubject';
 
     protected static ?string $title = 'Activity Log';
 
