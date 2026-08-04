@@ -15,7 +15,7 @@ class PolydockStoreWebhookFactory extends Factory
     {
         return [
             'polydock_store_id' => PolydockStore::factory(),
-            'url' => fake()->url(),
+            'url' => 'https://'.fake()->domainName().'/webhooks/'.fake()->uuid(),
             'active' => fake()->boolean(80), // 80% chance of being active
         ];
     }

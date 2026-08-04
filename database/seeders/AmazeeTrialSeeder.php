@@ -98,6 +98,7 @@ class AmazeeTrialSeeder extends Seeder
             'polydock_store_id' => $usStore->id,
             'url' => $webhookUrl,
             'active' => true,
+            'include_sensitive_data' => true,
         ]);
 
         $this->getStoreAppCKEditor($usStore, 'USA');
@@ -111,6 +112,7 @@ class AmazeeTrialSeeder extends Seeder
             'polydock_store_id' => $chStore->id,
             'url' => $webhookUrl,
             'active' => true,
+            'include_sensitive_data' => true,
         ]);
 
         $this->getStoreAppCKEditor($chStore, 'CH');
@@ -124,6 +126,7 @@ class AmazeeTrialSeeder extends Seeder
             'polydock_store_id' => $auStore->id,
             'url' => $webhookUrl,
             'active' => true,
+            'include_sensitive_data' => true,
         ]);
 
         $this->getStoreAppCKEditor($auStore, 'AU');
@@ -137,6 +140,7 @@ class AmazeeTrialSeeder extends Seeder
             'polydock_store_id' => $deStore->id,
             'url' => $webhookUrl,
             'active' => true,
+            'include_sensitive_data' => true,
         ]);
 
         $this->getStoreAppCKEditor($deStore, 'DE');
