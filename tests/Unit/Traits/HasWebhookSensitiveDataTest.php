@@ -16,6 +16,9 @@ class HasWebhookSensitiveDataTest extends TestCase
             use HasWebhookSensitiveData;
 
             public $sensitiveDataKeys;
+
+            /** @var array<string, mixed> */
+            public $data = [];
         };
     }
 
@@ -67,5 +70,68 @@ class HasWebhookSensitiveDataTest extends TestCase
     {
         $sensitiveKeys = ['/^.*_key.*$/'];
         $this->assertTrue($this->traitObject->shouldFilterKey('AMAZEEAI_API_KEY', $sensitiveKeys));
+    }
+
+    public function test_get_webhook_safe_data_includes_credentials_by_default(): void
+    {
+        $this->traitObject->data = [
+            'lagoon-generate-app-admin-password' => 'hunter2',
+            'lagoon-generate-app-admin-username' => 'admin',
+            'user-email' => 'someone@example.com',
+            'some-api-token' => 'should-be-redacted',
+            'app-url' => 'https://example.com',
+        ];
+
+        $safe = $this->traitObject->getWebhookSafeData();
+
+        $this->assertSame('hunter2', $safe['lagoon-generate-app-admin-password']);
+        $this->assertSame('admin', $safe['lagoon-generate-app-admin-username']);
+        $this->assertSame('someone@example.com', $safe['user-email']);
+        $this->assertSame('https://example.com', $safe['app-url']);
+        $this->assertArrayNotHasKey('some-api-token', $safe);
+    }
+
+    public function test_get_webhook_safe_data_drops_credentials_when_not_included(): void
+    {
+        $this->traitObject->data = [
+            'lagoon-generate-app-admin-password' => 'hunter2',
+            'lagoon-generate-app-admin-username' => 'admin',
+            'user-email' => 'someone@example.com',
+            'app-url' => 'https://example.com',
+        ];
+
+        $safe = $this->traitObject->getWebhookSafeData('data', false);
+
+        $this->assertArrayNotHasKey('lagoon-generate-app-admin-password', $safe);
+        $this->assertArrayNotHasKey('lagoon-generate-app-admin-username', $safe);
+        $this->assertSame('someone@example.com', $safe['user-email']);
+        $this->assertSame('https://example.com', $safe['app-url']);
+    }
+
+    public function test_get_webhook_safe_data_reads_the_named_attribute(): void
+    {
+        $object = new class
+        {
+            use HasWebhookSensitiveData;
+
+            /** @var list<string>|null */
+            public $sensitiveDataKeys;
+
+            /** @var array<string, mixed> */
+            public $result_data = [
+                'lagoon-generate-app-admin-password' => 'hunter2',
+                'amazee-ai-backend-token' => 'should-be-redacted',
+                'app-url' => 'https://example.com',
+            ];
+        };
+
+        $safe = $object->getWebhookSafeData('result_data', false);
+
+        $this->assertArrayNotHasKey('lagoon-generate-app-admin-password', $safe);
+        $this->assertArrayNotHasKey('amazee-ai-backend-token', $safe);
+        $this->assertSame('https://example.com', $safe['app-url']);
+
+        $withCredentials = $object->getWebhookSafeData('result_data');
+        $this->assertSame('hunter2', $withCredentials['lagoon-generate-app-admin-password']);
     }
 }

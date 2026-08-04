@@ -26,10 +26,12 @@ class PolydockStoreWebhook extends Model
         'polydock_store_id',
         'url',
         'active',
+        'include_sensitive_data',
     ];
 
     protected $casts = [
         'active' => 'boolean',
+        'include_sensitive_data' => 'boolean',
     ];
 
     /**
@@ -49,6 +51,32 @@ class PolydockStoreWebhook extends Model
                 $webhook->secret = Str::random(40);
             }
         });
+
+        // Payloads can carry credentials and PII, and the HMAC signature is
+        // only tamper-proof if the transport is encrypted — refuse plaintext
+        // endpoints everywhere a webhook can be created or edited (Filament,
+        // console command, raw model writes). Plain http is allowed only for
+        // loopback addresses so local development receivers keep working.
+        static::saving(function (self $webhook): void {
+            if (! self::isAllowedUrl((string) $webhook->url)) {
+                throw new RuntimeException(
+                    "Webhook URL must use https:// (http:// is only allowed for localhost): {$webhook->url}"
+                );
+            }
+        });
+    }
+
+    public static function isAllowedUrl(string $url): bool
+    {
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+            return false;
+        }
+
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+
+        return $scheme === 'https'
+            || ($scheme === 'http' && in_array($host, ['localhost', '127.0.0.1'], true));
     }
 
     /**
@@ -71,7 +99,7 @@ class PolydockStoreWebhook extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['url', 'active'])
+            ->logOnly(['url', 'active', 'include_sensitive_data'])
             ->logOnlyDirty()
             ->dontLogEmptyChanges();
     }

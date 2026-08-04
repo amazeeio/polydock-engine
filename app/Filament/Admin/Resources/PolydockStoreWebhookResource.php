@@ -45,10 +45,19 @@ class PolydockStoreWebhookResource extends Resource
                     ->required(),
                 TextInput::make('url')
                     ->required()
+                    ->url()
+                    ->rule(fn () => function (string $attribute, mixed $value, \Closure $fail): void {
+                        if (! PolydockStoreWebhook::isAllowedUrl((string) $value)) {
+                            $fail('Webhook URLs must use https:// (http:// is only allowed for localhost).');
+                        }
+                    })
                     ->maxLength(255)
                     ->columnSpanFull(),
                 Toggle::make('active')
                     ->required(),
+                Toggle::make('include_sensitive_data')
+                    ->label('Include sensitive data')
+                    ->helperText('Send generated app credentials and raw registration data in payloads. Only enable for trusted consumers that need them (e.g. trial emails) — leave off for event logging.'),
             ]);
     }
 
@@ -62,6 +71,9 @@ class PolydockStoreWebhookResource extends Resource
                 TextColumn::make('url')
                     ->searchable(),
                 IconColumn::make('active')
+                    ->boolean(),
+                IconColumn::make('include_sensitive_data')
+                    ->label('Sensitive data')
                     ->boolean(),
             ])
             ->filters([
