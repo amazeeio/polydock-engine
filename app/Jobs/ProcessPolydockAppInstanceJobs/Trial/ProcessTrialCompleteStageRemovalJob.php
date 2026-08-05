@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessTrialCompleteStageRemovalJob extends BaseJob
 {
-    public function handle()
+    public function handle(): void
     {
         $this->polydockJobStart();
 

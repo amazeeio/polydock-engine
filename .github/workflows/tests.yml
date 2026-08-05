@@ -42,7 +42,8 @@ jobs:
       run: ./vendor/bin/phpstan analyse --no-progress
 
     - name: Execute tests (Unit and Feature tests) via PHPUnit, with coverage gate
-      # Baseline measured at 37.15% lines (2026-07-17); floor set 2 points
+      # Baseline measured at 52.6% lines (2026-08-02); floor set 2 points
       # under it. Ratchet upward deliberately as coverage-focused PRs land;
       # never lower it silently.
-      run: php artisan test --coverage --min=35
+      # History: 37.15% (2026-07-17, floor 35), 49.6% (2026-08-01, floor 47).
+      run: php artisan test --coverage --min=50

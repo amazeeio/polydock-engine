@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\LagoonClientService;
+use Exception;
 use Illuminate\Console\Command;
 
 class SyncLagoonMetadata extends BaseCommand
@@ -82,7 +83,7 @@ class SyncLagoonMetadata extends BaseCommand
                 'timeout' => 60.0,
                 'connect_timeout' => 10.0,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Failed to authenticate Lagoon client: '.$e->getMessage());
 
             return Command::FAILURE;
@@ -147,7 +148,7 @@ class SyncLagoonMetadata extends BaseCommand
                         $existingMetadata = json_decode($projectData['metadata'], true) ?: [];
                     }
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->warn(sprintf('  - Failed to fetch existing project metadata: %s. Proceeding with safety writes.', $e->getMessage()));
             }
 
@@ -170,7 +171,7 @@ class SyncLagoonMetadata extends BaseCommand
                         $this->line(sprintf('  - Set metadata: %s => %s', $key, $value));
                         $keysWritten++;
                     }
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->error(sprintf('  - Exception writing metadata "%s": %s', $key, $e->getMessage()));
                     $hasError = true;
                 }

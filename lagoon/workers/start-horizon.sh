@@ -11,12 +11,17 @@ source /lagoon/entrypoints/55-generate-env.sh
 echo "Done loading Lagoon environment"
 
 if [ -f "/app/config/horizon.php" ]; then
-  
+
   if [ ! -z "$POLYDOCK_SRE_SLACK_WEBHOOK_URL" ]; then
     RUN_CONTEXT=$SERVICE_NAME.$LAGOON_GIT_SAFE_BRANCH.$LAGOON_PROJECT
 
     echo "[$SERVICE_NAME] Sending Slack notification"
-    curl -X POST -H 'Content-type: application/json' --data '{"text":":rocket: ['$RUN_CONTEXT'] Horizon Started"}' $POLYDOCK_SRE_SLACK_WEBHOOK_URL
+    curl --max-time 10 -X POST -H 'Content-type: application/json' --data '{"text":":rocket: ['$RUN_CONTEXT'] Horizon Started"}' $POLYDOCK_SRE_SLACK_WEBHOOK_URL
+
+    # Alert when horizon stops for any reason (crash, OOM, supervisor stop) —
+    # supervisord will restart it, but a hiccup should never go unnoticed.
+    # --max-time keeps an unreachable webhook from blocking the restart.
+    trap 'curl --max-time 10 -X POST -H "Content-type: application/json" --data "{\"text\":\":fire: [$RUN_CONTEXT] Horizon Exited (supervisord will restart it)\"}" $POLYDOCK_SRE_SLACK_WEBHOOK_URL' EXIT
   fi
 
   /usr/local/bin/php artisan horizon

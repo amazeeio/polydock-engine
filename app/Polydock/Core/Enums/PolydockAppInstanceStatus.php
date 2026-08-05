@@ -312,11 +312,17 @@ enum PolydockAppInstanceStatus: string implements HasColor, HasIcon, HasLabel
         };
     }
 
+    /**
+     * @return array<int, string>
+     */
     public static function getValues(): array
     {
         return array_column(self::cases(), 'value');
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function getOptions(): array
     {
         return array_combine(

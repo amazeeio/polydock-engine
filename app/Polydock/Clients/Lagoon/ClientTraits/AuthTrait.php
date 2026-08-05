@@ -69,7 +69,7 @@ trait AuthTrait
     /**
      * Retrieves information about the currently authenticated user
      *
-     * @return array User information including ID and email
+     * @return array<string, mixed> User information including ID and email
      *
      * @throws LagoonClientInitializeRequiredToInteractException If client is not properly initialized
      */

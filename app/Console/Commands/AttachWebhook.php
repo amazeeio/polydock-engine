@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreWebhook;
 use Illuminate\Console\Command;
+use Override;
 
 class AttachWebhook extends BaseCommand
 {
@@ -15,8 +16,9 @@ class AttachWebhook extends BaseCommand
      */
     protected $signature = 'polydock:attach-webhook
                           {--store-id= : Store ID to attach webhook to}
-                          {--url= : Webhook URL}
-                          {--active= : Whether webhook is active (true/false)}';
+                          {--url= : Webhook URL (must be https)}
+                          {--active= : Whether webhook is active (true/false)}
+                          {--include-sensitive-data : Send credentials/raw registration data in payloads}';
 
     /**
      * The console command description.
@@ -28,7 +30,7 @@ class AttachWebhook extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $this->info('Attaching webhook to Polydock Store...');
 
@@ -72,6 +74,12 @@ class AttachWebhook extends BaseCommand
             return 1;
         }
 
+        if (! PolydockStoreWebhook::isAllowedUrl($webhookUrl)) {
+            $this->error('Webhook URL must use https:// (http:// is only allowed for localhost).');
+
+            return 1;
+        }
+
         // Get active status
         $activeInput = $this->option('active') ?? $this->choice('Should the webhook be active?', ['true', 'false']);
         $active = filter_var($activeInput, FILTER_VALIDATE_BOOLEAN);
@@ -81,6 +89,7 @@ class AttachWebhook extends BaseCommand
             'polydock_store_id' => $store->id,
             'url' => $webhookUrl,
             'active' => $active,
+            'include_sensitive_data' => (bool) $this->option('include-sensitive-data'),
         ]);
 
         $this->info("✅ Webhook attached successfully to store '{$store->name}' with ID: {$webhook->id}");
@@ -90,7 +99,7 @@ class AttachWebhook extends BaseCommand
         return 0;
     }
 
-    #[\Override]
+    #[Override]
     public function sensitiveInputs(): array
     {
         return ['url'];

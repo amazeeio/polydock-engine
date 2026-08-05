@@ -51,7 +51,7 @@ abstract class BaseJob implements ShouldQueue
         protected int $appInstanceId,
     ) {}
 
-    public function getPolydockJobId()
+    public function getPolydockJobId(): string
     {
         // Identity only — no DB round-trip. Existence is enforced once, in
         // polydockJobStart(), which every handle() calls first.
@@ -120,7 +120,7 @@ abstract class BaseJob implements ShouldQueue
     /**
      * Get the middleware the job should pass through.
      *
-     * @return array
+     * @return array<int, WithoutOverlapping>
      */
     public function middleware()
     {
@@ -272,7 +272,7 @@ abstract class BaseJob implements ShouldQueue
         return $currentOrdinal > $expectedOrdinal;
     }
 
-    public function polydockJobStart()
+    public function polydockJobStart(): void
     {
         // Single fetch for the whole job: find() already returns a fresh row
         // (no refresh needed) and storeApp is eager-loaded for the log lines
@@ -302,9 +302,13 @@ abstract class BaseJob implements ShouldQueue
         ]);
     }
 
-    public function polydockJobDone()
+    public function polydockJobDone(): void
     {
-        if (! $this->appInstance) {
+        // isset(), not a truthiness check: $appInstance is a non-nullable typed
+        // property, so reading it before polydockJobStart() has assigned it
+        // raises an Error instead of yielding null — which would escape this
+        // guard entirely. Matches shouldSkipBecauseStatusAdvanced() above.
+        if (! isset($this->appInstance)) {
             Log::error('Failed to process PolydockAppInstance - not found', [
                 'app_instance_id' => $this->appInstanceId,
                 'job_type' => class_basename(static::class),

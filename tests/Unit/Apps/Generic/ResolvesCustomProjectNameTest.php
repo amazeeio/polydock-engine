@@ -31,8 +31,14 @@ class ResolvesCustomProjectNameHarness
 
     public object $lagoonClient;
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function info(string $message, array $context = []): void {}
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function error(string $message, array $context = []): void {}
 }
 
@@ -53,6 +59,9 @@ class ResolvesCustomProjectNameTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * @param  array<string, mixed>  $appConfig
+     */
     private function makeInstance(array $appConfig = [], ?string $requestedName = null): PolydockAppInstance
     {
         Event::fake([

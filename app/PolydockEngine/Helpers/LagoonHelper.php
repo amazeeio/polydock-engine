@@ -5,13 +5,17 @@ namespace App\PolydockEngine\Helpers;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use phpseclib3\Crypt\PublicKeyLoader;
+use Throwable;
 
 class LagoonHelper
 {
-    public static $cacheKeyPrefix = 'lagoon_core_data_for_region_';
+    public static string $cacheKeyPrefix = 'lagoon_core_data_for_region_';
 
-    public static $cacheTTL = 60;
+    public static int $cacheTTL = 60;
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function getLagoonCoreDataForRegion(string $regionId): ?array
     {
         $cacheKey = self::$cacheKeyPrefix.$regionId;
@@ -63,7 +67,7 @@ class LagoonHelper
             $key = PublicKeyLoader::load($privateKey);
 
             return $key->getPublicKey()->toString('OpenSSH');
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // Parsing failures are expected when validating user-provided keys.
 
             return null;

@@ -6,18 +6,17 @@ use App\Filament\Admin\Resources\PolydockStoreAppResource;
 use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Attributes\PolydockAppStoreFields;
 use App\Services\PolydockAppClassDiscovery;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditPolydockStoreApp extends EditRecord
 {
     protected static string $resource = PolydockStoreAppResource::class;
 
-    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->hidden(fn () => $this->record->instances()->exists()),
         ];
     }
@@ -27,7 +26,6 @@ class EditPolydockStoreApp extends EditRecord
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
-    #[\Override]
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Load custom field values from app_config JSON column
@@ -53,7 +51,6 @@ class EditPolydockStoreApp extends EditRecord
         return $data;
     }
 
-    #[\Override]
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $discovery = app(PolydockAppClassDiscovery::class);

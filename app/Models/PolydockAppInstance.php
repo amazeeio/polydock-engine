@@ -13,18 +13,21 @@ use App\PolydockEngine\PolydockEngineAppNotFoundException;
 use App\Traits\HasPolydockVariables;
 use App\Traits\HasWebhookSensitiveData;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Contracts\Encryption\DecryptException;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\LogOptions;
+use Override;
 use Spatie\Activitylog\Models\Activity;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property int $id
@@ -70,7 +73,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * The fillable attributes for the model
      *
-     * @var array
+     * @var list<string>
      */
     protected $fillable = [
         'name',
@@ -107,7 +110,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * The casts for the model
      *
-     * @var array
+     * @var array<string, string>
      */
     protected $casts = [
         'status' => PolydockAppInstanceStatus::class,
@@ -147,6 +150,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     private PolydockAppLoggerInterface $logger;
 
     // Add default sensitive keys specific to app instances
+    /**
+     * @var list<string>
+     */
     protected array $sensitiveDataKeys = [
         // Exact matches
         'private_key',
@@ -182,10 +188,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 'force_purge_requested_at',
             ])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontLogEmptyChanges();
     }
 
-    public function tapActivity(Activity $activity, string $eventName): void
+    public function beforeActivityLogged(Activity $activity, string $eventName): void
     {
         if ($eventName === 'created') {
             $activity->properties = $activity->properties->merge([
@@ -195,6 +201,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         }
     }
 
+    /**
+     * @var array<mixed>
+     */
     public static array $pendingStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_CREATE,
         PolydockAppInstanceStatus::PENDING_CREATE,
@@ -211,6 +220,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PENDING_PURGE,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $completedStatuses = [
         PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
         PolydockAppInstanceStatus::CREATE_COMPLETED,
@@ -227,6 +239,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::POLYDOCK_CLAIM_COMPLETED,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $failedStatuses = [
         PolydockAppInstanceStatus::PRE_CREATE_FAILED,
         PolydockAppInstanceStatus::CREATE_FAILED,
@@ -244,6 +259,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PURGE_FAILED,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $pollingStatuses = [
         PolydockAppInstanceStatus::DEPLOY_RUNNING,
         PolydockAppInstanceStatus::UPGRADE_RUNNING,
@@ -253,6 +271,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $stageCreateStatuses = [
         PolydockAppInstanceStatus::NEW,
         PolydockAppInstanceStatus::PENDING_PRE_CREATE,
@@ -266,6 +287,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::POST_CREATE_COMPLETED,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $stageDeployStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_DEPLOY,
         PolydockAppInstanceStatus::PENDING_DEPLOY,
@@ -278,6 +302,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $stageRemoveStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
         PolydockAppInstanceStatus::PENDING_REMOVE,
@@ -291,12 +318,18 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::REMOVED,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $stagePurgeStatuses = [
         PolydockAppInstanceStatus::PENDING_PURGE,
         PolydockAppInstanceStatus::PURGE_RUNNING,
         PolydockAppInstanceStatus::PURGE_FAILED,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $stageUpgradeStatuses = [
         PolydockAppInstanceStatus::PENDING_PRE_UPGRADE,
         PolydockAppInstanceStatus::PENDING_UPGRADE,
@@ -310,6 +343,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::POST_UPGRADE_RUNNING,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $stageRunningStatuses = [
         PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
         PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
@@ -317,6 +353,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
     ];
 
+    /**
+     * @var array<mixed>
+     */
     public static array $stageClaimStatuses = [
         PolydockAppInstanceStatus::PENDING_POLYDOCK_CLAIM,
         PolydockAppInstanceStatus::POLYDOCK_CLAIM_RUNNING,
@@ -357,7 +396,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      *
      * @return string
      */
-    #[\Override]
+    #[Override]
     public function getRouteKeyName()
     {
         return 'uuid';
@@ -366,7 +405,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Boot the model.
      */
-    #[\Override]
+    #[Override]
     protected static function boot()
     {
         parent::boot();
@@ -459,7 +498,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         });
     }
 
-    public static function getDataForLagoonScript(PolydockStoreApp $storeApp, string $fieldKeyPart, string $dataKeyPart)
+    /**
+     * @return array<string, string>
+     */
+    public static function getDataForLagoonScript(PolydockStoreApp $storeApp, string $fieldKeyPart, string $dataKeyPart): array
     {
         $data = [];
         $fieldKeyScript = 'lagoon_'.$fieldKeyPart.'_script';
@@ -641,7 +683,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Eloquent mutator to safely truncate status messages before writing to DB.
      */
-    public function setStatusMessageAttribute($value): void
+    public function setStatusMessageAttribute(?string $value): void
     {
         if ($value === null) {
             $this->attributes['status_message'] = null;
@@ -826,6 +868,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this->logger;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function info(string $message, array $context = []): self
     {
         if (isset($this->logger)) {
@@ -837,6 +882,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function error(string $message, array $context = []): self
     {
         if (isset($this->logger)) {
@@ -848,6 +896,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function warning(string $message, array $context = []): self
     {
         if (isset($this->logger)) {
@@ -859,6 +910,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function debug(string $message, array $context = []): self
     {
         if (isset($this->logger)) {
@@ -963,6 +1017,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the store app that this instance belongs to
+     *
+     * @return BelongsTo<PolydockStoreApp, $this>
      */
     public function storeApp(): BelongsTo
     {
@@ -971,6 +1027,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the user group that owns this instance
+     *
+     * @return BelongsTo<UserGroup, $this>
      */
     public function userGroup(): BelongsTo
     {
@@ -979,6 +1037,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the deployment run that most recently redeployed this instance.
+     *
+     * @return BelongsTo<PolydockDeploymentRun, $this>
      */
     public function deploymentRun(): BelongsTo
     {
@@ -1007,7 +1067,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Get all variables for this app instance
      */
-    public function variables()
+    /**
+     * @return MorphMany<PolydockVariable, $this>
+     */
+    public function variables(): MorphMany
     {
         return $this->morphMany(PolydockVariable::class, 'variabled');
     }
@@ -1118,6 +1181,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             : null;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function logLine(string $level, string $message, array $context = []): self
     {
         $this->logs()->create([
@@ -1132,6 +1198,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
     /**
      * Get the remote registration associated with this instance
+     *
+     * @return HasOne<UserRemoteRegistration, $this>
      */
     public function remoteRegistration(): HasOne
     {
@@ -1272,7 +1340,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     /**
      * Calculate and set trial dates based on end datetime
      *
-     * @param  \DateTime|Carbon  $trialEndDateTime  When the trial should end
+     * @param  DateTime|Carbon  $trialEndDateTime  When the trial should end
      * @param  bool  $saveModel  Whether to save the model after setting trial dates
      */
     public function calculateAndSetTrialDatesFromEndDate($trialEndDateTime, bool $saveModel = false): self

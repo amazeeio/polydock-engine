@@ -6,6 +6,7 @@ use App\Polydock\Clients\AmazeeAi\Client;
 use App\Polydock\Clients\AmazeeAi\Exception\HttpException;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use Exception;
 
 trait UsesAmazeeAiBackend
 {
@@ -65,7 +66,7 @@ trait UsesAmazeeAiBackend
 
         try {
             $response = $this->amazeeAiBackendClient->getMe();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Failed to authenticate with Amazee AI backend: '.$e->getMessage(), $logContext);
 
             return false;
@@ -99,7 +100,10 @@ trait UsesAmazeeAiBackend
     {
         $logContext = $this->getLogContext(__FUNCTION__);
 
-        if (! $this->amazeeAiBackendClient) {
+        // isset(), not a truthiness check: $amazeeAiBackendClient is a
+        // non-nullable typed property, so pinging before the client is
+        // initialized raised an Error rather than the exception below.
+        if (! isset($this->amazeeAiBackendClient)) {
             throw new PolydockAppInstanceStatusFlowException('amazeeAI backend client not found for ping');
         }
 
@@ -121,13 +125,15 @@ trait UsesAmazeeAiBackend
 
                 return false;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Error pinging amazeeAI backend: ', $logContext + ['error' => $e->getMessage()]);
             throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
         }
     }
 
     /**
+     * @return array<mixed>
+     *
      * @throws PolydockAppInstanceStatusFlowException
      */
     public function getPrivateAICredentialsFromBackend(PolydockAppInstanceInterface $appInstance): array

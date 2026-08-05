@@ -16,6 +16,10 @@ class PolydockStoreAppNamingConfigTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     * @param  array<string, mixed>  $appConfig
+     */
     private function makeStoreApp(array $appConfig = [], array $attributes = []): PolydockStoreApp
     {
         $store = PolydockStore::factory()->create(['lagoon_deploy_project_prefix' => 'testapp']);

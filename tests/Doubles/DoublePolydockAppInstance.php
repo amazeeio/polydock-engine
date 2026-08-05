@@ -20,6 +20,9 @@ class DoublePolydockAppInstance implements PolydockAppInstanceInterface
 
     public $data = [];
 
+    /**
+     * @param  array<string, mixed>  $data
+     */
     public function __construct($storeApp = null, array $data = [])
     {
         $this->storeApp = $storeApp;
@@ -100,21 +103,33 @@ class DoublePolydockAppInstance implements PolydockAppInstanceInterface
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function info(string $message, array $context = []): self
     {
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function error(string $message, array $context = []): self
     {
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function warning(string $message, array $context = []): self
     {
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function debug(string $message, array $context = []): self
     {
         return $this;
@@ -145,6 +160,9 @@ class DoublePolydockAppInstance implements PolydockAppInstanceInterface
         return '';
     }
 
+    /**
+     * @param  array<string, mixed>  $options
+     */
     public function save(array $options = []) {}
 
     public function setAppUrl(string $url, ?string $oneTimeLoginUrl = null, ?int $numberOfHoursForOneTimeLoginUrl = 24): self

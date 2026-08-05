@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -90,7 +91,7 @@ class ListUnclaimedAppInstancesCommand extends BaseCommand
             ]);
 
             return Command::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Failed to list unclaimed instances: '.$e->getMessage());
             Log::error('Failed to list unclaimed instances via command', [
                 'error' => $e->getMessage(),

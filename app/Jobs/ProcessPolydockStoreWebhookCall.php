@@ -4,6 +4,8 @@ namespace App\Jobs;
 
 use App\Enums\PolydockStoreWebhookCallStatusEnum;
 use App\Models\PolydockStoreWebhookCall;
+use DateTime;
+use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
@@ -11,6 +13,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ProcessPolydockStoreWebhookCall implements ShouldQueue
 {
@@ -46,7 +49,7 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
     /**
      * Determine if the job should be retried.
      */
-    public function retryUntil(): \DateTime
+    public function retryUntil(): DateTime
     {
         return now()->addMinutes(5); // Give up after 5 minutes total
     }
@@ -105,7 +108,7 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
                 ]);
 
                 // This will trigger a retry if we haven't exceeded tries
-                throw new \Exception("Webhook call failed with status code: {$response->status()}");
+                throw new Exception("Webhook call failed with status code: {$response->status()}");
             }
 
             Log::info('Webhook call processed successfully', [
@@ -113,7 +116,7 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
                 'status_code' => $response->status(),
                 'attempt' => $this->attempts(),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error processing webhook call', [
                 'webhook_call_id' => $this->webhookCall->id,
                 'error' => $e->getMessage(),
@@ -136,7 +139,7 @@ class ProcessPolydockStoreWebhookCall implements ShouldQueue
     /**
      * Handle a job failure.
      */
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
         Log::error('Webhook call job failed permanently', [
             'webhook_call_id' => $this->webhookCall->id,

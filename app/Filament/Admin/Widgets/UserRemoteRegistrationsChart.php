@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class UserRemoteRegistrationsChart extends WeeklyBarChartWidget
 {
-    protected static ?string $heading = 'Remote Registrations by Status';
+    protected ?string $heading = 'Remote Registrations by Status';
 
     protected static ?int $sort = 200;
 

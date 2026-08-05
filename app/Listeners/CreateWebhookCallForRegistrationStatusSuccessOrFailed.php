@@ -5,6 +5,7 @@ namespace App\Listeners;
 use App\Enums\UserRemoteRegistrationStatusEnum;
 use App\Events\UserRemoteRegistrationStatusChanged;
 use App\Models\PolydockStoreWebhookCall;
+use Exception;
 use Illuminate\Support\Facades\Log;
 
 class CreateWebhookCallForRegistrationStatusSuccessOrFailed
@@ -59,6 +60,11 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
                         ],
                     ]);
 
+                    // Webhooks flagged include_sensitive_data get the raw registration
+                    // payload (existing trial email consumers depend on it); all others
+                    // get the redacted version.
+                    $includeSensitive = $webhook->include_sensitive_data;
+
                     PolydockStoreWebhookCall::create([
                         'polydock_store_webhook_id' => $webhook->id,
                         'event' => 'registration.status.changed',
@@ -72,13 +78,17 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
                             'user_group' => $event->registration->userGroup->toArray(),
                             'trial_app_id' => $event->registration->polydock_store_app_id,
                             'trial_app' => $event->registration->storeApp->toArray(),
-                            'request_data' => $event->registration->request_data,
-                            'result_data' => $event->registration->result_data,
+                            'request_data' => $includeSensitive
+                                ? $event->registration->request_data
+                                : $event->registration->getWebhookSafeData('request_data', false),
+                            'result_data' => $includeSensitive
+                                ? $event->registration->result_data
+                                : $event->registration->getWebhookSafeData('result_data', false),
                             'created_at' => $event->registration->created_at,
                             'updated_at' => $event->registration->updated_at,
                         ],
                     ]);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     Log::error('Failed to create webhook call for registration status change', [
                         'webhook_id' => $webhook->id,
                         'registration_id' => $event->registration->id,

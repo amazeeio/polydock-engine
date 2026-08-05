@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\PolydockAppInstance;
 use App\Polydock\Clients\Lagoon\Client;
 use App\Services\LagoonClientService;
+use Exception;
 use Illuminate\Console\Command;
 
 class TriggerLagoonDeployOnAppInstance extends BaseCommand
@@ -25,7 +26,7 @@ class TriggerLagoonDeployOnAppInstance extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $instanceUuid = $this->argument(key: 'instance_uuid');
         $envOverride = $this->option(key: 'environment');
@@ -86,7 +87,7 @@ class TriggerLagoonDeployOnAppInstance extends BaseCommand
         if (! $client) {
             try {
                 $client = app(LagoonClientService::class)->getAuthenticatedClient();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error(string: "Authentication failed for instance {$instance->id}: {$e->getMessage()}");
 
                 return 1;
@@ -115,7 +116,7 @@ class TriggerLagoonDeployOnAppInstance extends BaseCommand
 
                 return 0;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error(string: "\n[FAILED] {$projectName}: {$e->getMessage()}");
 
             return 1;

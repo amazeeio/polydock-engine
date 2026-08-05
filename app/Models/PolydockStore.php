@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class PolydockStore extends Model
 {
@@ -38,7 +38,7 @@ class PolydockStore extends Model
         return LogOptions::defaults()
             ->logOnly(['name', 'status', 'listed_in_marketplace'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontLogEmptyChanges();
     }
 
     public function getLagoonDeployPrivateKeyAttribute(): ?string
@@ -46,6 +46,9 @@ class PolydockStore extends Model
         return $this->getPolydockVariableValue('lagoon_deploy_private_key');
     }
 
+    /**
+     * @return HasMany<PolydockStoreApp, $this>
+     */
     public function apps(): HasMany
     {
         return $this->hasMany(PolydockStoreApp::class);
@@ -63,6 +66,8 @@ class PolydockStore extends Model
 
     /**
      * Get all variables for this store
+     *
+     * @return MorphMany<PolydockVariable, $this>
      */
     public function variables(): MorphMany
     {

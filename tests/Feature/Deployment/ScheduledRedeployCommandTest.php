@@ -31,6 +31,9 @@ class ScheduledRedeployCommandTest extends TestCase
         $this->app->instance(LagoonClientService::class, new FakeLagoonClientService($this->client));
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function storeApp(array $attributes = []): PolydockStoreApp
     {
         $store = PolydockStore::factory()->create();
@@ -42,6 +45,9 @@ class ScheduledRedeployCommandTest extends TestCase
         ], $attributes));
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function makeInstance(PolydockStoreApp $app, array $attributes = [], ?UserGroup $group = null): PolydockAppInstance
     {
         $project = $attributes['name'] ?? ('proj-'.fake()->unique()->lexify('?????'));

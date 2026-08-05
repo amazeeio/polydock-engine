@@ -27,6 +27,9 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
      */
     private const int MAX_TOKEN_AGE_MINUTES = 2;
 
+    /**
+     * @param  array<string, mixed>  $config
+     */
     public function __construct(array $config, PolydockAppLoggerInterface $logger)
     {
         $this->setLogger($logger);
@@ -64,6 +67,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
      * Sets up authentication using an SSH key and manages token caching
      *
      * @param  string  $sshPrivateKeyFile  Path to SSH private key file
+     * @param  array<mixed>  $config
      */
     protected function initLagoonClient(array $config)
     {

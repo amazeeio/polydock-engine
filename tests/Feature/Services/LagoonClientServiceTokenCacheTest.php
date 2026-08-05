@@ -15,7 +15,11 @@ use Tests\TestCase;
  */
 class LagoonClientServiceTokenCacheTest extends TestCase
 {
-    /** A config whose key file cannot exist, so the real SSH path fails fast. */
+    /**
+     * A config whose key file cannot exist, so the real SSH path fails fast.
+     *
+     * @return array<string, mixed>
+     */
     private function unusableConfig(): array
     {
         return [

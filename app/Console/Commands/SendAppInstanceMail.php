@@ -8,8 +8,10 @@ use App\Mail\AppInstanceReadyMail;
 use App\Mail\AppInstanceTrialCompleteMail;
 use App\Models\User;
 use App\Models\UserRemoteRegistration;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use Override;
 
 class SendAppInstanceMail extends BaseCommand
 {
@@ -32,6 +34,9 @@ class SendAppInstanceMail extends BaseCommand
      */
     protected $description = 'Send a specific mailable to a specified email address based on a user remote registration UUID';
 
+    /**
+     * @var array<string, mixed>
+     */
     private array $availableMailTypes = [
         'ready' => AppInstanceReadyMail::class,
         'midtrial' => AppInstanceMidtrialMail::class,
@@ -42,7 +47,7 @@ class SendAppInstanceMail extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $registrationUuid = $this->argument('registration');
         $mailType = $this->argument('mail-type');
@@ -132,7 +137,7 @@ class SendAppInstanceMail extends BaseCommand
 
                 $this->info("✓ Email sent to {$recipient['name']} ({$recipient['email']})");
                 $successCount++;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error("✗ Failed to send to {$recipient['email']}: {$e->getMessage()}");
                 $errorCount++;
             }
@@ -160,6 +165,8 @@ class SendAppInstanceMail extends BaseCommand
 
     /**
      * Get recipients for the email
+     *
+     * @return array<int, array<string, User|string>>
      */
     private function getRecipients(UserRemoteRegistration $registration, string $email): array
     {
@@ -187,7 +194,7 @@ class SendAppInstanceMail extends BaseCommand
         ];
     }
 
-    #[\Override]
+    #[Override]
     public function sensitiveInputs(): array
     {
         return ['email'];

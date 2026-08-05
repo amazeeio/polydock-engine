@@ -26,10 +26,10 @@ use App\Polydock\Core\PolydockAppBase;
 use App\Polydock\Core\PolydockAppInstanceInterface;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\Polydock\Core\PolydockAppVariableDefinitionBase;
-use App\Polydock\Core\PolydockAppVariableDefinitionInterface;
 use App\Polydock\Core\PolydockEngineInterface;
 use App\Polydock\Core\PolydockServiceProviderInterface;
 use App\PolydockServiceProviders\PolydockServiceProviderFTLagoon;
+use Exception;
 
 #[PolydockAppTitle('Generic Lagoon App')]
 class PolydockApp extends PolydockAppBase
@@ -64,7 +64,7 @@ class PolydockApp extends PolydockAppBase
     /**
      * Get the default variable definitions for this app specifically
      *
-     * @return array<PolydockAppVariableDefinitionInterface>
+     * @return array<mixed>
      */
     public static function getAppDefaultVariableDefinitions(): array
     {
@@ -97,7 +97,10 @@ class PolydockApp extends PolydockAppBase
      */
     public function pingLagoonAPI(): bool
     {
-        if (! $this->lagoonClient) {
+        // isset(), not a truthiness check: $lagoonClient is a non-nullable typed
+        // property, so pinging before initializeLagoonClient() raised an Error
+        // rather than the documented exception below.
+        if (! isset($this->lagoonClient)) {
             throw new PolydockAppInstanceStatusFlowException('Lagoon client not found for ping');
         }
 
@@ -109,7 +112,7 @@ class PolydockApp extends PolydockAppBase
             }
 
             return $ping;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
         }
     }
@@ -150,7 +153,7 @@ class PolydockApp extends PolydockAppBase
     /**
      * Grant the instance's deploy group access to its Lagoon project.
      *
-     * @throws \Exception If Lagoon rejects the grant or returns no id
+     * @throws Exception If Lagoon rejects the grant or returns no id
      */
     public function addDeployGroupToLagoonProject(PolydockAppInstanceInterface $appInstance): void
     {
@@ -165,12 +168,12 @@ class PolydockApp extends PolydockAppBase
                 ? ($result['error'][0]['message'] ?? json_encode($result['error']))
                 : $result['error'];
             $this->error($errorMessage);
-            throw new \Exception($errorMessage);
+            throw new Exception($errorMessage);
         }
 
         if (! isset($result['addGroupsToProject']['id'])) {
             $this->error('addGroupsToProject ID not found in data');
-            throw new \Exception('addGroupsToProject ID not found in data');
+            throw new Exception('addGroupsToProject ID not found in data');
         }
     }
 
@@ -178,6 +181,7 @@ class PolydockApp extends PolydockAppBase
      * Verifies that the lagoon values are available.
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
+     * @param  array<string, mixed>  $logContext
      * @return bool True if the lagoon values are available, false otherwise
      */
     public function verifyLagoonValuesAreAvailable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
@@ -271,6 +275,7 @@ class PolydockApp extends PolydockAppBase
      * Verifies that the project name is available.
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
+     * @param  array<string, mixed>  $logContext
      * @return bool True if the project name is available, false otherwise
      */
     public function verifyLagoonProjectNameIsAvailable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
@@ -291,6 +296,7 @@ class PolydockApp extends PolydockAppBase
      * Verifies that the project id is available.
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to verify
+     * @param  array<string, mixed>  $logContext
      * @return bool True if the project id is available, false otherwise
      */
     public function verifyLagoonProjectIdIsAvailable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
@@ -308,6 +314,8 @@ class PolydockApp extends PolydockAppBase
     }
 
     /**
+     * @param  array<string, mixed>  $logContext
+     *
      * @throws PolydockAppInstanceStatusFlowException
      */
     public function validateLagoonPingAndThrowExceptionIfFailed(array $logContext = []): void
@@ -402,7 +410,7 @@ class PolydockApp extends PolydockAppBase
             if ($shortCircuit !== null) {
                 return $shortCircuit;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error($functionName.' failed: '.$e->getMessage(), $logContext + [
                 'exception_class' => get_class($e),
             ]);
@@ -421,7 +429,7 @@ class PolydockApp extends PolydockAppBase
      * Get the log context for a specific function.
      *
      * @param  string  $location  The location of the log context
-     * @return array The log context
+     * @return array<string, mixed> The log context
      */
     public function getLogContext(string $location): array
     {
@@ -431,7 +439,7 @@ class PolydockApp extends PolydockAppBase
     /**
      * @throws LagoonClientInitializeRequiredToInteractException
      */
-    public function addOrUpdateLagoonProjectVariable(PolydockAppInstanceInterface $appInstance, $variableName, $variableValue, $variableScope): void
+    public function addOrUpdateLagoonProjectVariable(PolydockAppInstanceInterface $appInstance, string $variableName, string $variableValue, string $variableScope): void
     {
         $projectName = $appInstance->getKeyValue('lagoon-project-name');
         $projectId = $appInstance->getKeyValue('lagoon-project-id');
@@ -455,7 +463,7 @@ class PolydockApp extends PolydockAppBase
                     'error' => $variable['error'],
                     'parsed_error' => $errorMessage,
                 ]);
-            throw new \Exception("Failed to add or update {$variableName} variable: ".$errorMessage);
+            throw new Exception("Failed to add or update {$variableName} variable: ".$errorMessage);
         }
 
         if ($this->lagoonClient->getDebug()) {

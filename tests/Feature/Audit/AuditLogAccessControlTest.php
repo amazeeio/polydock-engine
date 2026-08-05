@@ -25,6 +25,8 @@ class AuditLogAccessControlTest extends TestCase
         app(PermissionRegistrar::class)->forgetCachedPermissions();
         $user->assignRole('super_admin');
 
+        $user->saveAppAuthenticationSecret('test-secret');
+
         activity()->log('Test entry');
 
         $this->actingAs($user)
@@ -38,6 +40,8 @@ class AuditLogAccessControlTest extends TestCase
         Role::findOrCreate('super_admin', config('auth.defaults.guard'));
         app(PermissionRegistrar::class)->forgetCachedPermissions();
         $user->assignRole('super_admin');
+
+        $user->saveAppAuthenticationSecret('test-secret');
 
         activity()->log('Detail test');
         $activity = Activity::first();

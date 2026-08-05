@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ServiceAccountRoleSeeder::class,
             SuperAdminRoleSeeder::class,
+            SupportRoleSeeder::class,
         ]);
 
         if (! app()->environment('production', 'prod')) {
@@ -118,12 +119,14 @@ class DatabaseSeeder extends Seeder
                 'polydock_store_id' => $usaStore->id,
                 'url' => $webhookUrl,
                 'active' => true,
+                'include_sensitive_data' => true,
             ]);
 
             PolydockStoreWebhook::create([
                 'polydock_store_id' => $switzerlandStore->id,
                 'url' => $webhookUrl,
                 'active' => true,
+                'include_sensitive_data' => true,
             ]);
 
             PolydockStoreApp::create([

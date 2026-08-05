@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Jobs\EnsureUnallocatedAppInstancesJob;
+use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -40,7 +41,7 @@ class DispatchEnsureUnallocatedAppInstancesJobCommand extends BaseCommand
             Log::info('EnsureUnallocatedAppInstancesJob dispatched successfully via command');
 
             return Command::SUCCESS;
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error('Failed to dispatch job: '.$e->getMessage());
             Log::error('Failed to dispatch EnsureUnallocatedAppInstancesJob via command', [
                 'error' => $e->getMessage(),

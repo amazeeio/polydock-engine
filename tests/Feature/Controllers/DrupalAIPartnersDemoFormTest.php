@@ -77,7 +77,7 @@ class DrupalAIPartnersDemoFormTest extends TestCase
     }
 
     #[Test]
-    public function it_renders_the_partners_demo_form_with_security_headers()
+    public function it_renders_the_partners_demo_form_with_security_headers(): void
     {
         $response = $this->get('/f/drupal-ai-partners-demo');
 
@@ -94,7 +94,7 @@ class DrupalAIPartnersDemoFormTest extends TestCase
     }
 
     #[Test]
-    public function it_sanitizes_admin_authored_html_before_rendering()
+    public function it_sanitizes_admin_authored_html_before_rendering(): void
     {
         PolydockHostedForm::where('slug', 'drupal-ai-partners-demo')->firstOrFail()->update([
             'title' => '<b>Partners</b> Demo',
@@ -121,7 +121,7 @@ class DrupalAIPartnersDemoFormTest extends TestCase
     }
 
     #[Test]
-    public function it_fails_submitting_form_with_missing_fields()
+    public function it_fails_submitting_form_with_missing_fields(): void
     {
         $response = $this->postJson('/f/drupal-ai-partners-demo', [
             'first_name' => '',
@@ -139,7 +139,7 @@ class DrupalAIPartnersDemoFormTest extends TestCase
     }
 
     #[Test]
-    public function it_fails_submitting_form_without_accepting_terms()
+    public function it_fails_submitting_form_without_accepting_terms(): void
     {
         $response = $this->postJson('/f/drupal-ai-partners-demo', [
             'first_name' => 'John',
@@ -154,7 +154,7 @@ class DrupalAIPartnersDemoFormTest extends TestCase
     }
 
     #[Test]
-    public function it_successfully_submits_and_registers_user_trial()
+    public function it_successfully_submits_and_registers_user_trial(): void
     {
         $response = $this->postJson('/f/drupal-ai-partners-demo', [
             'first_name' => 'John',

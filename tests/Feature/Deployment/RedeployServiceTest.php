@@ -41,6 +41,9 @@ class RedeployServiceTest extends TestCase
         return app(PolydockDeploymentService::class);
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function makeInstance(
         PolydockAppInstanceStatus $status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
         string $project = 'proj-a',

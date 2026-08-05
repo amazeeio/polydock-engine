@@ -15,6 +15,7 @@ trait PolydockEngineFunctionCallerTrait
      * Resolve the app object for an instance and confirm it exposes the
      * requested function. Logs and returns null when it can't.
      *
+     * @param  array<string, mixed>  $outputContext
      * @return PolydockAppInterface|null
      */
     private function resolveAppFunction(PolydockAppInstance $appInstance, string $appFunctionName, array $outputContext)
@@ -143,6 +144,9 @@ trait PolydockEngineFunctionCallerTrait
         return false;
     }
 
+    /**
+     * @param  list<PolydockAppInstanceStatus>  $expectedStatuses
+     */
     protected function processPolydockAppPollUpdateUsingFunction(
         PolydockAppInstance $appInstance,
         string $appFunctionName,

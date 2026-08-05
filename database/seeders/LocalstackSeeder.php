@@ -59,6 +59,7 @@ class LocalstackSeeder extends Seeder
             'polydock_store_id' => $store->id,
             'url' => $webhookUrl,
             'active' => true,
+            'include_sensitive_data' => true,
         ]);
 
         PolydockStoreApp::create([

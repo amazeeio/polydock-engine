@@ -3,25 +3,30 @@
 namespace App\Models;
 
 use App\Enums\UserGroupRoleEnum;
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthentication;
+use Filament\Auth\MultiFactor\App\Contracts\HasAppAuthenticationRecovery;
 use Filament\Models\Contracts\FilamentUser;
-use Filament\Models\Contracts\HasTenants;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Override;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 use Spatie\Permission\Traits\HasRoles;
 
-class User extends Authenticatable implements FilamentUser, HasTenants
+/**
+ * @property string|null $okta_sub
+ * @property string|null $app_authentication_secret
+ * @property array<int, string>|null $app_authentication_recovery_codes
+ */
+class User extends Authenticatable implements FilamentUser, HasAppAuthentication, HasAppAuthenticationRecovery
 {
     use HasApiTokens;
 
@@ -59,12 +64,14 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     protected $hidden = [
         'password',
         'remember_token',
+        'app_authentication_secret',
+        'app_authentication_recovery_codes',
     ];
 
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $appends = [
         'name',
@@ -75,13 +82,42 @@ class User extends Authenticatable implements FilamentUser, HasTenants
      *
      * @return array<string, string>
      */
-    #[\Override]
+    #[Override]
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'app_authentication_secret' => 'encrypted',
+            'app_authentication_recovery_codes' => 'encrypted:array',
         ];
+    }
+
+    public function getAppAuthenticationSecret(): ?string
+    {
+        return $this->app_authentication_secret;
+    }
+
+    public function saveAppAuthenticationSecret(?string $secret): void
+    {
+        $this->app_authentication_secret = $secret;
+        $this->save();
+    }
+
+    public function getAppAuthenticationHolderName(): string
+    {
+        return $this->email;
+    }
+
+    public function getAppAuthenticationRecoveryCodes(): ?array
+    {
+        return $this->app_authentication_recovery_codes;
+    }
+
+    public function saveAppAuthenticationRecoveryCodes(?array $codes): void
+    {
+        $this->app_authentication_recovery_codes = $codes;
+        $this->save();
     }
 
     public function getActivitylogOptions(): LogOptions
@@ -89,7 +125,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
         return LogOptions::defaults()
             ->logOnly(['first_name', 'last_name', 'email'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontLogEmptyChanges();
     }
 
     /**
@@ -103,7 +139,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /**
      * Get all user groups this user belongs to
      *
-     * @return BelongsToMany
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function groups()
     {
@@ -115,7 +151,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /**
      * Get all primary groups this user belongs to
      *
-     * @return BelongsToMany
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function primaryGroups()
     {
@@ -125,6 +161,8 @@ class User extends Authenticatable implements FilamentUser, HasTenants
 
     /**
      * Get all admin groups this user belongs to.
+     *
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function adminGroups()
     {
@@ -135,7 +173,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /**
      * Get all member groups this user belongs to
      *
-     * @return BelongsToMany
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function memberGroups()
     {
@@ -146,7 +184,7 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     /**
      * Get all viewer groups this user belongs to
      *
-     * @return BelongsToMany
+     * @return BelongsToMany<UserGroup, $this>
      */
     public function viewerGroups()
     {
@@ -173,35 +211,17 @@ class User extends Authenticatable implements FilamentUser, HasTenants
     }
 
     /**
-     * Get all tenants the user can access
-     */
-    public function getTenants(Panel $panel): Collection
-    {
-        return $this->groups;
-    }
-
-    /**
-     * Check if the user can access the tenant
-     */
-    public function canAccessTenant(Model $tenant): bool
-    {
-        return $this->groups()->whereKey($tenant)->exists();
-    }
-
-    /**
      * Check if the user can access the panel
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        if ($panel->getId() === 'admin') {
-            return $this->hasRole('super_admin') || $this->can('access_admin_panel');
-        }
-
-        return true;
+        return $this->hasRole('super_admin') || $this->can('access_admin_panel');
     }
 
     /**
      * Get all remote registration requests for this user
+     *
+     * @return HasMany<UserRemoteRegistration, $this>
      */
     public function remoteRegistrations(): HasMany
     {

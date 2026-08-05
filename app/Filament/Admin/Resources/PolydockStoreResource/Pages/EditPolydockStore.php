@@ -3,7 +3,7 @@
 namespace App\Filament\Admin\Resources\PolydockStoreResource\Pages;
 
 use App\Filament\Admin\Resources\PolydockStoreResource;
-use Filament\Actions;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -11,11 +11,10 @@ class EditPolydockStore extends EditRecord
 {
     protected static string $resource = PolydockStoreResource::class;
 
-    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make()
+            DeleteAction::make()
                 ->hidden(
                     fn () => $this->record
                         ->apps()
