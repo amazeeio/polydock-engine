@@ -15,21 +15,26 @@ use App\Polydock\Apps\Generic\PolydockAiApp;
 use App\Polydock\Apps\Generic\PolydockApp;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use phpseclib3\Crypt\EC;
 
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Deploy key for seeded stores: the local dev fixture if present,
-     * otherwise a placeholder — real keys are set per store via the
-     * admin panel or polydock:create-store.
+     * Deploy key for seeded stores: the local dev fixture, generated on
+     * first use so it is always a structurally valid SSH key. It is not
+     * authorized in Lagoon — authorize it or replace it per store via the
+     * admin panel / polydock:create-store before real deploys.
      */
     public static function localDeployKey(): string
     {
         $keyFile = base_path('tests/fixtures/lagoon-deploy-private-key');
 
-        return file_exists($keyFile)
-            ? file_get_contents($keyFile)
-            : 'mock-deploy-private-key-for-testing';
+        if (! file_exists($keyFile)) {
+            file_put_contents($keyFile, EC::createKey('Ed25519')->toString('OpenSSH'));
+            chmod($keyFile, 0600);
+        }
+
+        return file_get_contents($keyFile);
     }
 
     /**
