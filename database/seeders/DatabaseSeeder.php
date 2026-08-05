@@ -19,6 +19,20 @@ use Illuminate\Support\Facades\Hash;
 class DatabaseSeeder extends Seeder
 {
     /**
+     * Deploy key for seeded stores: the local dev fixture if present,
+     * otherwise a placeholder — real keys are set per store via the
+     * admin panel or polydock:create-store.
+     */
+    public static function localDeployKey(): string
+    {
+        $keyFile = base_path('tests/fixtures/lagoon-deploy-private-key');
+
+        return file_exists($keyFile)
+            ? file_get_contents($keyFile)
+            : 'mock-deploy-private-key-for-testing';
+    }
+
+    /**
      * Seed the application's database.
      */
     public function run(): void
@@ -82,10 +96,7 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
 
-            $deployKeyFile = config('polydock.lagoon_deploy_private_key_file');
-            $deployKey = (\is_string($deployKeyFile) && \file_exists($deployKeyFile))
-                ? \file_get_contents($deployKeyFile)
-                : 'mock-deploy-private-key-for-testing';
+            $deployKey = self::localDeployKey();
 
             // Create the stores
             $usaStore = PolydockStore::create([

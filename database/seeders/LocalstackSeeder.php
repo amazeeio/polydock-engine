@@ -37,7 +37,7 @@ class LocalstackSeeder extends Seeder
             'role' => UserGroupRoleEnum::OWNER->value,
         ]);
 
-        $deployKey = file_get_contents(config('polydock.lagoon_deploy_private_key_file'));
+        $deployKey = DatabaseSeeder::localDeployKey();
 
         // Create the stores
         $store = PolydockStore::create([
