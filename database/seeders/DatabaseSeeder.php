@@ -20,21 +20,21 @@ use phpseclib3\Crypt\EC;
 class DatabaseSeeder extends Seeder
 {
     /**
-     * Deploy key for seeded stores: the local dev fixture, generated on
-     * first use so it is always a structurally valid SSH key. It is not
-     * authorized in Lagoon — authorize it or replace it per store via the
-     * admin panel / polydock:create-store before real deploys.
+     * Deploy key for seeded stores: the local dev fixture if present,
+     * otherwise a freshly generated throwaway so the key is always
+     * structurally valid. Neither is authorized in Lagoon — authorize it
+     * or replace it per store via the admin panel / polydock:create-store
+     * before real deploys.
      */
     public static function localDeployKey(): string
     {
         $keyFile = base_path('tests/fixtures/lagoon-deploy-private-key');
 
-        if (! file_exists($keyFile)) {
-            file_put_contents($keyFile, EC::createKey('Ed25519')->toString('OpenSSH'));
-            chmod($keyFile, 0600);
+        if (file_exists($keyFile)) {
+            return file_get_contents($keyFile);
         }
 
-        return file_get_contents($keyFile);
+        return EC::createKey('Ed25519')->toString('OpenSSH');
     }
 
     /**
