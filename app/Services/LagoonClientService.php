@@ -73,12 +73,7 @@ class LagoonClientService
         // Primary source: config (which reads FTLAGOON_PRIVATE_KEY_FILE)
         $keyFile = $sshConfig['ssh_private_key_file'] ?? null;
 
-        // Fallback to POLYDOCK_LAGOON_DEPLOY_PRIVATE_KEY_FILE if first is missing or default
-        if (empty($keyFile) || $keyFile === 'tests/fixtures/lagoon-private-key') {
-            $keyFile = config('polydock.lagoon_deploy_private_key_file');
-        }
-
-        // Final fallback to system default
+        // Fallback to system default
         if (empty($keyFile)) {
             $home = getenv('HOME');
             if ($home === false || $home === '') {
@@ -91,44 +86,6 @@ class LagoonClientService
                 // Leave $keyFile empty; it will be validated later in getAuthenticatedClient()
                 $keyFile = null;
             }
-        }
-
-        // Fallback or override via content if provided (from config, not env())
-        $keyContent = config('polydock.ftlagoon_private_key_content');
-
-        if ($keyContent) {
-            // Use storage/app/ssh as a safe default for writing the temp key
-            $baseDir = storage_path('app/ssh');
-
-            $tempKeyFile = $baseDir.'/env_id_rsa';
-
-            $dir = dirname($tempKeyFile);
-            if (! is_dir($dir)) {
-                if (! @mkdir($dir, 0700, true) && ! is_dir($dir)) {
-                    throw new \RuntimeException('Failed to create SSH key directory: '.$dir);
-                }
-            }
-
-            if (! file_exists($tempKeyFile) || file_get_contents($tempKeyFile) !== $keyContent) {
-                $tmpFile = $tempKeyFile.'.tmp';
-
-                $bytesWritten = @file_put_contents($tmpFile, $keyContent, LOCK_EX);
-                if ($bytesWritten === false) {
-                    @unlink($tmpFile);
-                    throw new \RuntimeException('Failed to write SSH private key to temporary file: '.$tmpFile);
-                }
-
-                if (! @chmod($tmpFile, 0600)) {
-                    @unlink($tmpFile);
-                    throw new \RuntimeException('Failed to set permissions on SSH private key file: '.$tmpFile);
-                }
-
-                if (! @rename($tmpFile, $tempKeyFile)) {
-                    @unlink($tmpFile);
-                    throw new \RuntimeException('Failed to move SSH private key file into place: '.$tempKeyFile);
-                }
-            }
-            $keyFile = $tempKeyFile;
         }
 
         return [
