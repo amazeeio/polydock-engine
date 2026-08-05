@@ -140,6 +140,9 @@ class MarkStuckInstancesFailedCommandTest extends TestCase
         $this->assertEquals($expectedTo, $instance->status);
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public static function statusTransitionProvider(): array
     {
         return [

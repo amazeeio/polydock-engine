@@ -57,6 +57,8 @@ class PolydockVariable extends Model
 
     /**
      * Get the parent model (Store, StoreApp, or AppInstance)
+     *
+     * @return MorphTo<Model, $this>
      */
     public function variabled(): MorphTo
     {

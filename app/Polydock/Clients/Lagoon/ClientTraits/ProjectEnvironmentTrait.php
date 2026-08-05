@@ -26,7 +26,7 @@ trait ProjectEnvironmentTrait
      *
      * @param  string  $projectName  The name of the project
      * @param  string  $environmentName  The name of the environment
-     * @return array Environment data or empty array if not found
+     * @return array<string, mixed> Environment data or empty array if not found
      */
     public function getProjectEnvironmentByName(string $projectName, $environmentName): array
     {
@@ -39,7 +39,7 @@ trait ProjectEnvironmentTrait
      * Gets all environments for a project
      *
      * @param  string  $projectName  The name of the project
-     * @return array Associative array of environments keyed by name
+     * @return array<string, mixed> Associative array of environments keyed by name
      *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
@@ -61,8 +61,8 @@ trait ProjectEnvironmentTrait
      *
      * @param  string  $projectName  The name of the project
      * @param  string  $deployBranch  The branch to deploy
-     * @param  array  $buildVariables  Optional build variables
-     * @return array Response from the API
+     * @param  array<string, mixed>  $buildVariables  Optional build variables
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -113,10 +113,10 @@ trait ProjectEnvironmentTrait
     /**
      * Triggers a bulk deployment for multiple environments
      *
-     * @param  array  $environments  Array of environments to deploy. Each can be an environment ID (int) or an array with 'id' or 'project' and 'name'
+     * @param  list<int|array<string, mixed>>  $environments  Array of environments to deploy. Each can be an environment ID (int) or an array with 'id' or 'project' and 'name'
      * @param  string|null  $name  Optional name for the bulk deployment
-     * @param  array  $buildVariables  Optional build variables to apply to all deployments in the batch
-     * @return array Response from the API including the bulk deployment ID
+     * @param  array<string, mixed>  $buildVariables  Optional build variables to apply to all deployments in the batch
+     * @return array<string, mixed> Response from the API including the bulk deployment ID
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -196,7 +196,7 @@ trait ProjectEnvironmentTrait
      * Gets deployments for a specific bulk ID
      *
      * @param  string  $bulkId  The bulk deployment ID
-     * @return array Deployment information or error details
+     * @return array<string, mixed> Deployment information or error details
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -242,7 +242,7 @@ trait ProjectEnvironmentTrait
      * @param  string  $projectId  The project ID
      * @param  string  $environmentName  The environment name
      * @param  string  $deploymentName  The deployment name
-     * @return array Deployment information or error details
+     * @return array<string, mixed> Deployment information or error details
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -293,7 +293,7 @@ trait ProjectEnvironmentTrait
      * @param  int|string  $projectId  The project ID
      * @param  string  $environmentName  The environment name
      * @param  int  $limit  Maximum number of deployments to return
-     * @return array List of deployments or error details
+     * @return array<string, mixed> List of deployments or error details
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -343,7 +343,7 @@ trait ProjectEnvironmentTrait
      *
      * @param  string  $projectName  The name of the project
      * @param  string|null  $environmentName  The name of the environment
-     * @return array Deployment information or error details
+     * @return array<string, mixed> Deployment information or error details
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -428,7 +428,7 @@ trait ProjectEnvironmentTrait
      *
      * @param  string  $projectName  The name of the project
      * @param  string  $environmentName  The name of the environment to delete
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -472,7 +472,7 @@ trait ProjectEnvironmentTrait
      * @param  string  $key  The variable key/name
      * @param  string  $value  The variable value
      * @param  string  $scope  The scope of the variable (GLOBAL, RUNTIME, BUILD, CONTAINER_REGISTRY)
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -497,7 +497,7 @@ trait ProjectEnvironmentTrait
      *
      * @param  string  $projectName  The name of the project
      * @param  string  $environmentName  The name of the environment
-     * @return array Associative array of variables with their values and scopes
+     * @return array<string, mixed> Associative array of variables with their values and scopes
      *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
@@ -529,7 +529,7 @@ trait ProjectEnvironmentTrait
      * @param  string  $projectName  The name of the project
      * @param  string  $environmentName  The name of the environment
      * @param  string  $variableName  The name of the variable to retrieve
-     * @return array Variable data including value and scope, or empty array if not found
+     * @return array<string, mixed> Variable data including value and scope, or empty array if not found
      *
      * @throws LagoonClientInitializeRequiredToInteractException
      */
@@ -546,7 +546,7 @@ trait ProjectEnvironmentTrait
      * @param  string  $projectName  The name of the project
      * @param  string  $variableName  The name of the variable to delete
      * @param  string  $environmentName  The name of the environment
-     * @return array Response from the API
+     * @return array<string, mixed> Response from the API
      *
      * @throws LagoonClientInitializeRequiredToInteractException if client not initialized
      */
@@ -562,6 +562,9 @@ trait ProjectEnvironmentTrait
         );
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function executeCommandOnProjectEnvironment(
         string $projectName,
         string $environmentName,

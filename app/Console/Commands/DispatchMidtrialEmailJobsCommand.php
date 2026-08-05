@@ -26,7 +26,7 @@ class DispatchMidtrialEmailJobsCommand extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $maxPerRun = config('polydock.max_per_run_dispatch_midtrial_emails');
         $this->info('Finding eligible app instances for midtrial emails...');

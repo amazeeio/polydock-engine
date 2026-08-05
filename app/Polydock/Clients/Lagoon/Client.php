@@ -49,16 +49,16 @@ class Client
      * Initializes the client with configuration settings for SSH and API connectivity.
      * Uses default values for most settings if not explicitly provided.
      *
-     * @param  array  $config  Configuration array with optional keys:
-     *                         - ssh_user: SSH username (default:
-     *                         'lagoon') - ssh_server: SSH server
-     *                         hostname (default:
-     *                         'ssh.lagoon.amazeeio.cloud') -
-     *                         ssh_port: SSH port (default: '32222') -
-     *                         endpoint: API endpoint URL (default:
-     *                         'https://api.lagoon.amazeeio.cloud/graphql')
-     *                         - ssh_private_key_file: Path to SSH
-     *                         private key (default: '~/.ssh/id_rsa')
+     * @param  array<string, mixed>  $config  Configuration array with optional keys:
+     *                                        - ssh_user: SSH username (default:
+     *                                        'lagoon') - ssh_server: SSH server
+     *                                        hostname (default:
+     *                                        'ssh.lagoon.amazeeio.cloud') -
+     *                                        ssh_port: SSH port (default: '32222') -
+     *                                        endpoint: API endpoint URL (default:
+     *                                        'https://api.lagoon.amazeeio.cloud/graphql')
+     *                                        - ssh_private_key_file: Path to SSH
+     *                                        private key (default: '~/.ssh/id_rsa')
      *
      * @throws LagoonClientPrivateKeyNotFoundException
      */

@@ -9,7 +9,9 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\Services\LagoonProjectPurgeService;
 use App\Services\PurgeResult;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Throwable;
 
 /**
  * Attempts a full Lagoon project deletion for an app instance whose env has
@@ -26,7 +28,7 @@ class ProcessProjectPurgeJob extends BaseJob implements ShouldQueue
         $appInstance = $this->appInstance;
 
         if (! $appInstance) {
-            throw new \Exception('Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found');
+            throw new Exception('Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found');
         }
 
         if ($appInstance->status !== PolydockAppInstanceStatus::PENDING_PURGE) {
@@ -52,7 +54,7 @@ class ProcessProjectPurgeJob extends BaseJob implements ShouldQueue
 
         try {
             $result = $service->attemptPurge($appInstance);
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             // Defensive: any unexpected error is treated as a Failed result so
             // we apply the same backoff/retry rules.
             $service->lastFailureReason = 'Unhandled exception: '.$e->getMessage();

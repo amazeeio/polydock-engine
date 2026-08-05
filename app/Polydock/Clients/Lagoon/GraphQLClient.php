@@ -8,12 +8,18 @@ use Illuminate\Support\Facades\Http;
 
 class GraphQLClient
 {
+    /**
+     * @param  array<string, mixed>  $config
+     */
     public function __construct(
         private readonly string $endpoint,
         private readonly string $token,
         private readonly array $config = []
     ) {}
 
+    /**
+     * @param  array<string, mixed>  $variables
+     */
     public function query(string $query, array $variables = []): GraphQLResponse
     {
         $response = Http::withHeaders([

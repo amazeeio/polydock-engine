@@ -25,6 +25,9 @@ class DeploymentModelTest extends TestCase
         return PolydockStoreApp::factory()->create(['polydock_store_id' => $store->id]);
     }
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function makeInstance(PolydockStoreApp $app, array $attributes = []): PolydockAppInstance
     {
         $instance = new PolydockAppInstance;

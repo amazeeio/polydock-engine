@@ -49,6 +49,11 @@ tasks:
         service: cli
         shell: bash
     - run:
+        name: Warm OpenAPI docs cache (generation is too slow for request time)
+        command: php artisan -n scramble:cache || true
+        service: cli
+        shell: bash
+    - run:
         name: Polydock SRE Slack Notification Post-rollout Ended
         command: if [ -f "/app/lagoon/scripts/lagoon-post-rollout-end.sh" ]; then /app/lagoon/scripts/lagoon-post-rollout-end.sh; fi
         service: cli

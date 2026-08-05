@@ -4,13 +4,16 @@ namespace App\Models;
 
 use App\Enums\PolydockStoreWebhookCallStatusEnum;
 use App\Jobs\ProcessPolydockStoreWebhookCall;
+use Database\Factories\PolydockStoreWebhookCallFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Log;
+use Override;
 
 class PolydockStoreWebhookCall extends Model
 {
+    /** @use HasFactory<PolydockStoreWebhookCallFactory> */
     use HasFactory;
 
     protected $fillable = [
@@ -35,7 +38,7 @@ class PolydockStoreWebhookCall extends Model
     /**
      * Boot the model.
      */
-    #[\Override]
+    #[Override]
     protected static function boot()
     {
         parent::boot();

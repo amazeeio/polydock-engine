@@ -28,7 +28,7 @@ enum PolydockStoreWebhookCallStatusEnum: string implements HasColor, HasIcon, Ha
         };
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): ?string
     {
         return match ($this) {
             self::PENDING => 'warning',

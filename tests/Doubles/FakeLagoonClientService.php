@@ -15,6 +15,9 @@ class FakeLagoonClientService extends LagoonClientService
 {
     public function __construct(public FakeLagoonClient $fakeClient) {}
 
+    /**
+     * @param  array<string, mixed>  $overrides
+     */
     #[\Override]
     public function getAuthenticatedClient(array $overrides = []): Client
     {

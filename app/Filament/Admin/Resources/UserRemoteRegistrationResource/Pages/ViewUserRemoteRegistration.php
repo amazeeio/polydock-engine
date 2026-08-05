@@ -5,27 +5,25 @@ namespace App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages;
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource;
 use App\Models\UserRemoteRegistration;
 use App\Support\SensitiveDataRedactor;
-use Filament\Infolists\Components\Grid;
-use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 
 class ViewUserRemoteRegistration extends ViewRecord
 {
     protected static string $resource = UserRemoteRegistrationResource::class;
 
     // Remove any header actions (including edit button)
-    #[\Override]
     protected function getHeaderActions(): array
     {
         return [];
     }
 
-    #[\Override]
-    public function infolist(Infolist $infolist): Infolist
+    public function infolist(Schema $schema): Schema
     {
-        return $infolist
+        return $schema
             ->schema([
                 Section::make('Registration Details')
                     ->schema([
@@ -86,6 +84,9 @@ class ViewUserRemoteRegistration extends ViewRecord
             ]);
     }
 
+    /**
+     * @return list<TextEntry>
+     */
     public static function getRenderedSafeRequestDataForRecord(UserRemoteRegistration $record): array
     {
         $fullSafeData = $record->request_data ?? [];
@@ -93,6 +94,9 @@ class ViewUserRemoteRegistration extends ViewRecord
         return self::getRenderedSafeDataForRecord($record, $fullSafeData);
     }
 
+    /**
+     * @return list<TextEntry>
+     */
     public static function getRenderedSafeResultDataForRecord(UserRemoteRegistration $record): array
     {
         $fullSafeData = $record->result_data ?? [];
@@ -100,6 +104,9 @@ class ViewUserRemoteRegistration extends ViewRecord
         return self::getRenderedSafeDataForRecord($record, $fullSafeData);
     }
 
+    /**
+     * @return list<TextEntry>
+     */
     public static function getRenderedSafeDataForRecord(UserRemoteRegistration $record, $safeData): array
     {
         $sensitiveKeys = $record->getSensitiveDataKeys();

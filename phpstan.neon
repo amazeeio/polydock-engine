@@ -4,7 +4,10 @@ includes:
     - phpstan-baseline.neon
 
 parameters:
-    level: 5
+    # Raised 5 -> 6 (2026-08-01) with the pre-existing 844 findings baselined:
+    # new code must be missing-iterable-type clean, existing debt is frozen
+    # rather than blocking. Chip away at the baseline, don't drop the level.
+    level: 6
     # Known tradeoff: disabled so baselined inline @phpstan-ignore comments and
     # resolved baseline entries don't surface as unmatched-ignore errors. The
     # cost is that stale baseline entries go undetected; periodically regenerate
@@ -25,10 +28,11 @@ parameters:
             message: "#^Called 'env' outside of the config directory which returns null when the config is cached, use 'config'.$#"
             path: *config/*.php
         # Mockery's shouldReceive() is typed as ExpectationInterface|HigherOrderMessage,
-        # but andReturnSelf()/andThrow() live only on the concrete Expectation class.
-        # Known larastan false positive on a runtime-valid chain.
+        # but the whole fluent chain (with/once/andReturn/...) lives only on the
+        # concrete Expectation class. Known larastan false positive on a
+        # runtime-valid chain — applies to every chain method, not just two.
         -
-            message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::(andReturnSelf|andThrow)\(\)\.$#'
+            message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::\w+\(\)\.$#'
             path: tests/*
 
     excludePaths:

@@ -9,11 +9,22 @@ use App\Filament\Admin\Resources\UserResource;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Services\GroupMembershipService;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Forms\Get;
+use Filament\Actions\Action;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DetachAction;
+use Filament\Actions\DetachBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Resources\RelationManagers\RelationManager;
-use Filament\Tables;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 class UsersRelationManager extends RelationManager
@@ -22,23 +33,22 @@ class UsersRelationManager extends RelationManager
 
     protected static ?string $inverseRelationship = 'groups';
 
-    #[\Override]
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
-            ->schema([
-                Forms\Components\TextInput::make('first_name')
+        return $schema
+            ->components([
+                TextInput::make('first_name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('last_name')
+                TextInput::make('last_name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
+                TextInput::make('email')
                     ->required()
                     ->email()
                     ->unique(ignoreRecord: true)
                     ->maxLength(255),
-                Forms\Components\TextInput::make('password')
+                TextInput::make('password')
                     ->password()
                     ->dehydrated(fn ($state) => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
@@ -46,7 +56,7 @@ class UsersRelationManager extends RelationManager
                     ->label(fn (string $operation): string => $operation === 'create'
                         ? 'Password'
                         : 'New Password (leave blank to keep current)'),
-                Forms\Components\Select::make('role')
+                Select::make('role')
                     ->options(UserGroupRoleEnum::class)
                     ->required(),
             ]);
@@ -57,15 +67,15 @@ class UsersRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('email')
             ->columns([
-                Tables\Columns\TextColumn::make('name')
+                TextColumn::make('name')
                     ->label('Name')
                     ->formatStateUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
                     ->url(fn ($record) => UserResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
-                Tables\Columns\TextColumn::make('email'),
-                Tables\Columns\TextColumn::make('pivot.role')
+                TextColumn::make('email'),
+                TextColumn::make('pivot.role')
                     ->badge(),
-                Tables\Columns\TextColumn::make('groups_count')
+                TextColumn::make('groups_count')
                     ->counts('groups')
                     ->label('Groups'),
             ])
@@ -73,12 +83,12 @@ class UsersRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                Tables\Actions\Action::make('add_user')
+                Action::make('add_user')
                     ->label('Add User')
                     ->modalHeading('Add User to Group')
                     ->modalWidth('lg')
-                    ->form([
-                        Forms\Components\ToggleButtons::make('mode')
+                    ->schema([
+                        ToggleButtons::make('mode')
                             ->label('User Source')
                             ->options([
                                 'existing' => 'Existing User',
@@ -96,10 +106,10 @@ class UsersRelationManager extends RelationManager
                             ->grouped()
                             ->live(),
 
-                        Forms\Components\Section::make('Search Existing User')
+                        Section::make('Search Existing User')
                             ->visible(fn (Get $get) => $get('mode') === 'existing')
                             ->schema([
-                                Forms\Components\Select::make('user_id')
+                                Select::make('user_id')
                                     ->label('Select User')
                                     ->placeholder('Search by email...')
                                     ->searchable()
@@ -125,34 +135,34 @@ class UsersRelationManager extends RelationManager
                                     ->required(fn (Get $get) => $get('mode') === 'existing'),
                             ]),
 
-                        Forms\Components\Section::make('Create New User')
+                        Section::make('Create New User')
                             ->visible(fn (Get $get) => $get('mode') === 'new')
                             ->schema([
-                                Forms\Components\Grid::make(2)
+                                Grid::make(2)
                                     ->schema([
-                                        Forms\Components\TextInput::make('first_name')
+                                        TextInput::make('first_name')
                                             ->label('First Name')
                                             ->required(fn (Get $get) => $get('mode') === 'new')
                                             ->maxLength(255),
-                                        Forms\Components\TextInput::make('last_name')
+                                        TextInput::make('last_name')
                                             ->label('Last Name')
                                             ->required(fn (Get $get) => $get('mode') === 'new')
                                             ->maxLength(255),
                                     ]),
-                                Forms\Components\TextInput::make('email')
+                                TextInput::make('email')
                                     ->label('Email Address')
                                     ->email()
                                     ->required(fn (Get $get) => $get('mode') === 'new')
                                     ->unique('users', 'email')
                                     ->maxLength(255),
-                                Forms\Components\TextInput::make('password')
+                                TextInput::make('password')
                                     ->label('Password')
                                     ->password()
                                     ->required(fn (Get $get) => $get('mode') === 'new')
                                     ->maxLength(255),
                             ]),
 
-                        Forms\Components\Select::make('role')
+                        Select::make('role')
                             ->options(UserGroupRoleEnum::class)
                             ->default(UserGroupRoleEnum::MEMBER)
                             ->required(),
@@ -181,8 +191,8 @@ class UsersRelationManager extends RelationManager
                         }
                     }),
             ])
-            ->actions([
-                Tables\Actions\EditAction::make()
+            ->recordActions([
+                EditAction::make()
                     ->before(function ($record, RelationManager $livewire, array $data): void {
                         /** @var UserGroup $group */
                         $group = $livewire->getOwnerRecord();
@@ -207,7 +217,7 @@ class UsersRelationManager extends RelationManager
                             ])
                             ->log("User '{$record->email}' role changed from '{$previousRole}' to '{$newRole}'");
                     }),
-                Tables\Actions\DetachAction::make()
+                DetachAction::make()
                     ->before(function ($record, RelationManager $livewire): void {
                         /** @var UserGroup $group */
                         $group = $livewire->getOwnerRecord();
@@ -224,7 +234,7 @@ class UsersRelationManager extends RelationManager
                             ])
                             ->log("User '{$record->email}' removed from group");
                     }),
-                Tables\Actions\DeleteAction::make()
+                DeleteAction::make()
                     ->before(function ($record, RelationManager $livewire): void {
                         /** @var UserGroup $group */
                         $group = $livewire->getOwnerRecord();
@@ -242,10 +252,10 @@ class UsersRelationManager extends RelationManager
                             ->log("User account '{$record->email}' deleted");
                     }),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DetachBulkAction::make(),
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DetachBulkAction::make(),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

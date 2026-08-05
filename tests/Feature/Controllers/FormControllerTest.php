@@ -12,7 +12,7 @@ use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
 use App\Models\UserRemoteRegistration;
 use App\Polydock\Apps\Generic\PolydockApp;
-use Illuminate\Foundation\Http\Middleware\ValidateCsrfToken;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
@@ -86,7 +86,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_aborts_with_404_for_unknown_form_slugs()
+    public function it_aborts_with_404_for_unknown_form_slugs(): void
     {
         $response = $this->get('/f/unknown-form-slug');
 
@@ -94,7 +94,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_aborts_with_404_for_disabled_forms()
+    public function it_aborts_with_404_for_disabled_forms(): void
     {
         $this->hostedForm->update(['enabled' => false]);
 
@@ -104,7 +104,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_renders_the_hosted_form_correctly_with_security_headers()
+    public function it_renders_the_hosted_form_correctly_with_security_headers(): void
     {
         $response = $this->get('/f/drupal-ai-demo');
 
@@ -119,7 +119,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_fails_submitting_form_with_missing_fields()
+    public function it_fails_submitting_form_with_missing_fields(): void
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
             'first_name' => '',
@@ -137,7 +137,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_fails_submitting_form_with_invalid_country()
+    public function it_fails_submitting_form_with_invalid_country(): void
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
             'first_name' => 'John',
@@ -158,7 +158,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_fails_if_recaptcha_verification_fails()
+    public function it_fails_if_recaptcha_verification_fails(): void
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
             'first_name' => 'John',
@@ -176,7 +176,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_successfully_submits_and_registers_user_trial()
+    public function it_successfully_submits_and_registers_user_trial(): void
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
             'first_name' => 'John',
@@ -219,7 +219,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_rejects_submitting_form_with_invalid_trial_app_uuid()
+    public function it_rejects_submitting_form_with_invalid_trial_app_uuid(): void
     {
         $response = $this->postJson('/f/drupal-ai-demo', [
             'first_name' => 'John',
@@ -234,7 +234,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_allows_recaptcha_bypass_on_testing_environment_during_network_failure()
+    public function it_allows_recaptcha_bypass_on_testing_environment_during_network_failure(): void
     {
         Http::fake([
             'https://www.google.com/recaptcha/api/siteverify' => function () {
@@ -263,9 +263,9 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_blocks_recaptcha_bypass_on_staging_environment_during_network_failure()
+    public function it_blocks_recaptcha_bypass_on_staging_environment_during_network_failure(): void
     {
-        $this->withoutMiddleware(ValidateCsrfToken::class);
+        $this->withoutMiddleware(PreventRequestForgery::class);
         $this->app->detectEnvironment(fn () => 'staging');
 
         Http::fake([
@@ -296,7 +296,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_skips_recaptcha_entirely_on_non_production_lagoon_environments()
+    public function it_skips_recaptcha_entirely_on_non_production_lagoon_environments(): void
     {
         config(['services.recaptcha.lagoon_environment_type' => 'development']);
 
@@ -320,7 +320,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_allows_submitting_without_recaptcha_when_recaptcha_is_disabled()
+    public function it_allows_submitting_without_recaptcha_when_recaptcha_is_disabled(): void
     {
         config(['services.recaptcha.enabled' => false]);
 
@@ -343,7 +343,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_rejects_submitting_form_with_an_app_not_in_the_forms_allowlist()
+    public function it_rejects_submitting_form_with_an_app_not_in_the_forms_allowlist(): void
     {
         // Available, trial-enabled app in a public store — but not allowed for this form
         $otherApp = PolydockStoreApp::create([
@@ -372,7 +372,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_does_not_expose_apps_outside_the_forms_allowlist_when_rendering()
+    public function it_does_not_expose_apps_outside_the_forms_allowlist_when_rendering(): void
     {
         PolydockStoreApp::create([
             'polydock_store_id' => $this->storeApp->polydock_store_id,
@@ -395,7 +395,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_hides_and_rejects_attached_apps_that_are_no_longer_available()
+    public function it_hides_and_rejects_attached_apps_that_are_no_longer_available(): void
     {
         // Attached to the form, but the app itself was disabled afterwards
         $this->storeApp->update(['status' => PolydockStoreAppStatusEnum::UNAVAILABLE]);
@@ -414,7 +414,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_hides_and_rejects_attached_apps_that_are_no_longer_available_for_trials()
+    public function it_hides_and_rejects_attached_apps_that_are_no_longer_available_for_trials(): void
     {
         $this->storeApp->update(['available_for_trials' => false]);
 
@@ -432,7 +432,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_rejects_all_submissions_when_the_form_has_no_allowed_apps()
+    public function it_rejects_all_submissions_when_the_form_has_no_allowed_apps(): void
     {
         $this->hostedForm->storeApps()->detach();
 
@@ -449,7 +449,7 @@ class FormControllerTest extends TestCase
     }
 
     #[Test]
-    public function it_rejects_submitting_form_with_app_uuid_from_a_private_store()
+    public function it_rejects_submitting_form_with_app_uuid_from_a_private_store(): void
     {
         $privateStore = PolydockStore::create([
             'name' => 'USA Private Store',

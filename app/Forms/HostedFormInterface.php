@@ -33,17 +33,23 @@ interface HostedFormInterface
 
     /**
      * Get the validation rules for the form payload.
+     *
+     * @return array<string, mixed>
      */
     public function getValidationRules(): array;
 
     /**
      * Get the store app UUIDs this form is allowed to provision.
      * An empty list means the form cannot provision anything.
+     *
+     * @return array<string, mixed>
      */
     public function getAllowedTrialAppUuids(): array;
 
     /**
      * Get whitelisted parent domains allowed to iframe this form.
+     *
+     * @return array<string, mixed>
      */
     public function getAllowedEmbedDomains(): array;
 
@@ -59,11 +65,16 @@ interface HostedFormInterface
 
     /**
      * Get whitelisted parent origins allowed to iframe this form (including protocol).
+     *
+     * @return array<string, mixed>
      */
     public function getAllowedEmbedOrigins(): array;
 
     /**
      * Map the form submission input array to the structure required by UserRemoteRegistration.
+     *
+     * @param  array<string, mixed>  $validatedData
+     * @return array<string, mixed>
      */
     public function transformPayload(array $validatedData): array;
 }

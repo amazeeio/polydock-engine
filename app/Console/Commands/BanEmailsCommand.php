@@ -12,6 +12,7 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
+use Override;
 
 class BanEmailsCommand extends BaseCommand
 {
@@ -200,6 +201,9 @@ class BanEmailsCommand extends BaseCommand
 
     /**
      * Normalize individual email and domain inputs to precise SQL-safe patterns.
+     *
+     * @param  list<string>  $inputs
+     * @return list<string>
      */
     protected function normalizePatterns(array $inputs): array
     {
@@ -259,6 +263,9 @@ class BanEmailsCommand extends BaseCommand
 
     /**
      * Find existing users matching any of the normalized patterns.
+     *
+     * @param  list<string>  $patterns
+     * @return Collection<int, User>
      */
     protected function findMatchingUsers(array $patterns): Collection
     {
@@ -276,6 +283,10 @@ class BanEmailsCommand extends BaseCommand
 
     /**
      * Find registrations matching patterns or linked to matched user IDs.
+     *
+     * @param  list<int>  $userIds
+     * @param  list<string>  $patterns
+     * @return Collection<int, UserRemoteRegistration>
      */
     protected function findMatchingRegistrations(array $patterns, array $userIds): Collection
     {
@@ -296,6 +307,10 @@ class BanEmailsCommand extends BaseCommand
 
     /**
      * Find app instances matching patterns or associated user group IDs.
+     *
+     * @param  list<string>  $patterns
+     * @param  list<int>  $groupIds
+     * @return Collection<int, PolydockAppInstance>
      */
     protected function findMatchingAppInstances(array $patterns, array $groupIds): Collection
     {
@@ -324,7 +339,7 @@ class BanEmailsCommand extends BaseCommand
         })->get();
     }
 
-    #[\Override]
+    #[Override]
     public function sensitiveInputs(): array
     {
         return ['patterns'];

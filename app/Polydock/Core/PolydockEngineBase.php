@@ -10,6 +10,13 @@ abstract class PolydockEngineBase implements PolydockEngineInterface
     use PolydockAppLoggerTrait;
 
     /**
+     * Declared here because PolydockAppLoggerTrait reads/writes it — every
+     * other trait consumer declares it too; the engine assigned it only via
+     * the subclass constructor.
+     */
+    protected PolydockAppLoggerInterface $logger;
+
+    /**
      * Validate that an app instance has all required variables
      *
      * @param  PolydockAppInstanceInterface  $appInstance  The app instance to validate

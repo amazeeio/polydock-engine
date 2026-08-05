@@ -69,17 +69,32 @@ class PolydockAppLoggerTraitTest extends TestCase
 
         $collector = new class implements PolydockAppLoggerInterface
         {
+            /**
+             * @var array<string, mixed>
+             */
             public array $lines = [];
 
+            /**
+             * @param  array<string, mixed>  $context
+             */
             public function info(string $message, array $context = []): void
             {
                 $this->lines[] = $message;
             }
 
+            /**
+             * @param  array<string, mixed>  $context
+             */
             public function error(string $message, array $context = []): void {}
 
+            /**
+             * @param  array<string, mixed>  $context
+             */
             public function warning(string $message, array $context = []): void {}
 
+            /**
+             * @param  array<string, mixed>  $context
+             */
             public function debug(string $message, array $context = []): void
             {
                 $this->lines[] = $message;

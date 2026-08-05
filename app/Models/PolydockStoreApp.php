@@ -7,6 +7,7 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Traits\HasPolydockVariables;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Database\Factories\PolydockStoreAppFactory;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,8 +15,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use Override;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property int $id
@@ -99,7 +101,9 @@ use Spatie\Activitylog\Traits\LogsActivity;
  */
 class PolydockStoreApp extends Model
 {
+    /** @use HasFactory<PolydockStoreAppFactory> */
     use HasFactory;
+
     use HasPolydockVariables;
     use LogsActivity;
 
@@ -178,7 +182,7 @@ class PolydockStoreApp extends Model
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $hidden = [
         'lagoon_deploy_private_key',
@@ -199,13 +203,13 @@ class PolydockStoreApp extends Model
                 'trial_duration_days',
             ])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontLogEmptyChanges();
     }
 
     /**
      * The accessors to append to the model's array form.
      *
-     * @var array
+     * @var list<string>
      */
     protected $appends = [
         'lagoon_deploy_region_id_ext',
@@ -224,7 +228,7 @@ class PolydockStoreApp extends Model
     /**
      * Boot the model.
      */
-    #[\Override]
+    #[Override]
     protected static function boot()
     {
         parent::boot();
@@ -239,17 +243,23 @@ class PolydockStoreApp extends Model
      *
      * @return string
      */
-    #[\Override]
+    #[Override]
     public function getRouteKeyName()
     {
         return 'uuid';
     }
 
+    /**
+     * @return BelongsTo<PolydockStore, $this>
+     */
     public function store(): BelongsTo
     {
         return $this->belongsTo(PolydockStore::class, 'polydock_store_id');
     }
 
+    /**
+     * @return BelongsTo<PolydockProductType, $this>
+     */
     public function productType(): BelongsTo
     {
         return $this->belongsTo(PolydockProductType::class, 'polydock_product_type_id');
@@ -371,12 +381,17 @@ class PolydockStoreApp extends Model
 
     /**
      * Get all unallocated instances of this store app
+     *
+     * @return HasMany<PolydockAppInstance, $this>
      */
     public function unallocatedInstances(): HasMany
     {
         return $this->instances()->whereNull('user_group_id');
     }
 
+    /**
+     * @return HasMany<PolydockAppInstance, $this>
+     */
     public function removableUnallocatedInstancesQuery(): HasMany
     {
         return $this->instances()
@@ -386,6 +401,9 @@ class PolydockStoreApp extends Model
             ->orderBy('created_at');
     }
 
+    /**
+     * @return HasMany<PolydockAppInstance, $this>
+     */
     public function refreshableUnallocatedInstancesQuery(): HasMany
     {
         return $this->removableUnallocatedInstancesQuery()
@@ -422,6 +440,8 @@ class PolydockStoreApp extends Model
 
     /**
      * Get all allocated instances of this store app
+     *
+     * @return HasMany<PolydockAppInstance, $this>
      */
     public function allocatedInstances(): HasMany
     {
@@ -430,6 +450,8 @@ class PolydockStoreApp extends Model
 
     /**
      * Get all variables for this store app
+     *
+     * @return MorphMany<PolydockVariable, $this>
      */
     public function variables(): MorphMany
     {

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\PolydockBannedPattern;
+use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -10,6 +11,9 @@ class EmailBlockerService
 {
     private const string FILE_NAME = 'disposable_domains.json';
 
+    /**
+     * @var array<string, mixed>
+     */
     private ?array $disposableDomainsCache = null;
 
     /**
@@ -74,7 +78,7 @@ class EmailBlockerService
             }
 
             Log::warning('Failed to update disposable email domains list: response not successful or malformed JSON.');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Exception triggered while updating disposable email domains', ['message' => $e->getMessage()]);
         }
 
@@ -83,6 +87,8 @@ class EmailBlockerService
 
     /**
      * Load disposable domains from local storage fallback.
+     *
+     * @return array<string, mixed>
      */
     private function loadDisposableDomains(): array
     {
@@ -123,6 +129,8 @@ class EmailBlockerService
 
     /**
      * Save disposable domains to local storage.
+     *
+     * @param  list<string>  $domains
      */
     private function saveDisposableDomains(array $domains): void
     {
@@ -147,6 +155,8 @@ class EmailBlockerService
 
     /**
      * Get domain hierarchy for checking parent domains (e.g. sub.domain.com -> [sub.domain.com, domain.com]).
+     *
+     * @return list<string>
      */
     private function getDomainHierarchy(string $domain): array
     {

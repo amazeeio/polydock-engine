@@ -9,6 +9,7 @@ use App\Models\PolydockStoreApp;
 use App\Polydock\Clients\Lagoon\Client;
 use App\Services\LagoonClientService;
 use App\Services\PolydockDeploymentService;
+use Exception;
 use Illuminate\Console\Command;
 
 use function Laravel\Prompts\multiselect;
@@ -32,14 +33,14 @@ class TriggerLagoonDeployOnAppInstances extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): int
     {
         $appUuid = $this->argument(key: 'app_uuid');
         $envOverride = $this->option(key: 'environment');
         $variablesOnly = $this->option(key: 'variables-only');
         $concurrency = max(1, (int) $this->option(key: 'concurrency'));
 
-        /** @var PolydockStoreApp $storeApp */
+        /** @var PolydockStoreApp|null $storeApp */
         $storeApp = PolydockStoreApp::where(column: 'uuid', operator: '=', value: $appUuid)->first();
         if (! $storeApp) {
             $this->error(string: "Store App with UUID {$appUuid} not found.");
@@ -210,7 +211,7 @@ class TriggerLagoonDeployOnAppInstances extends BaseCommand
         if (! $client) {
             try {
                 $client = app(LagoonClientService::class)->getAuthenticatedClient();
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error("Authentication failed for instance {$instance->id}: {$e->getMessage()}");
 
                 return 1;
@@ -239,7 +240,7 @@ class TriggerLagoonDeployOnAppInstances extends BaseCommand
 
                 return 0;
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->error(string: "\n[FAILED] {$projectName}: {$e->getMessage()}");
 
             return 1;

@@ -22,6 +22,8 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
     /**
      * Construct a new service provider amazee.ai backend.
      *
+     * @param  array<string, mixed>  $config
+     *
      * @throws PolydockEngineServiceProviderInitializationException
      */
     public function __construct(array $config, PolydockAppLoggerInterface $logger)
@@ -44,7 +46,7 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
      *
      * Sets up authentication using a token and manages token caching
      *
-     * @param  array  $config  The configuration array
+     * @param  array<string, mixed>  $config  The configuration array
      */
     protected function initAmazeeAiBackendClient(array $config)
     {

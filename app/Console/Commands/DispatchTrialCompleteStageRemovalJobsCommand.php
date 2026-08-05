@@ -27,7 +27,7 @@ class DispatchTrialCompleteStageRemovalJobsCommand extends BaseCommand
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $maxPerRun = config('polydock.max_per_run_dispatch_trial_complete_stage_removal');
         $this->info('Finding eligible app instances for trial complete stage removal...');

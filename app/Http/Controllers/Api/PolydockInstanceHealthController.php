@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use ValueError;
 
 class PolydockInstanceHealthController extends Controller
 {
-    public function __invoke(Request $request, string $uuid, string $status)
+    public function __invoke(Request $request, string $uuid, string $status): JsonResponse
     {
         $expectedToken = config('polydock.health_token');
         $suppliedToken = $request->query('token');
@@ -61,7 +63,7 @@ class PolydockInstanceHealthController extends Controller
         // Validate status
         try {
             $statusEnum = PolydockAppInstanceStatus::from($status);
-        } catch (\ValueError) {
+        } catch (ValueError) {
             Log::error('Invalid status value', $logContext + ['status_code' => 400]);
 
             return response()->json([

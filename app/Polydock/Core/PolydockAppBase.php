@@ -6,7 +6,7 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\Traits\PolydockAppConfigurationTrait;
 use App\Polydock\Core\Traits\PolydockAppFundamentalsTrait;
 use App\Polydock\Core\Traits\PolydockAppLoggerTrait;
-use Filament\Forms\Components\Component;
+use Filament\Schemas\Components\Component;
 
 abstract class PolydockAppBase implements PolydockAppInterface
 {
@@ -44,6 +44,8 @@ abstract class PolydockAppBase implements PolydockAppInterface
 
     /**
      * Configuration settings for the app
+     *
+     * @var array<string, mixed>
      */
     protected array $appConfiguration;
 
@@ -71,7 +73,7 @@ abstract class PolydockAppBase implements PolydockAppInterface
      * @param  string  $appAuthor  Name of the author/creator
      * @param  string  $appWebsite  Website URL for the app
      * @param  string  $appSupportEmail  Support email address
-     * @param  array  $variableDefinitions  Array of variable definitions
+     * @param  array<string, mixed>  $variableDefinitions  Array of variable definitions
      */
     final public function __construct(string $appName, string $appDescription, string $appAuthor, string $appWebsite, string $appSupportEmail, array $variableDefinitions = [])
     {
@@ -257,7 +259,7 @@ abstract class PolydockAppBase implements PolydockAppInterface
      * - Add the #[PolydockAppStoreFields] attribute to the class
      * - Implement the HasStoreAppFormFields interface
      *
-     * @return array<\Filament\Infolists\Components\Component> Array of Filament infolist components
+     * @return array<Component> Array of Filament infolist components
      *
      * @example
      * ```php
@@ -341,7 +343,7 @@ abstract class PolydockAppBase implements PolydockAppInterface
      * - Add the #[PolydockAppInstanceFields] attribute to the class
      * - Implement the HasAppInstanceFormFields interface
      *
-     * @return array<\Filament\Infolists\Components\Component> Array of Filament infolist components
+     * @return array<Component> Array of Filament infolist components
      *
      * @example
      * ```php

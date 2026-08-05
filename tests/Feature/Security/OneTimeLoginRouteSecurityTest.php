@@ -17,6 +17,9 @@ class OneTimeLoginRouteSecurityTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * @param  array<string, mixed>  $attributes
+     */
     private function createAppInstance(array $attributes = []): PolydockAppInstance
     {
         $store = PolydockStore::factory()->create();

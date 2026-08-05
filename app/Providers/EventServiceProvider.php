@@ -14,6 +14,7 @@ use App\Listeners\ProcessNewPolydockAppInstance;
 use App\Listeners\ProcessNewUserRemoteRegistration;
 use App\Listeners\ProcessPolydockAppInstanceStatusChange;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
+use Override;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -42,8 +43,8 @@ class EventServiceProvider extends ServiceProvider
     /**
      * Register any events for your application.
      */
-    #[\Override]
-    public function boot()
+    #[Override]
+    public function boot(): void
     {
         //
     }

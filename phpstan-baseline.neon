@@ -1,58 +1,16 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$force_purge_requested_at\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 5
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getUserEmail\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:groups\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setStatus\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
 			message: '#^Access to undefined constant App\\Enums\\PolydockStoreAppStatusEnum\:\:DEPRECATED\.$#'
 			identifier: classConstant.notFound
 			count: 1
 			path: app/Console/Commands/CreateStoreApp.php
+
+		-
+			message: '#^Method App\\Polydock\\Core\\PolydockAppLoggerInterface@anonymous/app/Console/Commands/RemoveEmptyProjectsCommand\.php\:245\:\:__construct\(\) has parameter \$command with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Console/Commands/RemoveEmptyProjectsCommand.php
 
 		-
 			message: '#^Argument of an invalid type Illuminate\\Process\\ProcessPoolResults supplied for foreach, only iterables are supported\.$#'
@@ -73,48 +31,6 @@ parameters:
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$first_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$last_name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$storeApp\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$userGroup\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
 			message: '#^Call to an undefined method Illuminate\\Database\\ConnectionInterface\:\:getDriverName\(\)\.$#'
 			identifier: method.notFound
 			count: 1
@@ -133,18 +49,6 @@ parameters:
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstance.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockStoreAppStatusEnum\:\:getColor\(\) never returns array\{50\: string, 100\: string, 200\: string, 300\: string, 400\: string, 500\: string, 600\: string, 700\: string, \.\.\.\} so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: app/Enums/PolydockStoreAppStatusEnum.php
-
-		-
 			message: '#^Method App\\Enums\\PolydockStoreAppStatusEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
@@ -155,12 +59,6 @@ parameters:
 			identifier: return.unusedType
 			count: 1
 			path: app/Enums/PolydockStoreAppStatusEnum.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockStoreStatusEnum\:\:getColor\(\) never returns array\{50\: string, 100\: string, 200\: string, 300\: string, 400\: string, 500\: string, 600\: string, 700\: string, \.\.\.\} so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: app/Enums/PolydockStoreStatusEnum.php
 
 		-
 			message: '#^Method App\\Enums\\PolydockStoreStatusEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
@@ -175,12 +73,6 @@ parameters:
 			path: app/Enums/PolydockStoreStatusEnum.php
 
 		-
-			message: '#^Method App\\Enums\\PolydockStoreWebhookCallStatusEnum\:\:getColor\(\) never returns array\{50\: string, 100\: string, 200\: string, 300\: string, 400\: string, 500\: string, 600\: string, 700\: string, \.\.\.\} so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: app/Enums/PolydockStoreWebhookCallStatusEnum.php
-
-		-
 			message: '#^Method App\\Enums\\PolydockStoreWebhookCallStatusEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
@@ -191,12 +83,6 @@ parameters:
 			identifier: return.unusedType
 			count: 1
 			path: app/Enums/PolydockStoreWebhookCallStatusEnum.php
-
-		-
-			message: '#^Method App\\Enums\\PolydockVariableScopeEnum\:\:getColor\(\) never returns array\{50\: string, 100\: string, 200\: string, 300\: string, 400\: string, 500\: string, 600\: string, 700\: string, \.\.\.\} so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: app/Enums/PolydockVariableScopeEnum.php
 
 		-
 			message: '#^Method App\\Enums\\PolydockVariableScopeEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
@@ -211,12 +97,6 @@ parameters:
 			path: app/Enums/PolydockVariableScopeEnum.php
 
 		-
-			message: '#^Method App\\Enums\\UserGroupRoleEnum\:\:getColor\(\) never returns array\{50\: string, 100\: string, 200\: string, 300\: string, 400\: string, 500\: string, 600\: string, 700\: string, \.\.\.\} so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: app/Enums/UserGroupRoleEnum.php
-
-		-
 			message: '#^Method App\\Enums\\UserGroupRoleEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
@@ -229,12 +109,6 @@ parameters:
 			path: app/Enums/UserGroupRoleEnum.php
 
 		-
-			message: '#^Method App\\Enums\\UserRemoteRegistrationStatusEnum\:\:getColor\(\) never returns array\{50\: string, 100\: string, 200\: string, 300\: string, 400\: string, 500\: string, 600\: string, 700\: string, \.\.\.\} so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: app/Enums/UserRemoteRegistrationStatusEnum.php
-
-		-
 			message: '#^Method App\\Enums\\UserRemoteRegistrationStatusEnum\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
 			identifier: return.unusedType
 			count: 1
@@ -245,12 +119,6 @@ parameters:
 			identifier: return.unusedType
 			count: 1
 			path: app/Enums/UserRemoteRegistrationStatusEnum.php
-
-		-
-			message: '#^Method App\\Enums\\UserRemoteRegistrationType\:\:getColor\(\) never returns array\{50\: string, 100\: string, 200\: string, 300\: string, 400\: string, 500\: string, 600\: string, 700\: string, \.\.\.\} so it can be removed from the return type\.$#'
-			identifier: return.unusedType
-			count: 1
-			path: app/Enums/UserRemoteRegistrationType.php
 
 		-
 			message: '#^Method App\\Enums\\UserRemoteRegistrationType\:\:getColor\(\) never returns null so it can be removed from the return type\.$#'
@@ -277,6 +145,18 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/CreatePolydockAppInstance.php
 
 		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
+
+		-
 			message: '#^Match expression does not handle remaining value\: mixed$#'
 			identifier: match.unhandled
 			count: 1
@@ -291,6 +171,18 @@ parameters:
 		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
+			count: 1
+			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 1
+			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
 			count: 1
 			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
 
@@ -379,16 +271,16 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockStoreResource/Pages/EditPolydockStore.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$url\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockStoreWebhookCallResource.php
-
-		-
 			message: '#^Called ''pluck'' on Laravel collection, but could have been retrieved as a query\.$#'
 			identifier: larastan.noUnnecessaryCollectionCall
 			count: 1
 			path: app/Filament/Admin/Resources/PolydockStoreWebhookResource.php
+
+		-
+			message: '#^Property App\\Filament\\Admin\\Resources\\RoleResource\\Pages\\CreateRole\:\:\$permissions with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Admin/Resources/RoleResource/Pages/CreateRole.php
 
 		-
 			message: '#^Cannot access property \$name on Illuminate\\Database\\Eloquent\\Model\|int\|string\.$#'
@@ -397,64 +289,22 @@ parameters:
 			path: app/Filament/Admin/Resources/RoleResource/Pages/EditRole.php
 
 		-
+			message: '#^Property App\\Filament\\Admin\\Resources\\RoleResource\\Pages\\EditRole\:\:\$permissions with generic class Illuminate\\Support\\Collection does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Admin/Resources/RoleResource/Pages/EditRole.php
+
+		-
+			message: '#^Method App\\Filament\\Admin\\Resources\\UserRemoteRegistrationResource\\Pages\\ViewUserRemoteRegistration\:\:getRenderedSafeDataForRecord\(\) has parameter \$safeData with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Filament/Admin/Resources/UserRemoteRegistrationResource/Pages/ViewUserRemoteRegistration.php
+
+		-
 			message: '#^Using nullsafe property access "\?\-\>display_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
 			path: app/Filament/Admin/Resources/UserResource.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PolydockAppInstance\:\:\$count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByStoreChart.php
-
-		-
-			message: '#^Parameter \#1 \$array of function array_values contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByStoreChart.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>count" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByStoreChart.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\PolydockAppInstance\:\:\$count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByTypeChart.php
-
-		-
-			message: '#^Parameter \#1 \$array of function array_values contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByTypeChart.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>count" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByTypeChart.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\User\:\:\$count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Admin/Widgets/UserCreatedChart.php
-
-		-
-			message: '#^Using nullsafe property access "\?\-\>count" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
-			count: 1
-			path: app/Filament/Admin/Widgets/UserCreatedChart.php
-
-		-
-			message: '#^Access to an undefined property App\\Models\\UserRemoteRegistration\:\:\$count\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Filament/Admin/Widgets/UserRemoteRegistrationsChart.php
 
 		-
 			message: '#^Match arm comparison between ''failed'' and ''failed'' is always true\.$#'
@@ -463,16 +313,22 @@ parameters:
 			path: app/Filament/Admin/Widgets/UserRemoteRegistrationsChart.php
 
 		-
-			message: '#^Parameter \#1 \$array of function array_values contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
+			message: '#^Method App\\Filament\\Admin\\Widgets\\WeeklyBarChartWidget\:\:buildWeeklyData\(\) has parameter \$rows with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
 			count: 1
-			path: app/Filament/Admin/Widgets/UserRemoteRegistrationsChart.php
+			path: app/Filament/Admin/Widgets/WeeklyBarChartWidget.php
 
 		-
-			message: '#^Using nullsafe property access "\?\-\>count" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
-			identifier: nullsafe.neverNull
+			message: '#^Method App\\Filament\\Admin\\Widgets\\WeeklyBarChartWidget\:\:buildWeeklyData\(\) has parameter \$seriesMeta with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
-			path: app/Filament/Admin/Widgets/UserRemoteRegistrationsChart.php
+			path: app/Filament/Admin/Widgets/WeeklyBarChartWidget.php
+
+		-
+			message: '#^Method App\\Filament\\Admin\\Widgets\\WeeklyBarChartWidget\:\:paletteSeries\(\) has parameter \$names with generic class Illuminate\\Support\\Collection but does not specify its types\: TKey, TValue$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Filament/Admin/Widgets/WeeklyBarChartWidget.php
 
 		-
 			message: '#^Access to an undefined property App\\Models\\UserGroup\:\:\$pivot\.$#'
@@ -484,18 +340,6 @@ parameters:
 			message: '#^Call to function is_null\(\) with string will always evaluate to false\.$#'
 			identifier: function.impossibleType
 			count: 2
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
-			message: '#^Method App\\Http\\Controllers\\Api\\AuthenticatedApiController\:\:resolveTargetGroup\(\) should return App\\Models\\UserGroup but returns Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) expects callable\(Illuminate\\Database\\Eloquent\\Model, int\)\: array\{id\: int, name\: string, slug\: string, role\: mixed\}, Closure\(App\\Models\\UserGroup\)\: array\{id\: int, name\: string, slug\: string, role\: mixed\} given\.$#'
-			identifier: argument.type
-			count: 1
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
 
 		-
@@ -517,70 +361,16 @@ parameters:
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/RegionsController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/RegionsController.php
-
-		-
 			message: '#^Anonymous function should return array\{id\: int, label\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, label\: mixed\}\>\} but returns array\{id\: int, label\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, label\: string\}\>\}\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Http/Controllers/Api/RegionsController.php
 
 		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Api/RegionsController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/Api/RegisterController.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getKeyValue\(\)\.$#'
-			identifier: method.notFound
-			count: 6
-			path: app/Http/Controllers/Api/RegisterController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$name\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$uuid\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
 			message: '#^Anonymous function should return array\{id\: int, name\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, name\: mixed\}\>\} but returns array\{id\: int, name\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, name\: string\}\>\}\.$#'
 			identifier: return.type
 			count: 1
 			path: app/Http/Controllers/FormController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,Illuminate\\Database\\Eloquent\\Model\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/BaseJob.php
 
 		-
 			message: '#^Property App\\Jobs\\ProcessPolydockAppInstanceJobs\\BaseJob\:\:\$appInstanceId on left side of \?\? is not nullable nor uninitialized\.$#'
@@ -604,91 +394,7 @@ parameters:
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
 			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/ProgressToNextStageJob.php
-
-		-
-			message: '#^Parameter \#2 \$code of class App\\Polydock\\Core\\PolydockAppInstanceStatusFlowException constructor expects int, App\\Polydock\\Core\\Enums\\PolydockAppInstanceStatus given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/ProgressToNextStageJob.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
 			path: app/Jobs/ProcessPolydockAppInstanceJobs/Purge/ProcessProjectPurgeJob.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessMidtrialEmailJob.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessMidtrialEmailJob.php
-
-		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 2
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessMidtrialEmailJob.php
-
-		-
-			message: '#^Parameter \#2 \$toUser of class App\\Mail\\AppInstanceMidtrialMail constructor expects App\\Models\\User, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessMidtrialEmailJob.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessOneDayLeftEmailJob.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessOneDayLeftEmailJob.php
-
-		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 2
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessOneDayLeftEmailJob.php
-
-		-
-			message: '#^Parameter \#2 \$toUser of class App\\Mail\\AppInstanceOneDayLeftMail constructor expects App\\Models\\User, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessOneDayLeftEmailJob.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessTrialCompleteEmailJob.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessTrialCompleteEmailJob.php
-
-		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 2
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessTrialCompleteEmailJob.php
-
-		-
-			message: '#^Parameter \#2 \$toUser of class App\\Mail\\AppInstanceTrialCompleteMail constructor expects App\\Models\\User, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/Trial/ProcessTrialCompleteEmailJob.php
 
 		-
 			message: '#^Negated boolean expression is always false\.$#'
@@ -715,91 +421,13 @@ parameters:
 			path: app/Jobs/ProcessPolydockAppInstanceJobs/Upgrade/UpgradeJob.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$url\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Jobs/ProcessPolydockStoreWebhookCall.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Jobs/ProcessUserRemoteRegistration.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getNewAppInstanceForThisApp\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Jobs/ProcessUserRemoteRegistration.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Listeners/CreateWebhookCallForAppInstanceStatusChanged.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$store\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Listeners/CreateWebhookCallForRegistrationStatusSuccessOrFailed.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$email\.$#'
-			identifier: property.notFound
-			count: 3
-			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$id\.$#'
-			identifier: property.notFound
-			count: 2
-			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$status\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setResultValue\(\)\.$#'
-			identifier: method.notFound
-			count: 9
-			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
-
-		-
-			message: '#^Called ''env'' outside of the config directory which returns null when the config is cached, use ''config''\.$#'
-			identifier: larastan.noEnvCallsOutsideOfConfig
-			count: 2
-			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
-
-		-
-			message: '#^Parameter \#2 \$toUser of class App\\Mail\\AppInstanceReadyMail constructor expects App\\Models\\User, Illuminate\\Database\\Eloquent\\Model given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Listeners/ProcessPolydockAppInstanceStatusChange.php
-
-		-
-			message: '#^PHPDoc type array of property App\\Models\\PolydockAppInstance\:\:\$casts is not covariant with PHPDoc type array\<string, string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$casts\.$#'
-			identifier: property.phpDocType
+			message: '#^Class App\\Models\\PolydockAppInstance has PHPDoc tag @property for property \$data with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^PHPDoc type array of property App\\Models\\PolydockAppInstance\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Parameter \#1 \$overrideDurationDays of method App\\Models\\PolydockAppInstance\:\:calculateAndSetTrialDates\(\) expects int\|null, float given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$sensitiveDataKeys \(array\) on left side of \?\? is not nullable\.$#'
+			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$sensitiveDataKeys \(list\<string\>\) on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.property
 			count: 1
 			path: app/Models/PolydockAppInstance.php
@@ -811,44 +439,38 @@ parameters:
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\PolydockBannedPattern\:\:\$fillable is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$fillable\.$#'
-			identifier: property.phpDocType
+			message: '#^Class App\\Models\\PolydockBannedPattern uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/PolydockBannedPattern.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getDecryptedValue\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Class App\\Models\\PolydockDeploymentRun uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PolydockDeploymentRun.php
+
+		-
+			message: '#^Method App\\Models\\PolydockHostedForm\:\:storeApps\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PolydockHostedForm.php
+
+		-
+			message: '#^Class App\\Models\\PolydockProductType uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
+			count: 1
+			path: app/Models/PolydockProductType.php
+
+		-
+			message: '#^Class App\\Models\\PolydockStore uses generic trait Illuminate\\Database\\Eloquent\\Factories\\HasFactory but does not specify its types\: TFactory$#'
+			identifier: missingType.generics
 			count: 1
 			path: app/Models/PolydockStore.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setEncryptedValue\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/PolydockStore.php
-
-		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model\:\:\$user_group_id\.$#'
-			identifier: property.notFound
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:getDecryptedValue\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setEncryptedValue\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setStatus\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Class App\\Models\\PolydockStoreApp has PHPDoc tag @property for property \$app_config with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
 			count: 1
 			path: app/Models/PolydockStoreApp.php
 
@@ -859,50 +481,14 @@ parameters:
 			path: app/Models/PolydockStoreApp.php
 
 		-
-			message: '#^PHPDoc type array of property App\\Models\\PolydockStoreApp\:\:\$appends is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$appends\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\PolydockStoreApp\:\:\$hidden is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$hidden\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$role\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Models/User.php
 
 		-
-			message: '#^PHPDoc type array\<int, string\> of property App\\Models\\User\:\:\$appends is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$appends\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/User.php
-
-		-
-			message: '#^Call to an undefined method Illuminate\\Database\\Eloquent\\Model\:\:setResultValue\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: app/Models/UserGroup.php
-
-		-
 			message: '#^Access to an undefined property App\\Models\\UserRemoteRegistration\:\:\$sensitiveDataKeys\.$#'
 			identifier: property.notFound
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^PHPDoc type array of property App\\Models\\UserRemoteRegistration\:\:\$appends is not covariant with PHPDoc type list\<string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$appends\.$#'
-			identifier: property.phpDocType
-			count: 1
-			path: app/Models/UserRemoteRegistration.php
-
-		-
-			message: '#^PHPDoc type array of property App\\Models\\UserRemoteRegistration\:\:\$casts is not covariant with PHPDoc type array\<string, string\> of overridden property Illuminate\\Database\\Eloquent\\Model\:\:\$casts\.$#'
-			identifier: property.phpDocType
 			count: 1
 			path: app/Models/UserRemoteRegistration.php
 
@@ -919,25 +505,19 @@ parameters:
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
 		-
-			message: '#^Offset ''result'' on non\-empty\-array on left side of \?\? always exists and is not nullable\.$#'
+			message: '#^Offset ''result'' on non\-empty\-array\<string, mixed\> on left side of \?\? always exists and is not nullable\.$#'
 			identifier: nullCoalesce.offset
 			count: 1
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
 		-
-			message: '#^Method App\\Polydock\\Apps\\AnythingLlm\\PolydockAnythingLLMApp\:\:getAppDefaultVariableDefinitions\(\) should return array\<App\\Polydock\\Core\\PolydockAppVariableDefinitionBase\> but returns array\<App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Polydock/Apps/AnythingLlm/PolydockAnythingLLMApp.php
-
-		-
-			message: '#^Call to function is_array\(\) with array will always evaluate to true\.$#'
+			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 2
 			path: app/Polydock/Apps/Generic/PolydockAiApp.php
 
 		-
-			message: '#^Call to function is_array\(\) with non\-empty\-array will always evaluate to true\.$#'
+			message: '#^Call to function is_array\(\) with non\-empty\-array\<string, mixed\> will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
 			path: app/Polydock/Apps/Generic/PolydockAiApp.php
@@ -951,7 +531,7 @@ parameters:
 		-
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
-			count: 2
+			count: 1
 			path: app/Polydock/Apps/Generic/PolydockAiApp.php
 
 		-
@@ -973,12 +553,6 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
-			message: '#^Call to an undefined method App\\Polydock\\Clients\\Lagoon\\Client\:\:addOrUpdateProjectMetadataByKey\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
 			message: '#^Call to function method_exists\(\) with App\\PolydockServiceProviders\\PolydockServiceProviderFTLagoon and ''getLagoonClient'' will always evaluate to true\.$#'
 			identifier: function.alreadyNarrowedType
 			count: 1
@@ -997,9 +571,21 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
+			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:runLifecyclePhase\(\) has parameter \$body with no value type specified in iterable type array\.$#'
+			identifier: missingType.iterableValue
+			count: 1
+			path: app/Polydock/Apps/Generic/PolydockApp.php
+
+		-
+			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues\(\) has parameter \$logContext with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: app/Polydock/Apps/Generic/PolydockApp.php
+
+		-
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
-			count: 2
+			count: 1
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
@@ -1013,72 +599,6 @@ parameters:
 			identifier: instanceof.alwaysTrue
 			count: 1
 			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppBase\:\:debug\(\) has invalid return type App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait\.$#'
-			identifier: return.trait
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppBase\:\:error\(\) has invalid return type App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait\.$#'
-			identifier: return.trait
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppBase\:\:info\(\) has invalid return type App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait\.$#'
-			identifier: return.trait
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockAppBase\:\:warning\(\) has invalid return type App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait\.$#'
-			identifier: return.trait
-			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^PHPDoc tag @return with type App\\Polydock\\Core\\PolydockAppBase\|App\\Polydock\\Core\\PolydockEngineBase\|App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait is not subtype of native type App\\Polydock\\Core\\PolydockAppBase\.$#'
-			identifier: return.phpDocType
-			count: 4
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Access to an undefined property App\\Polydock\\Core\\PolydockEngineBase\:\:\$logger\.$#'
-			identifier: property.notFound
-			count: 8
-			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineBase\:\:debug\(\) has invalid return type App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait\.$#'
-			identifier: return.trait
-			count: 1
-			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineBase\:\:error\(\) has invalid return type App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait\.$#'
-			identifier: return.trait
-			count: 1
-			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineBase\:\:info\(\) has invalid return type App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait\.$#'
-			identifier: return.trait
-			count: 1
-			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^Method App\\Polydock\\Core\\PolydockEngineBase\:\:warning\(\) has invalid return type App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait\.$#'
-			identifier: return.trait
-			count: 1
-			path: app/Polydock/Core/PolydockEngineBase.php
-
-		-
-			message: '#^PHPDoc tag @return with type App\\Polydock\\Core\\PolydockAppBase\|App\\Polydock\\Core\\PolydockEngineBase\|App\\Polydock\\Core\\Traits\\PolydockAppLoggerTrait is not subtype of native type App\\Polydock\\Core\\PolydockEngineBase\.$#'
-			identifier: return.phpDocType
-			count: 4
-			path: app/Polydock/Core/PolydockEngineBase.php
 
 		-
 			message: '#^Access to an undefined property App\\Polydock\\Core\\PolydockAppInstanceInterface&Illuminate\\Database\\Eloquent\\Model\:\:\$storeApp\.$#'
@@ -1095,7 +615,7 @@ parameters:
 		-
 			message: '#^Negated boolean expression is always false\.$#'
 			identifier: booleanNot.alwaysFalse
-			count: 2
+			count: 1
 			path: app/PolydockEngine/Engine.php
 
 		-
@@ -1117,10 +637,22 @@ parameters:
 			path: app/PolydockEngine/Engine.php
 
 		-
+			message: '#^Parameter \#1 \$regionId of method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:getRegion\(\) expects int, string given\.$#'
+			identifier: argument.type
+			count: 1
+			path: app/PolydockEngine/Helpers/AmazeeAiBackendHelper.php
+
+		-
 			message: '#^Call to an undefined method phpseclib3\\Crypt\\Common\\AsymmetricKey\:\:getPublicKey\(\)\.$#'
 			identifier: method.notFound
 			count: 1
 			path: app/PolydockEngine/Helpers/LagoonHelper.php
+
+		-
+			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderAmazeeAiBackend\:\:initAmazeeAiBackendClient\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: app/PolydockServiceProviders/PolydockServiceProviderAmazeeAiBackend.php
 
 		-
 			message: '#^Call to method getMessage\(\) on an unknown class App\\PolydockServiceProviders\\Throwable\.$#'
@@ -1135,22 +667,16 @@ parameters:
 			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
 
 		-
-			message: '#^PHPDoc tag @param references unknown parameter\: \$sshPrivateKeyFile$#'
-			identifier: parameter.notFound
+			message: '#^Method App\\PolydockServiceProviders\\PolydockServiceProviderFTLagoon\:\:initLagoonClient\(\) has no return type specified\.$#'
+			identifier: missingType.return
 			count: 1
 			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
 
 		-
-			message: '#^Instantiated class Aws\\DynamoDb\\DynamoDbClient not found\.$#'
-			identifier: class.notFound
+			message: '#^PHPDoc tag @param references unknown parameter\: \$sshPrivateKeyFile$#'
+			identifier: parameter.notFound
 			count: 1
-			path: app/Providers/AppServiceProvider.php
-
-		-
-			message: '#^Left side of \|\| is always false\.$#'
-			identifier: booleanOr.leftAlwaysFalse
-			count: 1
-			path: app/Providers/AppServiceProvider.php
+			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
 
 		-
 			message: '#^Call to function is_array\(\) with non\-empty\-array will always evaluate to true\.$#'
@@ -1165,21 +691,117 @@ parameters:
 			path: bootstrap/app.php
 
 		-
-			message: '#^Call to an undefined method Faker\\Generator\:\:json\(\)\.$#'
-			identifier: method.notFound
+			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppCKEditor\(\) has parameter \$namePrefix with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
-			path: database/factories/PolydockStoreWebhookCallFactory.php
+			path: database/seeders/AmazeeTrialSeeder.php
 
 		-
-			message: '#^Call to an undefined method Filament\\Forms\\Components\\Component\:\:getName\(\)\.$#'
-			identifier: method.notFound
-			count: 2
+			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppCKEditor\(\) has parameter \$store with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: database/seeders/AmazeeTrialSeeder.php
+
+		-
+			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppCategorizePages\(\) has parameter \$namePrefix with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: database/seeders/AmazeeTrialSeeder.php
+
+		-
+			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppCategorizePages\(\) has parameter \$store with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: database/seeders/AmazeeTrialSeeder.php
+
+		-
+			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppGeneric\(\) has parameter \$namePrefix with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: database/seeders/AmazeeTrialSeeder.php
+
+		-
+			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppGeneric\(\) has parameter \$store with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: database/seeders/AmazeeTrialSeeder.php
+
+		-
+			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppSearch\(\) has parameter \$namePrefix with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: database/seeders/AmazeeTrialSeeder.php
+
+		-
+			message: '#^Method Database\\Seeders\\AmazeeTrialSeeder\:\:getStoreAppSearch\(\) has parameter \$store with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: database/seeders/AmazeeTrialSeeder.php
+
+		-
+			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:__construct\(\) has parameter \$storeApp with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Doubles/DoublePolydockAppInstance.php
+
+		-
+			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:getPolydockVariableValue\(\) has no return type specified\.$#'
+			identifier: missingType.return
+			count: 1
+			path: tests/Doubles/DoublePolydockAppInstance.php
+
+		-
+			message: '#^Method Tests\\Doubles\\DoublePolydockAppInstance\:\:getPolydockVariableValue\(\) has parameter \$default with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Doubles/DoublePolydockAppInstance.php
+
+		-
+			message: '#^Property Tests\\Doubles\\DoublePolydockAppInstance\:\:\$data has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: tests/Doubles/DoublePolydockAppInstance.php
+
+		-
+			message: '#^Property Tests\\Doubles\\DoublePolydockAppInstance\:\:\$storeApp has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: tests/Doubles/DoublePolydockAppInstance.php
+
+		-
+			message: '#^Method Tests\\Feature\\TestablePolydockAmazeeClawAiApp\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$appInstance with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
 			path: tests/Feature/AmazeeClawConfigTest.php
 
 		-
-			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Model&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\:\:\$id\.$#'
-			identifier: property.notFound
+			message: '#^Method Tests\\Feature\\TestablePolydockAmazeeClawAiApp\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableName with no type specified\.$#'
+			identifier: missingType.parameter
 			count: 1
+			path: tests/Feature/AmazeeClawConfigTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\TestablePolydockAmazeeClawAiApp\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableScope with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Feature/AmazeeClawConfigTest.php
+
+		-
+			message: '#^Method Tests\\Feature\\TestablePolydockAmazeeClawAiApp\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableValue with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Feature/AmazeeClawConfigTest.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: tests/Feature/Api/AuthenticatedApiTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
@@ -1201,48 +823,6 @@ parameters:
 			path: tests/Feature/Console/Commands/MarkStuckInstancesFailedCommandTest.php
 
 		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Feature/Console/Commands/RemoveEmptyProjectsCommandTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
-			identifier: method.notFound
-			count: 2
-			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
-			identifier: method.notFound
-			count: 9
-			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 44
-			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
-			identifier: method.notFound
-			count: 4
-			path: tests/Feature/Console/Commands/TriggerLagoonDeployOnAppInstancesTest.php
-
-		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Feature/Console/Commands/TriggerLagoonDeployOnAppInstancesTest.php
-
-		-
 			message: '#^Call to an undefined static method Illuminate\\Support\\Facades\\Log\:\:shouldHaveReceived\(\)\.$#'
 			identifier: staticMethod.notFound
 			count: 3
@@ -1253,6 +833,18 @@ parameters:
 			identifier: method.alreadyNarrowedType
 			count: 1
 			path: tests/Feature/Controllers/FormControllerTest.php
+
+		-
+			message: '#^Unable to resolve the template type TKey in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: tests/Feature/Deployment/ScheduledRedeployCommandTest.php
+
+		-
+			message: '#^Unable to resolve the template type TValue in call to function collect$#'
+			identifier: argument.templateType
+			count: 2
+			path: tests/Feature/Deployment/ScheduledRedeployCommandTest.php
 
 		-
 			message: '#^Access to an undefined property Illuminate\\Database\\Eloquent\\Relations\\Pivot\:\:\$role\.$#'
@@ -1273,28 +865,52 @@ parameters:
 			path: tests/Feature/Filament/CreatePolydockAppInstanceTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertTrue\(\) with true will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
+			message: '#^Call to an undefined method Illuminate\\Testing\\TestResponse\:\:assertFormFieldExists\(\)\.$#'
+			identifier: method.notFound
 			count: 1
-			path: tests/Unit/ExampleTest.php
+			path: tests/Feature/Filament/ResourcePagesSmokeTest.php
 
 		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:andReturnSelf\(\)\.$#'
+			message: '#^Call to an undefined method Filament\\Schemas\\Components\\Component\:\:getName\(\)\.$#'
 			identifier: method.notFound
-			count: 4
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
+			count: 1
+			path: tests/Feature/Polydock/AppInstanceFormSchemaTest.php
 
 		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:once\(\)\.$#'
-			identifier: method.notFound
-			count: 7
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
+			message: '#^Method Tests\\Feature\\Polydock\\LifecyclePhaseTestApp\:\:validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues\(\) has parameter \$logContext with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Feature/Polydock/RunLifecyclePhaseTest.php
 
 		-
-			message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage\:\:with\(\)\.$#'
-			identifier: method.notFound
-			count: 3
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
+			message: '#^Dead catch \- App\\Polydock\\Core\\PolydockAppInstanceStatusFlowException is never thrown in the try block\.$#'
+			identifier: catch.neverThrown
+			count: 2
+			path: tests/Feature/PolydockEngine/EngineDispatchTest.php
+
+		-
+			message: '#^Parameter \#1 \$logger of class App\\PolydockEngine\\Engine constructor expects App\\Polydock\\Core\\PolydockAppLoggerInterface, Mockery\\LegacyMockInterface given\.$#'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/PolydockEngine/EngineDispatchTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:46\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableName with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:46\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableScope with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest.php
+
+		-
+			message: '#^Method class@anonymous/tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest\.php\:46\:\:addOrUpdateLagoonProjectVariable\(\) has parameter \$variableValue with no type specified\.$#'
+			identifier: missingType.parameter
+			count: 1
+			path: tests/Unit/Apps/Generic/LagoonCustomRouteVariableTest.php
 
 		-
 			message: '#^Parameter \#1 \$appInstance of method App\\Polydock\\Core\\PolydockEngineBase\:\:validateAppInstanceHasAllRequiredVariables\(\) expects App\\Polydock\\Core\\PolydockAppInstanceInterface, Mockery\\MockInterface given\.$#'
@@ -1307,18 +923,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<Filament\\Forms\\Components\\Component\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 4
-			path: tests/Unit/Services/PolydockAppClassDiscoveryTest.php
-
-		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<Filament\\Infolists\\Components\\Component\> will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 2
-			path: tests/Unit/Services/PolydockAppClassDiscoveryTest.php
 
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string, bool\> will always evaluate to true\.$#'
@@ -1339,13 +943,19 @@ parameters:
 			path: tests/Unit/Services/PolydockAppClassDiscoveryTest.php
 
 		-
-			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsObject\(\) with Filament\\Forms\\Components\\Component will always evaluate to true\.$#'
-			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Unit/Services/PolydockAppClassDiscoveryTest.php
-
-		-
 			message: '#^Access to an undefined property class@anonymous/tests/Unit/Traits/HasWebhookSensitiveDataTest\.php\:14\:\:\$data\.$#'
 			identifier: property.notFound
 			count: 5
+			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
+
+		-
+			message: '#^Property Tests\\Unit\\Traits\\HasWebhookSensitiveDataTest\:\:\$traitObject has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
+			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php
+
+		-
+			message: '#^Property class@anonymous/tests/Unit/Traits/HasWebhookSensitiveDataTest\.php\:14\:\:\$sensitiveDataKeys has no type specified\.$#'
+			identifier: missingType.property
+			count: 1
 			path: tests/Unit/Traits/HasWebhookSensitiveDataTest.php

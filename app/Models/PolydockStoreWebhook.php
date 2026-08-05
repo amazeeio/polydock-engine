@@ -2,30 +2,36 @@
 
 namespace App\Models;
 
+use Database\Factories\PolydockStoreWebhookFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+use RuntimeException;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 /**
  * @property string $secret
  */
 class PolydockStoreWebhook extends Model
 {
+    /** @use HasFactory<PolydockStoreWebhookFactory> */
     use HasFactory;
+
     use LogsActivity;
 
     protected $fillable = [
         'polydock_store_id',
         'url',
         'active',
+        'include_sensitive_data',
     ];
 
     protected $casts = [
         'active' => 'boolean',
+        'include_sensitive_data' => 'boolean',
     ];
 
     /**
@@ -45,6 +51,32 @@ class PolydockStoreWebhook extends Model
                 $webhook->secret = Str::random(40);
             }
         });
+
+        // Payloads can carry credentials and PII, and the HMAC signature is
+        // only tamper-proof if the transport is encrypted — refuse plaintext
+        // endpoints everywhere a webhook can be created or edited (Filament,
+        // console command, raw model writes). Plain http is allowed only for
+        // loopback addresses so local development receivers keep working.
+        static::saving(function (self $webhook): void {
+            if (! self::isAllowedUrl((string) $webhook->url)) {
+                throw new RuntimeException(
+                    "Webhook URL must use https:// (http:// is only allowed for localhost): {$webhook->url}"
+                );
+            }
+        });
+    }
+
+    public static function isAllowedUrl(string $url): bool
+    {
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+            return false;
+        }
+
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+
+        return $scheme === 'https'
+            || ($scheme === 'http' && in_array($host, ['localhost', '127.0.0.1'], true));
     }
 
     /**
@@ -58,7 +90,7 @@ class PolydockStoreWebhook extends Model
         // creating hook and existing rows are backfilled by migration, so this is
         // a defensive guard against raw inserts / unexpected null secrets.
         if (empty($this->secret)) {
-            throw new \RuntimeException("Webhook {$this->id} has no signing secret; refusing to deliver.");
+            throw new RuntimeException("Webhook {$this->id} has no signing secret; refusing to deliver.");
         }
 
         return 'sha256='.hash_hmac('sha256', $body, (string) $this->secret);
@@ -67,11 +99,14 @@ class PolydockStoreWebhook extends Model
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
-            ->logOnly(['url', 'active'])
+            ->logOnly(['url', 'active', 'include_sensitive_data'])
             ->logOnlyDirty()
-            ->dontSubmitEmptyLogs();
+            ->dontLogEmptyChanges();
     }
 
+    /**
+     * @return BelongsTo<PolydockStore, $this>
+     */
     public function store(): BelongsTo
     {
         return $this->belongsTo(PolydockStore::class, 'polydock_store_id');
@@ -79,6 +114,8 @@ class PolydockStoreWebhook extends Model
 
     /**
      * Get the calls for this webhook
+     *
+     * @return HasMany<PolydockStoreWebhookCall, $this>
      */
     public function calls(): HasMany
     {

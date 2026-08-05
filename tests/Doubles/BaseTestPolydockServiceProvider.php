@@ -7,6 +7,9 @@ use App\Polydock\Core\PolydockServiceProviderInterface;
 
 abstract class BaseTestPolydockServiceProvider implements PolydockServiceProviderInterface
 {
+    /**
+     * @param  array<string, mixed>  $config
+     */
     public function __construct(
         private readonly array $config,
         private PolydockAppLoggerInterface $logger,
@@ -16,6 +19,9 @@ abstract class BaseTestPolydockServiceProvider implements PolydockServiceProvide
 
     abstract public function getDescription(): string;
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getConfig(): array
     {
         return $this->config;
@@ -33,6 +39,9 @@ abstract class BaseTestPolydockServiceProvider implements PolydockServiceProvide
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function info(string $message, array $context = []): self
     {
         $this->logger->info($message, $context);
@@ -40,6 +49,9 @@ abstract class BaseTestPolydockServiceProvider implements PolydockServiceProvide
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function error(string $message, array $context = []): self
     {
         $this->logger->error($message, $context);
@@ -47,6 +59,9 @@ abstract class BaseTestPolydockServiceProvider implements PolydockServiceProvide
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function warning(string $message, array $context = []): self
     {
         $this->logger->warning($message, $context);
@@ -54,6 +69,9 @@ abstract class BaseTestPolydockServiceProvider implements PolydockServiceProvide
         return $this;
     }
 
+    /**
+     * @param  array<string, mixed>  $context
+     */
     public function debug(string $message, array $context = []): self
     {
         $this->logger->debug($message, $context);

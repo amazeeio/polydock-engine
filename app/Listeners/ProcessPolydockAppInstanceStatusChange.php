@@ -101,7 +101,7 @@ class ProcessPolydockAppInstanceStatusChange
         }
     }
 
-    public function switchOnStatus(PolydockAppInstanceStatusChanged $event)
+    public function switchOnStatus(PolydockAppInstanceStatusChanged $event): void
     {
         $appInstance = $event->appInstance;
 

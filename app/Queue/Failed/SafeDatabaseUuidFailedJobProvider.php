@@ -6,6 +6,7 @@ namespace App\Queue\Failed;
 
 use Illuminate\Database\QueryException;
 use Illuminate\Queue\Failed\DatabaseUuidFailedJobProvider;
+use Override;
 
 class SafeDatabaseUuidFailedJobProvider extends DatabaseUuidFailedJobProvider
 {
@@ -14,7 +15,7 @@ class SafeDatabaseUuidFailedJobProvider extends DatabaseUuidFailedJobProvider
      *
      * {@inheritdoc}
      */
-    #[\Override]
+    #[Override]
     public function log($connection, $queue, $payload, $exception)
     {
         try {

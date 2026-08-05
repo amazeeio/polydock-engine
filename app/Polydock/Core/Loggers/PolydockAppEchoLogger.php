@@ -12,7 +12,7 @@ class PolydockAppEchoLogger implements PolydockAppLoggerInterface
      * Log an informational message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      */
     public function info(string $message, array $context = []): void
     {
@@ -23,7 +23,7 @@ class PolydockAppEchoLogger implements PolydockAppLoggerInterface
      * Log an error message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      */
     public function error(string $message, array $context = []): void
     {
@@ -34,7 +34,7 @@ class PolydockAppEchoLogger implements PolydockAppLoggerInterface
      * Log a warning message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      */
     public function warning(string $message, array $context = []): void
     {
@@ -45,7 +45,7 @@ class PolydockAppEchoLogger implements PolydockAppLoggerInterface
      * Log a debug message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      */
     public function debug(string $message, array $context = []): void
     {
@@ -57,7 +57,7 @@ class PolydockAppEchoLogger implements PolydockAppLoggerInterface
      *
      * @param  string  $level  The log level
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data
+     * @param  array<string, mixed>  $context  Additional context data
      */
     private function output(string $level, string $message, array $context): void
     {

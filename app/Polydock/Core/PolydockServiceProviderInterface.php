@@ -9,7 +9,7 @@ interface PolydockServiceProviderInterface
     /**
      * Constructor
      *
-     * @param  array  $config  The configuration for the service provider
+     * @param  array<string, mixed>  $config  The configuration for the service provider
      */
     public function __construct(array $config, PolydockAppLoggerInterface $logger);
 
@@ -46,7 +46,7 @@ interface PolydockServiceProviderInterface
      * Log an informational message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function info(string $message, array $context = []): self;
@@ -55,7 +55,7 @@ interface PolydockServiceProviderInterface
      * Log an error message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function error(string $message, array $context = []): self;
@@ -64,7 +64,7 @@ interface PolydockServiceProviderInterface
      * Log a warning message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function warning(string $message, array $context = []): self;
@@ -73,7 +73,7 @@ interface PolydockServiceProviderInterface
      * Log a debug message
      *
      * @param  string  $message  The message to log
-     * @param  array  $context  Additional context data for the log entry
+     * @param  array<string, mixed>  $context  Additional context data for the log entry
      * @return self Returns the instance for method chaining
      */
     public function debug(string $message, array $context = []): self;

@@ -9,6 +9,7 @@ use App\Forms\HostedFormInterface;
 use App\Models\PolydockHostedForm;
 use App\Models\PolydockStore;
 use App\Models\UserRemoteRegistration;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
@@ -160,7 +161,7 @@ class FormController extends Controller
                         'message' => 'reCAPTCHA verification failed. Please try again.',
                     ], Response::HTTP_UNPROCESSABLE_ENTITY);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 Log::error('reCAPTCHA communication error during form submit', [
                     'form' => $formSlug,
                     'error' => $e->getMessage(),
@@ -198,7 +199,7 @@ class FormController extends Controller
                 'message' => 'Registration pending',
                 'id' => $registration->uuid,
             ], Response::HTTP_ACCEPTED);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error('Error creating user remote registration from hosted form', [
                 'form' => $formSlug,
                 'error' => $e->getMessage(),

@@ -112,8 +112,8 @@ class ModelActivityLogTest extends TestCase
             ->first();
 
         $this->assertNotNull($activity);
-        $this->assertEquals($group1->id, $activity->properties['old']['user_group_id']);
-        $this->assertEquals($group2->id, $activity->properties['attributes']['user_group_id']);
+        $this->assertEquals($group1->id, $activity->attribute_changes['old']['user_group_id']);
+        $this->assertEquals($group2->id, $activity->attribute_changes['attributes']['user_group_id']);
     }
 
     public function test_user_group_logs_creation(): void
@@ -142,8 +142,8 @@ class ModelActivityLogTest extends TestCase
             ->first();
 
         $this->assertNotNull($activity);
-        $this->assertEquals('Original Name', $activity->properties['old']['name']);
-        $this->assertEquals('New Name', $activity->properties['attributes']['name']);
+        $this->assertEquals('Original Name', $activity->attribute_changes['old']['name']);
+        $this->assertEquals('New Name', $activity->attribute_changes['attributes']['name']);
     }
 
     public function test_user_logs_email_change(): void
@@ -160,8 +160,8 @@ class ModelActivityLogTest extends TestCase
             ->first();
 
         $this->assertNotNull($activity);
-        $this->assertEquals('old@example.com', $activity->properties['old']['email']);
-        $this->assertEquals('new@example.com', $activity->properties['attributes']['email']);
+        $this->assertEquals('old@example.com', $activity->attribute_changes['old']['email']);
+        $this->assertEquals('new@example.com', $activity->attribute_changes['attributes']['email']);
     }
 
     public function test_user_does_not_log_password_change(): void

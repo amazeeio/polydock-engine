@@ -7,6 +7,7 @@ namespace App\Jobs\ProcessPolydockAppInstanceJobs\New;
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
+use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
 class ProcessNewJob extends BaseJob implements ShouldQueue
@@ -19,7 +20,7 @@ class ProcessNewJob extends BaseJob implements ShouldQueue
         $this->polydockJobStart();
         $appInstance = $this->appInstance;
         if (! $appInstance) {
-            throw new \Exception(
+            throw new Exception(
                 'Failed to process PolydockAppInstance in '.class_basename(self::class).' - not found',
             );
         }

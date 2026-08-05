@@ -114,6 +114,9 @@ trait ClaimAppInstanceTrait
         );
     }
 
+    /**
+     * @param  array<string, mixed>  $logContext
+     */
     private function resolveClaimUrlFromLagoonRoutes(string $projectName, string $deployEnvironment, array $logContext = []): ?string
     {
         if (empty($projectName) || empty($deployEnvironment)) {

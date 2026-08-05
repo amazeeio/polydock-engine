@@ -17,6 +17,9 @@ class LagoonCustomRouteVariableTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * @param  array<string, mixed>  $appConfig
+     */
     private function makeInstance(array $appConfig): PolydockAppInstance
     {
         Event::fake([
@@ -52,6 +55,9 @@ class LagoonCustomRouteVariableTest extends TestCase
                 $this->variables[] = ['name' => $variableName, 'value' => $variableValue, 'scope' => $variableScope];
             }
 
+            /**
+             * @param  array<string, mixed>  $context
+             */
             public function info(string $message, array $context = []): void {}
 
             public function injectRoute(PolydockAppInstanceInterface $appInstance, string $projectName): void
