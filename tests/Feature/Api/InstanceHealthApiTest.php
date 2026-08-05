@@ -46,18 +46,25 @@ class InstanceHealthApiTest extends TestCase
         $this->uuid = $this->instance->uuid;
     }
 
-    public function test_health_check_without_configured_token_allows_request(): void
+    public function test_health_check_without_configured_token_returns_503(): void
     {
-        // GIVEN no token is configured
+        // GIVEN no token is configured, and the instance is in a state distinct
+        // from the one the request would set (so "unchanged" is meaningful).
         Config::set('polydock.health_token', null);
+        $this->instance->status = PolydockAppInstanceStatus::RUNNING_UNHEALTHY;
+        $this->instance->save();
 
-        // WHEN we hit the endpoint without a token
+        // WHEN we hit the endpoint (without a token) asking for a *different* status
         $response = $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed");
 
-        // THEN it should be successful and update the status
-        $response->assertStatus(200);
+        // THEN it should fail closed with 503 and NOT update the status
+        $response->assertStatus(503);
+        $response->assertJson([
+            'error' => 'Health endpoint is not configured',
+            'status_code' => 503,
+        ]);
         $this->instance->refresh();
-        $this->assertEquals(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, $this->instance->status);
+        $this->assertEquals(PolydockAppInstanceStatus::RUNNING_UNHEALTHY, $this->instance->status);
     }
 
     public function test_health_check_with_configured_token_and_correct_token_allows_request(): void
@@ -129,12 +136,12 @@ class InstanceHealthApiTest extends TestCase
     {
         // GIVEN a trusted IP is configured
         Config::set('polydock.trusted_ips', ['10.0.0.5']);
-        Config::set('polydock.health_token', null);
+        Config::set('polydock.health_token', 'secure-test-token');
 
         // WHEN we hit the endpoint 130 times from trusted IP
         for ($i = 0; $i < 130; $i++) {
             $this->withServerVariables(['REMOTE_ADDR' => '10.0.0.5'])
-                ->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed")
+                ->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed?token=secure-test-token")
                 ->assertStatus(200);
         }
     }
@@ -153,7 +160,7 @@ class InstanceHealthApiTest extends TestCase
 
     public function test_health_check_throttles_per_ip_across_uuids(): void
     {
-        Config::set('polydock.health_token', null); // No token gating
+        Config::set('polydock.health_token', 'secure-test-token');
 
         // GIVEN another instance exists
         $storeApp = PolydockStoreApp::first();
@@ -168,10 +175,13 @@ class InstanceHealthApiTest extends TestCase
         $anotherInstance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
         $anotherInstance->saveQuietly();
 
-        // WHEN we exhaust the per-minute limit (120) against the first UUID
+        // WHEN we exhaust the per-minute limit (120) against the first UUID.
+        // A valid token bypasses the limiter, so these are unauthenticated
+        // (401) requests — the realistic UUID-enumeration scenario the limiter
+        // exists to stop. They still count against the per-IP budget.
         for ($i = 0; $i < 120; $i++) {
             $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed")
-                ->assertStatus(200);
+                ->assertStatus(401);
         }
 
         // THEN a further request for the first UUID is throttled
