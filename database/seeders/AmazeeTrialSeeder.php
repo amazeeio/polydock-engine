@@ -43,7 +43,7 @@ class AmazeeTrialSeeder extends Seeder
             'role' => UserGroupRoleEnum::OWNER->value,
         ]);
 
-        $deployKey = file_get_contents(config('polydock.lagoon_deploy_private_key_file'));
+        $deployKey = DatabaseSeeder::localDeployKey();
 
         $usStore = PolydockStore::create([
             'name' => 'USA Store',
