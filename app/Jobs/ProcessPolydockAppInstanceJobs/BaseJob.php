@@ -9,6 +9,7 @@ use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\PolydockEngine\Engine;
 use App\PolydockEngine\PolydockLogger;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -17,7 +18,7 @@ use Spatie\SlackAlerts\Facades\SlackAlert;
 
 abstract class BaseJob implements ShouldQueue
 {
-    use \Illuminate\Foundation\Queue\Queueable;
+    use Queueable;
 
     /**
      * The number of seconds the job can run before timing out.

@@ -7,13 +7,14 @@ use App\Models\PolydockStoreWebhookCall;
 use DateTime;
 use Exception;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
 class ProcessPolydockStoreWebhookCall implements ShouldQueue
 {
-    use \Illuminate\Foundation\Queue\Queueable;
+    use Queueable;
 
     /**
      * The number of times the job may be attempted.

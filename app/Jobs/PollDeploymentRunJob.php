@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\PolydockDeploymentRun;
 use App\Services\PolydockDeploymentService;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Foundation\Queue\Queueable;
 
 /**
  * Polls a single deployment run's Lagoon bulk deployment once, updating the run's
@@ -13,7 +14,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
  */
 class PollDeploymentRunJob implements ShouldQueue
 {
-    use \Illuminate\Foundation\Queue\Queueable;
+    use Queueable;
 
     public function __construct(public int $deploymentRunId) {}
 
