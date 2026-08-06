@@ -36,7 +36,7 @@ return new class extends Migration
         ];
         $originalStatuses = array_filter(
             PolydockAppInstanceStatus::getValues(),
-            fn ($value) => ! in_array($value, $statusesToExclude)
+            fn (string $value): bool => ! in_array($value, $statusesToExclude)
         );
 
         $statuses = implode("','", $originalStatuses);

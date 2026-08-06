@@ -83,7 +83,7 @@ class ProcessUserRemoteRegistrationTest extends TestCase
             $persistedStatuses[] = $event->registration->status;
         });
 
-        (new ProcessUserRemoteRegistration($registration))->handle();
+        new ProcessUserRemoteRegistration($registration)->handle();
 
         $this->assertNotContains(UserRemoteRegistrationStatusEnum::SUCCESS, $persistedStatuses);
 
@@ -99,7 +99,7 @@ class ProcessUserRemoteRegistrationTest extends TestCase
 
         $registration = $this->makeTrialRegistration();
 
-        (new ProcessUserRemoteRegistration($registration))->handle();
+        new ProcessUserRemoteRegistration($registration)->handle();
 
         $registration->refresh();
         $this->assertEquals(UserRemoteRegistrationStatusEnum::SUCCESS, $registration->status);

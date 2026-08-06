@@ -409,7 +409,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         if (! \in_array($appInstance->getStatus(), $statuses)) {
             throw new PolydockAppInstanceStatusFlowException(
                 'PolydockAppInstance status expected to be one of '
-                .\implode(', ', \array_map(fn ($status) => $status->value, $statuses))
+                .\implode(', ', \array_map(fn (PolydockAppInstanceStatus $status) => $status->value, $statuses))
                 .' but is '
                 .$appInstance->getStatus()->value,
             );

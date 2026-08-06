@@ -35,6 +35,7 @@ class PolydockStoreWebhookResource extends Resource
 
     protected static ?int $navigationSort = 5100;
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -46,7 +47,7 @@ class PolydockStoreWebhookResource extends Resource
                 TextInput::make('url')
                     ->required()
                     ->url()
-                    ->rule(fn () => function (string $attribute, mixed $value, \Closure $fail): void {
+                    ->rule(fn (): \Closure => function (string $attribute, mixed $value, \Closure $fail): void {
                         if (! PolydockStoreWebhook::isAllowedUrl((string) $value)) {
                             $fail('Webhook URLs must use https:// (http:// is only allowed for localhost).');
                         }
@@ -61,6 +62,7 @@ class PolydockStoreWebhookResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -89,6 +91,7 @@ class PolydockStoreWebhookResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -96,6 +99,7 @@ class PolydockStoreWebhookResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

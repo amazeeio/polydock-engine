@@ -29,6 +29,7 @@ class UserRemoteRegistrationResource extends Resource
 
     protected static ?int $navigationSort = 3;
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -37,6 +38,7 @@ class UserRemoteRegistrationResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -82,15 +84,11 @@ class UserRemoteRegistrationResource extends Resource
                 SelectFilter::make('store_id')
                     ->label('Store')
                     ->options(fn () => PolydockStore::pluck('name', 'id'))
-                    ->query(function ($query, array $data) {
-                        return $query->when($data['value'], fn ($query) => $query->whereHas('storeApp', fn ($q) => $q->where('polydock_store_id', $data['value'])));
-                    }),
+                    ->query(fn ($query, array $data) => $query->when($data['value'], fn ($query) => $query->whereHas('storeApp', fn ($q) => $q->where('polydock_store_id', $data['value'])))),
                 SelectFilter::make('store_app_id')
                     ->label('Store App')
                     ->options(fn () => PolydockStoreApp::pluck('name', 'id'))
-                    ->query(function ($query, array $data) {
-                        return $query->when($data['value'], fn ($query) => $query->where('polydock_store_app_id', $data['value']));
-                    }),
+                    ->query(fn ($query, array $data) => $query->when($data['value'], fn ($query) => $query->where('polydock_store_app_id', $data['value']))),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -98,6 +96,7 @@ class UserRemoteRegistrationResource extends Resource
             ->toolbarActions([]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -105,16 +104,19 @@ class UserRemoteRegistrationResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function canEdit(Model $record): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

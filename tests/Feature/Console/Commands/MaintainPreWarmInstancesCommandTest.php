@@ -96,7 +96,7 @@ class MaintainPreWarmInstancesCommandTest extends TestCase
 
         $removed = collect([$a, $b, $c])
             ->each->refresh()
-            ->filter(fn ($i) => $i->status === PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
+            ->filter(fn ($i): bool => $i->status === PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
 
         $this->assertCount(2, $removed);
     }
@@ -135,7 +135,7 @@ class MaintainPreWarmInstancesCommandTest extends TestCase
 
         $targetRemoved = collect([$targetExcess1, $targetExcess2])
             ->each->refresh()
-            ->filter(fn ($i) => $i->status === PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
+            ->filter(fn ($i): bool => $i->status === PolydockAppInstanceStatus::PENDING_PRE_REMOVE);
         $this->assertCount(1, $targetRemoved);
 
         // The other app should be untouched.

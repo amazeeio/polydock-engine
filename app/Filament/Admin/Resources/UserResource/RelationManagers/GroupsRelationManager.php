@@ -20,6 +20,7 @@ class GroupsRelationManager extends RelationManager
 {
     protected static string $relationship = 'groups';
 
+    #[\Override]
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -36,7 +37,7 @@ class GroupsRelationManager extends RelationManager
             ->recordTitleAttribute('name')
             ->columns([
                 TextColumn::make('name')
-                    ->url(fn ($record) => UserGroupResource::getUrl('view', ['record' => $record]))
+                    ->url(fn ($record): string => UserGroupResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
                 TextColumn::make('users_count')
                     ->counts('users')

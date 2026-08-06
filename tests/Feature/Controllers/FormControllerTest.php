@@ -14,6 +14,7 @@ use App\Models\UserRemoteRegistration;
 use App\Polydock\Apps\Generic\PolydockApp;
 use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Queue;
 use PHPUnit\Framework\Attributes\Test;
@@ -41,7 +42,7 @@ class FormControllerTest extends TestCase
 
         // Prevent external reCAPTCHA API hits by default in tests
         Http::fake([
-            'https://www.google.com/recaptcha/api/siteverify' => function ($request) {
+            'https://www.google.com/recaptcha/api/siteverify' => function (Request $request) {
                 $responseToken = $request['response'] ?? '';
                 if ($responseToken === 'invalid-token') {
                     return Http::response(['success' => false]);
@@ -237,7 +238,7 @@ class FormControllerTest extends TestCase
     public function it_allows_recaptcha_bypass_on_testing_environment_during_network_failure(): void
     {
         Http::fake([
-            'https://www.google.com/recaptcha/api/siteverify' => function () {
+            'https://www.google.com/recaptcha/api/siteverify' => function (): void {
                 throw new \Exception('Network connection timeout');
             },
         ]);
@@ -266,10 +267,10 @@ class FormControllerTest extends TestCase
     public function it_blocks_recaptcha_bypass_on_staging_environment_during_network_failure(): void
     {
         $this->withoutMiddleware(PreventRequestForgery::class);
-        $this->app->detectEnvironment(fn () => 'staging');
+        $this->app->detectEnvironment(fn (): string => 'staging');
 
         Http::fake([
-            'https://www.google.com/recaptcha/api/siteverify' => function () {
+            'https://www.google.com/recaptcha/api/siteverify' => function (): void {
                 throw new \Exception('Network connection timeout');
             },
         ]);
@@ -314,9 +315,7 @@ class FormControllerTest extends TestCase
         ]);
 
         // And the rendered form must not load the recaptcha widget
-        $this->get('/f/drupal-ai-demo')
-            ->assertStatus(200)
-            ->assertDontSee('g-recaptcha', false);
+        $this->get('/f/drupal-ai-demo')->assertStatus(200)->assertDontSeeHtml('g-recaptcha');
     }
 
     #[Test]

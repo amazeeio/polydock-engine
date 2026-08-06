@@ -18,6 +18,7 @@ class Login extends BaseLogin
 {
     public bool $emailChecked = false;
 
+    #[\Override]
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -28,6 +29,7 @@ class Login extends BaseLogin
             ]);
     }
 
+    #[\Override]
     public function authenticate(): ?LoginResponse
     {
         $this->form->getState();
@@ -58,6 +60,7 @@ class Login extends BaseLogin
         return $domain !== '' && in_array($domain, config('okta.domains', []), true);
     }
 
+    #[\Override]
     protected function getAuthenticateFormAction(): Action
     {
         return parent::getAuthenticateFormAction()

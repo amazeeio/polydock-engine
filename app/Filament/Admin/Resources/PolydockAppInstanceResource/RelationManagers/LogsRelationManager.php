@@ -20,7 +20,7 @@ class LogsRelationManager extends RelationManager
                 TextColumn::make('created_at')
                     ->dateTime('d-m-Y H:i:s'),
                 TextColumn::make('message')
-                    ->description(fn ($record) => json_encode($record->data, JSON_PRETTY_PRINT))
+                    ->description(fn ($record): string|false => json_encode($record->data, JSON_PRETTY_PRINT))
                     ->wrap(),
                 TextColumn::make('type'),
                 TextColumn::make('level')

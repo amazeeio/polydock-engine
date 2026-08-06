@@ -21,6 +21,7 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
      */
     protected ?string $lagoonKeyDir = null;
 
+    #[\Override]
     protected function tearDown(): void
     {
         try {
@@ -41,10 +42,12 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
     private function deleteDirectory(string $directory): void
     {
         foreach (scandir($directory) ?: [] as $item) {
-            if ($item === '.' || $item === '..') {
+            if ($item === '.') {
                 continue;
             }
-
+            if ($item === '..') {
+                continue;
+            }
             $path = $directory.DIRECTORY_SEPARATOR.$item;
 
             if (is_dir($path)) {
@@ -81,7 +84,7 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
             'ssh_private_key_file' => $lagoonKeyPath,
         ]]);
 
-        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
+        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config): string => 'fake-token');
     }
 
     public function test_it_runs_serially_by_default(): void

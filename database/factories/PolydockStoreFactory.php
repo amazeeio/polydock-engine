@@ -25,14 +25,14 @@ class PolydockStoreFactory extends Factory
 
     public function public(): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'status' => PolydockStoreStatusEnum::PUBLIC,
         ]);
     }
 
     public function private(): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'status' => PolydockStoreStatusEnum::PRIVATE,
         ]);
     }

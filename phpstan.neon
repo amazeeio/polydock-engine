@@ -1,13 +1,28 @@
 includes:
     - vendor/larastan/larastan/extension.neon
     - vendor/nesbot/carbon/extension.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/tomasvotruba/type-coverage/config/extension.neon
     - phpstan-baseline.neon
 
 parameters:
-    # Raised 5 -> 6 (2026-08-01) with the pre-existing 844 findings baselined:
-    # new code must be missing-iterable-type clean, existing debt is frozen
-    # rather than blocking. Chip away at the baseline, don't drop the level.
-    level: 6
+    # Raised 5 -> 6 (2026-08-01, 844 findings baselined), then 6 -> max with
+    # strict-rules (2026-08-06, baseline regenerated): new code must be
+    # max+strict clean, existing debt is frozen rather than blocking.
+    # Chip away at the baseline, don't drop the level.
+    level: max
+
+    # Models declare casts via the casts() method (Laravel 11+ style); larastan
+    # only parses that method's return array when this flag is on.
+    parseModelCastsMethod: true
+
+    # Ratchet floors set to the measured coverage at adoption (2026-08-06),
+    # same philosophy as the CI line-coverage gate: never lower, bump as
+    # type-hint-focused PRs land.
+    type_coverage:
+        return: 98
+        param: 82
+        property: 97
     # Known tradeoff: disabled so baselined inline @phpstan-ignore comments and
     # resolved baseline entries don't surface as unmatched-ignore errors. The
     # cost is that stale baseline entries go undetected; periodically regenerate

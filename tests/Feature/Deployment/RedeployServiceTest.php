@@ -109,7 +109,7 @@ class RedeployServiceTest extends TestCase
         $this->assertNotNull($a->refresh()->last_deploy_triggered_at);
         $this->assertNotNull($b->refresh()->last_deploy_triggered_at);
 
-        Queue::assertPushed(PollDeploymentRunJob::class, fn ($job) => $job->deploymentRunId === $run->id);
+        Queue::assertPushed(PollDeploymentRunJob::class, fn ($job): bool => $job->deploymentRunId === $run->id);
     }
 
     public function test_trigger_failure_marks_run_failed_and_does_not_claim_instances(): void

@@ -28,11 +28,6 @@ class PolydockStore extends Model
         'lagoon_deploy_group_name',
     ];
 
-    protected $casts = [
-        'status' => PolydockStoreStatusEnum::class,
-        'listed_in_marketplace' => 'boolean',
-    ];
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -72,5 +67,14 @@ class PolydockStore extends Model
     public function variables(): MorphMany
     {
         return $this->morphMany(PolydockVariable::class, 'variabled');
+    }
+
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'status' => PolydockStoreStatusEnum::class,
+            'listed_in_marketplace' => 'boolean',
+        ];
     }
 }

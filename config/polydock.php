@@ -32,14 +32,14 @@ $filterServiceProviders = explode(',', (string) env('POLYDOCK_DISABLED_SERVICE_P
 
 foreach ($filterServiceProviders as $filterServiceProvider) {
     $filterServiceProvider = trim($filterServiceProvider);
-    if (! empty($filterServiceProvider) && isset($serviceProviderSingletons[$filterServiceProvider])) {
+    if ($filterServiceProvider !== '' && $filterServiceProvider !== '0' && isset($serviceProviderSingletons[$filterServiceProvider])) {
         unset($serviceProviderSingletons[$filterServiceProvider]);
     }
 }
 
 return [
     'health_token' => env('POLYDOCK_HEALTH_TOKEN'),
-    'trusted_ips' => array_filter(array_map('trim', explode(',', (string) env('POLYDOCK_TRUSTED_IPS', '')))),
+    'trusted_ips' => array_filter(array_map(trim(...), explode(',', (string) env('POLYDOCK_TRUSTED_IPS', '')))),
     'lagoon_environment_type' => env('LAGOON_ENVIRONMENT_TYPE', 'development'),
     'default_user_group_id_for_unallocated_instances' => env('POLYDOCK_DEFAULT_USER_GROUP_ID_FOR_UNALLOCATED_INSTANCES', 1),
     'max_per_run_dispatch_midtrial_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_MIDTRIAL_EMAILS', 25),

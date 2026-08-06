@@ -18,12 +18,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::connection($this->connection())->table($this->table(), function (Blueprint $table) {
+        Schema::connection($this->connection())->table($this->table(), function (Blueprint $table): void {
             $table->json('attribute_changes')->nullable()->after('causer_id');
             $table->dropColumn('batch_uuid');
         });
 
-        $this->query()->whereNotNull('properties')->eachById(function ($row) {
+        $this->query()->whereNotNull('properties')->eachById(function ($row): void {
             $properties = json_decode((string) $row->properties, true) ?: [];
             $changes = array_intersect_key($properties, array_flip(['attributes', 'old']));
             $remaining = array_diff_key($properties, array_flip(['attributes', 'old']));
@@ -41,11 +41,11 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::connection($this->connection())->table($this->table(), function (Blueprint $table) {
+        Schema::connection($this->connection())->table($this->table(), function (Blueprint $table): void {
             $table->uuid('batch_uuid')->nullable()->after('causer_id');
         });
 
-        $this->query()->whereNotNull('attribute_changes')->eachById(function ($row) {
+        $this->query()->whereNotNull('attribute_changes')->eachById(function ($row): void {
             $properties = json_decode((string) $row->properties, true) ?: [];
             $changes = json_decode((string) $row->attribute_changes, true) ?: [];
 
@@ -54,7 +54,7 @@ return new class extends Migration
             ]);
         });
 
-        Schema::connection($this->connection())->table($this->table(), function (Blueprint $table) {
+        Schema::connection($this->connection())->table($this->table(), function (Blueprint $table): void {
             $table->dropColumn('attribute_changes');
         });
     }

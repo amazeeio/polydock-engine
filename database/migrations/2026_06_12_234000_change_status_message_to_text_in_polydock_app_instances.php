@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->text('status_message')->nullable()->change();
         });
     }
@@ -21,7 +21,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->string('status_message', 255)->nullable()->change();
         });
     }

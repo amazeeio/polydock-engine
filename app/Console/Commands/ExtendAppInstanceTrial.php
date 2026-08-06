@@ -133,7 +133,7 @@ class ExtendAppInstanceTrial extends BaseCommand
                 hint: $header,
             );
 
-            if (empty($selectedIds)) {
+            if ($selectedIds === []) {
                 $this->info('No instances selected.');
 
                 return 0;

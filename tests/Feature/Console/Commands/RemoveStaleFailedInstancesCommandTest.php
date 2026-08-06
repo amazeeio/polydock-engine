@@ -159,7 +159,7 @@ class RemoveStaleFailedInstancesCommandTest extends TestCase
 
         $statuses = collect([$a->fresh()->status, $b->fresh()->status]);
         $this->assertCount(1, $statuses->filter(
-            fn ($s) => $s === PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
+            fn ($s): bool => $s === PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
         ));
     }
 }

@@ -86,7 +86,7 @@ trait UsesManualAmazeeAiCredentials
     public function provisionAndInjectManualAmazeeAiCredentials(PolydockAppInstanceInterface $appInstance, array $logContext = []): array
     {
         $functionName = __FUNCTION__;
-        $logContext = $logContext + $this->getLogContext($functionName);
+        $logContext += $this->getLogContext($functionName);
 
         $claimEnvVars = [];
 
@@ -113,7 +113,7 @@ trait UsesManualAmazeeAiCredentials
         } else {
             $secret = $appInstance->getKeyValue('secret');
 
-            if (! \is_array($secret) || empty($secret)) {
+            if (! \is_array($secret) || $secret === []) {
                 $this->warning("{$functionName}: No manual AI credentials found in secret", $logContext);
 
                 return [];
@@ -163,7 +163,10 @@ trait UsesManualAmazeeAiCredentials
 
         $this->info("{$functionName}: Injecting AI LLM Credentials", $logContext);
         foreach ($claimEnvVars as $variableName => $variableValue) {
-            if ($variableValue === null || $variableValue === '') {
+            if ($variableValue === null) {
+                continue;
+            }
+            if ($variableValue === '') {
                 continue;
             }
             $this->addOrUpdateLagoonProjectVariable($appInstance, $variableName, $variableValue, 'GLOBAL');

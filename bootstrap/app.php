@@ -18,7 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withMiddleware(function (Middleware $middleware) {
+    ->withMiddleware(function (Middleware $middleware): void {
         $trustedProxies = env('TRUSTED_PROXIES', '*');
         $middleware->trustProxies(at: $trustedProxies);
 
@@ -34,9 +34,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'instances.write.ability' => EnsureInstancesWriteAbility::class,
         ]);
 
-        $middleware->redirectGuestsTo(fn () => null);
+        $middleware->redirectGuestsTo(fn (): null => null);
     })
-    ->withExceptions(function (Exceptions $exceptions) {
+    ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (AuthenticationException $e, Request $request) {
             if ($request->is('api/*') || $request->expectsJson()) {
                 return response()->json(['message' => 'Unauthenticated.'], 401);

@@ -38,6 +38,7 @@ class UserResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
@@ -55,6 +56,7 @@ class UserResource extends Resource
         return $query->whereKey($user->getKey());
     }
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -75,7 +77,7 @@ class UserResource extends Resource
 
                 TextInput::make('password')
                     ->password()
-                    ->dehydrated(fn ($state) => filled($state))
+                    ->dehydrated(fn ($state): bool => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255)
                     ->label(fn (string $operation): string => $operation === 'create'
@@ -91,6 +93,7 @@ class UserResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -124,12 +127,10 @@ class UserResource extends Resource
                     ->schema([
                         DatePicker::make('created_from'),
                     ])
-                    ->query(function ($query, array $data) {
-                        return $query->when(
-                            $data['created_from'],
-                            fn ($query) => $query->where('created_at', '>=', $data['created_from']),
-                        );
-                    }),
+                    ->query(fn ($query, array $data) => $query->when(
+                        $data['created_from'],
+                        fn ($query) => $query->where('created_at', '>=', $data['created_from']),
+                    )),
             ])
             ->recordActions([
                 ViewAction::make(),
@@ -142,6 +143,7 @@ class UserResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -150,6 +152,7 @@ class UserResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -160,6 +163,7 @@ class UserResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema
@@ -204,7 +208,7 @@ class UserResource extends Resource
                             ->label('Member of')
                             ->listWithLineBreaks()
                             ->bulleted()
-                            ->url(fn ($record) => $record->groups->isNotEmpty() ? UserGroupResource::getUrl('view', ['record' => $record->groups->first()]) : null)
+                            ->url(fn ($record): ?string => $record->groups->isNotEmpty() ? UserGroupResource::getUrl('view', ['record' => $record->groups->first()]) : null)
                             ->openUrlInNewTab(),
                     ])
                     ->columnSpan(1),

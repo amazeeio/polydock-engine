@@ -386,7 +386,7 @@ class BanEmailsCommandTest extends TestCase
         $rule = new BannedEmail;
 
         $called = false;
-        $fail = function ($message) use (&$called) {
+        $fail = function ($message) use (&$called): void {
             $called = true;
         };
 

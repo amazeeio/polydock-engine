@@ -8,12 +8,9 @@ use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Polydock\Core\PolydockAppInstanceStatusFlowException;
 use App\PolydockEngine\Engine;
 use App\PolydockEngine\PolydockLogger;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\Middleware\WithoutOverlapping;
-use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -21,10 +18,7 @@ use Spatie\SlackAlerts\Facades\SlackAlert;
 
 abstract class BaseJob implements ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
     use Queueable;
-    use SerializesModels;
 
     /**
      * The number of seconds the job can run before timing out.
@@ -40,7 +34,7 @@ abstract class BaseJob implements ShouldQueue
      */
     public $failOnTimeout = true;
 
-    protected const OVERLAP_LOCK_SECONDS = 660;
+    protected const int OVERLAP_LOCK_SECONDS = 660;
 
     protected PolydockAppInstance $appInstance;
 
@@ -129,7 +123,7 @@ abstract class BaseJob implements ShouldQueue
         Log::info('Unique ID for job: '.$uniqueId);
 
         return [
-            (new WithoutOverlapping($uniqueId))
+            new WithoutOverlapping($uniqueId)
                 ->expireAfter(self::OVERLAP_LOCK_SECONDS)
                 ->shared() // Use shared lock across different queues
                 ->dontRelease(),
@@ -186,7 +180,7 @@ abstract class BaseJob implements ShouldQueue
      * {@see ProcessPolydockAppInstanceStatusChange}, and the
      * stage groupings on {@see PolydockAppInstance}.
      */
-    private static function lifecycleStageOrdinal(PolydockAppInstanceStatus $status): ?int
+    private function lifecycleStageOrdinal(PolydockAppInstanceStatus $status): ?int
     {
         return match ($status) {
             PolydockAppInstanceStatus::NEW => 0,
@@ -262,8 +256,8 @@ abstract class BaseJob implements ShouldQueue
 
     private function isKnownStatusProgression(PolydockAppInstanceStatus $expectedStatus, PolydockAppInstanceStatus $currentStatus): bool
     {
-        $expectedOrdinal = self::lifecycleStageOrdinal($expectedStatus);
-        $currentOrdinal = self::lifecycleStageOrdinal($currentStatus);
+        $expectedOrdinal = $this->lifecycleStageOrdinal($expectedStatus);
+        $currentOrdinal = $this->lifecycleStageOrdinal($currentStatus);
 
         if ($expectedOrdinal === null || $currentOrdinal === null) {
             return false;

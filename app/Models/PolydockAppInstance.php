@@ -108,33 +108,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     ];
 
     /**
-     * The casts for the model
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'status' => PolydockAppInstanceStatus::class,
-        'data' => 'array',
-        'is_trial' => 'boolean',
-        'trial_ends_at' => 'datetime',
-        'trial_completed' => 'boolean',
-        'send_midtrial_email_at' => 'datetime',
-        'midtrial_email_sent' => 'boolean',
-        'send_one_day_left_email_at' => 'datetime',
-        'one_day_left_email_sent' => 'boolean',
-        'trial_complete_email_sent' => 'boolean',
-        'app_one_time_login_valid_until' => 'datetime',
-        'removed_at' => 'datetime',
-        'purge_eligible_at' => 'datetime',
-        'force_purge_requested_at' => 'datetime',
-        'purge_last_attempted_at' => 'datetime',
-        'purge_attempts' => 'integer',
-        'last_deployed_at' => 'datetime',
-        'last_deploy_triggered_at' => 'datetime',
-        'next_redeploy_at' => 'datetime',
-    ];
-
-    /**
      * The engine for the app instance
      */
     private PolydockEngineInterface $engine;
@@ -410,7 +383,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             // Get the store app and its class
             $storeApp = PolydockStoreApp::findOrFail($model->polydock_store_app_id);
 
@@ -475,7 +448,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             }
         });
 
-        static::created(function ($appInstance) {
+        static::created(function ($appInstance): void {
             // Fire the NEW status event if applicable
             if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
                 $appInstance->info('MODEL: New app instance created', [
@@ -486,7 +459,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             }
         });
 
-        static::updated(function ($appInstance) {
+        static::updated(function ($appInstance): void {
             if ($appInstance->wasChanged('status')) {
                 $appInstance->info('MODEL: Status changed for app instance', [
                     'app_instance_id' => $appInstance->id,
@@ -639,7 +612,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $this->purge_eligible_at = $now->copy()->addDays($graceDays);
             }
 
-            if (! empty($statusMessage)) {
+            if ($statusMessage !== '' && $statusMessage !== '0') {
                 $this->setStatusMessage($statusMessage);
             }
         } else {
@@ -649,7 +622,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 'status' => $status,
             ]);
 
-            if (! empty($statusMessage)) {
+            if ($statusMessage !== '' && $statusMessage !== '0') {
                 $this->setStatusMessage($statusMessage);
             }
         }
@@ -691,7 +664,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             return;
         }
 
-        $string = (string) $value;
+        $string = $value;
         $maxBytes = 2000; // Safe limit for status messages (approx 500-2000 chars)
 
         if (strlen($string) > $maxBytes) {
@@ -719,7 +692,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      *
      * @var list<string>
      */
-    private const ENCRYPTED_KEYS = [
+    private const array ENCRYPTED_KEYS = [
         'secret',
     ];
 
@@ -760,7 +733,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             $token = config('polydock.health_token');
             if (! empty($token)) {
                 $value = $this->stripTokenFromUrl((string) $value);
-                $separator = str_contains((string) $value, '?') ? '&' : '?';
+                $separator = str_contains($value, '?') ? '&' : '?';
 
                 return $value.$separator.'token='.urlencode($token);
             }
@@ -774,7 +747,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * Lets getKeyValue() distinguish already-encrypted ciphertext from any
      * legacy plaintext still present in the `data` column (backfill guard).
      */
-    private const ENCRYPTED_SECRET_PREFIX = 'enc:v1:';
+    private const string ENCRYPTED_SECRET_PREFIX = 'enc:v1:';
 
     /**
      * Encrypt a secret value for storage inside the `data` column.
@@ -786,7 +759,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     private function encryptSecretValue(mixed $value): mixed
     {
-        if ($value === null || $value === '' || $value === []) {
+        if (in_array($value, [null, '', []], true)) {
             return $value;
         }
 
@@ -845,9 +818,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 unset($queryParams['token']);
                 $queryString = http_build_query($queryParams);
                 $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '';
-                $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+                $host = $parsedUrl['host'] ?? '';
                 $port = isset($parsedUrl['port']) ? ':'.$parsedUrl['port'] : '';
-                $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
+                $path = $parsedUrl['path'] ?? '';
 
                 return $scheme.$host.$port.$path.($queryString !== '' ? '?'.$queryString : '');
             }
@@ -1085,9 +1058,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         // Randomly choose between color-animal or verb-animal pattern
         if (random_int(0, 1) === 0) {
             return strtolower(self::pickColor().self::pickAnimal());
-        } else {
-            return strtolower($this->pickVerb().self::pickAnimal());
         }
+
+        return strtolower($this->pickVerb().self::pickAnimal());
     }
 
     /**
@@ -1347,8 +1320,39 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         // diffInDays() returns a float in Carbon 3; round up so a partial day still
         // grants a full trial day rather than being truncated toward zero.
-        $durationDays = (int) ceil((float) now()->diffInDays($trialEndDateTime));
+        $durationDays = (int) ceil(now()->diffInDays($trialEndDateTime));
 
         return $this->calculateAndSetTrialDates($durationDays, $saveModel);
+    }
+
+    /**
+     * The casts for the model
+     *
+     * @return array<string, string>
+     */
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'status' => PolydockAppInstanceStatus::class,
+            'data' => 'array',
+            'is_trial' => 'boolean',
+            'trial_ends_at' => 'datetime',
+            'trial_completed' => 'boolean',
+            'send_midtrial_email_at' => 'datetime',
+            'midtrial_email_sent' => 'boolean',
+            'send_one_day_left_email_at' => 'datetime',
+            'one_day_left_email_sent' => 'boolean',
+            'trial_complete_email_sent' => 'boolean',
+            'app_one_time_login_valid_until' => 'datetime',
+            'removed_at' => 'datetime',
+            'purge_eligible_at' => 'datetime',
+            'force_purge_requested_at' => 'datetime',
+            'purge_last_attempted_at' => 'datetime',
+            'purge_attempts' => 'integer',
+            'last_deployed_at' => 'datetime',
+            'last_deploy_triggered_at' => 'datetime',
+            'next_redeploy_at' => 'datetime',
+        ];
     }
 }

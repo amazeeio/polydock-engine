@@ -27,11 +27,12 @@ class PolydockProductType extends Model
         'slug',
     ];
 
+    #[\Override]
     public static function boot(): void
     {
         parent::boot();
 
-        static::saving(function ($model) {
+        static::saving(function ($model): void {
             if (empty($model->slug) || ($model->isDirty('name') && ! $model->isDirty('slug'))) {
                 $model->slug = Str::slug($model->name);
             }

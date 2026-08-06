@@ -44,11 +44,13 @@ class ResolvesCustomProjectNameHarness
 
 class ClawLikeNamingHarness extends ResolvesCustomProjectNameHarness
 {
+    #[\Override]
     public static function defaultProjectNamingAdjectives(): array
     {
         return ['pinchy'];
     }
 
+    #[\Override]
     public static function defaultProjectNamingNouns(): array
     {
         return ['lobster'];

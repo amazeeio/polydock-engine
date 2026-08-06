@@ -35,6 +35,7 @@ class ActivityLogResource extends Resource
 
     protected static ?int $navigationSort = 9000;
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -47,7 +48,7 @@ class ActivityLogResource extends Resource
                 TextColumn::make('causer.email')
                     ->label('Actor')
                     ->searchable()
-                    ->description(fn (Activity $record) => $record->properties['is_service_account'] ?? false
+                    ->description(fn (Activity $record): ?string => $record->properties['is_service_account'] ?? false
                         ? 'service-account'
                         : null)
                     ->placeholder('System'),
@@ -58,7 +59,7 @@ class ActivityLogResource extends Resource
                     ->limit(80),
                 TextColumn::make('subject_type')
                     ->label('Resource')
-                    ->formatStateUsing(fn (?string $state) => $state ? class_basename($state) : '-')
+                    ->formatStateUsing(fn (?string $state): string => $state ? class_basename($state) : '-')
                     ->badge()
                     ->color('gray'),
                 TextColumn::make('subject_id')
@@ -67,7 +68,7 @@ class ActivityLogResource extends Resource
                 TextColumn::make('event')
                     ->label('Event')
                     ->badge()
-                    ->color(fn (?string $state) => match ($state) {
+                    ->color(fn (?string $state): string => match ($state) {
                         'created' => 'success',
                         'updated' => 'warning',
                         'deleted' => 'danger',
@@ -81,7 +82,7 @@ class ActivityLogResource extends Resource
                         ->whereNotNull('subject_type')
                         ->distinct()
                         ->pluck('subject_type', 'subject_type')
-                        ->mapWithKeys(fn ($type) => [$type => class_basename($type)])
+                        ->mapWithKeys(fn ($type): array => [$type => class_basename($type)])
                         ->all()),
                 SelectFilter::make('event')
                     ->options([
@@ -100,7 +101,7 @@ class ActivityLogResource extends Resource
                             return $query->whereJsonContains('properties', ['is_service_account' => true]);
                         }
                         if ($data['value'] === 'human') {
-                            return $query->where(function ($q) {
+                            return $query->where(function ($q): void {
                                 $q->whereJsonContains('properties', ['is_service_account' => false])
                                     ->orWhereJsonDoesntContainKey('properties->is_service_account');
                             });
@@ -115,6 +116,7 @@ class ActivityLogResource extends Resource
             ->toolbarActions([]);
     }
 
+    #[\Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema
@@ -136,13 +138,13 @@ class ActivityLogResource extends Resource
                             ->schema([
                                 TextEntry::make('subject_type')
                                     ->label('Resource Type')
-                                    ->formatStateUsing(fn (?string $state) => $state ? class_basename($state) : '-'),
+                                    ->formatStateUsing(fn (?string $state): string => $state ? class_basename($state) : '-'),
                                 TextEntry::make('subject_id')
                                     ->label('Resource ID')
                                     ->placeholder('-'),
                                 TextEntry::make('event')
                                     ->badge()
-                                    ->color(fn (?string $state) => match ($state) {
+                                    ->color(fn (?string $state): string => match ($state) {
                                         'created' => 'success',
                                         'updated' => 'warning',
                                         'deleted' => 'danger',
@@ -162,9 +164,9 @@ class ActivityLogResource extends Resource
                                     ->placeholder('-'),
                                 TextEntry::make('properties.is_service_account')
                                     ->label('Service Account')
-                                    ->formatStateUsing(fn ($state) => $state ? 'Yes' : 'No')
+                                    ->formatStateUsing(fn ($state): string => $state ? 'Yes' : 'No')
                                     ->badge()
-                                    ->color(fn ($state) => $state ? 'warning' : 'gray'),
+                                    ->color(fn ($state): string => $state ? 'warning' : 'gray'),
                                 TextEntry::make('properties.user_agent')
                                     ->label('User Agent')
                                     ->placeholder('-')
@@ -175,25 +177,25 @@ class ActivityLogResource extends Resource
                     ->schema([
                         TextEntry::make('attribute_changes.old')
                             ->label('Before')
-                            ->state(fn (Activity $record) => isset($record->attribute_changes['old'])
+                            ->state(fn (Activity $record): string|false|null => isset($record->attribute_changes['old'])
                                 ? json_encode($record->attribute_changes['old'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
                                 : null)
                             ->placeholder('N/A')
                             ->columnSpanFull(),
                         TextEntry::make('attribute_changes.attributes')
                             ->label('After')
-                            ->state(fn (Activity $record) => isset($record->attribute_changes['attributes'])
+                            ->state(fn (Activity $record): string|false|null => isset($record->attribute_changes['attributes'])
                                 ? json_encode($record->attribute_changes['attributes'], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES)
                                 : null)
                             ->placeholder('N/A')
                             ->columnSpanFull(),
                     ])
-                    ->visible(fn (Activity $record) => isset($record->attribute_changes['old']) || isset($record->attribute_changes['attributes'])),
+                    ->visible(fn (Activity $record): bool => isset($record->attribute_changes['old']) || isset($record->attribute_changes['attributes'])),
                 Section::make('Full Properties')
                     ->schema([
                         TextEntry::make('properties')
                             ->label('')
-                            ->state(fn (Activity $record) => json_encode(
+                            ->state(fn (Activity $record): string|false => json_encode(
                                 collect($record->properties)->except(['old', 'attributes', 'ip', 'user_agent', 'token_id', 'token_name', 'is_service_account', 'request_id'])->all(),
                                 JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES,
                             ))
@@ -206,11 +208,13 @@ class ActivityLogResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

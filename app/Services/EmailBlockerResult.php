@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
 class EmailBlockerResult
 {
     public function __construct(
-        private bool $isBlocked,
-        private ?string $reason = null
+        private readonly bool $isBlocked,
+        private readonly ?string $reason = null
     ) {}
 
     /**

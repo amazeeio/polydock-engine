@@ -66,7 +66,7 @@ class DispatchMidtrialEmailJobsCommandTest extends TestCase
     public function test_dispatches_job_for_eligible_instance(): void
     {
         $storeApp = $this->createStoreApp();
-        $instance = $this->createInstance($storeApp, sendMidtrialEmailAt: now()->subHour());
+        $this->createInstance($storeApp, sendMidtrialEmailAt: now()->subHour());
 
         $this->artisan('polydock:dispatch-midtrial-emails')->assertExitCode(0);
 
@@ -106,7 +106,7 @@ class DispatchMidtrialEmailJobsCommandTest extends TestCase
     public function test_does_not_dispatch_when_send_time_is_null(): void
     {
         $storeApp = $this->createStoreApp();
-        $this->createInstance($storeApp, sendMidtrialEmailAt: null);
+        $this->createInstance($storeApp);
 
         $this->artisan('polydock:dispatch-midtrial-emails')->assertExitCode(0);
 

@@ -64,7 +64,7 @@ class ProcessTrialCompleteEmailJobTest extends TestCase
     {
         Mail::fake();
 
-        (new ProcessTrialCompleteEmailJob($this->instance->id))->handle();
+        new ProcessTrialCompleteEmailJob($this->instance->id)->handle();
 
         Mail::assertSent(AppInstanceTrialCompleteMail::class);
 
@@ -83,7 +83,7 @@ class ProcessTrialCompleteEmailJobTest extends TestCase
         Mail::shouldReceive('to')->andReturn($pendingMail);
 
         try {
-            (new ProcessTrialCompleteEmailJob($this->instance->id))->handle();
+            new ProcessTrialCompleteEmailJob($this->instance->id)->handle();
             $this->fail('Expected the job to propagate the send exception.');
         } catch (RuntimeException $e) {
             $this->assertSame('SMTP failure', $e->getMessage());

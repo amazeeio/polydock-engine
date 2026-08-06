@@ -12,6 +12,7 @@ class ListUserRemoteRegistrations extends ListRecords
 {
     protected static string $resource = UserRemoteRegistrationResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [

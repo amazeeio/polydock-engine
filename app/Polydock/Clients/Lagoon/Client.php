@@ -108,7 +108,7 @@ class Client
      */
     public function initGraphqlClient(): void
     {
-        if (empty($this->lagoonToken)) {
+        if (in_array($this->lagoonToken, [null, '', '0'], true)) {
             throw new LagoonClientTokenRequiredToInitializeException;
         }
 

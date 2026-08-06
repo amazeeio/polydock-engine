@@ -56,9 +56,9 @@ class PollEnsureUnallocatedAppInstancesJobCommand extends BaseCommand
         $apps = PolydockStoreApp::query()
             ->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
             ->withCount([
-                'instances as unallocated_instances_count' => function ($query) {
+                'instances as unallocated_instances_count' => function ($query): void {
                     $query->whereNull('user_group_id')
-                        ->where(function ($q) {
+                        ->where(function ($q): void {
                             $q->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
                                 ->orWhereIn('status', PolydockAppInstance::unallocatedInProgressStatuses());
                         });

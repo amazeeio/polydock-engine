@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('polydock_store_webhooks', function (Blueprint $table) {
+        Schema::table('polydock_store_webhooks', function (Blueprint $table): void {
             $table->string('secret')->nullable()->after('url');
         });
 
@@ -23,7 +23,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('polydock_store_webhooks', function (Blueprint $table) {
+        Schema::table('polydock_store_webhooks', function (Blueprint $table): void {
             $table->dropColumn('secret');
         });
     }

@@ -9,6 +9,7 @@ class EditPolydockAppInstance extends EditRecord
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -16,6 +17,7 @@ class EditPolydockAppInstance extends EditRecord
         ];
     }
 
+    #[\Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);

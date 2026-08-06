@@ -16,9 +16,8 @@ trait PolydockEngineFunctionCallerTrait
      * requested function. Logs and returns null when it can't.
      *
      * @param  array<string, mixed>  $outputContext
-     * @return PolydockAppInterface|null
      */
-    private function resolveAppFunction(PolydockAppInstance $appInstance, string $appFunctionName, array $outputContext)
+    private function resolveAppFunction(PolydockAppInstance $appInstance, string $appFunctionName, array $outputContext): ?PolydockAppInterface
     {
         try {
             $polydockApp = $appInstance->getApp();

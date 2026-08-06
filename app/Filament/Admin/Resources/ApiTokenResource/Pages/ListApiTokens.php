@@ -19,6 +19,7 @@ class ListApiTokens extends ListRecords
 {
     protected static string $resource = ApiTokenResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -67,7 +68,7 @@ class ListApiTokens extends ListRecords
                 ->action(function (array $data): void {
                     /** @var User $user */
                     $user = User::query()->findOrFail($data['user_id']);
-                    $expiresAt = ! empty($data['expires_at']) ? Carbon::parse((string) $data['expires_at']) : null;
+                    $expiresAt = empty($data['expires_at']) ? null : Carbon::parse((string) $data['expires_at']);
                     $token = $user->createToken(
                         name: (string) $data['token_name'],
                         abilities: array_values($data['abilities']),

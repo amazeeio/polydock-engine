@@ -21,8 +21,11 @@ class UserGroupPolicy
         if ($user->hasRole('service-account')) {
             return true;
         }
+        if ($user->can('view_user_group')) {
+            return true;
+        }
 
-        return $user->can('view_user_group') || $user->groups()->whereKey($group->getKey())->exists();
+        return $user->groups()->whereKey($group->getKey())->exists();
     }
 
     public function create(User $user): bool

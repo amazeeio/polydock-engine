@@ -4,6 +4,7 @@ namespace Tests\Feature\Migrations;
 
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
+use App\Polydock\Apps\Generic\PolydockApp;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
@@ -60,7 +61,7 @@ class MigratePolydockAppClassesTest extends TestCase
 
         // Check migration updates (collapsed generic app types)
         $this->assertEquals(
-            'App\Polydock\Apps\Generic\PolydockApp',
+            PolydockApp::class,
             DB::table('polydock_store_apps')->where('name', 'App 1')->value('polydock_app_class')
         );
         $this->assertEquals(
@@ -69,7 +70,7 @@ class MigratePolydockAppClassesTest extends TestCase
         );
 
         $this->assertEquals(
-            'App\Polydock\Apps\Generic\PolydockApp',
+            PolydockApp::class,
             DB::table('polydock_store_apps')->where('name', 'App 2')->value('polydock_app_class')
         );
         $this->assertEquals(

@@ -207,7 +207,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     {
         $role = $this->groupRole($group);
 
-        return $role !== null && $role->atLeast($required);
+        return $role instanceof UserGroupRoleEnum && $role->atLeast($required);
     }
 
     /**
@@ -215,7 +215,11 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasRole('super_admin') || $this->can('access_admin_panel');
+        if ($this->hasRole('super_admin')) {
+            return true;
+        }
+
+        return $this->can('access_admin_panel');
     }
 
     /**

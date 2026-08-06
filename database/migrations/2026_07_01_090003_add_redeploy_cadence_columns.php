@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->boolean('redeploy_enabled')->default(false);
             $table->unsignedInteger('redeploy_interval_days')->nullable();
             $table->unsignedInteger('beta_redeploy_interval_days')->nullable();
         });
 
-        Schema::table('user_groups', function (Blueprint $table) {
+        Schema::table('user_groups', function (Blueprint $table): void {
             $table->boolean('is_beta')->default(false)->index();
         });
     }
@@ -27,7 +27,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->dropColumn([
                 'redeploy_enabled',
                 'redeploy_interval_days',
@@ -35,7 +35,7 @@ return new class extends Migration
             ]);
         });
 
-        Schema::table('user_groups', function (Blueprint $table) {
+        Schema::table('user_groups', function (Blueprint $table): void {
             $table->dropIndex(['is_beta']);
             $table->dropColumn('is_beta');
         });

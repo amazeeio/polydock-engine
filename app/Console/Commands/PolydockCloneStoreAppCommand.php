@@ -47,7 +47,7 @@ class PolydockCloneStoreAppCommand extends BaseCommand
 
             // Create store selection array
             $storeChoices = $stores
-                ->mapWithKeys(fn ($store) => [$store->id => "{$store->name} (ID: {$store->id})"])
+                ->mapWithKeys(fn ($store): array => [$store->id => "{$store->name} (ID: {$store->id})"])
                 ->toArray();
 
             // Ask user which store to clone into

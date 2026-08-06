@@ -64,16 +64,16 @@ class DispatchProjectPurgeJobsCommand extends BaseCommand
         $candidates = PolydockAppInstance::query()
             ->where('status', PolydockAppInstanceStatus::REMOVED)
             ->where('purge_attempts', '<', $maxAttempts)
-            ->where(function ($query) use ($now) {
+            ->where(function ($query) use ($now): void {
                 // Either grace period elapsed naturally...
-                $query->where(function ($q) use ($now) {
+                $query->where(function ($q) use ($now): void {
                     $q->whereNotNull('purge_eligible_at')
                         ->where('purge_eligible_at', '<=', $now);
                 })
                     // ...or admin-forced.
                     ->orWhereNotNull('force_purge_requested_at');
             })
-            ->where(function ($query) use ($backoffCutoff) {
+            ->where(function ($query) use ($backoffCutoff): void {
                 $query->whereNull('purge_last_attempted_at')
                     ->orWhere('purge_last_attempted_at', '<=', $backoffCutoff);
             })

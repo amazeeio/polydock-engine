@@ -38,9 +38,9 @@ trait OrganizationTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            return $response->getData();
         }
+
+        // Returns an array with all the data returned by the GraphQL server.
+        return $response->getData();
     }
 }

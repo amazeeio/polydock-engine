@@ -42,8 +42,11 @@ class DispatchScheduledRedeploysCommand extends BaseCommand
 
         foreach ($due->groupBy('polydock_store_app_id') as $group) {
             $run = $service->redeploy($group->all(), PolydockDeploymentRunTriggerSourceEnum::SCHEDULED);
-
-            if (! $run || $run->status === PolydockDeploymentRunStatusEnum::FAILED) {
+            if (! $run) {
+                // Leave next_redeploy_at untouched so these retry on a later tick.
+                continue;
+            }
+            if ($run->status === PolydockDeploymentRunStatusEnum::FAILED) {
                 // Leave next_redeploy_at untouched so these retry on a later tick.
                 continue;
             }
@@ -76,17 +79,17 @@ class DispatchScheduledRedeploysCommand extends BaseCommand
             ->with(['storeApp', 'userGroup'])
             ->whereIn('status', PolydockAppInstance::$redeployEligibleStatuses)
             ->where('is_trial', false)
-            ->whereHas('storeApp', function ($query) {
+            ->whereHas('storeApp', function ($query): void {
                 $query->where('redeploy_enabled', true)
                     ->whereNotNull('redeploy_interval_days');
             })
-            ->whereDoesntHave('deploymentRun', function ($query) {
+            ->whereDoesntHave('deploymentRun', function ($query): void {
                 $query->whereIn('status', [
                     PolydockDeploymentRunStatusEnum::PENDING->value,
                     PolydockDeploymentRunStatusEnum::RUNNING->value,
                 ]);
             })
-            ->where(function ($query) {
+            ->where(function ($query): void {
                 $query->whereNull('next_redeploy_at')
                     ->orWhere('next_redeploy_at', '<=', now());
             })

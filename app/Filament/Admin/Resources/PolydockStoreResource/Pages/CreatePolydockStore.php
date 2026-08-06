@@ -12,6 +12,7 @@ class CreatePolydockStore extends CreateRecord
 {
     protected static string $resource = PolydockStoreResource::class;
 
+    #[\Override]
     protected function handleRecordCreation(array $data): Model
     {
         $key = $data['lagoon_deploy_private_key'] ?? null;

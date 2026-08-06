@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             // Trial duration
             $table->unsignedInteger('trial_duration_days')->nullable()->after('email_body_markdown');
 
@@ -31,7 +31,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->dropColumn([
                 'trial_duration_days',
                 'send_midtrial_email',

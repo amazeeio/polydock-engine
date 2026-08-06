@@ -41,7 +41,7 @@ class PolydockDeploymentRunFactory extends Factory
 
     public function completed(): static
     {
-        return $this->state(fn () => [
+        return $this->state(fn (): array => [
             'status' => PolydockDeploymentRunStatusEnum::COMPLETED,
             'completed_at' => now(),
         ]);

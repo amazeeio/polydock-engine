@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
@@ -19,6 +21,7 @@ class AppInstancesRelationManager extends RelationManager
 {
     protected static string $relationship = 'appInstances';
 
+    #[\Override]
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -37,7 +40,7 @@ class AppInstancesRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
-                    ->url(fn ($record) => PolydockAppInstanceResource::getUrl('view', ['record' => $record]))
+                    ->url(fn ($record): string => PolydockAppInstanceResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
                 TextColumn::make('storeApp.name')
                     ->label('Store App')
@@ -59,7 +62,7 @@ class AppInstancesRelationManager extends RelationManager
                 EditAction::make(),
                 DeleteAction::make(),
                 ViewAction::make()
-                    ->url(fn ($record) => PolydockAppInstanceResource::getUrl('view', ['record' => $record])),
+                    ->url(fn ($record): string => PolydockAppInstanceResource::getUrl('view', ['record' => $record])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

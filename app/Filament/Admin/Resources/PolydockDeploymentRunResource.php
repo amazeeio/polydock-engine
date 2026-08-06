@@ -33,31 +33,37 @@ class PolydockDeploymentRunResource extends Resource
 
     protected static ?int $navigationSort = 150;
 
+    #[\Override]
     public static function canViewAny(): bool
     {
         return PolydockDeploymentRun::currentUserCanManage();
     }
 
+    #[\Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function canEdit(Model $record): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function canDelete(Model $record): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->with('storeApp');
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -86,7 +92,7 @@ class PolydockDeploymentRunResource extends Resource
                 TextColumn::make('failed_count')
                     ->label('Failed')
                     ->numeric()
-                    ->color(fn ($state) => $state > 0 ? 'danger' : 'gray'),
+                    ->color(fn ($state): string => $state > 0 ? 'danger' : 'gray'),
                 TextColumn::make('lagoon_bulk_id')
                     ->label('Bulk ID')
                     ->copyable()
@@ -100,11 +106,11 @@ class PolydockDeploymentRunResource extends Resource
             ->filters([
                 SelectFilter::make('status')
                     ->options(collect(PolydockDeploymentRunStatusEnum::cases())
-                        ->mapWithKeys(fn ($case) => [$case->value => $case->getLabel()])
+                        ->mapWithKeys(fn ($case): array => [$case->value => $case->getLabel()])
                         ->all()),
                 SelectFilter::make('trigger_source')
                     ->options(collect(PolydockDeploymentRunTriggerSourceEnum::cases())
-                        ->mapWithKeys(fn ($case) => [$case->value => $case->getLabel()])
+                        ->mapWithKeys(fn ($case): array => [$case->value => $case->getLabel()])
                         ->all()),
             ])
             ->recordActions([
@@ -113,6 +119,7 @@ class PolydockDeploymentRunResource extends Resource
             ->toolbarActions([]);
     }
 
+    #[\Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema->components([
@@ -139,13 +146,14 @@ class PolydockDeploymentRunResource extends Resource
                         ->hiddenLabel()
                         ->state(fn (PolydockDeploymentRun $record) => $record->instances()
                             ->get(['name', 'last_deployment_status'])
-                            ->map(fn ($i) => $i->name.' — '.($i->last_deployment_status ?? 'pending'))
+                            ->map(fn ($i): string => $i->name.' — '.($i->last_deployment_status ?? 'pending'))
                             ->implode("\n"))
                         ->placeholder('No instances attached'),
                 ]),
         ]);
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

@@ -43,7 +43,7 @@ class EmailBlockerService
         $emailParts = explode('@', $email);
         $domain = $emailParts[1] ?? '';
 
-        if (! empty($domain)) {
+        if ($domain !== '' && $domain !== '0') {
             $disposableDomains = $this->loadDisposableDomains();
             $domainHierarchy = $this->getDomainHierarchy($domain);
 
@@ -69,7 +69,7 @@ class EmailBlockerService
             if ($response->successful()) {
                 $domains = $response->json();
 
-                if (\is_array($domains) && ! empty($domains)) {
+                if (\is_array($domains) && $domains !== []) {
                     $this->saveDisposableDomains($domains);
                     Log::info('Successfully updated disposable email domains list', ['count' => \count($domains)]);
 

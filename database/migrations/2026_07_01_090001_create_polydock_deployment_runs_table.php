@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('polydock_deployment_runs', function (Blueprint $table) {
+        Schema::create('polydock_deployment_runs', function (Blueprint $table): void {
             $table->id();
             $table->uuid('uuid')->unique();
             $table->foreignId('polydock_store_app_id')

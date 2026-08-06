@@ -25,7 +25,7 @@ use Throwable;
  */
 class PolydockDeploymentService
 {
-    public function __construct(private LagoonClientService $lagoon) {}
+    public function __construct(private readonly LagoonClientService $lagoon) {}
 
     /**
      * Trigger a redeploy across the given instances and return the created run.
@@ -43,7 +43,7 @@ class PolydockDeploymentService
     ): ?PolydockDeploymentRun {
         /** @var Collection<int, PolydockAppInstance> $deployable */
         $deployable = collect($instances)
-            ->filter(fn (PolydockAppInstance $i) => $i->isRedeployEligible() && ! $i->hasInFlightDeployment())
+            ->filter(fn (PolydockAppInstance $i): bool => $i->isRedeployEligible() && ! $i->hasInFlightDeployment())
             ->values();
 
         // Build Lagoon environment tuples + a lookup back to the instance.
@@ -65,7 +65,7 @@ class PolydockDeploymentService
             $byTarget[$this->targetKey($project, $branch)] = $instance;
         }
 
-        if (empty($environments)) {
+        if ($environments === []) {
             Log::info('Redeploy requested but no deployable instances', [
                 'trigger_source' => $source->value,
                 'requested' => $deployable->count(),
@@ -177,7 +177,10 @@ class PolydockDeploymentService
         foreach ($deployments as $deployment) {
             $project = data_get($deployment, 'environment.project.name');
             $branch = data_get($deployment, 'environment.name');
-            if (! $project || ! $branch) {
+            if (! $project) {
+                continue;
+            }
+            if (! $branch) {
                 continue;
             }
             $latestByTarget[$this->targetKey($project, $branch)] = $deployment;

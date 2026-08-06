@@ -59,7 +59,7 @@ class Ssh extends SpatieSsh
         $execute = $this->getCommandForExecute($command, $serviceName, $containerName);
 
         if ($input !== null) {
-            $this->configureProcess(function (Process $process) use ($input) {
+            $this->configureProcess(function (Process $process) use ($input): void {
                 $process->setInput($input);
             });
         }

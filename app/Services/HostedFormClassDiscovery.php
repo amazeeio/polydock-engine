@@ -35,8 +35,10 @@ class HostedFormClassDiscovery
             }
 
             $reflection = new \ReflectionClass($class);
-
-            if ($reflection->isAbstract() || ! $reflection->implementsInterface(HostedFormInterface::class)) {
+            if ($reflection->isAbstract()) {
+                continue;
+            }
+            if (! $reflection->implementsInterface(HostedFormInterface::class)) {
                 continue;
             }
 

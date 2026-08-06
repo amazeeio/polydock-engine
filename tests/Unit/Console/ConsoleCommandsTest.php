@@ -24,10 +24,12 @@ class ConsoleCommandsTest extends TestCase
 
         $count = 0;
         foreach ($files as $file) {
-            if ($file->isDir() || $file->getExtension() !== 'php') {
+            if ($file->isDir()) {
                 continue;
             }
-
+            if ($file->getExtension() !== 'php') {
+                continue;
+            }
             $relativePath = str_replace($commandsPath.DIRECTORY_SEPARATOR, '', $file->getRealPath());
             $className = 'App\\Console\\Commands\\'.str_replace(['/', '\\', '.php'], ['\\', '\\', ''], $relativePath);
 

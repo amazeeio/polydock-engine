@@ -64,8 +64,8 @@ abstract class BaseHostedForm implements HostedFormInterface
                 Rule::exists('polydock_store_apps', 'uuid')
                     ->where('status', PolydockStoreAppStatusEnum::AVAILABLE->value)
                     ->where('available_for_trials', true)
-                    ->where(function ($query) {
-                        $query->whereExists(function ($subQuery) {
+                    ->where(function ($query): void {
+                        $query->whereExists(function ($subQuery): void {
                             $subQuery->selectRaw(1)
                                 ->from('polydock_stores')
                                 ->whereColumn('polydock_stores.id', 'polydock_store_apps.polydock_store_id')

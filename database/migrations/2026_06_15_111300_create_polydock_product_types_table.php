@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('polydock_product_types', function (Blueprint $table) {
+        Schema::create('polydock_product_types', function (Blueprint $table): void {
             $table->id();
             $table->string('name')->unique();
             $table->string('slug')->unique();
             $table->timestamps();
         });
 
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->foreignId('polydock_product_type_id')
                 ->nullable()
                 ->after('polydock_store_id')
@@ -32,7 +32,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->dropForeign(['polydock_product_type_id']);
             $table->dropColumn('polydock_product_type_id');
         });

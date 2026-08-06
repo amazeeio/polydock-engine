@@ -56,7 +56,6 @@ class TriggerLagoonDeployOnAppInstance extends BaseCommand
 
         $status = $this->deployToInstance(
             instance: $instance,
-            client: null,
             envOverride: $envOverride,
             variablesOnly: $variablesOnly
         );
@@ -111,11 +110,10 @@ class TriggerLagoonDeployOnAppInstance extends BaseCommand
                 $this->error(string: "\n[FAILED] {$projectName}: {$errors}");
 
                 return 1;
-            } else {
-                $this->info(string: "\n[SUCCESS] {$projectName}: Deployment triggered.");
-
-                return 0;
             }
+            $this->info(string: "\n[SUCCESS] {$projectName}: Deployment triggered.");
+
+            return 0;
         } catch (Exception $e) {
             $this->error(string: "\n[FAILED] {$projectName}: {$e->getMessage()}");
 

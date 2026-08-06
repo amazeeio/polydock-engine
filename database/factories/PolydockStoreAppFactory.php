@@ -30,21 +30,21 @@ class PolydockStoreAppFactory extends Factory
 
     public function unavailable(): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'status' => PolydockStoreAppStatusEnum::UNAVAILABLE,
         ]);
     }
 
     public function availableForTrials(): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'available_for_trials' => true,
         ]);
     }
 
     public function notAvailableForTrials(): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'available_for_trials' => false,
         ]);
     }

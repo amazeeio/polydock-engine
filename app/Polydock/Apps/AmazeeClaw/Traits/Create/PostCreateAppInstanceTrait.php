@@ -54,7 +54,7 @@ trait PostCreateAppInstanceTrait
                     }
                 } catch (\Exception $e) {
                     $this->error('Post Create Failed: '.$e->getMessage(), [
-                        'exception_class' => \get_class($e),
+                        'exception_class' => $e::class,
                         'exception_trace' => $e->getTraceAsString(),
                     ]);
 

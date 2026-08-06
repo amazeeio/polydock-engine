@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('polydock_hosted_forms', function (Blueprint $table) {
+        Schema::create('polydock_hosted_forms', function (Blueprint $table): void {
             $table->id();
             $table->string('slug')->unique();
             $table->string('form_class');
@@ -22,7 +22,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('polydock_hosted_form_store_app', function (Blueprint $table) {
+        Schema::create('polydock_hosted_form_store_app', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('polydock_hosted_form_id')->constrained()->cascadeOnDelete();
             $table->foreignId('polydock_store_app_id')->constrained()->cascadeOnDelete();

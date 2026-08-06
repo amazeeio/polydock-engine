@@ -18,6 +18,7 @@ class SyncLagoonMetadataTest extends TestCase
 
     protected ?string $lagoonKeyDir = null;
 
+    #[\Override]
     protected function tearDown(): void
     {
         try {
@@ -35,7 +36,10 @@ class SyncLagoonMetadataTest extends TestCase
     private function deleteDirectory(string $directory): void
     {
         foreach (scandir($directory) ?: [] as $item) {
-            if ($item === '.' || $item === '..') {
+            if ($item === '.') {
+                continue;
+            }
+            if ($item === '..') {
                 continue;
             }
             $path = $directory.DIRECTORY_SEPARATOR.$item;
@@ -63,7 +67,7 @@ class SyncLagoonMetadataTest extends TestCase
             'ssh_private_key_file' => $lagoonKeyPath,
         ]]);
 
-        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
+        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config): string => 'fake-token');
     }
 
     public function test_it_syncs_metadata_for_active_instances(): void
@@ -639,17 +643,14 @@ class SyncLagoonMetadataTest extends TestCase
         $refClient = new \ReflectionClass($client);
 
         $propUser = $refClient->getProperty('lagoonSshUser');
-        $propUser->setAccessible(true);
         // Should remain default 'lagoon' rather than 'malicious-user-hack'
         $this->assertEquals('lagoon', $propUser->getValue($client));
 
         $propEndpoint = $refClient->getProperty('lagoonApiEndpoint');
-        $propEndpoint->setAccessible(true);
         // Should remain default value 'https://api.lagoon.amazeeio.cloud/graphql' rather than 'https://malicious-endpoint.hack/graphql'
         $this->assertEquals('https://api.lagoon.amazeeio.cloud/graphql', $propEndpoint->getValue($client));
 
         $propConfig = $refClient->getProperty('config');
-        $propConfig->setAccessible(true);
         $config = $propConfig->getValue($client);
 
         // Assert that the allowlisted overrides are preserved

@@ -42,7 +42,7 @@ class GeneralApplicationTest extends TestCase
     public function test_user_creation_with_database(): void
     {
         // Create a user using the factory
-        $user = User::factory()->create([
+        User::factory()->create([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'test@example.com',
@@ -146,7 +146,7 @@ class GeneralApplicationTest extends TestCase
 
         Log::shouldReceive('shareContext')
             ->once()
-            ->with(\Mockery::on(function ($context) {
+            ->with(\Mockery::on(function (array $context): bool {
                 $expectedArgv = 'artisan test:dummy-command --password=[REDACTED] --token --verbose --secret-token [REDACTED] --port=8080 -p [REDACTED] --safe-option safe-value';
 
                 return isset($context['artisan_command'])
@@ -199,7 +199,7 @@ class GeneralApplicationTest extends TestCase
 
         Log::shouldReceive('shareContext')
             ->once()
-            ->with(\Mockery::on(function ($context) {
+            ->with(\Mockery::on(function (array $context): bool {
                 $expectedArgv = 'artisan test:redact-positional-command [REDACTED] my-safe-value -t non-sensitive-filter-val';
 
                 return isset($context['artisan_command'])
@@ -259,7 +259,7 @@ class GeneralApplicationTest extends TestCase
 
         Log::shouldReceive('shareContext')
             ->once()
-            ->with(\Mockery::on(function ($context) {
+            ->with(\Mockery::on(function (array $context): bool {
                 $expectedArgv = 'artisan test:explicit-sensitive-command [REDACTED] my-public-argument-value --sensitive-opt [REDACTED] --normal-opt my-public-option-value';
 
                 return isset($context['artisan_command'])
