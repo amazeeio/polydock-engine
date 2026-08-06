@@ -186,9 +186,7 @@ trait ProjectEnvironmentTrait
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
         } else {
-            $data = $response->getData();
-
-            return $data;
+            return $response->getData();
         }
     }
 

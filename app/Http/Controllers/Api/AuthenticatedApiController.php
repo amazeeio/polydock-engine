@@ -479,7 +479,7 @@ class AuthenticatedApiController extends Controller
      */
     public function assignInstanceToGroup(Request $request, string $uuid): JsonResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'group_id' => 'nullable|integer|exists:user_groups,id',
             'group_slug' => 'nullable|string|exists:user_groups,slug',
         ]);

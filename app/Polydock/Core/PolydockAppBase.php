@@ -52,7 +52,7 @@ abstract class PolydockAppBase implements PolydockAppInterface
     /**
      * Whether the app fundamentals have been validated
      */
-    private bool $isValidated = false;
+    private bool $isValidated;
 
     /**
      * Array of variable definitions

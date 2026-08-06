@@ -691,7 +691,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             return;
         }
 
-        $string = (string) $value;
+        $string = $value;
         $maxBytes = 2000; // Safe limit for status messages (approx 500-2000 chars)
 
         if (strlen($string) > $maxBytes) {
@@ -760,7 +760,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             $token = config('polydock.health_token');
             if (! empty($token)) {
                 $value = $this->stripTokenFromUrl((string) $value);
-                $separator = str_contains((string) $value, '?') ? '&' : '?';
+                $separator = str_contains($value, '?') ? '&' : '?';
 
                 return $value.$separator.'token='.urlencode($token);
             }
@@ -1347,7 +1347,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         // diffInDays() returns a float in Carbon 3; round up so a partial day still
         // grants a full trial day rather than being truncated toward zero.
-        $durationDays = (int) ceil((float) now()->diffInDays($trialEndDateTime));
+        $durationDays = (int) ceil(now()->diffInDays($trialEndDateTime));
 
         return $this->calculateAndSetTrialDates($durationDays, $saveModel);
     }

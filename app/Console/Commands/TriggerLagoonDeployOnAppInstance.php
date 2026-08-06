@@ -56,7 +56,6 @@ class TriggerLagoonDeployOnAppInstance extends BaseCommand
 
         $status = $this->deployToInstance(
             instance: $instance,
-            client: null,
             envOverride: $envOverride,
             variablesOnly: $variablesOnly
         );

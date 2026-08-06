@@ -144,10 +144,6 @@ class PolydockApp extends PolydockAppBase
         if (! $this->lagoonClient) {
             throw new PolydockAppInstanceStatusFlowException('Lagoon client not found');
         }
-
-        if (! ($this->lagoonClient instanceof LagoonClient)) {
-            throw new PolydockAppInstanceStatusFlowException('Lagoon client is not an instance of LagoonClient');
-        }
     }
 
     /**

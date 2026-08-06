@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Rector\CodingStyle\Rector\FuncCall\FunctionFirstClassCallableRector;
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\LevelSetList;
+use Rector\Set\ValueObject\SetList;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector;
 
 return static function (RectorConfig $rectorConfig): void {
@@ -22,6 +23,7 @@ return static function (RectorConfig $rectorConfig): void {
     // Register sets for PHP version upgrade
     $rectorConfig->sets([
         LevelSetList::UP_TO_PHP_84,
+        SetList::DEAD_CODE,
     ]);
 
     // Enforces declare(strict_types=1); at the top of all files

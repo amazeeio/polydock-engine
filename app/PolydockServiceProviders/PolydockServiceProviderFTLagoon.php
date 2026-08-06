@@ -22,8 +22,6 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
 
     /**
      * Maximum age in minutes before a token is considered expired.
-     *
-     * @var int
      */
     private const int MAX_TOKEN_AGE_MINUTES = 2;
 

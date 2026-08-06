@@ -87,7 +87,6 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
             return $this->runCommandOnInstance(
                 instance: $instance,
                 command: $commandName,
-                client: null,
                 envOverride: $envOverride,
                 serviceName: $serviceName,
                 containerName: $containerName
@@ -155,7 +154,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
                 $label = sprintf(
                     '%s  %s  %s  %s',
                     str_pad($data['id'], $maxWidths['id']),
-                    str_pad((string) $data['name'], $maxWidths['name']),
+                    str_pad($data['name'], $maxWidths['name']),
                     str_pad((string) $data['project'], $maxWidths['project']),
                     str_pad((string) $data['branch'], $maxWidths['branch'])
                 );

@@ -94,7 +94,7 @@ class DispatchTrialCompleteStageRemovalJobsCommandTest extends TestCase
     public function test_does_not_dispatch_when_trial_ends_at_is_null(): void
     {
         $storeApp = $this->createStoreApp();
-        $this->createInstance($storeApp, trialEndsAt: null);
+        $this->createInstance($storeApp);
 
         $this->artisan('polydock:dispatch-trial-complete-stage-removal')->assertExitCode(0);
 

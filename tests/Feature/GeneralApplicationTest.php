@@ -42,7 +42,7 @@ class GeneralApplicationTest extends TestCase
     public function test_user_creation_with_database(): void
     {
         // Create a user using the factory
-        $user = User::factory()->create([
+        User::factory()->create([
             'first_name' => 'Test',
             'last_name' => 'User',
             'email' => 'test@example.com',

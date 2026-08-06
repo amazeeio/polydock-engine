@@ -49,7 +49,7 @@ class InstanceHealthApiTest extends TestCase
     public function test_health_check_without_configured_token_allows_request(): void
     {
         // GIVEN no token is configured
-        Config::set('polydock.health_token', null);
+        Config::set('polydock.health_token');
 
         // WHEN we hit the endpoint without a token
         $response = $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed");
@@ -127,7 +127,7 @@ class InstanceHealthApiTest extends TestCase
     {
         // GIVEN a trusted IP is configured
         Config::set('polydock.trusted_ips', ['10.0.0.5']);
-        Config::set('polydock.health_token', null);
+        Config::set('polydock.health_token');
 
         // WHEN we hit the endpoint 130 times from trusted IP
         for ($i = 0; $i < 130; $i++) {
@@ -151,7 +151,7 @@ class InstanceHealthApiTest extends TestCase
 
     public function test_health_check_throttles_per_ip_across_uuids(): void
     {
-        Config::set('polydock.health_token', null); // No token gating
+        Config::set('polydock.health_token'); // No token gating
 
         // GIVEN another instance exists
         $storeApp = PolydockStoreApp::first();
@@ -184,7 +184,7 @@ class InstanceHealthApiTest extends TestCase
 
     public function test_health_check_cannot_unclaim_a_claimed_instance(): void
     {
-        Config::set('polydock.health_token', null);
+        Config::set('polydock.health_token');
 
         // WHEN a claimed instance is reported as unclaimed
         $response = $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-unclaimed");
@@ -197,7 +197,7 @@ class InstanceHealthApiTest extends TestCase
 
     public function test_health_check_cannot_claim_an_unclaimed_instance(): void
     {
-        Config::set('polydock.health_token', null);
+        Config::set('polydock.health_token');
         $this->instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED;
         $this->instance->saveQuietly();
 
