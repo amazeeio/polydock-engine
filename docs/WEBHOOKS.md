@@ -18,6 +18,35 @@ Each delivery is an HTTP `POST` with a JSON body and the following headers:
 | `X-Polydock-Attempt` | The current delivery attempt number |
 | `X-Polydock-Signature` | `sha256=<hex>` HMAC of the raw request body |
 
+## App instance events
+
+`app_instance.created` and `app_instance.status_changed` share one payload
+shape. The two events differ only in `previous_status`, which is `null` for
+`app_instance.created`:
+
+```json
+{
+    "app_instance_id": 42,
+    "app_instance_uuid": "0f1c9a3e-6d2b-4e1a-9b6f-2c4d8e7a5b31",
+    "store_id": 1,
+    "store_name": "Example store",
+    "store_app_id": 7,
+    "store_app_name": "Example app",
+    "previous_status": "pending-deploy",
+    "current_status": "deploy-completed",
+    "data": {},
+    "timestamp": "2026-01-01T12:00:00+00:00"
+}
+```
+
+Identify the instance by `app_instance_uuid` — it is the instance's public
+identifier, the value returned by the API when the instance is created and the
+key used in instance API routes. `app_instance_id` is Polydock's internal
+auto-increment id and is not stable across environments.
+
+`data` holds the instance's provisioning data. It is redacted unless the
+webhook has `include_sensitive_data` set.
+
 ## Verifying the signature
 
 The `X-Polydock-Signature` header lets you confirm a request genuinely came
