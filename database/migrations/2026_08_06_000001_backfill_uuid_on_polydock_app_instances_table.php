@@ -16,6 +16,16 @@ return new class extends Migration
      */
     public function up(): void
     {
+        if (in_array(DB::connection()->getDriverName(), ['mysql', 'mariadb'], true)) {
+            // Single atomic statement: no window between chunks where a
+            // concurrent status transition could still read a null uuid.
+            DB::statement('UPDATE polydock_app_instances SET uuid = UUID() WHERE uuid IS NULL');
+
+            return;
+        }
+
+        // Portable fallback for drivers without UUID() (sqlite in tests, where
+        // there is no concurrent traffic to race against).
         DB::table('polydock_app_instances')
             ->whereNull('uuid')
             ->orderBy('id')
