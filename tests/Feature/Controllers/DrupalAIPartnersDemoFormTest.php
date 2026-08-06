@@ -108,15 +108,15 @@ class DrupalAIPartnersDemoFormTest extends TestCase
 
         // Title is stored as plain text
         $response->assertSee('Partners Demo');
-        $response->assertDontSee('<b>Partners</b>', false);
+        $response->assertDontSeeHtml('<b>Partners</b>');
 
         // Disallowed tags/attributes/schemes are stripped, allowed ones survive
-        $response->assertDontSee('alert(1)', false);
-        $response->assertDontSee('onclick', false);
-        $response->assertDontSee('javascript:', false);
-        $response->assertDontSee('onerror', false);
-        $response->assertSee('<a href="https://example.com">good link</a>', false);
-        $response->assertSee('<strong>kept</strong>', false);
+        $response->assertDontSeeHtml('alert(1)');
+        $response->assertDontSeeHtml('onclick');
+        $response->assertDontSeeHtml('javascript:');
+        $response->assertDontSeeHtml('onerror');
+        $response->assertSeeHtml('<a href="https://example.com">good link</a>');
+        $response->assertSeeHtml('<strong>kept</strong>');
         $response->assertSee('Notice text');
     }
 

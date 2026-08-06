@@ -29,11 +29,6 @@ class PolydockStoreWebhook extends Model
         'include_sensitive_data',
     ];
 
-    protected $casts = [
-        'active' => 'boolean',
-        'include_sensitive_data' => 'boolean',
-    ];
-
     /**
      * Attributes hidden from array/JSON serialization. The signing secret must
      * never be exposed in API responses.
@@ -121,5 +116,14 @@ class PolydockStoreWebhook extends Model
     public function calls(): HasMany
     {
         return $this->hasMany(PolydockStoreWebhookCall::class);
+    }
+
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'active' => 'boolean',
+            'include_sensitive_data' => 'boolean',
+        ];
     }
 }

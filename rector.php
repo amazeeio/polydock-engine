@@ -9,6 +9,8 @@ use Rector\Set\ValueObject\SetList;
 use Rector\TypeDeclaration\Rector\Property\TypedPropertyFromAssignsRector;
 use Rector\TypeDeclaration\Rector\Property\TypedPropertyFromStrictSetUpRector;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector;
+use RectorLaravel\Rector\ClassMethod\MigrateToSimplifiedAttributeRector;
+use RectorLaravel\Set\LaravelLevelSetList;
 
 return static function (RectorConfig $rectorConfig): void {
     $rectorConfig->paths([
@@ -29,6 +31,9 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::CODE_QUALITY,
         SetList::EARLY_RETURN,
         SetList::TYPE_DECLARATION,
+        // WITHOUT_ATTRIBUTES: skips rewriting Eloquent scopes/casts to PHP
+        // attributes — adopt that deliberately, not as a side effect
+        LaravelLevelSetList::UP_TO_LARAVEL_130_WITHOUT_ATTRIBUTES,
     ]);
 
     // Enforces declare(strict_types=1); at the top of all files
@@ -49,5 +54,10 @@ return static function (RectorConfig $rectorConfig): void {
         TypedPropertyFromAssignsRector::class => [
             __DIR__.'/tests/Unit/Traits/HasWebhookSensitiveDataTest.php',
         ],
+        // Migrating get*Attribute() accessors to Attribute::make() drops the
+        // return types larastan uses to type the magic properties (~105 new
+        // phpstan errors). Legacy accessors remain fully supported; migrate
+        // deliberately with typed closures if ever wanted.
+        MigrateToSimplifiedAttributeRector::class,
     ]);
 };

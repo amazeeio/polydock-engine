@@ -42,19 +42,6 @@ class UserRemoteRegistration extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'status' => UserRemoteRegistrationStatusEnum::class,
-        'type' => UserRemoteRegistrationType::class,
-        'request_data' => 'array',
-        'result_data' => 'array',
-        'polydock_store_app_id' => 'integer:nullable',
-    ];
-
-    /**
      * The accessors to append to the model's array form.
      *
      * @var list<string>
@@ -214,6 +201,21 @@ class UserRemoteRegistration extends Model
         return [
             'request_data' => $this->request_data,
             'result_data' => $this->result_data,
+        ];
+    }
+
+    /**
+     * The attributes that should be cast.
+     */
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'status' => UserRemoteRegistrationStatusEnum::class,
+            'type' => UserRemoteRegistrationType::class,
+            'request_data' => 'array',
+            'result_data' => 'array',
+            'polydock_store_app_id' => 'integer:nullable',
         ];
     }
 }

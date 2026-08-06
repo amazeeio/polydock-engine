@@ -4,11 +4,7 @@ namespace App\Jobs;
 
 use App\Models\PolydockDeploymentRun;
 use App\Services\PolydockDeploymentService;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
 
 /**
  * Polls a single deployment run's Lagoon bulk deployment once, updating the run's
@@ -17,10 +13,7 @@ use Illuminate\Queue\SerializesModels;
  */
 class PollDeploymentRunJob implements ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
-    use Queueable;
-    use SerializesModels;
+    use \Illuminate\Foundation\Queue\Queueable;
 
     public function __construct(public int $deploymentRunId) {}
 

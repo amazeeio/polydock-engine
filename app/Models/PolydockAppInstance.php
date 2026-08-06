@@ -108,33 +108,6 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     ];
 
     /**
-     * The casts for the model
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'status' => PolydockAppInstanceStatus::class,
-        'data' => 'array',
-        'is_trial' => 'boolean',
-        'trial_ends_at' => 'datetime',
-        'trial_completed' => 'boolean',
-        'send_midtrial_email_at' => 'datetime',
-        'midtrial_email_sent' => 'boolean',
-        'send_one_day_left_email_at' => 'datetime',
-        'one_day_left_email_sent' => 'boolean',
-        'trial_complete_email_sent' => 'boolean',
-        'app_one_time_login_valid_until' => 'datetime',
-        'removed_at' => 'datetime',
-        'purge_eligible_at' => 'datetime',
-        'force_purge_requested_at' => 'datetime',
-        'purge_last_attempted_at' => 'datetime',
-        'purge_attempts' => 'integer',
-        'last_deployed_at' => 'datetime',
-        'last_deploy_triggered_at' => 'datetime',
-        'next_redeploy_at' => 'datetime',
-    ];
-
-    /**
      * The engine for the app instance
      */
     private PolydockEngineInterface $engine;
@@ -1350,5 +1323,36 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         $durationDays = (int) ceil(now()->diffInDays($trialEndDateTime));
 
         return $this->calculateAndSetTrialDates($durationDays, $saveModel);
+    }
+
+    /**
+     * The casts for the model
+     *
+     * @return array<string, string>
+     */
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'status' => PolydockAppInstanceStatus::class,
+            'data' => 'array',
+            'is_trial' => 'boolean',
+            'trial_ends_at' => 'datetime',
+            'trial_completed' => 'boolean',
+            'send_midtrial_email_at' => 'datetime',
+            'midtrial_email_sent' => 'boolean',
+            'send_one_day_left_email_at' => 'datetime',
+            'one_day_left_email_sent' => 'boolean',
+            'trial_complete_email_sent' => 'boolean',
+            'app_one_time_login_valid_until' => 'datetime',
+            'removed_at' => 'datetime',
+            'purge_eligible_at' => 'datetime',
+            'force_purge_requested_at' => 'datetime',
+            'purge_last_attempted_at' => 'datetime',
+            'purge_attempts' => 'integer',
+            'last_deployed_at' => 'datetime',
+            'last_deploy_triggered_at' => 'datetime',
+            'next_redeploy_at' => 'datetime',
+        ];
     }
 }

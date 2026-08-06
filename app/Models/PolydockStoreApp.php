@@ -166,19 +166,6 @@ class PolydockStoreApp extends Model
         'beta_redeploy_interval_days',
     ];
 
-    protected $casts = [
-        'status' => PolydockStoreAppStatusEnum::class,
-        'app_config' => 'array',
-        'available_for_trials' => 'boolean',
-        'target_unallocated_app_instances' => 'integer',
-        'send_midtrial_email' => 'boolean',
-        'send_one_day_left_email' => 'boolean',
-        'send_trial_complete_email' => 'boolean',
-        'redeploy_enabled' => 'boolean',
-        'redeploy_interval_days' => 'integer',
-        'beta_redeploy_interval_days' => 'integer',
-    ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -598,5 +585,22 @@ class PolydockStoreApp extends Model
         }
 
         return $this->redeploy_interval_days;
+    }
+
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'status' => PolydockStoreAppStatusEnum::class,
+            'app_config' => 'array',
+            'available_for_trials' => 'boolean',
+            'target_unallocated_app_instances' => 'integer',
+            'send_midtrial_email' => 'boolean',
+            'send_one_day_left_email' => 'boolean',
+            'send_trial_complete_email' => 'boolean',
+            'redeploy_enabled' => 'boolean',
+            'redeploy_interval_days' => 'integer',
+            'beta_redeploy_interval_days' => 'integer',
+        ];
     }
 }

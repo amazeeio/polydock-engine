@@ -21,8 +21,8 @@ class UserGroupFactory extends Factory
     {
         return [
             'name' => fake()->company(),
-            'created_at' => $this->faker->dateTime(),
-            'updated_at' => $this->faker->dateTime(),
+            'created_at' => fake()->dateTime(),
+            'updated_at' => fake()->dateTime(),
         ];
     }
 }

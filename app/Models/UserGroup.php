@@ -27,10 +27,6 @@ class UserGroup extends Model
         'is_beta',
     ];
 
-    protected $casts = [
-        'is_beta' => 'boolean',
-    ];
-
     public function getActivitylogOptions(): LogOptions
     {
         return LogOptions::defaults()
@@ -263,5 +259,13 @@ class UserGroup extends Model
         ]);
 
         return $appInstance;
+    }
+
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'is_beta' => 'boolean',
+        ];
     }
 }

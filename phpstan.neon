@@ -12,6 +12,10 @@ parameters:
     # Chip away at the baseline, don't drop the level.
     level: max
 
+    # Models declare casts via the casts() method (Laravel 11+ style); larastan
+    # only parses that method's return array when this flag is on.
+    parseModelCastsMethod: true
+
     # Ratchet floors set to the measured coverage at adoption (2026-08-06),
     # same philosophy as the CI line-coverage gate: never lower, bump as
     # type-hint-focused PRs land.

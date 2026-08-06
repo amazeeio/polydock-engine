@@ -315,9 +315,7 @@ class FormControllerTest extends TestCase
         ]);
 
         // And the rendered form must not load the recaptcha widget
-        $this->get('/f/drupal-ai-demo')
-            ->assertStatus(200)
-            ->assertDontSee('g-recaptcha', false);
+        $this->get('/f/drupal-ai-demo')->assertStatus(200)->assertDontSeeHtml('g-recaptcha');
     }
 
     #[Test]

@@ -15,10 +15,6 @@ class PolydockAppInstanceLog extends Model
         'data',
     ];
 
-    protected $casts = [
-        'data' => 'array',
-    ];
-
     /**
      * Get the instance that owns this log entry
      *
@@ -27,5 +23,13 @@ class PolydockAppInstanceLog extends Model
     public function instance(): BelongsTo
     {
         return $this->belongsTo(PolydockAppInstance::class, 'polydock_app_instance_id');
+    }
+
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'data' => 'array',
+        ];
     }
 }
