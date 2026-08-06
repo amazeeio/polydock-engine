@@ -25,7 +25,7 @@ class MarkStuckInstancesFailedCommand extends BaseCommand
      *
      * @return array<int, PolydockAppInstanceStatus>
      */
-    private static function intermediateStatuses(): array
+    private function intermediateStatuses(): array
     {
         return PolydockAppInstance::unallocatedInProgressStatuses();
     }
@@ -33,7 +33,7 @@ class MarkStuckInstancesFailedCommand extends BaseCommand
     /**
      * Resolve the corresponding failed status for a given intermediate status.
      */
-    private static function resolveFailedStatus(PolydockAppInstanceStatus $status): PolydockAppInstanceStatus
+    private function resolveFailedStatus(PolydockAppInstanceStatus $status): PolydockAppInstanceStatus
     {
         return match ($status) {
             PolydockAppInstanceStatus::NEW,
@@ -80,11 +80,11 @@ class MarkStuckInstancesFailedCommand extends BaseCommand
         $rows = [];
 
         PolydockAppInstance::query()
-            ->whereIn('status', self::intermediateStatuses())
+            ->whereIn('status', $this->intermediateStatuses())
             ->where('updated_at', '<=', $cutoff)
             ->chunkById($chunkSize, function ($instances) use ($dryRun, $threshold, &$totalMarked, &$rows) {
                 foreach ($instances as $instance) {
-                    $failedStatus = self::resolveFailedStatus($instance->status);
+                    $failedStatus = $this->resolveFailedStatus($instance->status);
 
                     $rows[] = [
                         $instance->id,

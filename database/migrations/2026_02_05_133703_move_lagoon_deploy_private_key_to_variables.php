@@ -79,7 +79,7 @@ return new class extends Migration
         }
 
         // Only delete variables that were successfully restored
-        if (! empty($restoredIds)) {
+        if ($restoredIds !== []) {
             DB::table('polydock_variables')
                 ->whereIn('id', $restoredIds)
                 ->delete();

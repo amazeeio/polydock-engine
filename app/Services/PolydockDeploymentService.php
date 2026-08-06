@@ -65,7 +65,7 @@ class PolydockDeploymentService
             $byTarget[$this->targetKey($project, $branch)] = $instance;
         }
 
-        if (empty($environments)) {
+        if ($environments === []) {
             Log::info('Redeploy requested but no deployable instances', [
                 'trigger_source' => $source->value,
                 'requested' => $deployable->count(),

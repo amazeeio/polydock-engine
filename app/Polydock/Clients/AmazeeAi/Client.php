@@ -14,15 +14,14 @@ class Client
     /**
      * @var array<string, mixed>
      */
-    private array $headers;
+    private array $headers = [
+        'Content-Type' => 'application/json',
+        'Accept' => 'application/json',
+    ];
 
     public function __construct(string $baseUrl, private readonly ?string $accessToken = null, private readonly bool $debug = false)
     {
         $this->baseUrl = rtrim($baseUrl, '/');
-        $this->headers = [
-            'Content-Type' => 'application/json',
-            'Accept' => 'application/json',
-        ];
 
         if ($this->accessToken) {
             $this->headers['Authorization'] = "Bearer {$this->accessToken}";
@@ -159,7 +158,7 @@ class Client
         $response = Http::withHeaders($this->headers)
             ->send($method, $url, [
                 'query' => $query,
-                'json' => empty($data) ? null : $data,
+                'json' => $data === [] ? null : $data,
             ]);
 
         $statusCode = $response->status();

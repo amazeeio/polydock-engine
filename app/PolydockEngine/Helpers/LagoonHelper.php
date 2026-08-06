@@ -59,7 +59,7 @@ class LagoonHelper
 
     public static function getPublicKeyFromPrivateKey(string $privateKey): ?string
     {
-        if (empty($privateKey)) {
+        if ($privateKey === '' || $privateKey === '0') {
             return null;
         }
 

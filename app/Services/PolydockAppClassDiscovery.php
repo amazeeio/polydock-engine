@@ -106,7 +106,7 @@ class PolydockAppClassDiscovery
     {
         $attributes = $reflection->getAttributes(PolydockAppTitle::class);
 
-        if (! empty($attributes)) {
+        if ($attributes !== []) {
             /** @var PolydockAppTitle $titleAttr */
             $titleAttr = $attributes[0]->newInstance();
 
@@ -145,7 +145,7 @@ class PolydockAppClassDiscovery
      */
     public function getStoreAppFormSchema(string $className): array
     {
-        if (empty($className)) {
+        if ($className === '' || $className === '0') {
             Log::debug('getStoreAppFormSchema: Empty class name provided');
 
             return [];
@@ -161,7 +161,7 @@ class PolydockAppClassDiscovery
             $reflection = new ReflectionClass($className);
             $attributes = $reflection->getAttributes(PolydockAppStoreFields::class);
 
-            if (empty($attributes)) {
+            if ($attributes === []) {
                 Log::debug('getStoreAppFormSchema: No PolydockAppStoreFields attribute found', ['className' => $className]);
 
                 return [];
@@ -216,7 +216,7 @@ class PolydockAppClassDiscovery
      */
     public function getStoreAppInfolistSchema(string $className): array
     {
-        if (empty($className)) {
+        if ($className === '' || $className === '0') {
             Log::debug('getStoreAppInfolistSchema: Empty class name provided');
 
             return [];
@@ -232,7 +232,7 @@ class PolydockAppClassDiscovery
             $reflection = new ReflectionClass($className);
             $attributes = $reflection->getAttributes(PolydockAppStoreFields::class);
 
-            if (empty($attributes)) {
+            if ($attributes === []) {
                 Log::debug('getStoreAppInfolistSchema: No PolydockAppStoreFields attribute found', ['className' => $className]);
 
                 return [];
@@ -300,7 +300,7 @@ class PolydockAppClassDiscovery
      */
     public function getAppInstanceFormSchema(string $className): array
     {
-        if (empty($className)) {
+        if ($className === '' || $className === '0') {
             Log::debug('getAppInstanceFormSchema: Empty class name provided');
 
             return [];
@@ -316,7 +316,7 @@ class PolydockAppClassDiscovery
             $reflection = new ReflectionClass($className);
             $attributes = $reflection->getAttributes(PolydockAppInstanceFields::class);
 
-            if (empty($attributes)) {
+            if ($attributes === []) {
                 Log::debug('getAppInstanceFormSchema: No PolydockAppInstanceFields attribute found', ['className' => $className]);
 
                 return [];
@@ -371,7 +371,7 @@ class PolydockAppClassDiscovery
      */
     public function getAppInstanceInfolistSchema(string $className): array
     {
-        if (empty($className)) {
+        if ($className === '' || $className === '0') {
             Log::debug('getAppInstanceInfolistSchema: Empty class name provided');
 
             return [];
@@ -387,7 +387,7 @@ class PolydockAppClassDiscovery
             $reflection = new ReflectionClass($className);
             $attributes = $reflection->getAttributes(PolydockAppInstanceFields::class);
 
-            if (empty($attributes)) {
+            if ($attributes === []) {
                 Log::debug('getAppInstanceInfolistSchema: No PolydockAppInstanceFields attribute found', ['className' => $className]);
 
                 return [];
@@ -514,7 +514,7 @@ class PolydockAppClassDiscovery
             // Recursively process child schema (for Sections, Grids, etc.)
             if (method_exists($component, 'schema')) {
                 $children = $this->childComponentsOf($component);
-                if (! empty($children)) {
+                if ($children !== []) {
                     $component->schema($this->prefixAppInstanceSchemaFieldNames($children));
                 }
             }
@@ -545,7 +545,7 @@ class PolydockAppClassDiscovery
             // Recursively process child schema (for Sections, Grids, etc.)
             if (method_exists($component, 'schema')) {
                 $children = $this->childComponentsOf($component);
-                if (! empty($children)) {
+                if ($children !== []) {
                     $component->schema($this->prefixSchemaFieldNames($children));
                 }
             }
@@ -575,7 +575,7 @@ class PolydockAppClassDiscovery
 
             // Recursively check child schema (for Sections, Grids, etc.)
             $children = $this->childComponentsOf($component);
-            if (! empty($children)) {
+            if ($children !== []) {
                 $names = array_merge($names, $this->extractFieldNamesFromSchema($children));
             }
         }
@@ -618,7 +618,7 @@ class PolydockAppClassDiscovery
             }
 
             $children = $this->childComponentsOf($component);
-            if (! empty($children)) {
+            if ($children !== []) {
                 $map = array_merge($map, $this->getFieldEncryptionMap($children));
             }
         }

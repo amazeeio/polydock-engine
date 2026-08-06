@@ -383,7 +383,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             }
         }
 
-        if (! empty($storedFields)) {
+        if ($storedFields !== []) {
             Log::info('Stored instance config fields as PolydockVariables', [
                 'registration_id' => $this->registration->id,
                 'app_instance_id' => $appInstance->id,

@@ -102,9 +102,9 @@ class AuthenticatedApiController extends Controller
             'name' => $validated['name'],
         ]);
 
-        $owner = ! empty($validated['owner_email'])
-            ? User::where('email', $validated['owner_email'])->firstOrFail()
-            : $actor;
+        $owner = empty($validated['owner_email'])
+            ? $actor
+            : User::where('email', $validated['owner_email'])->firstOrFail();
 
         $owner->groups()->syncWithoutDetaching([
             $group->id => ['role' => UserGroupRoleEnum::OWNER->value],
@@ -225,7 +225,7 @@ class AuthenticatedApiController extends Controller
             abort(403, 'You may only request your own instances.');
         }
 
-        if ($targetGroup !== null) {
+        if ($targetGroup instanceof UserGroup) {
             $this->authorize('view', $targetGroup);
         }
 
@@ -241,7 +241,7 @@ class AuthenticatedApiController extends Controller
             $instanceQuery->whereIn('user_group_id', $user->groups()->pluck('user_groups.id'));
         }
 
-        if ($targetGroup !== null) {
+        if ($targetGroup instanceof UserGroup) {
             $instanceQuery->where('user_group_id', $targetGroup->id);
         }
 

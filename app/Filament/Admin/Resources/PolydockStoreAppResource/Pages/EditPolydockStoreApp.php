@@ -164,8 +164,9 @@ class EditPolydockStoreApp extends EditRecord
             $data['lagoon_custom_route_annotations'],
         );
 
-        // Store the app config as JSON
-        $data['app_config'] = ! empty($appConfig) ? $appConfig : null;
+        // Store the app config as JSON; never empty because the runtime
+        // settings above are always assigned
+        $data['app_config'] = $appConfig;
 
         return $data;
     }

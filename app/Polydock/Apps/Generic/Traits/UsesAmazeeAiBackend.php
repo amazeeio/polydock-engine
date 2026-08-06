@@ -127,7 +127,7 @@ trait UsesAmazeeAiBackend
             }
         } catch (Exception $e) {
             $this->error('Error pinging amazeeAI backend: ', $logContext + ['error' => $e->getMessage()]);
-            throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
+            throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage(), $e->getCode(), $e);
         }
     }
 

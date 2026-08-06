@@ -31,7 +31,7 @@ class HostedFormHtml
 
     private static function sanitizer(): HtmlSanitizer
     {
-        if (self::$sanitizer === null) {
+        if (! self::$sanitizer instanceof HtmlSanitizer) {
             $config = (new HtmlSanitizerConfig)
                 ->allowElement('a', ['href', 'target', 'rel'])
                 ->allowElement('p')

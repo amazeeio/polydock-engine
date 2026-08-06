@@ -155,7 +155,7 @@ class FakeLagoonClient extends Client
     #[\Override]
     public function bulkDeployEnvironments(array $environments, ?string $name = null, array $buildVariables = []): array
     {
-        $this->bulkCalls[] = compact('environments', 'name', 'buildVariables');
+        $this->bulkCalls[] = ['environments' => $environments, 'name' => $name, 'buildVariables' => $buildVariables];
 
         if ($this->throwOnDeploy) {
             throw new \RuntimeException('bulk deploy failed');
@@ -174,7 +174,7 @@ class FakeLagoonClient extends Client
             throw new \RuntimeException('poll failed');
         }
 
-        if (! empty($this->deploymentResponses)) {
+        if ($this->deploymentResponses !== []) {
             $this->lastDeployments = array_shift($this->deploymentResponses);
         }
 

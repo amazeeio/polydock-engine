@@ -51,7 +51,7 @@ class LagoonProjectPurgeService
      */
     protected function client(): Client
     {
-        if ($this->client === null) {
+        if (! $this->client instanceof Client) {
             if (app()->bound(Client::class)) {
                 $this->client = app(Client::class);
             } else {
@@ -94,7 +94,7 @@ class LagoonProjectPurgeService
     {
         $deleted = $env['deleted'] ?? null;
 
-        return $deleted === null || $deleted === '' || $deleted === '0000-00-00 00:00:00';
+        return in_array($deleted, [null, '', '0000-00-00 00:00:00'], true);
     }
 
     /**

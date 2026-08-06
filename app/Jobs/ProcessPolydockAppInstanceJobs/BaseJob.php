@@ -186,7 +186,7 @@ abstract class BaseJob implements ShouldQueue
      * {@see ProcessPolydockAppInstanceStatusChange}, and the
      * stage groupings on {@see PolydockAppInstance}.
      */
-    private static function lifecycleStageOrdinal(PolydockAppInstanceStatus $status): ?int
+    private function lifecycleStageOrdinal(PolydockAppInstanceStatus $status): ?int
     {
         return match ($status) {
             PolydockAppInstanceStatus::NEW => 0,
@@ -262,8 +262,8 @@ abstract class BaseJob implements ShouldQueue
 
     private function isKnownStatusProgression(PolydockAppInstanceStatus $expectedStatus, PolydockAppInstanceStatus $currentStatus): bool
     {
-        $expectedOrdinal = self::lifecycleStageOrdinal($expectedStatus);
-        $currentOrdinal = self::lifecycleStageOrdinal($currentStatus);
+        $expectedOrdinal = $this->lifecycleStageOrdinal($expectedStatus);
+        $currentOrdinal = $this->lifecycleStageOrdinal($currentStatus);
 
         if ($expectedOrdinal === null || $currentOrdinal === null) {
             return false;

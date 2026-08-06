@@ -210,7 +210,7 @@ class BanEmailsCommand extends BaseCommand
         $normalized = [];
         foreach ($inputs as $input) {
             $input = trim(strtolower($input));
-            if (empty($input)) {
+            if ($input === '' || $input === '0') {
                 continue;
             }
 
@@ -269,7 +269,7 @@ class BanEmailsCommand extends BaseCommand
      */
     protected function findMatchingUsers(array $patterns): Collection
     {
-        if (empty($patterns)) {
+        if ($patterns === []) {
             return new Collection;
         }
 
@@ -290,12 +290,12 @@ class BanEmailsCommand extends BaseCommand
      */
     protected function findMatchingRegistrations(array $patterns, array $userIds): Collection
     {
-        if (empty($patterns) && empty($userIds)) {
+        if ($patterns === [] && $userIds === []) {
             return new Collection;
         }
 
         return UserRemoteRegistration::where(function ($query) use ($patterns, $userIds) {
-            if (! empty($userIds)) {
+            if ($userIds !== []) {
                 $query->whereIn('user_id', $userIds);
             }
             foreach ($patterns as $pattern) {
@@ -314,14 +314,14 @@ class BanEmailsCommand extends BaseCommand
      */
     protected function findMatchingAppInstances(array $patterns, array $groupIds): Collection
     {
-        if (empty($patterns) && empty($groupIds)) {
+        if ($patterns === [] && $groupIds === []) {
             return new Collection;
         }
 
         $connectionType = DB::connection()->getDriverName();
 
         return PolydockAppInstance::where(function ($query) use ($patterns, $groupIds, $connectionType) {
-            if (! empty($groupIds)) {
+            if ($groupIds !== []) {
                 $query->whereIn('user_group_id', $groupIds);
             }
 

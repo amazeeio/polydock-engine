@@ -207,7 +207,7 @@ class User extends Authenticatable implements FilamentUser, HasAppAuthentication
     {
         $role = $this->groupRole($group);
 
-        return $role !== null && $role->atLeast($required);
+        return $role instanceof UserGroupRoleEnum && $role->atLeast($required);
     }
 
     /**

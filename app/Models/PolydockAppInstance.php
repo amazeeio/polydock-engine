@@ -639,7 +639,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $this->purge_eligible_at = $now->copy()->addDays($graceDays);
             }
 
-            if (! empty($statusMessage)) {
+            if ($statusMessage !== '' && $statusMessage !== '0') {
                 $this->setStatusMessage($statusMessage);
             }
         } else {
@@ -649,7 +649,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 'status' => $status,
             ]);
 
-            if (! empty($statusMessage)) {
+            if ($statusMessage !== '' && $statusMessage !== '0') {
                 $this->setStatusMessage($statusMessage);
             }
         }
@@ -786,7 +786,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     private function encryptSecretValue(mixed $value): mixed
     {
-        if ($value === null || $value === '' || $value === []) {
+        if (in_array($value, [null, '', []], true)) {
             return $value;
         }
 

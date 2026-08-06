@@ -141,27 +141,27 @@ abstract class PolydockAppBase implements PolydockAppInterface
      */
     private function validateAppFundamentals(): PolydockAppInterface
     {
-        if (empty($this->appName)) {
+        if (! isset($this->appName) || ($this->appName === '' || $this->appName === '0')) {
             throw new PolydockAppValidationException('App name is required');
         }
 
-        if (empty($this::getAppVersion())) {
+        if (in_array($this::getAppVersion(), ['', '0'], true)) {
             throw new PolydockAppValidationException('App version is required');
         }
 
-        if (empty($this->appDescription)) {
+        if (! isset($this->appDescription) || ($this->appDescription === '' || $this->appDescription === '0')) {
             throw new PolydockAppValidationException('App description is required');
         }
 
-        if (empty($this->appAuthor)) {
+        if (! isset($this->appAuthor) || ($this->appAuthor === '' || $this->appAuthor === '0')) {
             throw new PolydockAppValidationException('App author is required');
         }
 
-        if (empty($this->appWebsite)) {
+        if (! isset($this->appWebsite) || ($this->appWebsite === '' || $this->appWebsite === '0')) {
             throw new PolydockAppValidationException('App website is required');
         }
 
-        if (empty($this->appSupportEmail)) {
+        if (! isset($this->appSupportEmail) || ($this->appSupportEmail === '' || $this->appSupportEmail === '0')) {
             throw new PolydockAppValidationException('App support email is required');
         }
 

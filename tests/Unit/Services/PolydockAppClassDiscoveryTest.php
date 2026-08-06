@@ -173,7 +173,7 @@ class PolydockAppClassDiscoveryTest extends TestCase
         $reflection = new \ReflectionClass(PolydockAiApp::class);
         $attributes = $reflection->getAttributes(PolydockAppTitle::class);
 
-        if (! empty($attributes)) {
+        if ($attributes !== []) {
             // If the attribute exists (after package update), verify it's read correctly
             $titleAttr = $attributes[0]->newInstance();
             $this->assertEquals('Generic Lagoon AI App', $titleAttr->title);

@@ -113,7 +113,7 @@ class PolydockApp extends PolydockAppBase
 
             return $ping;
         } catch (Exception $e) {
-            throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
+            throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage(), $e->getCode(), $e);
         }
     }
 

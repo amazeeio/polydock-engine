@@ -177,7 +177,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
                 hint: $header
             );
 
-            if (empty($selectedIds)) {
+            if ($selectedIds === []) {
                 $this->info(string: 'No instances selected.');
 
                 return 0;

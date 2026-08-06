@@ -81,7 +81,7 @@ trait ProjectEnvironmentTrait
             'returnData' => true,
         ];
 
-        if (! empty($buildVariables)) {
+        if ($buildVariables !== []) {
             $formattedVars = [];
             foreach ($buildVariables as $key => $value) {
                 $formattedVars[] = [
@@ -164,7 +164,7 @@ trait ProjectEnvironmentTrait
             'environments' => $envInputs,
         ];
 
-        if (! empty($buildVariables)) {
+        if ($buildVariables !== []) {
             $formattedVars = [];
             foreach ($buildVariables as $key => $value) {
                 $formattedVars[] = [
@@ -414,7 +414,7 @@ trait ProjectEnvironmentTrait
             }
         }
 
-        if (! empty($environmentName)) {
+        if (! in_array($environmentName, [null, '', '0'], true)) {
             return isset($deployments[$environmentName]) ? [$environmentName => $deployments[$environmentName]] : [];
         }
 

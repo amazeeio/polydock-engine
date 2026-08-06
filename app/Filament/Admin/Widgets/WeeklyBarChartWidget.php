@@ -67,7 +67,7 @@ abstract class WeeklyBarChartWidget extends ChartWidget
         // The expression is interpolated into DB::raw() — hard-fail on
         // anything but a plain [table.]column identifier so a future caller
         // can never feed it request input.
-        if (! preg_match('/^[A-Za-z_][A-Za-z0-9_]*(\.[A-Za-z_][A-Za-z0-9_]*)?$/', $column)) {
+        if (! preg_match('/^[A-Za-z_]\w*(\.[A-Za-z_]\w*)?$/', $column)) {
             throw new \InvalidArgumentException("Invalid column identifier: {$column}");
         }
 

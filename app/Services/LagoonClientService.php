@@ -31,7 +31,7 @@ class LagoonClientService
         }
 
         $token = $this->getLagoonToken($clientConfig);
-        if (empty($token)) {
+        if ($token === '' || $token === '0') {
             $msg = 'Failed to retrieve Lagoon API token. Ensure the SSH key at '.$clientConfig['ssh_private_key_file'].' is valid and authorized in Lagoon.';
             Log::error($msg);
             throw new \Exception($msg);

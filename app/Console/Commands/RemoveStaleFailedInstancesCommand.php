@@ -39,7 +39,7 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
      *
      * @return array<int, PolydockAppInstanceStatus>
      */
-    private static function preRemovalFailedStatuses(): array
+    private function preRemovalFailedStatuses(): array
     {
         return [
             PolydockAppInstanceStatus::PRE_CREATE_FAILED,
@@ -58,7 +58,7 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
      *
      * @return array<int, PolydockAppInstanceStatus>
      */
-    private static function removeStageFailedStatuses(): array
+    private function removeStageFailedStatuses(): array
     {
         return [
             PolydockAppInstanceStatus::PRE_REMOVE_FAILED,
@@ -75,7 +75,7 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
         $cutoff = now()->subDays($days);
 
         $eligible = PolydockAppInstance::query()
-            ->whereIn('status', array_merge(self::preRemovalFailedStatuses(), self::removeStageFailedStatuses()))
+            ->whereIn('status', array_merge($this->preRemovalFailedStatuses(), $this->removeStageFailedStatuses()))
             ->where('updated_at', '<=', $cutoff)
             ->orderBy('updated_at')
             ->limit($limit)
@@ -92,7 +92,7 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
         $swept = 0;
 
         foreach ($eligible as $instance) {
-            $isRemoveStageFailure = in_array($instance->status, self::removeStageFailedStatuses(), true);
+            $isRemoveStageFailure = in_array($instance->status, $this->removeStageFailedStatuses(), true);
             $target = $isRemoveStageFailure
                 ? PolydockAppInstanceStatus::REMOVED
                 : PolydockAppInstanceStatus::PENDING_PRE_REMOVE;

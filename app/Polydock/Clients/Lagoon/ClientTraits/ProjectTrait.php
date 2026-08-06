@@ -40,7 +40,7 @@ trait ProjectTrait
             'branches' => $branches,
             'productionEnvironment' => $productionEnvironment,
             'autoIdle' => $autoIdle ?? 0,
-        ] + (! empty($privateKey) ? ['privateKey' => $privateKey] : []);
+        ] + (in_array($privateKey, [null, '', '0'], true) ? [] : ['privateKey' => $privateKey]);
 
         return $this->addProjectMutation($projectInput);
     }
@@ -84,7 +84,7 @@ trait ProjectTrait
             'autoIdle' => $autoIdle ?? 0,
         ];
 
-        if (! empty($privateKey)) {
+        if ($privateKey !== '' && $privateKey !== '0') {
             $projectInput['privateKey'] = $privateKey;
         }
 
@@ -357,7 +357,7 @@ trait ProjectTrait
             'value' => $value,
         ];
 
-        if (! empty($environment)) {
+        if (! in_array($environment, [null, '', '0'], true)) {
             $input['environment'] = $environment;
         }
 
@@ -542,7 +542,7 @@ trait ProjectTrait
             'name' => $variableName,
         ];
 
-        if (! empty($environment)) {
+        if (! in_array($environment, [null, '', '0'], true)) {
             $input['environment'] = $environment;
         }
 
@@ -602,7 +602,7 @@ trait ProjectTrait
             throw new LagoonClientInitializeRequiredToInteractException;
         }
 
-        if (empty($branches) && empty($pullrequests)) {
+        if (in_array($branches, [null, '', '0'], true) && in_array($pullrequests, [null, '', '0'], true)) {
             throw new Exception('At least one of branches or pullrequests must be provided');
         }
 
@@ -634,11 +634,11 @@ trait ProjectTrait
             'weight' => $weight,
         ];
 
-        if (! empty($branches)) {
+        if (! in_array($branches, [null, '', '0'], true)) {
             $input['branches'] = $branches;
         }
 
-        if (! empty($pullrequests)) {
+        if (! in_array($pullrequests, [null, '', '0'], true)) {
             $input['pullrequests'] = $pullrequests;
         }
 
@@ -748,7 +748,7 @@ trait ProjectTrait
             throw new LagoonClientInitializeRequiredToInteractException;
         }
 
-        if (empty($branches) && empty($pullRequest)) {
+        if (in_array($branches, [null, '', '0'], true) && in_array($pullRequest, [null, '', '0'], true)) {
             throw new Exception('At least one of branches or pullRequest must be provided');
         }
 
@@ -778,11 +778,11 @@ trait ProjectTrait
             'deployTarget' => $deployTargetId,
         ];
 
-        if (! empty($branches)) {
+        if (! in_array($branches, [null, '', '0'], true)) {
             $patch['branches'] = $branches;
         }
 
-        if (! empty($pullRequest)) {
+        if (! in_array($pullRequest, [null, '', '0'], true)) {
             $patch['pullrequests'] = $pullRequest;
         }
 
