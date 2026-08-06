@@ -327,7 +327,7 @@ enum PolydockAppInstanceStatus: string implements HasColor, HasIcon, HasLabel
     {
         return array_combine(
             array_column(self::cases(), 'value'),
-            array_map(fn ($status) => $status->getLabel(), self::cases())
+            array_map(fn (PolydockAppInstanceStatus $status): string => $status->getLabel(), self::cases())
         );
     }
 }

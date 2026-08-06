@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->timestamp('next_poll_after')->nullable()->after('status_message');
 
             // Add index for efficient polling queries
@@ -18,7 +18,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->dropIndex('polydock_app_instances_polling_idx');
             $table->dropColumn('next_poll_after');
         });

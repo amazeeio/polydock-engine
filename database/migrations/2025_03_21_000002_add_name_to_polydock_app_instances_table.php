@@ -8,14 +8,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->string('name')->nullable();
         });
     }
 
     public function down(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->dropColumn('name');
         });
     }

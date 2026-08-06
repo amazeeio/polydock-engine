@@ -11,7 +11,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->timestamp('removed_at')->nullable()->after('trial_complete_email_sent');
             $table->timestamp('purge_eligible_at')->nullable()->after('removed_at')->index();
             $table->timestamp('force_purge_requested_at')->nullable()->after('purge_eligible_at');
@@ -29,7 +29,7 @@ return new class extends Migration
             ->where('status', PolydockAppInstanceStatus::REMOVED->value)
             ->whereNull('removed_at')
             ->orderBy('id')
-            ->chunkById(500, function ($rows) use ($graceDays) {
+            ->chunkById(500, function ($rows) use ($graceDays): void {
                 foreach ($rows as $row) {
                     $updatedAt = $row->updated_at ? Carbon::parse($row->updated_at) : Carbon::now();
 
@@ -45,7 +45,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->dropSoftDeletes();
             $table->dropColumn([
                 'removed_at',

@@ -42,7 +42,7 @@ class PolydockStoreWebhookCallResource extends Resource
                 TextColumn::make('status')
                     ->description(fn (PolydockStoreWebhookCall $record) => $record->response_code)
                     ->badge()
-                    ->color(fn ($state) => match ($state->getLabel()) {
+                    ->color(fn ($state): string => match ($state->getLabel()) {
                         'Success' => 'success',
                         'Failed' => 'danger',
                         default => 'warning',
@@ -87,7 +87,7 @@ class PolydockStoreWebhookCallResource extends Resource
                             ->schema([
                                 TextEntry::make('status')
                                     ->badge()
-                                    ->color(fn ($state) => match ($state->getLabel()) {
+                                    ->color(fn ($state): string => match ($state->getLabel()) {
                                         'Success' => 'success',
                                         'Failed' => 'danger',
                                         default => 'warning',
@@ -95,7 +95,7 @@ class PolydockStoreWebhookCallResource extends Resource
                                 TextEntry::make('response_code')
                                     ->label('Response Code')
                                     ->icon('heroicon-m-signal')
-                                    ->color(fn ($state) => str_starts_with((string) $state, '2')
+                                    ->color(fn ($state): string => str_starts_with((string) $state, '2')
                                         ? 'success'
                                         : 'danger'),
                                 TextEntry::make('attempt')
@@ -111,15 +111,15 @@ class PolydockStoreWebhookCallResource extends Resource
                     ->schema([
                         TextEntry::make('payload')
                             ->label('Request Payload')
-                            ->state(fn ($record) => json_encode($record->payload, JSON_PRETTY_PRINT))
+                            ->state(fn ($record): string|false => json_encode($record->payload, JSON_PRETTY_PRINT))
                             ->columnSpanFull(),
                         TextEntry::make('response_body')
                             ->label('Response Body')
-                            ->visible(fn ($state) => ! empty($state))
+                            ->visible(fn ($state): bool => ! empty($state))
                             ->columnSpanFull(),
                         TextEntry::make('exception')
                             ->label('Error Details')
-                            ->visible(fn ($state) => ! empty($state))
+                            ->visible(fn ($state): bool => ! empty($state))
                             ->color('danger')
                             ->columnSpanFull(),
                     ])

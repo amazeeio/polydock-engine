@@ -136,7 +136,7 @@ class EnsureUnallocatedAppInstancesJob implements ShouldQueue
     private function refreshStaleInstances($apps): int
     {
         $refreshable = $apps
-            ->filter(fn (PolydockStoreApp $app) => $app->refresh_unallocated_instances
+            ->filter(fn (PolydockStoreApp $app): bool => $app->refresh_unallocated_instances
                 && $app->refreshableUnallocatedInstancesQuery()->exists())
             ->sortBy(fn (PolydockStoreApp $app) => $app->refreshableUnallocatedInstancesQuery()->min('created_at'));
 

@@ -99,7 +99,7 @@ class ListPolydockAppInstances extends ListRecords
             ...PolydockAppInstance::$stageDeployStatuses,
             ...PolydockAppInstance::$stageClaimStatuses,
             ...PolydockAppInstance::$stageUpgradeStatuses,
-            ...array_filter(PolydockAppInstance::$stageRemoveStatuses, fn ($status) => $status !== PolydockAppInstanceStatus::REMOVED),
+            ...array_filter(PolydockAppInstance::$stageRemoveStatuses, fn ($status): bool => $status !== PolydockAppInstanceStatus::REMOVED),
         ];
 
         // Each tab's scope is written once; all badges derive from a single
@@ -127,7 +127,7 @@ class ListPolydockAppInstances extends ListRecords
             // listed twice must not be counted twice.
             'in_progress' => collect($inProgressStatuses)
                 ->unique(fn (PolydockAppInstanceStatus $status) => $status->value)
-                ->sum(fn (PolydockAppInstanceStatus $status) => (int) $countsByStatus->get($status->value, 0)),
+                ->sum(fn (PolydockAppInstanceStatus $status): int => (int) $countsByStatus->get($status->value, 0)),
             'healthy_claimed' => (int) $countsByStatus->get(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED->value, 0),
             'healthy_unclaimed' => (int) $countsByStatus->get(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED->value, 0),
             'removed' => $removed,

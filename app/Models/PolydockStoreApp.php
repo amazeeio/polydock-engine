@@ -240,7 +240,7 @@ class PolydockStoreApp extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             $model->uuid = (string) Str::uuid();
         });
     }
@@ -345,7 +345,7 @@ class PolydockStoreApp extends Model
 
         return $this->instances()
             ->whereNull('user_group_id')
-            ->where(function ($query) {
+            ->where(function ($query): void {
                 $query->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
                     ->orWhereIn('status', PolydockAppInstance::unallocatedInProgressStatuses());
             })

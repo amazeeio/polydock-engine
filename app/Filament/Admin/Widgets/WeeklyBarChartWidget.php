@@ -83,7 +83,7 @@ abstract class WeeklyBarChartWidget extends ChartWidget
     protected function paletteSeries(Collection $names, array $colors): array
     {
         return $names->values()
-            ->mapWithKeys(fn ($name, int $index) => [$name => [
+            ->mapWithKeys(fn ($name, int $index): array => [$name => [
                 'label' => $name,
                 'backgroundColor' => $colors[$index % count($colors)],
             ]])

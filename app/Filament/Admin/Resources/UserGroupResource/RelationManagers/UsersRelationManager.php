@@ -51,7 +51,7 @@ class UsersRelationManager extends RelationManager
                     ->maxLength(255),
                 TextInput::make('password')
                     ->password()
-                    ->dehydrated(fn ($state) => filled($state))
+                    ->dehydrated(fn ($state): bool => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255)
                     ->label(fn (string $operation): string => $operation === 'create'
@@ -70,8 +70,8 @@ class UsersRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('name')
                     ->label('Name')
-                    ->formatStateUsing(fn ($record) => "{$record->first_name} {$record->last_name}")
-                    ->url(fn ($record) => UserResource::getUrl('view', ['record' => $record]))
+                    ->formatStateUsing(fn ($record): string => "{$record->first_name} {$record->last_name}")
+                    ->url(fn ($record): string => UserResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
                 TextColumn::make('email'),
                 TextColumn::make('pivot.role')
@@ -108,7 +108,7 @@ class UsersRelationManager extends RelationManager
                             ->live(),
 
                         Section::make('Search Existing User')
-                            ->visible(fn (Get $get) => $get('mode') === 'existing')
+                            ->visible(fn (Get $get): bool => $get('mode') === 'existing')
                             ->schema([
                                 Select::make('user_id')
                                     ->label('Select User')
@@ -133,33 +133,33 @@ class UsersRelationManager extends RelationManager
                                             ->whereKey($value)
                                             ->value('email');
                                     })
-                                    ->required(fn (Get $get) => $get('mode') === 'existing'),
+                                    ->required(fn (Get $get): bool => $get('mode') === 'existing'),
                             ]),
 
                         Section::make('Create New User')
-                            ->visible(fn (Get $get) => $get('mode') === 'new')
+                            ->visible(fn (Get $get): bool => $get('mode') === 'new')
                             ->schema([
                                 Grid::make(2)
                                     ->schema([
                                         TextInput::make('first_name')
                                             ->label('First Name')
-                                            ->required(fn (Get $get) => $get('mode') === 'new')
+                                            ->required(fn (Get $get): bool => $get('mode') === 'new')
                                             ->maxLength(255),
                                         TextInput::make('last_name')
                                             ->label('Last Name')
-                                            ->required(fn (Get $get) => $get('mode') === 'new')
+                                            ->required(fn (Get $get): bool => $get('mode') === 'new')
                                             ->maxLength(255),
                                     ]),
                                 TextInput::make('email')
                                     ->label('Email Address')
                                     ->email()
-                                    ->required(fn (Get $get) => $get('mode') === 'new')
+                                    ->required(fn (Get $get): bool => $get('mode') === 'new')
                                     ->unique('users', 'email')
                                     ->maxLength(255),
                                 TextInput::make('password')
                                     ->label('Password')
                                     ->password()
-                                    ->required(fn (Get $get) => $get('mode') === 'new')
+                                    ->required(fn (Get $get): bool => $get('mode') === 'new')
                                     ->maxLength(255),
                             ]),
 
@@ -168,7 +168,7 @@ class UsersRelationManager extends RelationManager
                             ->default(UserGroupRoleEnum::MEMBER)
                             ->required(),
                     ])
-                    ->action(function (array $data, RelationManager $livewire) {
+                    ->action(function (array $data, RelationManager $livewire): void {
                         $userId = $data['user_id'] ?? null;
 
                         if ($data['mode'] === 'new') {
@@ -236,7 +236,7 @@ class UsersRelationManager extends RelationManager
                             ->log("User '{$record->email}' removed from group");
                     }),
                 DeleteAction::make()
-                    ->before(function ($record, RelationManager $livewire): void {
+                    ->before(function (User $record, RelationManager $livewire): void {
                         /** @var UserGroup $group */
                         $group = $livewire->getOwnerRecord();
 

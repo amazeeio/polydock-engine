@@ -63,7 +63,7 @@ class AuthenticatedApiController extends Controller
             ->get();
 
         return response()->json([
-            'data' => $groups->map(fn (UserGroup $group) => [
+            'data' => $groups->map(fn (UserGroup $group): array => [
                 'id' => $group->id,
                 'name' => $group->name,
                 'slug' => $group->slug,
@@ -145,7 +145,7 @@ class AuthenticatedApiController extends Controller
             })
             ->get();
 
-        $formattedApps = $apps->map(fn (PolydockStoreApp $app) => [
+        $formattedApps = $apps->map(fn (PolydockStoreApp $app): array => [
             'uuid' => $app->uuid,
             'name' => $app->name,
             'description' => $app->description,
@@ -247,7 +247,7 @@ class AuthenticatedApiController extends Controller
 
         $instances = $instanceQuery->get();
 
-        $formattedInstances = $instances->map(fn (PolydockAppInstance $instance) => [
+        $formattedInstances = $instances->map(fn (PolydockAppInstance $instance): array => [
             'uuid' => $instance->uuid,
             'name' => $instance->name,
             'label' => $instance->getKeyValue('instance-label') ?: null,
@@ -324,7 +324,7 @@ class AuthenticatedApiController extends Controller
             'config' => 'nullable|array',
             'config.*' => [
                 'nullable',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail): void {
                     // Allow 'secret' to be an array if passed within config (legacy support)
                     if (str_ends_with($attribute, '.secret')) {
                         if (! \is_array($value)) {

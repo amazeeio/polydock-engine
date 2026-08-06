@@ -82,7 +82,7 @@ class MarkStuckInstancesFailedCommand extends BaseCommand
         PolydockAppInstance::query()
             ->whereIn('status', $this->intermediateStatuses())
             ->where('updated_at', '<=', $cutoff)
-            ->chunkById($chunkSize, function ($instances) use ($dryRun, $threshold, &$totalMarked, &$rows) {
+            ->chunkById($chunkSize, function ($instances) use ($dryRun, $threshold, &$totalMarked, &$rows): void {
                 foreach ($instances as $instance) {
                     $failedStatus = $this->resolveFailedStatus($instance->status);
 

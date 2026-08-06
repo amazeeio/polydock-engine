@@ -17,7 +17,7 @@ parameters:
     # type-hint-focused PRs land.
     type_coverage:
         return: 98
-        param: 80
+        param: 82
         property: 97
     # Known tradeoff: disabled so baselined inline @phpstan-ignore comments and
     # resolved baseline entries don't surface as unmatched-ignore errors. The

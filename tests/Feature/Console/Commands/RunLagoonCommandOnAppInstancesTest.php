@@ -76,7 +76,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
             'ssh_private_key_file' => $lagoonKeyPath,
         ]]);
 
-        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
+        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config): string => 'fake-token');
 
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();
@@ -160,7 +160,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
 
         // The coordinator should fetch the token exactly once before spawning workers.
         $tokenFetchCount = 0;
-        $this->app->instance('polydock.lagoon.token_fetcher', function (array $config) use (&$tokenFetchCount) {
+        $this->app->instance('polydock.lagoon.token_fetcher', function (array $config) use (&$tokenFetchCount): string {
             $tokenFetchCount++;
 
             return 'fake-token-concurrent';
@@ -218,7 +218,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
         $this->assertSame(1, $tokenFetchCount, 'Token should be fetched exactly once in the coordinator, not once per worker.');
 
         // Assert subprocesses were launched with the pre-fetched token in their environment.
-        Process::assertRan(function ($process) use ($instance1) {
+        Process::assertRan(function ($process) use ($instance1): bool {
             $cmd = $process->command;
             $hasId = is_array($cmd) ? in_array("--instance-id={$instance1->id}", $cmd) : str_contains($cmd, "--instance-id={$instance1->id}");
             $hasToken = isset($process->environment['LAGOON_PREFETCHED_TOKEN']) && $process->environment['LAGOON_PREFETCHED_TOKEN'] === 'fake-token-concurrent';
@@ -227,7 +227,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
                 && (is_array($cmd) ? in_array('drush cr', $cmd) : str_contains($cmd, 'drush cr'))
                 && $hasToken;
         });
-        Process::assertRan(function ($process) use ($instance2) {
+        Process::assertRan(function ($process) use ($instance2): bool {
             $cmd = $process->command;
             $hasId = is_array($cmd) ? in_array("--instance-id={$instance2->id}", $cmd) : str_contains($cmd, "--instance-id={$instance2->id}");
             $hasToken = isset($process->environment['LAGOON_PREFETCHED_TOKEN']) && $process->environment['LAGOON_PREFETCHED_TOKEN'] === 'fake-token-concurrent';
@@ -270,7 +270,7 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
             'ssh_private_key_file' => $lagoonKeyPath,
         ]]);
 
-        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
+        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config): string => 'fake-token');
 
         $mock = \Mockery::mock(Client::class);
         $mock->shouldReceive('setLagoonToken')->with('fake-token')->once();

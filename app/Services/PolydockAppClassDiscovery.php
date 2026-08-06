@@ -633,7 +633,7 @@ class PolydockAppClassDiscovery
      */
     private function matchesNamespaceFilter(string $className): bool
     {
-        return array_any(self::NAMESPACE_FILTERS, fn (string $filter) => stripos($className, $filter) !== false);
+        return array_any(self::NAMESPACE_FILTERS, fn (string $filter): bool => stripos($className, $filter) !== false);
     }
 
     /**

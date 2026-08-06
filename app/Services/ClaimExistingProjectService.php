@@ -107,7 +107,7 @@ class ClaimExistingProjectService
             $productionEnvironment = $project['productionEnvironment'] ?? $storeApp->lagoon_deploy_branch;
             $regionId = $project['openshift']['id'] ?? $storeApp->lagoon_deploy_region_id_ext;
 
-            return DB::transaction(function () use ($storeApp, $userGroup, $projectName, $project, $productionEnvironment, $regionId) {
+            return DB::transaction(function () use ($storeApp, $userGroup, $projectName, $project, $productionEnvironment, $regionId): PolydockAppInstance {
                 // The creating hook seeds `data` from the store app (deploy keys,
                 // group, region, health webhook, generated creds). We then overwrite
                 // the identity/lifecycle keys to point at the real project.

@@ -14,11 +14,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->string('migrated_from_class')->nullable();
         });
 
-        DB::transaction(function () {
+        DB::transaction(function (): void {
             $mappings = [
                 'App\Polydock\CoreAmazeeioGeneric\PolydockApp' => PolydockApp::class,
                 'App\Polydock\CoreAmazeeioGeneric\PolydockAiApp' => PolydockAiApp::class,
@@ -43,7 +43,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        DB::transaction(function () {
+        DB::transaction(function (): void {
             if (Schema::hasColumn('polydock_store_apps', 'migrated_from_class')) {
                 DB::table('polydock_store_apps')
                     ->whereNotNull('migrated_from_class')
@@ -69,7 +69,7 @@ return new class extends Migration
         });
 
         if (Schema::hasColumn('polydock_store_apps', 'migrated_from_class')) {
-            Schema::table('polydock_store_apps', function (Blueprint $table) {
+            Schema::table('polydock_store_apps', function (Blueprint $table): void {
                 $table->dropColumn('migrated_from_class');
             });
         }

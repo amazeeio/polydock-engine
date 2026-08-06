@@ -187,7 +187,7 @@ class MarkStuckInstancesFailedCommandTest extends TestCase
             ->assertSuccessful();
 
         Log::shouldHaveReceived('warning')
-            ->withArgs(function (...$args) {
+            ->withArgs(function (...$args): bool {
                 $message = $args[0] ?? '';
                 $context = $args[1] ?? [];
 

@@ -73,16 +73,16 @@ class UserRemoteRegistration extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             $model->uuid = (string) Str::uuid();
         });
 
-        static::created(function ($model) {
+        static::created(function ($model): void {
             Log::info('User remote registration created', ['registration' => SensitiveDataRedactor::redact($model->toArray())]);
             UserRemoteRegistrationCreated::dispatch($model);
         });
 
-        static::updating(function ($model) {
+        static::updating(function ($model): void {
             // If status is changing, fire the event
             if ($model->isDirty('status')) {
                 UserRemoteRegistrationStatusChanged::dispatch(

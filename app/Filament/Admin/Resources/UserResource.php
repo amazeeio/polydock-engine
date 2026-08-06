@@ -77,7 +77,7 @@ class UserResource extends Resource
 
                 TextInput::make('password')
                     ->password()
-                    ->dehydrated(fn ($state) => filled($state))
+                    ->dehydrated(fn ($state): bool => filled($state))
                     ->required(fn (string $operation): bool => $operation === 'create')
                     ->maxLength(255)
                     ->label(fn (string $operation): string => $operation === 'create'
@@ -208,7 +208,7 @@ class UserResource extends Resource
                             ->label('Member of')
                             ->listWithLineBreaks()
                             ->bulleted()
-                            ->url(fn ($record) => $record->groups->isNotEmpty() ? UserGroupResource::getUrl('view', ['record' => $record->groups->first()]) : null)
+                            ->url(fn ($record): ?string => $record->groups->isNotEmpty() ? UserGroupResource::getUrl('view', ['record' => $record->groups->first()]) : null)
                             ->openUrlInNewTab(),
                     ])
                     ->columnSpan(1),

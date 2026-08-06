@@ -48,7 +48,7 @@ class CreateWebhookCallForRegistrationStatusSuccessOrFailed
             ->webhooks()
             ->where('active', true)
             ->get()
-            ->each(function ($webhook) use ($event) {
+            ->each(function ($webhook) use ($event): void {
                 try {
                     Log::info('Creating webhook call for registration status change', [
                         'webhook_id' => $webhook->id,

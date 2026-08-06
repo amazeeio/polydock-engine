@@ -43,7 +43,7 @@ class PolydockDeploymentService
     ): ?PolydockDeploymentRun {
         /** @var Collection<int, PolydockAppInstance> $deployable */
         $deployable = collect($instances)
-            ->filter(fn (PolydockAppInstance $i) => $i->isRedeployEligible() && ! $i->hasInFlightDeployment())
+            ->filter(fn (PolydockAppInstance $i): bool => $i->isRedeployEligible() && ! $i->hasInFlightDeployment())
             ->values();
 
         // Build Lagoon environment tuples + a lookup back to the instance.

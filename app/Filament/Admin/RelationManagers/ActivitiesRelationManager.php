@@ -58,7 +58,7 @@ class ActivitiesRelationManager extends RelationManager
                     ->limit(80),
                 TextColumn::make('event')
                     ->badge()
-                    ->color(fn (?string $state) => match ($state) {
+                    ->color(fn (?string $state): string => match ($state) {
                         'created' => 'success',
                         'updated' => 'warning',
                         'deleted' => 'danger',

@@ -6,6 +6,7 @@ namespace Tests\Feature\Security;
 
 use App\Http\Middleware\BlockHorizonMutations;
 use App\Models\User;
+use Illuminate\Contracts\Routing\ResponseFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -91,7 +92,7 @@ class HorizonAccessControlTest extends TestCase
         $request = Request::create('/horizon/api/stats', 'GET');
         $request->setUserResolver(fn () => $user);
 
-        $response = $middleware->handle($request, fn () => response('Success'));
+        $response = $middleware->handle($request, fn (): ResponseFactory|\Illuminate\Http\Response => response('Success'));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Success', $response->getContent());
@@ -107,7 +108,7 @@ class HorizonAccessControlTest extends TestCase
         $request->setUserResolver(fn () => $user);
 
         try {
-            $middleware->handle($request, fn () => response('Success'));
+            $middleware->handle($request, fn (): ResponseFactory|\Illuminate\Http\Response => response('Success'));
             $this->fail('Expected HttpException was not thrown.');
         } catch (HttpException $e) {
             $this->assertEquals(403, $e->getStatusCode());
@@ -124,7 +125,7 @@ class HorizonAccessControlTest extends TestCase
         $request = Request::create('/horizon/api/jobs/failed/retry/1', 'POST');
         $request->setUserResolver(fn () => $user);
 
-        $response = $middleware->handle($request, fn () => response('Success'));
+        $response = $middleware->handle($request, fn (): ResponseFactory|\Illuminate\Http\Response => response('Success'));
 
         $this->assertEquals(200, $response->getStatusCode());
         $this->assertEquals('Success', $response->getContent());

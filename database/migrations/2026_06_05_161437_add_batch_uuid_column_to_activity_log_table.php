@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::connection(config('activitylog.database_connection'))
-            ->table(config('activitylog.table_name'), function (Blueprint $table) {
+            ->table(config('activitylog.table_name'), function (Blueprint $table): void {
                 $table->uuid('batch_uuid')->nullable()->after('properties');
             });
     }
@@ -17,7 +17,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::connection(config('activitylog.database_connection'))
-            ->table(config('activitylog.table_name'), function (Blueprint $table) {
+            ->table(config('activitylog.table_name'), function (Blueprint $table): void {
                 $table->dropColumn('batch_uuid');
             });
     }

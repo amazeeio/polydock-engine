@@ -67,7 +67,7 @@ class LagoonClientServiceTokenCacheTest extends TestCase
     {
         $config = $this->unusableConfig();
         Cache::put(LagoonClientService::tokenCacheKey($config), 'cached-tok', 60);
-        app()->instance('polydock.lagoon.token_fetcher', fn (array $c) => 'bound-tok');
+        app()->instance('polydock.lagoon.token_fetcher', fn (array $c): string => 'bound-tok');
 
         try {
             $token = app(LagoonClientService::class)->getLagoonToken($config);

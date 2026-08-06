@@ -59,7 +59,7 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
         $this->assertNotNull($call->processed_at);
         $this->assertNull($call->exception);
 
-        Http::assertSent(fn ($request) => $request->url() === 'https://example.test/hook'
+        Http::assertSent(fn ($request): bool => $request->url() === 'https://example.test/hook'
             && $request->hasHeader('X-Polydock-Event', 'app.created')
             && $request->hasHeader('X-Polydock-Delivery', (string) $call->id)
             && $request->hasHeader('X-Polydock-Attempt'));
@@ -117,7 +117,7 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
 
     public function test_transport_exception_records_exception_and_rethrows(): void
     {
-        Http::fake(function () {
+        Http::fake(function (): void {
             throw new ConnectionException('Connection timed out');
         });
 

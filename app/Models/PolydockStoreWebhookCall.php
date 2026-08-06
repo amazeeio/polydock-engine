@@ -43,7 +43,7 @@ class PolydockStoreWebhookCall extends Model
     {
         parent::boot();
 
-        static::created(function ($webhookCall) {
+        static::created(function ($webhookCall): void {
             Log::info('Queuing webhook call for processing', [
                 'webhook_call_id' => $webhookCall->id,
                 'event' => $webhookCall->event,

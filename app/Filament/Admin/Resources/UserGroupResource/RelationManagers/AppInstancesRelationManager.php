@@ -40,7 +40,7 @@ class AppInstancesRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
-                    ->url(fn ($record) => PolydockAppInstanceResource::getUrl('view', ['record' => $record]))
+                    ->url(fn ($record): string => PolydockAppInstanceResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
                 TextColumn::make('storeApp.name')
                     ->label('Store App')
@@ -62,7 +62,7 @@ class AppInstancesRelationManager extends RelationManager
                 EditAction::make(),
                 DeleteAction::make(),
                 ViewAction::make()
-                    ->url(fn ($record) => PolydockAppInstanceResource::getUrl('view', ['record' => $record])),
+                    ->url(fn ($record): string => PolydockAppInstanceResource::getUrl('view', ['record' => $record])),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

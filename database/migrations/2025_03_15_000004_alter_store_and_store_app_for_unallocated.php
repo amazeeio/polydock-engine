@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->dropForeign(['user_group_id']);
             $table->foreignId('user_group_id')->nullable()->change();
             $table->foreign('user_group_id')->references('id')->on('user_groups')->nullOnDelete();
         });
 
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->integer('target_unallocated_app_instances')->default(0);
         });
     }
@@ -27,11 +27,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->foreignId('user_group_id')->constrained()->cascadeOnDelete();
         });
 
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->dropColumn('target_unallocated_app_instances');
         });
     }

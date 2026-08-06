@@ -10,7 +10,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table): void {
             $table->string('okta_sub')->nullable()->unique()->after('password');
             // Okta-linked and JIT-created users have no password.
             $table->string('password')->nullable()->change();
@@ -19,7 +19,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('users', function (Blueprint $table): void {
             $table->dropColumn('okta_sub');
             $table->string('password')->nullable(false)->change();
         });

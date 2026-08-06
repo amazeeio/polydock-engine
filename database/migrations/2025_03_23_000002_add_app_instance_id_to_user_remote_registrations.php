@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('user_remote_registrations', function (Blueprint $table) {
+        Schema::table('user_remote_registrations', function (Blueprint $table): void {
             $table->unsignedBigInteger('polydock_app_instance_id')->nullable()->after('user_group_id');
 
             $table->foreign('polydock_app_instance_id')
@@ -23,7 +23,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('user_remote_registrations', function (Blueprint $table) {
+        Schema::table('user_remote_registrations', function (Blueprint $table): void {
             $table->dropForeign(['polydock_app_instance_id']);
             $table->dropIndex('user_remote_reg_app_instance_idx');
             $table->dropColumn('polydock_app_instance_id');

@@ -58,7 +58,7 @@ class BanEmailsCommand extends BaseCommand
         $bannedUserIds = $users->pluck('id')->toArray();
 
         // 3. Identify User Groups associated with these users
-        $groupsToCheck = UserGroup::whereHas('users', function ($query) use ($bannedUserIds) {
+        $groupsToCheck = UserGroup::whereHas('users', function ($query) use ($bannedUserIds): void {
             $query->whereIn('user_id', $bannedUserIds);
         })->get();
 
@@ -121,7 +121,7 @@ class BanEmailsCommand extends BaseCommand
         $deletedGroups = [];
 
         // 7. Perform DB modifications inside a transaction for atomic safety
-        DB::transaction(function () use ($patterns, $reason, $users, $groupsToCheck, $registrations, $instances, &$deletedGroups) {
+        DB::transaction(function () use ($patterns, $reason, $users, $groupsToCheck, $registrations, $instances, &$deletedGroups): void {
             // Save patterns in polydock_banned_patterns table
             foreach ($patterns as $pattern) {
                 PolydockBannedPattern::firstOrCreate(
@@ -277,7 +277,7 @@ class BanEmailsCommand extends BaseCommand
             return new Collection;
         }
 
-        return User::where(function ($query) use ($patterns) {
+        return User::where(function ($query) use ($patterns): void {
             foreach ($patterns as $pattern) {
                 $escapedPattern = $this->escapeLikePattern($pattern);
                 $query->orWhereRaw("email LIKE ? ESCAPE '='", [$escapedPattern]);
@@ -298,7 +298,7 @@ class BanEmailsCommand extends BaseCommand
             return new Collection;
         }
 
-        return UserRemoteRegistration::where(function ($query) use ($patterns, $userIds) {
+        return UserRemoteRegistration::where(function ($query) use ($patterns, $userIds): void {
             if ($userIds !== []) {
                 $query->whereIn('user_id', $userIds);
             }
@@ -324,7 +324,7 @@ class BanEmailsCommand extends BaseCommand
 
         $connectionType = DB::connection()->getDriverName();
 
-        return PolydockAppInstance::where(function ($query) use ($patterns, $groupIds, $connectionType) {
+        return PolydockAppInstance::where(function ($query) use ($patterns, $groupIds, $connectionType): void {
             if ($groupIds !== []) {
                 $query->whereIn('user_group_id', $groupIds);
             }

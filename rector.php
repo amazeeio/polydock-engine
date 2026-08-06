@@ -6,6 +6,8 @@ use Rector\CodingStyle\Rector\FuncCall\FunctionFirstClassCallableRector;
 use Rector\Config\RectorConfig;
 use Rector\Set\ValueObject\LevelSetList;
 use Rector\Set\ValueObject\SetList;
+use Rector\TypeDeclaration\Rector\Property\TypedPropertyFromAssignsRector;
+use Rector\TypeDeclaration\Rector\Property\TypedPropertyFromStrictSetUpRector;
 use Rector\TypeDeclaration\Rector\StmtsAwareInterface\SafeDeclareStrictTypesRector;
 
 return static function (RectorConfig $rectorConfig): void {
@@ -26,6 +28,7 @@ return static function (RectorConfig $rectorConfig): void {
         SetList::DEAD_CODE,
         SetList::CODE_QUALITY,
         SetList::EARLY_RETURN,
+        SetList::TYPE_DECLARATION,
     ]);
 
     // Enforces declare(strict_types=1); at the top of all files
@@ -37,6 +40,14 @@ return static function (RectorConfig $rectorConfig): void {
         // phpstan max against the untyped sensitiveInputs() convention method
         FunctionFirstClassCallableRector::class => [
             __DIR__.'/app/Providers/AppServiceProvider.php',
+        ],
+        // Would re-type $traitObject as bare `object`, losing the
+        // anonymous-class type phpstan infers from the setUp assignment
+        TypedPropertyFromStrictSetUpRector::class => [
+            __DIR__.'/tests/Unit/Traits/HasWebhookSensitiveDataTest.php',
+        ],
+        TypedPropertyFromAssignsRector::class => [
+            __DIR__.'/tests/Unit/Traits/HasWebhookSensitiveDataTest.php',
         ],
     ]);
 };

@@ -57,7 +57,7 @@ class ExportRegistrationData extends BaseCommand
         }
 
         if ($store = $this->option('store')) {
-            $query->whereHas('storeApp.store', function ($q) use ($store) {
+            $query->whereHas('storeApp.store', function ($q) use ($store): void {
                 $q->where('name', 'like', "%{$store}%");
             });
         }
@@ -70,7 +70,7 @@ class ExportRegistrationData extends BaseCommand
             return self::FAILURE;
         }
 
-        $exportData = $registrations->map(fn (UserRemoteRegistration $registration) => [
+        $exportData = $registrations->map(fn (UserRemoteRegistration $registration): array => [
             'id' => $registration->id,
             'type' => $registration->type->value ?? '',
             'email' => $registration->email,

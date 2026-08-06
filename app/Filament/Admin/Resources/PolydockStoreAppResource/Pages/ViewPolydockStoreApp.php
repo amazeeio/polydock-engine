@@ -31,10 +31,10 @@ class ViewPolydockStoreApp extends ViewRecord
                 ->schema([
                     Placeholder::make('current_unallocated')
                         ->label('Current Removable Unallocated Instances')
-                        ->content(fn () => (string) $this->record->removableUnallocatedInstancesQuery()->count()),
+                        ->content(fn (): string => (string) $this->record->removableUnallocatedInstancesQuery()->count()),
                     Placeholder::make('target_unallocated')
                         ->label('Target Unallocated Instances')
-                        ->content(fn () => (string) $this->record->target_unallocated_app_instances),
+                        ->content(fn (): string => (string) $this->record->target_unallocated_app_instances),
                     TextInput::make('count')
                         ->label('Instances to Remove')
                         ->numeric()

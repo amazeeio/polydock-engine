@@ -64,67 +64,67 @@ class PolydockStoreResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
-                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
                 TextInput::make('lagoon_deploy_project_prefix')
                     ->label('Lagoon Deploy Project Prefix')
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
-                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
                 TextInput::make('lagoon_deploy_organization_id_ext')
                     ->label('Lagoon Deploy Organization ID')
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
-                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
                 TextInput::make('amazee_ai_backend_region_id_ext')
                     ->label('amazee.ai Backend Region ID')
                     ->numeric()
                     ->dehydrated(
-                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
                 TextInput::make('lagoon_deploy_group_name')
                     ->label('Lagoon Deploy Group Name')
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
-                        fn (?PolydockStore $record) => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record) => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
                     ),
                 Textarea::make('lagoon_deploy_private_key')
                     ->label('Lagoon Deploy Private Key')
                     ->columnSpanFull()
                     ->rows(3)
-                    ->formatStateUsing(fn ($state) => null)
-                    ->dehydrated(fn ($state) => filled($state))
-                    ->placeholder(fn ($record) => filled($record?->lagoon_deploy_private_key)
+                    ->formatStateUsing(fn ($state): null => null)
+                    ->dehydrated(fn ($state): bool => filled($state))
+                    ->placeholder(fn ($record): string => filled($record?->lagoon_deploy_private_key)
                         ? 'Current key is set. Leave empty to keep it, or enter a new one to replace it.'
                         : 'No key is currently set. Enter a new key here.'
                     )
                     ->live(onBlur: true)
-                    ->afterStateUpdated(function (Set $set, ?string $state, ?PolydockStore $record) {
+                    ->afterStateUpdated(function (Set $set, ?string $state, ?PolydockStore $record): void {
                         $keyToUse = filled($state) ? $state : $record?->lagoon_deploy_private_key;
                         $set('derived_public_key', $keyToUse ? LagoonHelper::getPublicKeyFromPrivateKey($keyToUse) : null);
                     })
                     ->rules([
-                        fn () => function (string $attribute, $value, Closure $fail) {
+                        fn (): Closure => function (string $attribute, $value, Closure $fail): void {
                             if (filled($value) && ! LagoonHelper::getPublicKeyFromPrivateKey($value)) {
                                 $fail('The private key is invalid.');
                             }
@@ -137,7 +137,7 @@ class PolydockStoreResource extends Resource
                     ->dehydrated(false)
                     ->columnSpanFull()
                     ->rows(5)
-                    ->formatStateUsing(fn (?PolydockStore $record) => $record?->lagoon_deploy_private_key
+                    ->formatStateUsing(fn (?PolydockStore $record): ?string => $record?->lagoon_deploy_private_key
                             ? LagoonHelper::getPublicKeyFromPrivateKey($record->lagoon_deploy_private_key)
                             : null
                     ),
@@ -158,7 +158,7 @@ class PolydockStoreResource extends Resource
                     ->label('Listed')
                     ->boolean(),
                 TextColumn::make('lagoon_deploy_region_id_ext')
-                    ->formatStateUsing(fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'))
+                    ->formatStateUsing(fn (string $state): ?string => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'))
                     ->label('Deploy Region')
                     ->searchable(),
                 TextColumn::make('lagoon_deploy_project_prefix')
@@ -167,7 +167,7 @@ class PolydockStoreResource extends Resource
                 TextColumn::make('amazee_ai_backend_region_id_ext')
                     ->label('AI Region')
                     ->formatStateUsing(
-                        fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name'),
+                        fn (string $state): ?string => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion($state, 'name'),
                     )
                     ->sortable(),
                 TextColumn::make('lagoon_deploy_organization_id_ext')
@@ -197,7 +197,7 @@ class PolydockStoreResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->hidden(fn () => true), // Disable bulk delete entirely
+                        ->hidden(fn (): true => true), // Disable bulk delete entirely
                 ]),
             ]);
     }
@@ -234,7 +234,7 @@ class PolydockStoreResource extends Resource
                                     ->label('Store Name'),
                                 TextEntry::make('status')
                                     ->badge()
-                                    ->color(fn ($state) => match ($state->value) {
+                                    ->color(fn ($state): string => match ($state->value) {
                                         PolydockStoreStatusEnum::PUBLIC->value => 'success',
                                         PolydockStoreStatusEnum::PRIVATE->value => 'warning',
                                         default => 'gray',
@@ -260,12 +260,12 @@ class PolydockStoreResource extends Resource
                                 TextEntry::make('lagoon_deploy_region_id_ext')
                                     ->label('Deploy Region')
                                     ->formatStateUsing(
-                                        fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'),
+                                        fn (string $state): ?string => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'),
                                     ),
                                 TextEntry::make('amazee_ai_backend_region_id_ext')
                                     ->label('AI Backend Region')
                                     ->formatStateUsing(
-                                        fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion(
+                                        fn (string $state): ?string => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion(
                                             $state,
                                             'name',
                                         ),

@@ -410,7 +410,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             // Get the store app and its class
             $storeApp = PolydockStoreApp::findOrFail($model->polydock_store_app_id);
 
@@ -475,7 +475,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             }
         });
 
-        static::created(function ($appInstance) {
+        static::created(function ($appInstance): void {
             // Fire the NEW status event if applicable
             if ($appInstance->status === PolydockAppInstanceStatus::NEW) {
                 $appInstance->info('MODEL: New app instance created', [
@@ -486,7 +486,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             }
         });
 
-        static::updated(function ($appInstance) {
+        static::updated(function ($appInstance): void {
             if ($appInstance->wasChanged('status')) {
                 $appInstance->info('MODEL: Status changed for app instance', [
                     'app_instance_id' => $appInstance->id,

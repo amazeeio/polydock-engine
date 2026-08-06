@@ -76,7 +76,7 @@ class InstanceListTabBadgesTest extends TestCase
 
         $page = new ListPolydockAppInstances;
         $badges = collect($page->getTabs())
-            ->map(fn ($tab) => (int) $tab->getBadge());
+            ->map(fn ($tab): int => (int) $tab->getBadge());
 
         $this->assertSame(5, $badges['active']);
         $this->assertSame(2, $badges['in_progress']);
@@ -91,7 +91,7 @@ class InstanceListTabBadgesTest extends TestCase
         $this->actingAs($this->admin);
 
         $badges = collect((new ListPolydockAppInstances)->getTabs())
-            ->map(fn ($tab) => (int) $tab->getBadge());
+            ->map(fn ($tab): int => (int) $tab->getBadge());
 
         $this->assertSame(0, $badges['active']);
         $this->assertSame(0, $badges['all']);

@@ -36,7 +36,7 @@ return new class extends Migration
             }
         }
 
-        Schema::table('polydock_stores', function (Blueprint $table) {
+        Schema::table('polydock_stores', function (Blueprint $table): void {
             $table->dropColumn('lagoon_deploy_private_key');
         });
     }
@@ -46,7 +46,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('polydock_stores', function (Blueprint $table) {
+        Schema::table('polydock_stores', function (Blueprint $table): void {
             $table->text('lagoon_deploy_private_key')->nullable()->after('lagoon_deploy_project_prefix');
         });
 

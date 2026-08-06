@@ -244,7 +244,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
                 $commandBase[] = "--container={$containerName}";
             }
 
-            $pool = Process::pool(function (Pool $pool) use ($instances, $commandBase, $prefetchedToken) {
+            $pool = Process::pool(function (Pool $pool) use ($instances, $commandBase, $prefetchedToken): void {
                 foreach ($instances as $instance) {
                     $command = array_merge($commandBase, ["--instance-id={$instance->id}"]);
                     $pool->as($instance->id)->command($command)->env(['LAGOON_PREFETCHED_TOKEN' => $prefetchedToken]);

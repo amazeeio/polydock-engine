@@ -28,7 +28,7 @@ return new class extends Migration
             ->where('status', PolydockAppInstanceStatus::REMOVED->value)
             ->whereNull('purge_eligible_at')
             ->orderBy('id')
-            ->chunkById(500, function ($rows) use ($graceDays) {
+            ->chunkById(500, function ($rows) use ($graceDays): void {
                 foreach ($rows as $row) {
                     DB::table('polydock_app_instances')
                         ->where('id', $row->id)

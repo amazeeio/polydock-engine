@@ -84,7 +84,7 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
             'ssh_private_key_file' => $lagoonKeyPath,
         ]]);
 
-        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config) => 'fake-token');
+        $this->app->instance('polydock.lagoon.token_fetcher', fn (array $config): string => 'fake-token');
     }
 
     public function test_it_runs_serially_by_default(): void

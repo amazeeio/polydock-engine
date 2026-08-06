@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('polydock_app_instance_logs', function (Blueprint $table) {
+        Schema::create('polydock_app_instance_logs', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('polydock_app_instance_id')
                 ->constrained()

@@ -72,7 +72,7 @@ class RunLifecyclePhaseTest extends TestCase
         $instance = new StatusRecordingAppInstance;
         $bodyArgs = null;
 
-        $returned = $this->app()->runPhase($instance, function (PolydockAppInstanceInterface $appInstance, array $logContext) use (&$bodyArgs) {
+        $returned = $this->app()->runPhase($instance, function (PolydockAppInstanceInterface $appInstance, array $logContext) use (&$bodyArgs): null {
             $bodyArgs = [$appInstance, $logContext];
 
             return null;
@@ -105,7 +105,7 @@ class RunLifecyclePhaseTest extends TestCase
     {
         $instance = new StatusRecordingAppInstance;
 
-        $returned = $this->app()->runPhase($instance, fn (PolydockAppInstanceInterface $appInstance) => $appInstance);
+        $returned = $this->app()->runPhase($instance, fn (PolydockAppInstanceInterface $appInstance): PolydockAppInstanceInterface => $appInstance);
 
         $this->assertSame($instance, $returned);
         $this->assertSame([

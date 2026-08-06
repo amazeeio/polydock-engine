@@ -115,7 +115,7 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
             // may have recovered the instance between the eligibility query
             // and this write, and saving the stale snapshot would shove a
             // live instance into removal/purge.
-            $sweptThisOne = DB::transaction(function () use ($instance, $cutoff, $target, $days) {
+            $sweptThisOne = DB::transaction(function () use ($instance, $cutoff, $target, $days): bool {
                 $fresh = PolydockAppInstance::query()
                     ->whereKey($instance->id)
                     ->lockForUpdate()

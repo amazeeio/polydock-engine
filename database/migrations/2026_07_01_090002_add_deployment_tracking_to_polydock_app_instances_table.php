@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->foreignId('deployment_run_id')
                 ->nullable()
                 ->after('user_group_id')
@@ -33,7 +33,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             $table->dropIndex('app_instances_store_app_next_redeploy_idx');
             $table->dropIndex(['next_redeploy_at']);
             $table->dropForeign(['deployment_run_id']);

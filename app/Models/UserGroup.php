@@ -162,7 +162,7 @@ class UserGroup extends Model
     {
         parent::boot();
 
-        static::creating(function ($userGroup) {
+        static::creating(function ($userGroup): void {
             if (empty($userGroup->slug)) {
                 $slug = Str::slug($userGroup->name);
                 $originalSlug = $slug;
