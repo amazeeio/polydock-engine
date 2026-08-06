@@ -39,6 +39,10 @@ class CreateWebhookCallForAppInstanceStatusChanged
                 'event' => $previousStatus === null ? 'app_instance.created' : 'app_instance.status_changed',
                 'payload' => [
                     'app_instance_id' => $event->appInstance->id,
+                    // The uuid is the instance's public identifier — it is what the
+                    // API returns on create and what consumers hold on to, so the
+                    // webhook has to carry it for them to resolve the instance.
+                    'app_instance_uuid' => $event->appInstance->uuid,
                     'store_id' => $event->appInstance->storeApp->store->id,
                     'store_name' => $event->appInstance->storeApp->store->name,
                     'store_app_id' => $event->appInstance->polydock_store_app_id,
