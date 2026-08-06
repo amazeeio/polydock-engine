@@ -48,7 +48,6 @@
         "phpstan/phpstan-strict-rules": "^2.0",
         "phpunit/phpunit": "^13.0",
         "rector/rector": "^2.3",
-        "squizlabs/php_codesniffer": "^4.0",
         "tomasvotruba/type-coverage": "^2.3"
     },
     "autoload": {
