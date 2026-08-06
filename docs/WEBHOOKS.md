@@ -44,8 +44,9 @@ identifier, the value returned by the API when the instance is created and the
 key used in instance API routes. `app_instance_id` is Polydock's internal
 auto-increment id and is not stable across environments.
 
-`data` holds the instance's provisioning data. It is redacted unless the
-webhook has `include_sensitive_data` set.
+`data` holds the instance's provisioning data. Sensitive keys are always
+redacted; setting `include_sensitive_data` additionally includes the generated
+app-admin username and password.
 
 ## Verifying the signature
 

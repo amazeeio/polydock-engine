@@ -67,11 +67,11 @@ class CreateWebhookCallForAppInstanceStatusChangedTest extends TestCase
 
         $call = PolydockStoreWebhookCall::query()->sole();
 
-        $this->assertSame('app_instance.created', $call->event);
-        $this->assertSame($instance->uuid, $call->payload['app_instance_uuid']);
-        $this->assertSame($instance->id, $call->payload['app_instance_id']);
-        $this->assertNull($call->payload['previous_status']);
-        $this->assertSame(
+        self::assertSame('app_instance.created', $call->event);
+        self::assertSame($instance->uuid, $call->payload['app_instance_uuid']);
+        self::assertSame($instance->id, $call->payload['app_instance_id']);
+        self::assertNull($call->payload['previous_status']);
+        self::assertSame(
             PolydockAppInstanceStatus::NEW->value,
             $call->payload['current_status'],
         );
@@ -92,13 +92,13 @@ class CreateWebhookCallForAppInstanceStatusChangedTest extends TestCase
 
         $call = PolydockStoreWebhookCall::query()->sole();
 
-        $this->assertSame('app_instance.status_changed', $call->event);
-        $this->assertSame($instance->uuid, $call->payload['app_instance_uuid']);
-        $this->assertSame(
+        self::assertSame('app_instance.status_changed', $call->event);
+        self::assertSame($instance->uuid, $call->payload['app_instance_uuid']);
+        self::assertSame(
             PolydockAppInstanceStatus::PENDING_PRE_DEPLOY->value,
             $call->payload['previous_status'],
         );
-        $this->assertSame(
+        self::assertSame(
             PolydockAppInstanceStatus::PENDING_DEPLOY->value,
             $call->payload['current_status'],
         );
