@@ -140,7 +140,10 @@ class PolydockDependencyTrackApp extends GenericPolydockApp implements HasAppIns
             $routes = explode(',', (string) ($environment['routes'] ?? ''));
             foreach ($routes as $route) {
                 $route = trim($route);
-                if ($route === '' || $route === '0') {
+                if ($route === '') {
+                    continue;
+                }
+                if ($route === '0') {
                     continue;
                 }
 

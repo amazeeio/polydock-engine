@@ -42,8 +42,11 @@ class DispatchScheduledRedeploysCommand extends BaseCommand
 
         foreach ($due->groupBy('polydock_store_app_id') as $group) {
             $run = $service->redeploy($group->all(), PolydockDeploymentRunTriggerSourceEnum::SCHEDULED);
-
-            if (! $run || $run->status === PolydockDeploymentRunStatusEnum::FAILED) {
+            if (! $run) {
+                // Leave next_redeploy_at untouched so these retry on a later tick.
+                continue;
+            }
+            if ($run->status === PolydockDeploymentRunStatusEnum::FAILED) {
                 // Leave next_redeploy_at untouched so these retry on a later tick.
                 continue;
             }

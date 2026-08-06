@@ -1085,9 +1085,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         // Randomly choose between color-animal or verb-animal pattern
         if (random_int(0, 1) === 0) {
             return strtolower(self::pickColor().self::pickAnimal());
-        } else {
-            return strtolower($this->pickVerb().self::pickAnimal());
         }
+
+        return strtolower($this->pickVerb().self::pickAnimal());
     }
 
     /**

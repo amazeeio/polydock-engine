@@ -246,24 +246,22 @@ class UserGroup extends Model
                 ->save();
 
             return $lockedInstance;
-        } else {
-            $appInstance = PolydockAppInstance::create([
-                'name' => $name,
-                'polydock_store_app_id' => $storeApp->id,
-                'user_group_id' => $userGroup->id,
-                'allocation_lock' => $allocationLock,
-                'status' => PolydockAppInstanceStatus::PENDING_PRE_CREATE,
-                'config' => [], // Empty config for now
-            ]);
-
-            Log::info('Allocated app instance created for group', [
-                'app_id' => $storeApp->id,
-                'app_name' => $storeApp->name,
-                'group_id' => $userGroup->id,
-                'group_name' => $userGroup->name,
-            ]);
-
-            return $appInstance;
         }
+        $appInstance = PolydockAppInstance::create([
+            'name' => $name,
+            'polydock_store_app_id' => $storeApp->id,
+            'user_group_id' => $userGroup->id,
+            'allocation_lock' => $allocationLock,
+            'status' => PolydockAppInstanceStatus::PENDING_PRE_CREATE,
+            'config' => [], // Empty config for now
+        ]);
+        Log::info('Allocated app instance created for group', [
+            'app_id' => $storeApp->id,
+            'app_name' => $storeApp->name,
+            'group_id' => $userGroup->id,
+            'group_name' => $userGroup->name,
+        ]);
+
+        return $appInstance;
     }
 }

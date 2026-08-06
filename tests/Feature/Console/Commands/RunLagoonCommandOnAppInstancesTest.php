@@ -41,10 +41,12 @@ class RunLagoonCommandOnAppInstancesTest extends TestCase
     private function deleteDirectory(string $directory): void
     {
         foreach (scandir($directory) ?: [] as $item) {
-            if ($item === '.' || $item === '..') {
+            if ($item === '.') {
                 continue;
             }
-
+            if ($item === '..') {
+                continue;
+            }
             $path = $directory.DIRECTORY_SEPARATOR.$item;
 
             if (is_dir($path)) {

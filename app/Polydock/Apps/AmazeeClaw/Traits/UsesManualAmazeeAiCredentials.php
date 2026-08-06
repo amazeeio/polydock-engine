@@ -163,7 +163,10 @@ trait UsesManualAmazeeAiCredentials
 
         $this->info("{$functionName}: Injecting AI LLM Credentials", $logContext);
         foreach ($claimEnvVars as $variableName => $variableValue) {
-            if ($variableValue === null || $variableValue === '') {
+            if ($variableValue === null) {
+                continue;
+            }
+            if ($variableValue === '') {
                 continue;
             }
             $this->addOrUpdateLagoonProjectVariable($appInstance, $variableName, $variableValue, 'GLOBAL');

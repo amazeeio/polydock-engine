@@ -58,12 +58,11 @@ trait AuthTrait
 
         if ($response->hasErrors()) {
             return false;
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            $data = $response->getData();
-
-            return isset($data['lagoonVersion']) && isset($data['me']['id']);
         }
+        // Returns an array with all the data returned by the GraphQL server.
+        $data = $response->getData();
+
+        return isset($data['lagoonVersion']) && isset($data['me']['id']);
     }
 
     /**
@@ -95,9 +94,9 @@ trait AuthTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            return $response->getData();
         }
+
+        // Returns an array with all the data returned by the GraphQL server.
+        return $response->getData();
     }
 }

@@ -126,10 +126,10 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            return $response->getData();
         }
+
+        // Returns an array with all the data returned by the GraphQL server.
+        return $response->getData();
     }
 
     /**
@@ -213,10 +213,10 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            return $response->getData();
         }
+
+        // Returns an array with all the data returned by the GraphQL server.
+        return $response->getData();
     }
 
     /**
@@ -267,9 +267,9 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            return $response->getData();
         }
+
+        return $response->getData();
     }
 
     /**
@@ -365,10 +365,10 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            return $response->getData();
         }
+
+        // Returns an array with all the data returned by the GraphQL server.
+        return $response->getData();
     }
 
     /**
@@ -436,10 +436,10 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            return $response->getData();
         }
+
+        // Returns an array with all the data returned by the GraphQL server.
+        return $response->getData();
     }
 
     /**
@@ -507,9 +507,9 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            return $response->getData();
         }
+
+        return $response->getData();
     }
 
     /**
@@ -550,10 +550,10 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            return $response->getData();
         }
+
+        // Returns an array with all the data returned by the GraphQL server.
+        return $response->getData();
     }
 
     /**
@@ -583,10 +583,10 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            return $response->getData();
         }
+
+        // Returns an array with all the data returned by the GraphQL server.
+        return $response->getData();
     }
 
     /**
@@ -646,9 +646,9 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            return $response->getData();
         }
+
+        return $response->getData();
     }
 
     /**
@@ -688,9 +688,9 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            return $response->getData();
         }
+
+        return $response->getData();
     }
 
     /**
@@ -730,9 +730,9 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            return $response->getData();
         }
+
+        return $response->getData();
     }
 
     /**
@@ -799,9 +799,9 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            return $response->getData();
         }
+
+        return $response->getData();
     }
 
     /**
@@ -831,8 +831,8 @@ trait ProjectTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            return ['id' => $deployTargetConfigId, 'project' => $projectId, 'execute' => true];
         }
+
+        return ['id' => $deployTargetConfigId, 'project' => $projectId, 'execute' => true];
     }
 }

@@ -32,8 +32,11 @@ class ActivitiesRelationManager extends RelationManager
         if ($user === null) {
             return false;
         }
+        if ($user->can('view_activity_log')) {
+            return true;
+        }
 
-        return $user->can('view_activity_log') || $user->can('view_any_activity_log');
+        return $user->can('view_any_activity_log');
     }
 
     public function table(Table $table): Table

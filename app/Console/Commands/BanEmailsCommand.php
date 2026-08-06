@@ -141,11 +141,12 @@ class BanEmailsCommand extends BaseCommand
             // Initiate graceful force-purge for matched app instances
             foreach ($instances as $instance) {
                 // Skip if already fully removed or in removal/purge stages
-                if (in_array($instance->status, PolydockAppInstance::$stageRemoveStatuses, true) ||
-                    in_array($instance->status, PolydockAppInstance::$stagePurgeStatuses, true)) {
+                if (in_array($instance->status, PolydockAppInstance::$stageRemoveStatuses, true)) {
                     continue;
                 }
-
+                if (in_array($instance->status, PolydockAppInstance::$stagePurgeStatuses, true)) {
+                    continue;
+                }
                 $instance->force_purge_requested_at = now();
                 $instance->setStatus(
                     PolydockAppInstanceStatus::PENDING_PRE_REMOVE,
@@ -210,7 +211,10 @@ class BanEmailsCommand extends BaseCommand
         $normalized = [];
         foreach ($inputs as $input) {
             $input = trim(strtolower($input));
-            if ($input === '' || $input === '0') {
+            if ($input === '') {
+                continue;
+            }
+            if ($input === '0') {
                 continue;
             }
 

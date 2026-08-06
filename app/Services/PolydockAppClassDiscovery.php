@@ -75,8 +75,10 @@ class PolydockAppClassDiscovery
             } catch (Throwable) {
                 continue;
             }
-
-            if ($reflection->isAbstract() || $reflection->isInterface()) {
+            if ($reflection->isAbstract()) {
+                continue;
+            }
+            if ($reflection->isInterface()) {
                 continue;
             }
 

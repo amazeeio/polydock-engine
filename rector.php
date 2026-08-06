@@ -25,6 +25,7 @@ return static function (RectorConfig $rectorConfig): void {
         LevelSetList::UP_TO_PHP_84,
         SetList::DEAD_CODE,
         SetList::CODE_QUALITY,
+        SetList::EARLY_RETURN,
     ]);
 
     // Enforces declare(strict_types=1); at the top of all files

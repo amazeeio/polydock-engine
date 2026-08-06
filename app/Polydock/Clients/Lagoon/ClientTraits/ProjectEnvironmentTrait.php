@@ -102,12 +102,11 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            $data = $response->getData();
-
-            return $data;
         }
+        // Returns an array with all the data returned by the GraphQL server.
+        $data = $response->getData();
+
+        return $data;
     }
 
     /**
@@ -185,9 +184,9 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            return $response->getData();
         }
+
+        return $response->getData();
     }
 
     /**
@@ -227,11 +226,10 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            $data = $response->getData();
-
-            return $data['deploymentsByBulkId'] ?? [];
         }
+        $data = $response->getData();
+
+        return $data['deploymentsByBulkId'] ?? [];
     }
 
     /**
@@ -277,12 +275,11 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            $data = $response->getData();
-
-            return $data['environmentByName']['deployments'][0] ?? ['error' => 'Deployment not found: '.$deploymentName, 'errorData' => $data];
         }
+        // Returns an array with all the data returned by the GraphQL server.
+        $data = $response->getData();
+
+        return $data['environmentByName']['deployments'][0] ?? ['error' => 'Deployment not found: '.$deploymentName, 'errorData' => $data];
     }
 
     /**
@@ -454,12 +451,11 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            $data = $response->getData();
-
-            return $data;
         }
+        // Returns an array with all the data returned by the GraphQL server.
+        $data = $response->getData();
+
+        return $data;
     }
 
     /**

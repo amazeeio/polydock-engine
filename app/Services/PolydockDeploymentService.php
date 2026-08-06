@@ -177,7 +177,10 @@ class PolydockDeploymentService
         foreach ($deployments as $deployment) {
             $project = data_get($deployment, 'environment.project.name');
             $branch = data_get($deployment, 'environment.name');
-            if (! $project || ! $branch) {
+            if (! $project) {
+                continue;
+            }
+            if (! $branch) {
                 continue;
             }
             $latestByTarget[$this->targetKey($project, $branch)] = $deployment;
