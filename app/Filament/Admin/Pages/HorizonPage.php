@@ -22,6 +22,7 @@ class HorizonPage extends Page
 
     protected static ?string $title = 'Horizon Queue Dashboard';
 
+    #[\Override]
     public static function canAccess(): bool
     {
         return auth()->user()?->hasRole('super_admin') ?? false;

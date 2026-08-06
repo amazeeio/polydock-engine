@@ -27,7 +27,7 @@ class TestableAiApp extends PolydockAiApp
  */
 class AmazeeAiBackendCredentialsTest extends TestCase
 {
-    private const BASE = 'http://amazee-ai.test';
+    private const string BASE = 'http://amazee-ai.test';
 
     /**
      * @return array<string, mixed>

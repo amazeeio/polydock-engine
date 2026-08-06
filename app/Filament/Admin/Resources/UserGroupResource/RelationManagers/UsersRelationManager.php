@@ -33,6 +33,7 @@ class UsersRelationManager extends RelationManager
 
     protected static ?string $inverseRelationship = 'groups';
 
+    #[\Override]
     public function form(Schema $schema): Schema
     {
         return $schema
@@ -181,7 +182,7 @@ class UsersRelationManager extends RelationManager
                         }
 
                         if ($userId) {
-                            $user = $user ?? User::findOrFail($userId);
+                            $user ??= User::findOrFail($userId);
                             /** @var UserGroup $group */
                             $group = $livewire->getOwnerRecord();
                             $role = $data['role'] instanceof UserGroupRoleEnum

@@ -13,6 +13,7 @@ class EditPolydockStoreApp extends EditRecord
 {
     protected static string $resource = PolydockStoreAppResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -21,11 +22,13 @@ class EditPolydockStoreApp extends EditRecord
         ];
     }
 
+    #[\Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
+    #[\Override]
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Load custom field values from app_config JSON column
@@ -51,6 +54,7 @@ class EditPolydockStoreApp extends EditRecord
         return $data;
     }
 
+    #[\Override]
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $discovery = app(PolydockAppClassDiscovery::class);

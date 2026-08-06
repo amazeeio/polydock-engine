@@ -36,6 +36,7 @@
         "spatie/ssh": "^1.10"
     },
     "require-dev": {
+        "driftingly/rector-laravel": "^2.5",
         "fakerphp/faker": "^1.23",
         "hotmeteor/spectator": "^3.0",
         "larastan/larastan": "^3.9",

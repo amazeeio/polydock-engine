@@ -21,6 +21,7 @@ class TriggerLagoonDeployOnAppInstancesTest extends TestCase
      */
     protected ?string $lagoonKeyDir = null;
 
+    #[\Override]
     protected function tearDown(): void
     {
         try {

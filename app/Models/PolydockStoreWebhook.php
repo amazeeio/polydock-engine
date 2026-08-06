@@ -44,6 +44,7 @@ class PolydockStoreWebhook extends Model
         'secret',
     ];
 
+    #[\Override]
     protected static function booted(): void
     {
         static::creating(function (self $webhook): void {

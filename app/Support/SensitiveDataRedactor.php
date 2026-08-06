@@ -12,14 +12,14 @@ namespace App\Support;
  */
 class SensitiveDataRedactor
 {
-    public const REDACTED_VALUE = 'REDACTED';
+    public const string REDACTED_VALUE = 'REDACTED';
 
     /**
      * Default sensitive key patterns applied when no custom keys are provided.
      *
      * @var list<string>
      */
-    private const DEFAULT_SENSITIVE_KEYS = [
+    private const array DEFAULT_SENSITIVE_KEYS = [
         // Exact matches
         'private_key',
         'secret',

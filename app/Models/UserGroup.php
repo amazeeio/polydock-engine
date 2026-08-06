@@ -157,6 +157,7 @@ class UserGroup extends Model
         return $this->name;
     }
 
+    #[\Override]
     protected static function boot()
     {
         parent::boot();

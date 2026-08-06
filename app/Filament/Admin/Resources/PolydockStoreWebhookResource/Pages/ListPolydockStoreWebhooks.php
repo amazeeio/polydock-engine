@@ -12,6 +12,7 @@ class ListPolydockStoreWebhooks extends ListRecords
 {
     protected static string $resource = PolydockStoreWebhookResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [

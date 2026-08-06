@@ -10,7 +10,7 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 class BannedEmail implements ValidationRule
 {
     public function __construct(
-        private bool $detailed = false
+        private readonly bool $detailed = false
     ) {}
 
     /**

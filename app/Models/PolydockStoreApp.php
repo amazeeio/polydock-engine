@@ -107,9 +107,9 @@ class PolydockStoreApp extends Model
     use HasPolydockVariables;
     use LogsActivity;
 
-    public const PROJECT_NAMING_MODE_PATTERN = 'pattern';
+    public const string PROJECT_NAMING_MODE_PATTERN = 'pattern';
 
-    public const PROJECT_NAMING_MODE_CUSTOM = 'custom';
+    public const string PROJECT_NAMING_MODE_CUSTOM = 'custom';
 
     protected $fillable = [
         'polydock_store_id',

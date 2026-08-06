@@ -22,6 +22,7 @@ class ViewPolydockAppInstance extends ViewRecord
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -109,9 +110,7 @@ class ViewPolydockAppInstance extends ViewRecord
                                 $clientConfig = $lagoonClientService->getClientConfig();
 
                                 // Cache the API token (string) to prevent repeated 5-second SSH token fetches
-                                $token = Cache::remember('lagoon_api_token_'.md5(json_encode($clientConfig)), now()->addMinutes(2), function () use ($lagoonClientService, $clientConfig) {
-                                    return $lagoonClientService->getLagoonToken($clientConfig);
-                                });
+                                $token = Cache::remember('lagoon_api_token_'.md5(json_encode($clientConfig)), now()->addMinutes(2), fn () => $lagoonClientService->getLagoonToken($clientConfig));
 
                                 if (empty($token)) {
                                     return 'Error: Unable to authenticate with Lagoon API';
@@ -227,15 +226,13 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->label('Retry Failed Instance')
                 ->icon('heroicon-o-arrow-path-rounded-square')
                 ->color('danger')
-                ->visible(function ($record): bool {
-                    return in_array($record->status, [
-                        PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
-                        PolydockAppInstanceStatus::DEPLOY_FAILED,
-                        PolydockAppInstanceStatus::POST_DEPLOY_FAILED,
-                        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
-                        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
-                    ], true);
-                })
+                ->visible(fn ($record): bool => in_array($record->status, [
+                    PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
+                    PolydockAppInstanceStatus::DEPLOY_FAILED,
+                    PolydockAppInstanceStatus::POST_DEPLOY_FAILED,
+                    PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                    PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+                ], true))
                 ->requiresConfirmation()
                 ->modalHeading('Retry Failed Instance')
                 ->modalDescription('This will check the Lagoon project/environment state and take corrective action: deploy the environment if missing, trigger a new deployment if it exists, then re-queue the claim process.')

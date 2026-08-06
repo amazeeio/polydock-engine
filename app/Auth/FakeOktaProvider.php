@@ -17,11 +17,13 @@ use SocialiteProviders\Okta\Provider as OktaProvider;
  */
 class FakeOktaProvider extends OktaProvider
 {
+    #[\Override]
     protected function getAuthUrl($state): string
     {
         return route('fake-okta.form', ['state' => $state]);
     }
 
+    #[\Override]
     public function user()
     {
         if ($this->hasInvalidState()) {

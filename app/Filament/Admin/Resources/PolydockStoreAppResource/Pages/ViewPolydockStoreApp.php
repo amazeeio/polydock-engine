@@ -17,6 +17,7 @@ class ViewPolydockStoreApp extends ViewRecord
 {
     protected static string $resource = PolydockStoreAppResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -150,6 +151,7 @@ class ViewPolydockStoreApp extends ViewRecord
         ];
     }
 
+    #[\Override]
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Load custom field values from app_config JSON column

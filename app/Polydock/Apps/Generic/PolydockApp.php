@@ -412,7 +412,7 @@ class PolydockApp extends PolydockAppBase
             }
         } catch (Exception $e) {
             $this->error($functionName.' failed: '.$e->getMessage(), $logContext + [
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
             ]);
             $appInstance->setStatus($failedStatus, 'An exception occurred: '.$e->getMessage())->save();
 

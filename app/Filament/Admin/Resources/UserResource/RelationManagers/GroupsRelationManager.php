@@ -20,6 +20,7 @@ class GroupsRelationManager extends RelationManager
 {
     protected static string $relationship = 'groups';
 
+    #[\Override]
     public function form(Schema $schema): Schema
     {
         return $schema

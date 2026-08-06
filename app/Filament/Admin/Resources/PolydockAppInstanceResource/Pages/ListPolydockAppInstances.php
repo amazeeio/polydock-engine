@@ -23,6 +23,7 @@ class ListPolydockAppInstances extends ListRecords
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -89,6 +90,7 @@ class ListPolydockAppInstances extends ListRecords
         ];
     }
 
+    #[\Override]
     public function getTabs(): array
     {
         $inProgressStatuses = [

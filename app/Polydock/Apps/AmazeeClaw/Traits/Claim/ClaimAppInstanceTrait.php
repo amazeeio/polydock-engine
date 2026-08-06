@@ -121,7 +121,7 @@ trait ClaimAppInstanceTrait
                     }
                 } catch (\Exception $e) {
                     $this->error($e->getMessage(), $logContext + [
-                        'exception_class' => \get_class($e),
+                        'exception_class' => $e::class,
                     ]);
                     $appInstance->setStatus(PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED, substr($e->getMessage(), 0, 100))->save();
 

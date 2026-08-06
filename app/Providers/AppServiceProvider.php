@@ -132,13 +132,12 @@ class AppServiceProvider extends ServiceProvider
                 $commandInstance = null;
                 try {
                     $kernel = app(Kernel::class);
-                    $property = (new \ReflectionClass($kernel))->getProperty('artisan');
-                    $property->setAccessible(true);
+                    $property = new \ReflectionClass($kernel)->getProperty('artisan');
                     $artisan = $property->getValue($kernel);
                     if ($artisan) {
                         $commandInstance = $artisan->find($command);
                     }
-                } catch (\Throwable $e) {
+                } catch (\Throwable) {
                     $commandInstance = null;
                 }
 
@@ -147,7 +146,7 @@ class AppServiceProvider extends ServiceProvider
                     if ($allCommandsFallback === null) {
                         try {
                             $allCommandsFallback = Artisan::all();
-                        } catch (\Throwable $e) {
+                        } catch (\Throwable) {
                             $allCommandsFallback = [];
                         }
                     }
@@ -175,13 +174,8 @@ class AppServiceProvider extends ServiceProvider
                     if (in_array($keyLower, $explicitSensitiveKeys, true)) {
                         return true;
                     }
-                    foreach ($substringSensitiveKeys as $substring) {
-                        if (str_contains($keyLower, $substring)) {
-                            return true;
-                        }
-                    }
 
-                    return false;
+                    return array_any($substringSensitiveKeys, fn ($substring) => str_contains($keyLower, $substring));
                 };
 
                 $optionExpectingValue = null;

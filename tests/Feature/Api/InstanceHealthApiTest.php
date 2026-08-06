@@ -114,9 +114,7 @@ class InstanceHealthApiTest extends TestCase
         // AND we expect Log::error to be called with redacted token
         Log::shouldReceive('error')
             ->once()
-            ->with('Invalid status value', \Mockery::on(function ($context) {
-                return isset($context['query']['token']) && $context['query']['token'] === '[REDACTED]';
-            }));
+            ->with('Invalid status value', \Mockery::on(fn ($context) => isset($context['query']['token']) && $context['query']['token'] === '[REDACTED]'));
 
         // WHEN we hit the endpoint with an invalid status and correct token
         $response = $this->getJson("/api/instance/{$this->uuid}/health/invalid-status?token=secure-test-token");

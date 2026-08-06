@@ -51,7 +51,7 @@ class PolydockHostedForm extends Model
      *
      * @var list<string>
      */
-    private const PLAIN_TEXT_FIELDS = ['title', 'seo_title', 'seo_description'];
+    private const array PLAIN_TEXT_FIELDS = ['title', 'seo_title', 'seo_description'];
 
     #[\Override]
     public function setAttribute($key, $value)

@@ -59,6 +59,7 @@ class PolydockStoreAppResource extends Resource
 
     protected static ?int $navigationSort = 5100;
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -334,6 +335,7 @@ class PolydockStoreAppResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -436,6 +438,7 @@ class PolydockStoreAppResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -443,6 +446,7 @@ class PolydockStoreAppResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -453,6 +457,7 @@ class PolydockStoreAppResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema
@@ -585,7 +590,7 @@ class PolydockStoreAppResource extends Resource
     }
 
     /** Lifecycle script prefixes shared by the form and infolist Lagoon Scripts sections. */
-    private const LAGOON_SCRIPT_STAGES = [
+    private const array LAGOON_SCRIPT_STAGES = [
         'post_deploy' => 'Post Deploy',
         'pre_upgrade' => 'Pre Upgrade',
         'upgrade' => 'Upgrade',
@@ -596,7 +601,7 @@ class PolydockStoreAppResource extends Resource
     ];
 
     /** Trial email prefixes shared by the form and infolist trial sections. */
-    private const TRIAL_EMAILS = [
+    private const array TRIAL_EMAILS = [
         'midtrial' => 'Mid-trial Email',
         'one_day_left' => 'One Day Left Email',
         'trial_complete' => 'Trial Complete Email',

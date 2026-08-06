@@ -13,6 +13,7 @@ class StatsOverview extends BaseWidget
 {
     protected static ?int $sort = 1;
 
+    #[\Override]
     protected function getStats(): array
     {
         // Full-table counts, cached briefly: the dashboard tolerates a minute

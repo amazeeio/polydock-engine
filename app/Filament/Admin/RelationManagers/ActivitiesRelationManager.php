@@ -24,6 +24,7 @@ class ActivitiesRelationManager extends RelationManager
 
     protected static ?string $title = 'Activity Log';
 
+    #[\Override]
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
         $user = auth()->user();

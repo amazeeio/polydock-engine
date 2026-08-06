@@ -18,6 +18,7 @@ class SyncLagoonMetadataTest extends TestCase
 
     protected ?string $lagoonKeyDir = null;
 
+    #[\Override]
     protected function tearDown(): void
     {
         try {
@@ -639,17 +640,14 @@ class SyncLagoonMetadataTest extends TestCase
         $refClient = new \ReflectionClass($client);
 
         $propUser = $refClient->getProperty('lagoonSshUser');
-        $propUser->setAccessible(true);
         // Should remain default 'lagoon' rather than 'malicious-user-hack'
         $this->assertEquals('lagoon', $propUser->getValue($client));
 
         $propEndpoint = $refClient->getProperty('lagoonApiEndpoint');
-        $propEndpoint->setAccessible(true);
         // Should remain default value 'https://api.lagoon.amazeeio.cloud/graphql' rather than 'https://malicious-endpoint.hack/graphql'
         $this->assertEquals('https://api.lagoon.amazeeio.cloud/graphql', $propEndpoint->getValue($client));
 
         $propConfig = $refClient->getProperty('config');
-        $propConfig->setAccessible(true);
         $config = $propConfig->getValue($client);
 
         // Assert that the allowlisted overrides are preserved

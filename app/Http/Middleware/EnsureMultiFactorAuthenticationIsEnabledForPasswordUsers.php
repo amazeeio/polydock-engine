@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
  */
 class EnsureMultiFactorAuthenticationIsEnabledForPasswordUsers extends EnsureMultiFactorAuthenticationIsEnabled
 {
+    #[\Override]
     public function handle(Request $request, Closure $next): mixed
     {
         $user = Filament::auth()->user();

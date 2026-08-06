@@ -40,7 +40,7 @@ abstract class BaseJob implements ShouldQueue
      */
     public $failOnTimeout = true;
 
-    protected const OVERLAP_LOCK_SECONDS = 660;
+    protected const int OVERLAP_LOCK_SECONDS = 660;
 
     protected PolydockAppInstance $appInstance;
 
@@ -129,7 +129,7 @@ abstract class BaseJob implements ShouldQueue
         Log::info('Unique ID for job: '.$uniqueId);
 
         return [
-            (new WithoutOverlapping($uniqueId))
+            new WithoutOverlapping($uniqueId)
                 ->expireAfter(self::OVERLAP_LOCK_SECONDS)
                 ->shared() // Use shared lock across different queues
                 ->dontRelease(),

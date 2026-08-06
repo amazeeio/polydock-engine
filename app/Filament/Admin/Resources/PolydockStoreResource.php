@@ -45,6 +45,7 @@ class PolydockStoreResource extends Resource
 
     protected static ?int $navigationSort = 5000;
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -143,6 +144,7 @@ class PolydockStoreResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -200,6 +202,7 @@ class PolydockStoreResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -207,6 +210,7 @@ class PolydockStoreResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -217,6 +221,7 @@ class PolydockStoreResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema

@@ -37,7 +37,7 @@ trait PreCreateAppInstanceTrait
                     }
                 } catch (\Exception $e) {
                     $this->error('Pre Create Failed: '.$e->getMessage(), [
-                        'exception_class' => \get_class($e),
+                        'exception_class' => $e::class,
                         'exception_trace' => $e->getTraceAsString(),
                     ]);
                     $appInstance->setStatus(PolydockAppInstanceStatus::PRE_CREATE_FAILED, 'An exception occurred: '.$e->getMessage())->save();

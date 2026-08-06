@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Support;
 
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
@@ -14,7 +16,7 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 class HostedFormHtml
 {
     /** Tags an admin may use in description/notice/disclaimer fields. */
-    public const ALLOWED_TAGS_HINT = '<a> <p> <br> <strong> <em> <b> <i> <u> <ul> <ol> <li>';
+    public const string ALLOWED_TAGS_HINT = '<a> <p> <br> <strong> <em> <b> <i> <u> <ul> <ol> <li>';
 
     private static ?HtmlSanitizer $sanitizer = null;
 

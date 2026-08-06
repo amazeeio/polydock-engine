@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    private const TABLE = 'polydock_app_instance_status_transitions';
+    private const string TABLE = 'polydock_app_instance_status_transitions';
 
     public function up(): void
     {

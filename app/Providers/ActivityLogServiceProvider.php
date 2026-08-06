@@ -15,7 +15,7 @@ class ActivityLogServiceProvider extends ServiceProvider
      * System-context keys that are added by this provider and must not be redacted.
      * These are safe -- they come from the system, not from user input.
      */
-    private const CONTEXT_KEYS = [
+    private const array CONTEXT_KEYS = [
         'ip',
         'user_agent',
         'request_id',

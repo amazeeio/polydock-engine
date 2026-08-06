@@ -27,6 +27,7 @@ class PolydockProductType extends Model
         'slug',
     ];
 
+    #[\Override]
     public static function boot(): void
     {
         parent::boot();

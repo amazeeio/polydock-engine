@@ -41,12 +41,10 @@ class RegisterControllerTest extends TestCase
 
         // THEN 'Processing register request' log must be redacted
         Log::shouldHaveReceived('info')
-            ->with('Processing register request', \Mockery::on(function ($context) {
-                return isset($context['request']['password'])
-                    && $context['request']['password'] === SensitiveDataRedactor::REDACTED_VALUE
-                    && isset($context['request']['api_key'])
-                    && $context['request']['api_key'] === SensitiveDataRedactor::REDACTED_VALUE;
-            }));
+            ->with('Processing register request', \Mockery::on(fn ($context) => isset($context['request']['password'])
+                && $context['request']['password'] === SensitiveDataRedactor::REDACTED_VALUE
+                && isset($context['request']['api_key'])
+                && $context['request']['api_key'] === SensitiveDataRedactor::REDACTED_VALUE));
 
         // AND 'User remote registration created' log must be redacted
         Log::shouldHaveReceived('info')

@@ -68,6 +68,7 @@ class PolydockDeploymentRun extends Model
         'last_polled_at' => 'datetime',
     ];
 
+    #[Override]
     protected static function boot()
     {
         parent::boot();

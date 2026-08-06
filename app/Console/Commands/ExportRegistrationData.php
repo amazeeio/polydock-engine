@@ -70,23 +70,21 @@ class ExportRegistrationData extends BaseCommand
             return self::FAILURE;
         }
 
-        $exportData = $registrations->map(function (UserRemoteRegistration $registration) {
-            return [
-                'id' => $registration->id,
-                'type' => $registration->type->value ?? '',
-                'email' => $registration->email,
-                'user_name' => $registration->user->name ?? '',
-                'user_group_name' => $registration->userGroup->name ?? '',
-                'store_name' => $registration->storeApp->store->name ?? '',
-                'store_app_name' => $registration->storeApp->name ?? '',
-                'status' => $registration->status->value,
-                'created_at' => $registration->created_at?->format('Y-m-d H:i:s'),
-                'updated_at' => $registration->updated_at?->format('Y-m-d H:i:s'),
-                'app_instance_name' => $registration->appInstance->name ?? '',
-                'app_instance_url' => $registration->appInstance->app_url ?? '',
-                'request_data' => json_encode(SensitiveDataRedactor::redact($registration->request_data ?? [])),
-            ];
-        });
+        $exportData = $registrations->map(fn (UserRemoteRegistration $registration) => [
+            'id' => $registration->id,
+            'type' => $registration->type->value ?? '',
+            'email' => $registration->email,
+            'user_name' => $registration->user->name ?? '',
+            'user_group_name' => $registration->userGroup->name ?? '',
+            'store_name' => $registration->storeApp->store->name ?? '',
+            'store_app_name' => $registration->storeApp->name ?? '',
+            'status' => $registration->status->value,
+            'created_at' => $registration->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $registration->updated_at?->format('Y-m-d H:i:s'),
+            'app_instance_name' => $registration->appInstance->name ?? '',
+            'app_instance_url' => $registration->appInstance->app_url ?? '',
+            'request_data' => json_encode(SensitiveDataRedactor::redact($registration->request_data ?? [])),
+        ]);
 
         $content = $format === 'json'
             ? $exportData->toJson(JSON_PRETTY_PRINT)
@@ -124,10 +122,10 @@ class ExportRegistrationData extends BaseCommand
     {
         $handle = fopen('php://temp', 'r+');
 
-        fputcsv($handle, array_keys($rows[0]));
+        fputcsv($handle, array_keys($rows[0]), escape: '\\');
 
         foreach ($rows as $row) {
-            fputcsv($handle, $row);
+            fputcsv($handle, $row, escape: '\\');
         }
 
         rewind($handle);

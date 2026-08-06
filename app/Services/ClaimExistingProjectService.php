@@ -27,7 +27,7 @@ use Illuminate\Support\Facades\DB;
  */
 class ClaimExistingProjectService
 {
-    public function __construct(private LagoonClientService $lagoonClientService) {}
+    public function __construct(private readonly LagoonClientService $lagoonClientService) {}
 
     public function claim(PolydockStoreApp $storeApp, UserGroup $userGroup, string $projectName): PolydockAppInstance
     {

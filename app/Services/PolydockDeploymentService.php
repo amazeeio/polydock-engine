@@ -25,7 +25,7 @@ use Throwable;
  */
 class PolydockDeploymentService
 {
-    public function __construct(private LagoonClientService $lagoon) {}
+    public function __construct(private readonly LagoonClientService $lagoon) {}
 
     /**
      * Trigger a redeploy across the given instances and return the created run.

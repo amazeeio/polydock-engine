@@ -127,7 +127,7 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
                     return false;
                 }
 
-                $fresh->force_purge_requested_at = $fresh->force_purge_requested_at ?? now();
+                $fresh->force_purge_requested_at ??= now();
                 // Status change fires PolydockAppInstanceStatusChanged, whose
                 // listener dispatches the stage job / purge transition.
                 $fresh->setStatus($target, "Stale failed instance swept after {$days} days");

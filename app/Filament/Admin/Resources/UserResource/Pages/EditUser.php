@@ -11,6 +11,7 @@ class EditUser extends EditRecord
 {
     protected static string $resource = UserResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -19,6 +20,7 @@ class EditUser extends EditRecord
         ];
     }
 
+    #[\Override]
     protected function getRedirectUrl(): ?string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);

@@ -35,6 +35,7 @@ class ActivityLogResource extends Resource
 
     protected static ?int $navigationSort = 9000;
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -115,6 +116,7 @@ class ActivityLogResource extends Resource
             ->toolbarActions([]);
     }
 
+    #[\Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema
@@ -206,11 +208,13 @@ class ActivityLogResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

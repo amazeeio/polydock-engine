@@ -19,6 +19,7 @@ class ListApiTokens extends ListRecords
 {
     protected static string $resource = ApiTokenResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [

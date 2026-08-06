@@ -719,7 +719,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      *
      * @var list<string>
      */
-    private const ENCRYPTED_KEYS = [
+    private const array ENCRYPTED_KEYS = [
         'secret',
     ];
 
@@ -774,7 +774,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      * Lets getKeyValue() distinguish already-encrypted ciphertext from any
      * legacy plaintext still present in the `data` column (backfill guard).
      */
-    private const ENCRYPTED_SECRET_PREFIX = 'enc:v1:';
+    private const string ENCRYPTED_SECRET_PREFIX = 'enc:v1:';
 
     /**
      * Encrypt a secret value for storage inside the `data` column.
@@ -845,9 +845,9 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 unset($queryParams['token']);
                 $queryString = http_build_query($queryParams);
                 $scheme = isset($parsedUrl['scheme']) ? $parsedUrl['scheme'].'://' : '';
-                $host = isset($parsedUrl['host']) ? $parsedUrl['host'] : '';
+                $host = $parsedUrl['host'] ?? '';
                 $port = isset($parsedUrl['port']) ? ':'.$parsedUrl['port'] : '';
-                $path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
+                $path = $parsedUrl['path'] ?? '';
 
                 return $scheme.$host.$port.$path.($queryString !== '' ? '?'.$queryString : '');
             }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\UserGroupResource\RelationManagers;
 
 use App\Filament\Admin\Resources\PolydockAppInstanceResource;
@@ -19,6 +21,7 @@ class AppInstancesRelationManager extends RelationManager
 {
     protected static string $relationship = 'appInstances';
 
+    #[\Override]
     public function form(Schema $schema): Schema
     {
         return $schema
