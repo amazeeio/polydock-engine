@@ -54,6 +54,7 @@ class RoleResource extends Resource implements HasShieldPermissions
         ];
     }
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -100,6 +101,7 @@ class RoleResource extends Resource implements HasShieldPermissions
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -144,11 +146,13 @@ class RoleResource extends Resource implements HasShieldPermissions
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

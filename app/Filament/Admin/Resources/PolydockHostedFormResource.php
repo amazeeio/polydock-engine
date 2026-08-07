@@ -67,7 +67,7 @@ class PolydockHostedFormResource extends Resource
                         'name',
                         fn ($query) => $query->with('store'),
                     )
-                    ->getOptionLabelFromRecordUsing(fn (PolydockStoreApp $record) => "{$record->store->name} — {$record->name}")
+                    ->getOptionLabelFromRecordUsing(fn (PolydockStoreApp $record): string => "{$record->store->name} — {$record->name}")
                     ->multiple()
                     ->preload()
                     ->columnSpanFull(),

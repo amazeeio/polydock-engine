@@ -17,6 +17,7 @@ class ViewPolydockStoreApp extends ViewRecord
 {
     protected static string $resource = PolydockStoreAppResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -30,10 +31,10 @@ class ViewPolydockStoreApp extends ViewRecord
                 ->schema([
                     Placeholder::make('current_unallocated')
                         ->label('Current Removable Unallocated Instances')
-                        ->content(fn () => (string) $this->record->removableUnallocatedInstancesQuery()->count()),
+                        ->content(fn (): string => (string) $this->record->removableUnallocatedInstancesQuery()->count()),
                     Placeholder::make('target_unallocated')
                         ->label('Target Unallocated Instances')
-                        ->content(fn () => (string) $this->record->target_unallocated_app_instances),
+                        ->content(fn (): string => (string) $this->record->target_unallocated_app_instances),
                     TextInput::make('count')
                         ->label('Instances to Remove')
                         ->numeric()
@@ -150,6 +151,7 @@ class ViewPolydockStoreApp extends ViewRecord
         ];
     }
 
+    #[\Override]
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Load custom field values from app_config JSON column

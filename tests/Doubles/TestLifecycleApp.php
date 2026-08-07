@@ -27,7 +27,7 @@ class TestLifecycleApp extends PolydockAppBase
     /** @var array<string, \Exception> */
     public static array $throwOn = [];
 
-    private const SUCCESS_STATUS = [
+    private const array SUCCESS_STATUS = [
         'preCreateAppInstance' => PolydockAppInstanceStatus::PRE_CREATE_COMPLETED,
         'createAppInstance' => PolydockAppInstanceStatus::CREATE_COMPLETED,
         'postCreateAppInstance' => PolydockAppInstanceStatus::POST_CREATE_COMPLETED,

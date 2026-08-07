@@ -41,16 +41,14 @@ class RegisterControllerTest extends TestCase
 
         // THEN 'Processing register request' log must be redacted
         Log::shouldHaveReceived('info')
-            ->with('Processing register request', \Mockery::on(function ($context) {
-                return isset($context['request']['password'])
-                    && $context['request']['password'] === SensitiveDataRedactor::REDACTED_VALUE
-                    && isset($context['request']['api_key'])
-                    && $context['request']['api_key'] === SensitiveDataRedactor::REDACTED_VALUE;
-            }));
+            ->with('Processing register request', \Mockery::on(fn ($context): bool => isset($context['request']['password'])
+                && $context['request']['password'] === SensitiveDataRedactor::REDACTED_VALUE
+                && isset($context['request']['api_key'])
+                && $context['request']['api_key'] === SensitiveDataRedactor::REDACTED_VALUE));
 
         // AND 'User remote registration created' log must be redacted
         Log::shouldHaveReceived('info')
-            ->with('User remote registration created', \Mockery::on(function ($context) {
+            ->with('User remote registration created', \Mockery::on(function (array $context): bool {
                 $reqData = $context['registration']['request_data'] ?? [];
 
                 return isset($reqData['password'])
@@ -86,7 +84,7 @@ class RegisterControllerTest extends TestCase
 
         // THEN 'Showing user remote registration' log must be redacted
         Log::shouldHaveReceived('info')
-            ->with('Showing user remote registration', \Mockery::on(function ($context) {
+            ->with('Showing user remote registration', \Mockery::on(function (array $context): bool {
                 $registrationArray = $context['registration'] ?? [];
                 $reqData = $registrationArray['request_data'] ?? [];
                 $resData = $registrationArray['result_data'] ?? [];

@@ -133,7 +133,7 @@ class PolydockInstanceHealthController extends Controller
         $logContext['status_code'] = 200;
 
         // Log debug data if present
-        if (! empty($debugData)) {
+        if ($debugData !== []) {
             $instance->debug('Health check data received', $logContext);
         }
 

@@ -24,6 +24,7 @@ class ActivitiesRelationManager extends RelationManager
 
     protected static ?string $title = 'Activity Log';
 
+    #[\Override]
     public static function canViewForRecord(Model $ownerRecord, string $pageClass): bool
     {
         $user = auth()->user();
@@ -31,8 +32,11 @@ class ActivitiesRelationManager extends RelationManager
         if ($user === null) {
             return false;
         }
+        if ($user->can('view_activity_log')) {
+            return true;
+        }
 
-        return $user->can('view_activity_log') || $user->can('view_any_activity_log');
+        return $user->can('view_any_activity_log');
     }
 
     public function table(Table $table): Table
@@ -54,7 +58,7 @@ class ActivitiesRelationManager extends RelationManager
                     ->limit(80),
                 TextColumn::make('event')
                     ->badge()
-                    ->color(fn (?string $state) => match ($state) {
+                    ->color(fn (?string $state): string => match ($state) {
                         'created' => 'success',
                         'updated' => 'warning',
                         'deleted' => 'danger',

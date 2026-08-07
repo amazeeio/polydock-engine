@@ -36,7 +36,7 @@ class DispatchTrialCompleteEmailJobsCommand extends BaseCommand
         $eligibleInstances = PolydockAppInstance::query()
             ->with(['storeApp', 'userGroup.owners']) // Eager load relationships
             ->where('is_trial', true)
-            ->whereHas('storeApp', function ($query) {
+            ->whereHas('storeApp', function ($query): void {
                 $query->where('send_trial_complete_email', true);
             })
             ->whereNotNull('trial_ends_at')

@@ -257,7 +257,7 @@ class RemoveAppInstancesTest extends TestCase
         $instance2 = $this->createInstance($storeApp, PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, 'fail-inst');
 
         // Dynamically throw exception on saving for fail-inst
-        PolydockAppInstance::saving(function ($instance) {
+        PolydockAppInstance::saving(function ($instance): void {
             if ($instance->name === 'fail-inst') {
                 throw new \Exception('Simulated save error');
             }
@@ -280,7 +280,7 @@ class RemoveAppInstancesTest extends TestCase
         $storeApp = $this->createStoreApp();
         $instance1 = $this->createInstance($storeApp, PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, 'fail-inst-1');
 
-        PolydockAppInstance::saving(function ($instance) {
+        PolydockAppInstance::saving(function ($instance): void {
             throw new \Exception('Simulated complete save error');
         });
 

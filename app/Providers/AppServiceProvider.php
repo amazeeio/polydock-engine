@@ -14,6 +14,7 @@ use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Console\Events\CommandStarting;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Queue\QueueServiceProvider;
 use Illuminate\Routing\Route;
@@ -49,7 +50,8 @@ class AppServiceProvider extends ServiceProvider
             // Force load QueueServiceProvider so that our queue.failer override is not overwritten by deferred loading
             $this->app->register(QueueServiceProvider::class);
 
-            $this->app->singleton('queue.failer', function ($app) {
+            // The container passes the Application instance (ArrayAccess), not an array
+            $this->app->singleton('queue.failer', function (Application $app): SafeDatabaseUuidFailedJobProvider {
                 $config = $app['config']['queue.failed'];
 
                 return new SafeDatabaseUuidFailedJobProvider(
@@ -75,7 +77,7 @@ class AppServiceProvider extends ServiceProvider
         // counter — unlike anonymous `throttle:N,1`, whose signature is
         // sha1(domain|ip) and is therefore shared across every route per IP.
         // Trusted internal callers (e.g. MoaD) bypass the public throttles.
-        $isTrusted = fn (Request $request) => in_array($request->ip(), config('polydock.trusted_ips', []), true);
+        $isTrusted = fn (Request $request): bool => in_array($request->ip(), config('polydock.trusted_ips', []), true);
 
         // Key on IP, not UUID: these limits exist to blunt enumeration, so a
         // per-UUID bucket (one fresh budget per guessed UUID) would defeat them.
@@ -102,23 +104,23 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(120)->by($request->ip());
         });
 
-        Gate::define('viewApiDocs', fn (?Authenticatable $user) => true);
+        Gate::define('viewApiDocs', fn (?Authenticatable $user): true => true);
 
         Scramble::configure()->expose(
             ui: '/api',
             document: '/api/openapi.json',
         )
-            ->withDocumentTransformers(function (OpenApi $openApi) {
+            ->withDocumentTransformers(function (OpenApi $openApi): void {
                 $openApi->secure(
                     SecurityScheme::http('bearer')->as('BearerAuth')
                 );
             });
 
-        Scramble::routes(fn (Route $route) => str_starts_with($route->uri(), 'api/'));
+        Scramble::routes(fn (Route $route): bool => str_starts_with($route->uri(), 'api/'));
 
         Event::listen(
             CommandStarting::class,
-            static function (CommandStarting $event) {
+            static function (CommandStarting $event): void {
                 $command = $event->command ?? 'artisan';
 
                 // Get raw CLI argv if available
@@ -132,13 +134,12 @@ class AppServiceProvider extends ServiceProvider
                 $commandInstance = null;
                 try {
                     $kernel = app(Kernel::class);
-                    $property = (new \ReflectionClass($kernel))->getProperty('artisan');
-                    $property->setAccessible(true);
+                    $property = new \ReflectionClass($kernel)->getProperty('artisan');
                     $artisan = $property->getValue($kernel);
                     if ($artisan) {
                         $commandInstance = $artisan->find($command);
                     }
-                } catch (\Throwable $e) {
+                } catch (\Throwable) {
                     $commandInstance = null;
                 }
 
@@ -147,7 +148,7 @@ class AppServiceProvider extends ServiceProvider
                     if ($allCommandsFallback === null) {
                         try {
                             $allCommandsFallback = Artisan::all();
-                        } catch (\Throwable $e) {
+                        } catch (\Throwable) {
                             $allCommandsFallback = [];
                         }
                     }
@@ -175,13 +176,8 @@ class AppServiceProvider extends ServiceProvider
                     if (in_array($keyLower, $explicitSensitiveKeys, true)) {
                         return true;
                     }
-                    foreach ($substringSensitiveKeys as $substring) {
-                        if (str_contains($keyLower, $substring)) {
-                            return true;
-                        }
-                    }
 
-                    return false;
+                    return array_any($substringSensitiveKeys, fn (string $substring): bool => str_contains($keyLower, $substring));
                 };
 
                 $optionExpectingValue = null;

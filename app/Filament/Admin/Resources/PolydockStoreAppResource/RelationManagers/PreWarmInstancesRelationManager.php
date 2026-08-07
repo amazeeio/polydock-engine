@@ -26,7 +26,7 @@ class PreWarmInstancesRelationManager extends RelationManager
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
-                    ->url(fn ($record) => PolydockAppInstanceResource::getUrl('view', ['record' => $record]))
+                    ->url(fn ($record): string => PolydockAppInstanceResource::getUrl('view', ['record' => $record]))
                     ->openUrlInNewTab(),
                 // The status enum implements HasColor/HasIcon/HasLabel, so
                 // badge() resolves color, icon, and label by itself.
@@ -34,7 +34,7 @@ class PreWarmInstancesRelationManager extends RelationManager
                     ->badge(),
                 IconColumn::make('allocation_lock')
                     ->label('Locked')
-                    ->state(fn ($record) => filled($record->allocation_lock))
+                    ->state(fn ($record): bool => filled($record->allocation_lock))
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->label('Created')
@@ -68,7 +68,7 @@ class PreWarmInstancesRelationManager extends RelationManager
             ->headerActions([])
             ->recordActions([
                 ViewAction::make()
-                    ->url(fn ($record) => PolydockAppInstanceResource::getUrl('view', ['record' => $record])),
+                    ->url(fn ($record): string => PolydockAppInstanceResource::getUrl('view', ['record' => $record])),
             ])
             ->toolbarActions([]);
     }

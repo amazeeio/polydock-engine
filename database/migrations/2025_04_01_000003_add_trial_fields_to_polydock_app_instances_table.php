@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             // Trial status fields
             $table->boolean('is_trial')->default(false)->after('status_message');
             $table->timestamp('trial_ends_at')->nullable()->after('is_trial');
@@ -34,7 +34,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('polydock_app_instances', function (Blueprint $table) {
+        Schema::table('polydock_app_instances', function (Blueprint $table): void {
             // Drop indexes
             $table->dropIndex('polydock_app_instances_trial_idx');
             $table->dropIndex('polydock_app_instances_midtrial_email_idx');

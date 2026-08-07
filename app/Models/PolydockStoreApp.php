@@ -107,9 +107,9 @@ class PolydockStoreApp extends Model
     use HasPolydockVariables;
     use LogsActivity;
 
-    public const PROJECT_NAMING_MODE_PATTERN = 'pattern';
+    public const string PROJECT_NAMING_MODE_PATTERN = 'pattern';
 
-    public const PROJECT_NAMING_MODE_CUSTOM = 'custom';
+    public const string PROJECT_NAMING_MODE_CUSTOM = 'custom';
 
     protected $fillable = [
         'polydock_store_id',
@@ -166,19 +166,6 @@ class PolydockStoreApp extends Model
         'beta_redeploy_interval_days',
     ];
 
-    protected $casts = [
-        'status' => PolydockStoreAppStatusEnum::class,
-        'app_config' => 'array',
-        'available_for_trials' => 'boolean',
-        'target_unallocated_app_instances' => 'integer',
-        'send_midtrial_email' => 'boolean',
-        'send_one_day_left_email' => 'boolean',
-        'send_trial_complete_email' => 'boolean',
-        'redeploy_enabled' => 'boolean',
-        'redeploy_interval_days' => 'integer',
-        'beta_redeploy_interval_days' => 'integer',
-    ];
-
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -198,6 +185,13 @@ class PolydockStoreApp extends Model
                 'polydock_app_class',
                 'lagoon_deploy_git',
                 'lagoon_deploy_branch',
+                'lagoon_post_deploy_script',
+                'lagoon_pre_upgrade_script',
+                'lagoon_upgrade_script',
+                'lagoon_post_upgrade_script',
+                'lagoon_claim_script',
+                'lagoon_pre_remove_script',
+                'lagoon_remove_script',
                 'available_for_trials',
                 'target_unallocated_app_instances',
                 'trial_duration_days',
@@ -233,7 +227,7 @@ class PolydockStoreApp extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             $model->uuid = (string) Str::uuid();
         });
     }
@@ -338,7 +332,7 @@ class PolydockStoreApp extends Model
 
         return $this->instances()
             ->whereNull('user_group_id')
-            ->where(function ($query) {
+            ->where(function ($query): void {
                 $query->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
                     ->orWhereIn('status', PolydockAppInstance::unallocatedInProgressStatuses());
             })
@@ -591,5 +585,22 @@ class PolydockStoreApp extends Model
         }
 
         return $this->redeploy_interval_days;
+    }
+
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'status' => PolydockStoreAppStatusEnum::class,
+            'app_config' => 'array',
+            'available_for_trials' => 'boolean',
+            'target_unallocated_app_instances' => 'integer',
+            'send_midtrial_email' => 'boolean',
+            'send_one_day_left_email' => 'boolean',
+            'send_trial_complete_email' => 'boolean',
+            'redeploy_enabled' => 'boolean',
+            'redeploy_interval_days' => 'integer',
+            'beta_redeploy_interval_days' => 'integer',
+        ];
     }
 }

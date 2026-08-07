@@ -15,7 +15,11 @@ class UserPolicy
 
     public function view(User $user, User $model): bool
     {
-        return $user->can('view_user') || $user->getKey() === $model->getKey();
+        if ($user->can('view_user')) {
+            return true;
+        }
+
+        return $user->getKey() === $model->getKey();
     }
 
     public function create(User $user): bool
@@ -25,7 +29,11 @@ class UserPolicy
 
     public function update(User $user, User $model): bool
     {
-        return $user->can('update_user') || $user->getKey() === $model->getKey();
+        if ($user->can('update_user')) {
+            return true;
+        }
+
+        return $user->getKey() === $model->getKey();
     }
 
     public function delete(User $user, User $model): bool

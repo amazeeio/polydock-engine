@@ -63,7 +63,7 @@ class AuthenticatedApiController extends Controller
             ->get();
 
         return response()->json([
-            'data' => $groups->map(fn (UserGroup $group) => [
+            'data' => $groups->map(fn (UserGroup $group): array => [
                 'id' => $group->id,
                 'name' => $group->name,
                 'slug' => $group->slug,
@@ -102,9 +102,9 @@ class AuthenticatedApiController extends Controller
             'name' => $validated['name'],
         ]);
 
-        $owner = ! empty($validated['owner_email'])
-            ? User::where('email', $validated['owner_email'])->firstOrFail()
-            : $actor;
+        $owner = empty($validated['owner_email'])
+            ? $actor
+            : User::where('email', $validated['owner_email'])->firstOrFail();
 
         $owner->groups()->syncWithoutDetaching([
             $group->id => ['role' => UserGroupRoleEnum::OWNER->value],
@@ -145,7 +145,7 @@ class AuthenticatedApiController extends Controller
             })
             ->get();
 
-        $formattedApps = $apps->map(fn (PolydockStoreApp $app) => [
+        $formattedApps = $apps->map(fn (PolydockStoreApp $app): array => [
             'uuid' => $app->uuid,
             'name' => $app->name,
             'description' => $app->description,
@@ -225,7 +225,7 @@ class AuthenticatedApiController extends Controller
             abort(403, 'You may only request your own instances.');
         }
 
-        if ($targetGroup !== null) {
+        if ($targetGroup instanceof UserGroup) {
             $this->authorize('view', $targetGroup);
         }
 
@@ -241,13 +241,13 @@ class AuthenticatedApiController extends Controller
             $instanceQuery->whereIn('user_group_id', $user->groups()->pluck('user_groups.id'));
         }
 
-        if ($targetGroup !== null) {
+        if ($targetGroup instanceof UserGroup) {
             $instanceQuery->where('user_group_id', $targetGroup->id);
         }
 
         $instances = $instanceQuery->get();
 
-        $formattedInstances = $instances->map(fn (PolydockAppInstance $instance) => [
+        $formattedInstances = $instances->map(fn (PolydockAppInstance $instance): array => [
             'uuid' => $instance->uuid,
             'name' => $instance->name,
             'label' => $instance->getKeyValue('instance-label') ?: null,
@@ -324,7 +324,7 @@ class AuthenticatedApiController extends Controller
             'config' => 'nullable|array',
             'config.*' => [
                 'nullable',
-                function ($attribute, $value, $fail) {
+                function ($attribute, $value, $fail): void {
                     // Allow 'secret' to be an array if passed within config (legacy support)
                     if (str_ends_with($attribute, '.secret')) {
                         if (! \is_array($value)) {
@@ -433,7 +433,7 @@ class AuthenticatedApiController extends Controller
                 if ((string) $key === 'secret' && $request->filled('secret')) {
                     continue;
                 }
-                $instance->storeKeyValue((string) $key, $value === null ? '' : $value);
+                $instance->storeKeyValue((string) $key, $value ?? '');
             }
         }
 
@@ -479,7 +479,7 @@ class AuthenticatedApiController extends Controller
      */
     public function assignInstanceToGroup(Request $request, string $uuid): JsonResponse
     {
-        $validated = $request->validate([
+        $request->validate([
             'group_id' => 'nullable|integer|exists:user_groups,id',
             'group_slug' => 'nullable|string|exists:user_groups,slug',
         ]);

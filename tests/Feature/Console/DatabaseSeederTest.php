@@ -35,7 +35,7 @@ class DatabaseSeederTest extends TestCase
     public function test_it_does_not_seed_mock_data_in_production_environment(): void
     {
         // Mock the environment to production
-        $this->app->detectEnvironment(fn () => 'production');
+        $this->app->detectEnvironment(fn (): string => 'production');
         $this->assertEquals('production', app()->environment());
 
         // Run seeder in production environment with --force to bypass confirmation prompt

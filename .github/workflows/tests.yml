@@ -41,6 +41,9 @@ jobs:
     - name: Static analysis (PHPStan)
       run: ./vendor/bin/phpstan analyse --no-progress
 
+    - name: Rector compliance (dry-run)
+      run: ./vendor/bin/rector --dry-run --no-progress-bar
+
     - name: Execute tests (Unit and Feature tests) via PHPUnit, with coverage gate
       # Baseline measured at 52.6% lines (2026-08-02); floor set 2 points
       # under it. Ratchet upward deliberately as coverage-focused PRs land;

@@ -56,23 +56,12 @@ class PolydockDeploymentRun extends Model
         'poll_attempts',
     ];
 
-    protected $casts = [
-        'trigger_source' => PolydockDeploymentRunTriggerSourceEnum::class,
-        'status' => PolydockDeploymentRunStatusEnum::class,
-        'total_count' => 'integer',
-        'success_count' => 'integer',
-        'failed_count' => 'integer',
-        'poll_attempts' => 'integer',
-        'started_at' => 'datetime',
-        'completed_at' => 'datetime',
-        'last_polled_at' => 'datetime',
-    ];
-
+    #[Override]
     protected static function boot()
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             if (empty($model->uuid)) {
                 $model->uuid = (string) Str::uuid();
             }
@@ -125,5 +114,21 @@ class PolydockDeploymentRun extends Model
 
         return $user !== null
             && ($user->hasRole('super_admin') || $user->can('manage_polydock_deployments'));
+    }
+
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'trigger_source' => PolydockDeploymentRunTriggerSourceEnum::class,
+            'status' => PolydockDeploymentRunStatusEnum::class,
+            'total_count' => 'integer',
+            'success_count' => 'integer',
+            'failed_count' => 'integer',
+            'poll_attempts' => 'integer',
+            'started_at' => 'datetime',
+            'completed_at' => 'datetime',
+            'last_polled_at' => 'datetime',
+        ];
     }
 }

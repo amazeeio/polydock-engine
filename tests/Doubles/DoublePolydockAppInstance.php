@@ -16,16 +16,13 @@ use App\Polydock\Core\PolydockEngineInterface;
  */
 class DoublePolydockAppInstance implements PolydockAppInstanceInterface
 {
-    public $storeApp;
-
     public $data = [];
 
     /**
      * @param  array<string, mixed>  $data
      */
-    public function __construct($storeApp = null, array $data = [])
+    public function __construct(public $storeApp = null, array $data = [])
     {
-        $this->storeApp = $storeApp;
         $this->data = $data;
     }
 

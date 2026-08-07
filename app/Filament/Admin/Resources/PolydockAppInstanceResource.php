@@ -57,6 +57,7 @@ class PolydockAppInstanceResource extends Resource
 
     protected static ?int $navigationSort = 100;
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -69,6 +70,7 @@ class PolydockAppInstanceResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -76,7 +78,7 @@ class PolydockAppInstanceResource extends Resource
             ->defaultSort('created_at', 'desc')
             ->columns([
                 TextColumn::make('name')
-                    ->description(fn ($record) => $record->storeApp->store->name.' - '.$record->storeApp->name)
+                    ->description(fn ($record): string => $record->storeApp->store->name.' - '.$record->storeApp->name)
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('userGroup.name')
@@ -89,34 +91,34 @@ class PolydockAppInstanceResource extends Resource
                     ->formatStateUsing(fn ($state, $record) => $record->trashed() ? 'Purged' : PolydockAppInstanceStatus::from($state->value)->getLabel())
                     ->sortable(),
                 TextColumn::make('is_trial')
-                    ->state(fn ($record) => $record->is_trial ? 'Yes' : 'No')
+                    ->state(fn ($record): string => $record->is_trial ? 'Yes' : 'No')
                     ->label('Trial'),
                 TextColumn::make('trial_ends_at')
                     ->label('Trial Ends At')
-                    ->description(fn ($record) => $record->trial_completed ? 'Trial completed' : 'Trial active')
+                    ->description(fn ($record): string => $record->trial_completed ? 'Trial completed' : 'Trial active')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('send_midtrial_email_at')
                     ->label('Midtrial Email')
-                    ->description(fn ($record) => $record->midtrial_email_sent ? 'Sent' : 'Pending')
+                    ->description(fn ($record): string => $record->midtrial_email_sent ? 'Sent' : 'Pending')
                     ->state(fn ($record) => $record->send_midtrial_email_at
                         ? $record->send_midtrial_email_at->format('Y-m-d H:i:s')
                         : ''),
                 TextColumn::make('send_one_day_left_email_at')
                     ->label('1D Left Email')
-                    ->description(fn ($record) => $record->one_day_left_email_sent ? 'Sent' : 'Pending')
+                    ->description(fn ($record): string => $record->one_day_left_email_sent ? 'Sent' : 'Pending')
                     ->state(fn ($record) => $record->send_one_day_left_email_at
                         ? $record->send_one_day_left_email_at->format('Y-m-d H:i:s')
                         : ''),
                 TextColumn::make('trial_complete_email_sent')
                     ->label('Trial Complete Email')
-                    ->state(fn ($record) => $record->is_trial && $record->trial_complete_email_sent
+                    ->state(fn ($record): string => $record->is_trial && $record->trial_complete_email_sent
                         ? 'Sent'
                         : ($record->is_trial ? 'Pending' : '')),
                 TextColumn::make('last_deployment_status')
                     ->label('Last Deploy')
                     ->badge()
-                    ->color(fn ($state) => match ($state) {
+                    ->color(fn ($state): string => match ($state) {
                         'complete', 'completed', 'success' => 'success',
                         'failed', 'failure', 'error', 'cancelled', 'canceled' => 'danger',
                         null, '' => 'gray',
@@ -163,7 +165,7 @@ class PolydockAppInstanceResource extends Resource
                 SelectFilter::make('status')
                     ->options(
                         collect(PolydockAppInstanceStatus::cases())
-                            ->mapWithKeys(fn ($status) => [$status->value => $status->getLabel()])
+                            ->mapWithKeys(fn ($status): array => [$status->value => $status->getLabel()])
                             ->toArray(),
                     )
                     ->multiple()
@@ -182,7 +184,7 @@ class PolydockAppInstanceResource extends Resource
                             return $query;
                         }
 
-                        return $query->where(function ($query) use ($data) {
+                        return $query->where(function ($query) use ($data): void {
                             match ($data['value']) {
                                 'pending' => $query->whereIn('status', PolydockAppInstance::$pendingStatuses),
                                 'completed' => $query->whereIn('status', PolydockAppInstance::$completedStatuses),
@@ -209,7 +211,7 @@ class PolydockAppInstanceResource extends Resource
                             return $query;
                         }
 
-                        return $query->where(function ($query) use ($data) {
+                        return $query->where(function ($query) use ($data): void {
                             match ($data['value']) {
                                 'create' => $query->whereIn('status', PolydockAppInstance::$stageCreateStatuses),
                                 'deploy' => $query->whereIn('status', PolydockAppInstance::$stageDeployStatuses),
@@ -304,6 +306,7 @@ class PolydockAppInstanceResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema
@@ -336,14 +339,14 @@ class PolydockAppInstanceResource extends Resource
                                 TextEntry::make('storeApp.lagoon_deploy_region_id_ext')
                                     ->label('Deploy Region')
                                     ->formatStateUsing(
-                                        fn ($state) => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'),
+                                        fn (string $state): ?string => LagoonHelper::getLagoonCodeDataValueForRegion($state, 'name'),
                                     ),
                                 TextEntry::make(
                                     'storeApp.amazee_ai_backend_region_id_ext',
                                 )
                                     ->label('AI Backend Region')
                                     ->formatStateUsing(
-                                        fn ($state) => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion(
+                                        fn (string $state): ?string => AmazeeAiBackendHelper::getAmazeeAiBackendCodeDataValueForRegion(
                                             $state,
                                             'name',
                                         ),
@@ -369,8 +372,8 @@ class PolydockAppInstanceResource extends Resource
                             ->iconColor('primary'),
                         TextEntry::make('userGroup.name')
                             ->label('User Group')
-                            ->visible(fn ($record) => $record->userGroup !== null)
-                            ->url(fn ($record) => $record->userGroup ? UserGroupResource::getUrl('view', ['record' => $record->userGroup]) : null)
+                            ->visible(fn ($record): bool => $record->userGroup !== null)
+                            ->url(fn ($record): ?string => $record->userGroup ? UserGroupResource::getUrl('view', ['record' => $record->userGroup]) : null)
                             ->openUrlInNewTab()
                             ->icon('heroicon-m-user-group')
                             ->iconColor('success'),
@@ -460,7 +463,7 @@ class PolydockAppInstanceResource extends Resource
                 ->schema([
                     KeyValueEntry::make('data')
                         ->label('')
-                        ->state(function (PolydockAppInstance $record) {
+                        ->state(function (PolydockAppInstance $record): array {
                             $safeData = $record->data ?? [];
                             $sensitiveKeys = $record->getSensitiveDataKeys();
                             $redactedData = [];
@@ -469,7 +472,7 @@ class PolydockAppInstanceResource extends Resource
                                 // Split combined key-value strings like "instance_config_VAR=VALUE"
                                 // but skip if it's a URL or if the key is already a non-numeric string.
                                 if (\is_int($key) && \is_string($value) && str_contains($value, '=') && ! str_starts_with($value, 'http')) {
-                                    [$newKey, $newValue] = explode('=', (string) $value, 2);
+                                    [$newKey, $newValue] = explode('=', $value, 2);
                                     $key = $newKey;
                                     $value = $newValue;
                                 }
@@ -568,6 +571,7 @@ class PolydockAppInstanceResource extends Resource
         return $renderedArray;
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -576,6 +580,7 @@ class PolydockAppInstanceResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function canCreate(): bool
     {
         /** @var User|null $user */
@@ -584,6 +589,7 @@ class PolydockAppInstanceResource extends Resource
         return $user?->can('create', PolydockAppInstance::class) ?? false;
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -594,6 +600,7 @@ class PolydockAppInstanceResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery()

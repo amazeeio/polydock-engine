@@ -59,6 +59,7 @@ class PolydockStoreAppResource extends Resource
 
     protected static ?int $navigationSort = 5100;
 
+    #[\Override]
     public static function form(Schema $schema): Schema
     {
         return $schema
@@ -68,15 +69,15 @@ class PolydockStoreAppResource extends Resource
                     ->options(PolydockStore::all()->pluck('name', 'id'))
                     ->required()
                     ->live()
-                    ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
-                    ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
+                    ->disabled(fn (?PolydockStoreApp $record): bool => $record && $record->instances()->exists())
+                    ->dehydrated(fn (?PolydockStoreApp $record): bool => ! $record || ! $record->instances()->exists()),
                 Select::make('polydock_app_class')
                     ->label('Polydock App Class')
                     ->options(fn () => app(PolydockAppClassDiscovery::class)->getAvailableAppClasses())
                     ->required()
                     ->searchable()
                     ->live(onBlur: false)
-                    ->afterStateUpdated(function (Set $set, ?string $old) {
+                    ->afterStateUpdated(function (Set $set, ?string $old): void {
                         if ($old) {
                             $fieldNames = app(PolydockAppClassDiscovery::class)
                                 ->getStoreAppFormFieldNames($old);
@@ -86,8 +87,8 @@ class PolydockStoreAppResource extends Resource
                         }
                     })
                     ->helperText('The application class that controls deployment and lifecycle behaviour.')
-                    ->disabled(fn (?PolydockStoreApp $record) => $record && $record->instances()->exists())
-                    ->dehydrated(fn (?PolydockStoreApp $record) => ! $record || ! $record->instances()->exists()),
+                    ->disabled(fn (?PolydockStoreApp $record): bool => $record && $record->instances()->exists())
+                    ->dehydrated(fn (?PolydockStoreApp $record): bool => ! $record || ! $record->instances()->exists()),
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),
@@ -334,6 +335,7 @@ class PolydockStoreAppResource extends Resource
             ]);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -431,11 +433,12 @@ class PolydockStoreAppResource extends Resource
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make()
-                        ->hidden(fn () => true), // Disable bulk delete entirely
+                        ->hidden(fn (): true => true), // Disable bulk delete entirely
                 ]),
             ]);
     }
 
+    #[\Override]
     public static function getRelations(): array
     {
         return [
@@ -443,6 +446,7 @@ class PolydockStoreAppResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [
@@ -453,6 +457,7 @@ class PolydockStoreAppResource extends Resource
         ];
     }
 
+    #[\Override]
     public static function infolist(Schema $schema): Schema
     {
         return $schema
@@ -476,7 +481,7 @@ class PolydockStoreAppResource extends Resource
                         TextEntry::make('description')
                             ->markdown()
                             ->columnSpanFull()
-                            ->hidden(fn ($record) => blank($record->description)),
+                            ->hidden(fn ($record): bool => blank($record->description)),
 
                         Grid::make(3)
                             ->schema([
@@ -585,7 +590,7 @@ class PolydockStoreAppResource extends Resource
     }
 
     /** Lifecycle script prefixes shared by the form and infolist Lagoon Scripts sections. */
-    private const LAGOON_SCRIPT_STAGES = [
+    private const array LAGOON_SCRIPT_STAGES = [
         'post_deploy' => 'Post Deploy',
         'pre_upgrade' => 'Pre Upgrade',
         'upgrade' => 'Upgrade',
@@ -596,7 +601,7 @@ class PolydockStoreAppResource extends Resource
     ];
 
     /** Trial email prefixes shared by the form and infolist trial sections. */
-    private const TRIAL_EMAILS = [
+    private const array TRIAL_EMAILS = [
         'midtrial' => 'Mid-trial Email',
         'one_day_left' => 'One Day Left Email',
         'trial_complete' => 'Trial Complete Email',
@@ -639,13 +644,13 @@ class PolydockStoreAppResource extends Resource
                 TextEntry::make("lagoon_{$stage}_script")
                     ->label("{$label} Script")
                     ->columnSpanFull()
-                    ->hidden(fn ($record) => blank($record->{"lagoon_{$stage}_script"})),
+                    ->hidden(fn ($record): bool => blank($record->{"lagoon_{$stage}_script"})),
                 TextEntry::make("lagoon_{$stage}_service")
                     ->label("{$label} Service")
-                    ->hidden(fn ($record) => blank($record->{"lagoon_{$stage}_script"})),
+                    ->hidden(fn ($record): bool => blank($record->{"lagoon_{$stage}_script"})),
                 TextEntry::make("lagoon_{$stage}_container")
                     ->label("{$label} Container")
-                    ->hidden(fn ($record) => blank($record->{"lagoon_{$stage}_script"})),
+                    ->hidden(fn ($record): bool => blank($record->{"lagoon_{$stage}_script"})),
             ])
             ->values()
             ->all();
@@ -703,9 +708,9 @@ class PolydockStoreAppResource extends Resource
             ->with(['store', 'productType'])
             ->withCount([
                 'allocatedInstances',
-                'instances as unallocated_instances_count' => function ($query) {
+                'instances as unallocated_instances_count' => function ($query): void {
                     $query->whereNull('user_group_id')
-                        ->where(function ($q) {
+                        ->where(function ($q): void {
                             $q->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED)
                                 ->orWhereIn('status', PolydockAppInstance::unallocatedInProgressStatuses());
                         });

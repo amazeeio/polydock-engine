@@ -113,7 +113,7 @@ class PolydockApp extends PolydockAppBase
 
             return $ping;
         } catch (Exception $e) {
-            throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
+            throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage(), $e->getCode(), $e);
         }
     }
 
@@ -143,10 +143,6 @@ class PolydockApp extends PolydockAppBase
 
         if (! $this->lagoonClient) {
             throw new PolydockAppInstanceStatusFlowException('Lagoon client not found');
-        }
-
-        if (! ($this->lagoonClient instanceof LagoonClient)) {
-            throw new PolydockAppInstanceStatusFlowException('Lagoon client is not an instance of LagoonClient');
         }
     }
 
@@ -412,7 +408,7 @@ class PolydockApp extends PolydockAppBase
             }
         } catch (Exception $e) {
             $this->error($functionName.' failed: '.$e->getMessage(), $logContext + [
-                'exception_class' => get_class($e),
+                'exception_class' => $e::class,
             ]);
             $appInstance->setStatus($failedStatus, 'An exception occurred: '.$e->getMessage())->save();
 

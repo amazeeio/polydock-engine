@@ -14,7 +14,7 @@ return new class extends Migration
         // not flipped to true by the backfill.
         $lastExistingWebhookId = DB::table('polydock_store_webhooks')->max('id');
 
-        Schema::table('polydock_store_webhooks', function (Blueprint $table) {
+        Schema::table('polydock_store_webhooks', function (Blueprint $table): void {
             $table->boolean('include_sensitive_data')->default(false)->after('secret');
         });
 
@@ -30,7 +30,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('polydock_store_webhooks', function (Blueprint $table) {
+        Schema::table('polydock_store_webhooks', function (Blueprint $table): void {
             $table->dropColumn('include_sensitive_data');
         });
     }

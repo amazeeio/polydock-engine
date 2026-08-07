@@ -30,17 +30,21 @@ class PolydockAppInstanceStatusTransition extends Model
         'to_status',
     ];
 
-    protected $casts = [
-        'from_status' => PolydockAppInstanceStatus::class,
-        'to_status' => PolydockAppInstanceStatus::class,
-        'created_at' => 'datetime',
-    ];
-
     /**
      * @return BelongsTo<PolydockAppInstance, $this>
      */
     public function instance(): BelongsTo
     {
         return $this->belongsTo(PolydockAppInstance::class, 'polydock_app_instance_id');
+    }
+
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'from_status' => PolydockAppInstanceStatus::class,
+            'to_status' => PolydockAppInstanceStatus::class,
+            'created_at' => 'datetime',
+        ];
     }
 }

@@ -22,8 +22,6 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
 
     /**
      * Maximum age in minutes before a token is considered expired.
-     *
-     * @var int
      */
     private const int MAX_TOKEN_AGE_MINUTES = 2;
 
@@ -112,7 +110,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
         }
 
         $token = $this->LagoonClient->getLagoonToken();
-        if (empty($token)) {
+        if (in_array($token, [null, '', '0'], true)) {
             // Log more details for debugging
             $this->error('Token debug info', [
                 'ssh_server' => $config['ssh_server'] ?? 'not set',

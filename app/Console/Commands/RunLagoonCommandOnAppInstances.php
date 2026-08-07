@@ -87,7 +87,6 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
             return $this->runCommandOnInstance(
                 instance: $instance,
                 command: $commandName,
-                client: null,
                 envOverride: $envOverride,
                 serviceName: $serviceName,
                 containerName: $containerName
@@ -155,7 +154,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
                 $label = sprintf(
                     '%s  %s  %s  %s',
                     str_pad($data['id'], $maxWidths['id']),
-                    str_pad((string) $data['name'], $maxWidths['name']),
+                    str_pad($data['name'], $maxWidths['name']),
                     str_pad((string) $data['project'], $maxWidths['project']),
                     str_pad((string) $data['branch'], $maxWidths['branch'])
                 );
@@ -178,7 +177,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
                 hint: $header
             );
 
-            if (empty($selectedIds)) {
+            if ($selectedIds === []) {
                 $this->info(string: 'No instances selected.');
 
                 return 0;
@@ -245,7 +244,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
                 $commandBase[] = "--container={$containerName}";
             }
 
-            $pool = Process::pool(function (Pool $pool) use ($instances, $commandBase, $prefetchedToken) {
+            $pool = Process::pool(function (Pool $pool) use ($instances, $commandBase, $prefetchedToken): void {
                 foreach ($instances as $instance) {
                     $command = array_merge($commandBase, ["--instance-id={$instance->id}"]);
                     $pool->as($instance->id)->command($command)->env(['LAGOON_PREFETCHED_TOKEN' => $prefetchedToken]);
@@ -355,11 +354,10 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
                 $this->error(string: "\n[FAILED] {$projectName}: {$errors}");
 
                 return 1;
-            } else {
-                $this->info(string: "\n[SUCCESS] {$projectName}: Command executed successfully.");
-
-                return 0;
             }
+            $this->info(string: "\n[SUCCESS] {$projectName}: Command executed successfully.");
+
+            return 0;
         } catch (Exception $e) {
             $this->error(string: "\n[FAILED] {$projectName}: {$e->getMessage()}");
 

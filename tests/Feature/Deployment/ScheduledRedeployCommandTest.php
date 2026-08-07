@@ -124,8 +124,8 @@ class ScheduledRedeployCommandTest extends TestCase
 
         // never-redeployed counts as oldest, then oldest last deployment.
         $recent = $this->makeInstance($app, ['name' => 'recent', 'last_deployed_at' => now()->subDays(2)]);
-        $ancient = $this->makeInstance($app, ['name' => 'ancient', 'last_deployed_at' => now()->subDays(30)]);
-        $never = $this->makeInstance($app, ['name' => 'never', 'last_deployed_at' => null]);
+        $this->makeInstance($app, ['name' => 'ancient', 'last_deployed_at' => now()->subDays(30)]);
+        $this->makeInstance($app, ['name' => 'never', 'last_deployed_at' => null]);
 
         $this->runCommand();
 

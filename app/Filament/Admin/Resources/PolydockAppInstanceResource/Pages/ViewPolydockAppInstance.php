@@ -22,6 +22,7 @@ class ViewPolydockAppInstance extends ViewRecord
 {
     protected static string $resource = PolydockAppInstanceResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -45,7 +46,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 })
                 ->requiresConfirmation()
                 ->modalDescription('Queues the configured claim hook again for this instance.')
-                ->action(function ($record): void {
+                ->action(function (PolydockAppInstance $record): void {
                     $skipReadyNotification = data_get($record->data, 'manual_hook_rerun.skip_ready_notification', false)
                         || in_array($record->status, [
                             PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
@@ -96,7 +97,7 @@ class ViewPolydockAppInstance extends ViewRecord
                         ->content(fn ($record) => $record->getKeyValue('lagoon-deploy-branch') ?: 'main'),
                     Placeholder::make('last_deployment_date')
                         ->label('Last Polydock Deployment Date')
-                        ->content(function ($record) {
+                        ->content(function ($record): string {
                             try {
                                 $projectName = $record->getKeyValue('lagoon-project-name');
                                 $environmentName = $record->getKeyValue('lagoon-deploy-branch') ?: 'main';
@@ -109,9 +110,7 @@ class ViewPolydockAppInstance extends ViewRecord
                                 $clientConfig = $lagoonClientService->getClientConfig();
 
                                 // Cache the API token (string) to prevent repeated 5-second SSH token fetches
-                                $token = Cache::remember('lagoon_api_token_'.md5(json_encode($clientConfig)), now()->addMinutes(2), function () use ($lagoonClientService, $clientConfig) {
-                                    return $lagoonClientService->getLagoonToken($clientConfig);
-                                });
+                                $token = Cache::remember('lagoon_api_token_'.md5(json_encode($clientConfig)), now()->addMinutes(2), fn () => $lagoonClientService->getLagoonToken($clientConfig));
 
                                 if (empty($token)) {
                                     return 'Error: Unable to authenticate with Lagoon API';
@@ -227,15 +226,13 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->label('Retry Failed Instance')
                 ->icon('heroicon-o-arrow-path-rounded-square')
                 ->color('danger')
-                ->visible(function ($record): bool {
-                    return in_array($record->status, [
-                        PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
-                        PolydockAppInstanceStatus::DEPLOY_FAILED,
-                        PolydockAppInstanceStatus::POST_DEPLOY_FAILED,
-                        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
-                        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
-                    ], true);
-                })
+                ->visible(fn ($record): bool => in_array($record->status, [
+                    PolydockAppInstanceStatus::POLYDOCK_CLAIM_FAILED,
+                    PolydockAppInstanceStatus::DEPLOY_FAILED,
+                    PolydockAppInstanceStatus::POST_DEPLOY_FAILED,
+                    PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+                    PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+                ], true))
                 ->requiresConfirmation()
                 ->modalHeading('Retry Failed Instance')
                 ->modalDescription('This will check the Lagoon project/environment state and take corrective action: deploy the environment if missing, trigger a new deployment if it exists, then re-queue the claim process.')
@@ -333,7 +330,7 @@ class ViewPolydockAppInstance extends ViewRecord
                         ->minDate(now())
                         ->default(fn ($record) => $record->trial_ends_at),
                 ])
-                ->action(function (array $data, $record): void {
+                ->action(function (array $data, PolydockAppInstance $record): void {
                     $newEndDate = Carbon::parse($data['new_trial_end_date']);
 
                     try {
@@ -386,7 +383,7 @@ class ViewPolydockAppInstance extends ViewRecord
                         ->helperText('Equivalent to clicking "Force Full Delete" the moment the instance reaches REMOVED.')
                         ->default(false),
                 ])
-                ->action(function (array $data, $record): void {
+                ->action(function (array $data, PolydockAppInstance $record): void {
                     $skipGrace = (bool) ($data['skip_grace_period'] ?? false);
 
                     if ($skipGrace) {
@@ -428,7 +425,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->requiresConfirmation()
                 ->modalHeading('Force full Lagoon project deletion?')
                 ->modalDescription('This skips the grace period and immediately tries to delete the Lagoon project. If environments are still being torn down, this will keep retrying until they are gone or the polling cap is reached.')
-                ->action(function ($record): void {
+                ->action(function (PolydockAppInstance $record): void {
                     $now = now();
                     $record->force_purge_requested_at = $now;
                     $record->purge_eligible_at = $now;
@@ -461,7 +458,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::PURGE_FAILED && ! $record->trashed())
                 ->requiresConfirmation()
                 ->modalDescription('Resets purge attempts and returns the instance to REMOVED with a fresh grace period before purge dispatch.')
-                ->action(function ($record): void {
+                ->action(function (PolydockAppInstance $record): void {
                     $graceDays = (int) config('polydock.cleanup.purge_grace_days', 14);
                     $record->purge_attempts = 0;
                     $record->purge_failure_reason = null;
@@ -496,7 +493,7 @@ class ViewPolydockAppInstance extends ViewRecord
                     && $record->status === PolydockAppInstanceStatus::REMOVED
                     && ! $record->trashed())
                 ->requiresConfirmation()
-                ->action(function ($record): void {
+                ->action(function (PolydockAppInstance $record): void {
                     $record->force_purge_requested_at = null;
                     $record->save();
 

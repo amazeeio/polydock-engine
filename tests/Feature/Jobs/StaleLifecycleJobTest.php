@@ -31,7 +31,7 @@ class StaleLifecycleJobTest extends TestCase
             'Already running',
         );
 
-        (new ClaimJob($appInstance->id))->handle();
+        new ClaimJob($appInstance->id)->handle();
 
         $appInstance->refresh();
 
@@ -50,7 +50,7 @@ class StaleLifecycleJobTest extends TestCase
             'Upgrade pending',
         );
 
-        (new ClaimJob($appInstance->id))->handle();
+        new ClaimJob($appInstance->id)->handle();
 
         $appInstance->refresh();
 
@@ -66,7 +66,7 @@ class StaleLifecycleJobTest extends TestCase
             'Ready to deploy',
         );
 
-        (new CreateJob($appInstance->id))->handle();
+        new CreateJob($appInstance->id)->handle();
 
         $appInstance->refresh();
 
@@ -82,7 +82,7 @@ class StaleLifecycleJobTest extends TestCase
             'Running unclaimed',
         );
 
-        (new DeployJob($appInstance->id))->handle();
+        new DeployJob($appInstance->id)->handle();
 
         $appInstance->refresh();
 
@@ -98,7 +98,7 @@ class StaleLifecycleJobTest extends TestCase
             'Awaiting post-remove',
         );
 
-        (new RemoveJob($appInstance->id))->handle();
+        new RemoveJob($appInstance->id)->handle();
 
         $appInstance->refresh();
 
@@ -119,7 +119,7 @@ class StaleLifecycleJobTest extends TestCase
 
         $this->expectException(PolydockAppInstanceStatusFlowException::class);
 
-        (new CreateJob($appInstance->id))->handle();
+        new CreateJob($appInstance->id)->handle();
     }
 
     public function test_create_job_does_not_skip_when_instance_is_in_the_same_create_stage(): void
@@ -138,7 +138,7 @@ class StaleLifecycleJobTest extends TestCase
 
         $this->expectException(PolydockAppInstanceStatusFlowException::class);
 
-        (new CreateJob($appInstance->id))->handle();
+        new CreateJob($appInstance->id)->handle();
     }
 
     public function test_claim_job_skips_when_instance_is_in_a_sibling_running_state(): void
@@ -154,7 +154,7 @@ class StaleLifecycleJobTest extends TestCase
             'Running unclaimed, awaiting claim',
         );
 
-        (new ClaimJob($appInstance->id))->handle();
+        new ClaimJob($appInstance->id)->handle();
 
         $appInstance->refresh();
 
@@ -175,7 +175,7 @@ class StaleLifecycleJobTest extends TestCase
 
         $this->expectException(PolydockAppInstanceStatusFlowException::class);
 
-        (new DeployJob($appInstance->id))->handle();
+        new DeployJob($appInstance->id)->handle();
     }
 
     public function test_poll_deployment_job_skips_when_instance_already_advanced_to_post_deploy(): void
@@ -186,7 +186,7 @@ class StaleLifecycleJobTest extends TestCase
             'Post deploy completed',
         );
 
-        (new PollDeploymentJob($appInstance->id))->handle();
+        new PollDeploymentJob($appInstance->id)->handle();
 
         $appInstance->refresh();
 
@@ -207,7 +207,7 @@ class StaleLifecycleJobTest extends TestCase
             'Deploy completed',
         );
 
-        (new PollDeploymentJob($appInstance->id))->handle();
+        new PollDeploymentJob($appInstance->id)->handle();
 
         $appInstance->refresh();
 

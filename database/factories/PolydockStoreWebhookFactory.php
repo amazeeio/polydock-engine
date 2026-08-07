@@ -22,14 +22,14 @@ class PolydockStoreWebhookFactory extends Factory
 
     public function active(): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'active' => true,
         ]);
     }
 
     public function inactive(): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn (array $attributes): array => [
             'active' => false,
         ]);
     }

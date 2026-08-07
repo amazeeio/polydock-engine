@@ -49,7 +49,7 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
 
         $call = $this->makeWebhookCall();
 
-        (new ProcessPolydockStoreWebhookCall($call))->handle();
+        new ProcessPolydockStoreWebhookCall($call)->handle();
 
         $call->refresh();
 
@@ -59,12 +59,10 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
         $this->assertNotNull($call->processed_at);
         $this->assertNull($call->exception);
 
-        Http::assertSent(function ($request) use ($call) {
-            return $request->url() === 'https://example.test/hook'
-                && $request->hasHeader('X-Polydock-Event', 'app.created')
-                && $request->hasHeader('X-Polydock-Delivery', (string) $call->id)
-                && $request->hasHeader('X-Polydock-Attempt');
-        });
+        Http::assertSent(fn ($request): bool => $request->url() === 'https://example.test/hook'
+            && $request->hasHeader('X-Polydock-Event', 'app.created')
+            && $request->hasHeader('X-Polydock-Delivery', (string) $call->id)
+            && $request->hasHeader('X-Polydock-Attempt'));
     }
 
     public function test_request_carries_valid_hmac_signature_over_the_sent_body(): void
@@ -79,7 +77,7 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
         $this->assertNotEmpty($secret);
         $this->assertArrayNotHasKey('secret', $call->webhook->toArray());
 
-        (new ProcessPolydockStoreWebhookCall($call))->handle();
+        new ProcessPolydockStoreWebhookCall($call)->handle();
 
         Http::assertSent(function ($request) use ($secret) {
             $body = $request->body();
@@ -98,7 +96,7 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
         $call = $this->makeWebhookCall();
 
         try {
-            (new ProcessPolydockStoreWebhookCall($call))->handle();
+            new ProcessPolydockStoreWebhookCall($call)->handle();
             $this->fail('Expected an exception to be thrown on a non-2xx response.');
         } catch (\Exception $e) {
             $this->assertStringContainsString('status code: 500', $e->getMessage());
@@ -119,14 +117,14 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
 
     public function test_transport_exception_records_exception_and_rethrows(): void
     {
-        Http::fake(function () {
+        Http::fake(function (): void {
             throw new ConnectionException('Connection timed out');
         });
 
         $call = $this->makeWebhookCall();
 
         try {
-            (new ProcessPolydockStoreWebhookCall($call))->handle();
+            new ProcessPolydockStoreWebhookCall($call)->handle();
             $this->fail('Expected the transport exception to be re-thrown.');
         } catch (ConnectionException $e) {
             $this->assertSame('Connection timed out', $e->getMessage());

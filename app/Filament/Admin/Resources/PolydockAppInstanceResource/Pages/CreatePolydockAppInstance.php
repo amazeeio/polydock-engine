@@ -88,7 +88,7 @@ class CreatePolydockAppInstance extends Page
                                     ->where('available_for_trials', true)
                                     ->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
                                     ->get()
-                                    ->mapWithKeys(fn ($app) => [$app->uuid => $app->name.' ('.$app->store->name.')']),
+                                    ->mapWithKeys(fn ($app): array => [$app->uuid => $app->name.' ('.$app->store->name.')']),
                             )
                             ->required()
                             ->searchable()

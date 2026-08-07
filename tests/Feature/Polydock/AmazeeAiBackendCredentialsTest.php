@@ -27,7 +27,7 @@ class TestableAiApp extends PolydockAiApp
  */
 class AmazeeAiBackendCredentialsTest extends TestCase
 {
-    private const BASE = 'http://amazee-ai.test';
+    private const string BASE = 'http://amazee-ai.test';
 
     /**
      * @return array<string, mixed>
@@ -89,12 +89,12 @@ class AmazeeAiBackendCredentialsTest extends TestCase
 
         $this->assertSame('sk-token', $credentials['litellm_token']);
 
-        Http::assertSent(fn ($request) => str_contains($request->url(), '/private-ai-keys')
+        Http::assertSent(fn ($request): bool => str_contains($request->url(), '/private-ai-keys')
             && $request['owner_id'] === 42
             && $request['region_id'] === 3);
 
         // Existing user found -> no user creation.
-        Http::assertNotSent(fn ($request) => $request->method() === 'POST'
+        Http::assertNotSent(fn ($request): bool => $request->method() === 'POST'
             && str_ends_with(parse_url($request->url(), PHP_URL_PATH), '/users'));
     }
 
@@ -108,11 +108,11 @@ class AmazeeAiBackendCredentialsTest extends TestCase
             $this->makeInstanceDouble(['amazee-ai-backend-user-email' => 'new@example.com']),
         );
 
-        Http::assertSent(fn ($request) => $request->method() === 'POST'
+        Http::assertSent(fn ($request): bool => $request->method() === 'POST'
             && str_ends_with(parse_url($request->url(), PHP_URL_PATH), '/users')
             && $request['email'] === 'new@example.com');
 
-        Http::assertSent(fn ($request) => str_contains($request->url(), '/private-ai-keys')
+        Http::assertSent(fn ($request): bool => str_contains($request->url(), '/private-ai-keys')
             && $request['owner_id'] === 77);
     }
 
@@ -122,7 +122,7 @@ class AmazeeAiBackendCredentialsTest extends TestCase
 
         $this->app()->getPrivateAICredentialsFromBackend($this->makeInstanceDouble());
 
-        Http::assertSent(fn ($request) => str_contains($request->url(), '/users/search')
+        Http::assertSent(fn ($request): bool => str_contains($request->url(), '/users/search')
             && str_contains($request->url(), urlencode('proj1@autogen.null')));
     }
 

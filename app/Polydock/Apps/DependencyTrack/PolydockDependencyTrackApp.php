@@ -109,7 +109,7 @@ class PolydockDependencyTrackApp extends GenericPolydockApp implements HasAppIns
         }
 
         $appUrl = $this->buildDependencyTrackUrlFromInstance($appInstance);
-        if (! empty($appUrl)) {
+        if (! in_array($appUrl, [null, '', '0'], true)) {
             $appInstance->setAppUrl($appUrl, $appUrl, 24);
         }
 
@@ -140,7 +140,10 @@ class PolydockDependencyTrackApp extends GenericPolydockApp implements HasAppIns
             $routes = explode(',', (string) ($environment['routes'] ?? ''));
             foreach ($routes as $route) {
                 $route = trim($route);
-                if (empty($route)) {
+                if ($route === '') {
+                    continue;
+                }
+                if ($route === '0') {
                     continue;
                 }
 

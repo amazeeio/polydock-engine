@@ -32,7 +32,7 @@ class PollDeploymentRunsCommand extends BaseCommand
                 PolydockDeploymentRunStatusEnum::RUNNING->value,
             ])
             ->where('poll_attempts', '<', $maxAttempts)
-            ->where(function ($query) use ($threshold) {
+            ->where(function ($query) use ($threshold): void {
                 $query->whereNull('last_polled_at')
                     ->orWhere('last_polled_at', '<=', $threshold);
             })

@@ -18,7 +18,7 @@ class EnumHelper
     public static function getEnumOptions(string $enumClass): array
     {
         return collect($enumClass::cases())
-            ->mapWithKeys(function ($case) {
+            ->mapWithKeys(function ($case): array {
                 $label = ($case instanceof HasLabel)
                     ? $case->getLabel()
                     : str($case->value)->title()->toString();

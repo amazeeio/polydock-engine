@@ -10,14 +10,14 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->string('mail_theme')->nullable()->after('email_body_markdown');
         });
     }
 
     public function down(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             $table->dropColumn('mail_theme');
         });
     }

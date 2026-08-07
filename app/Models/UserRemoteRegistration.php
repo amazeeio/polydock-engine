@@ -42,19 +42,6 @@ class UserRemoteRegistration extends Model
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
-    protected $casts = [
-        'status' => UserRemoteRegistrationStatusEnum::class,
-        'type' => UserRemoteRegistrationType::class,
-        'request_data' => 'array',
-        'result_data' => 'array',
-        'polydock_store_app_id' => 'integer:nullable',
-    ];
-
-    /**
      * The accessors to append to the model's array form.
      *
      * @var list<string>
@@ -73,16 +60,16 @@ class UserRemoteRegistration extends Model
     {
         parent::boot();
 
-        static::creating(function ($model) {
+        static::creating(function ($model): void {
             $model->uuid = (string) Str::uuid();
         });
 
-        static::created(function ($model) {
+        static::created(function ($model): void {
             Log::info('User remote registration created', ['registration' => SensitiveDataRedactor::redact($model->toArray())]);
             UserRemoteRegistrationCreated::dispatch($model);
         });
 
-        static::updating(function ($model) {
+        static::updating(function ($model): void {
             // If status is changing, fire the event
             if ($model->isDirty('status')) {
                 UserRemoteRegistrationStatusChanged::dispatch(
@@ -214,6 +201,21 @@ class UserRemoteRegistration extends Model
         return [
             'request_data' => $this->request_data,
             'result_data' => $this->result_data,
+        ];
+    }
+
+    /**
+     * The attributes that should be cast.
+     */
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'status' => UserRemoteRegistrationStatusEnum::class,
+            'type' => UserRemoteRegistrationType::class,
+            'request_data' => 'array',
+            'result_data' => 'array',
+            'polydock_store_app_id' => 'integer:nullable',
         ];
     }
 }

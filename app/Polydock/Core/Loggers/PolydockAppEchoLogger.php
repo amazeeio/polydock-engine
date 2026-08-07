@@ -62,7 +62,7 @@ class PolydockAppEchoLogger implements PolydockAppLoggerInterface
     private function output(string $level, string $message, array $context): void
     {
         echo "[$level] $message".PHP_EOL;
-        if (! empty($context)) {
+        if ($context !== []) {
             echo 'Context: '.json_encode($context, JSON_PRETTY_PRINT).PHP_EOL;
         }
     }

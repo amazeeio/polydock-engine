@@ -16,11 +16,13 @@ class ViewUserRemoteRegistration extends ViewRecord
     protected static string $resource = UserRemoteRegistrationResource::class;
 
     // Remove any header actions (including edit button)
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [];
     }
 
+    #[\Override]
     public function infolist(Schema $schema): Schema
     {
         return $schema
@@ -65,7 +67,7 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     ->label('App'),
                                 TextEntry::make('appInstance.name')
                                     ->label('Instance')
-                                    ->url(fn ($record) => $record->appInstance
+                                    ->url(fn ($record): ?string => $record->appInstance
                                         ? route(
                                             'filament.admin.resources.polydock-app-instances.view',
                                             ['record' => $record->appInstance],
@@ -75,11 +77,11 @@ class ViewUserRemoteRegistration extends ViewRecord
                     ]),
 
                 Section::make('Request Data')
-                    ->schema(fn ($record) => self::getRenderedSafeRequestDataForRecord($record))
+                    ->schema(fn (UserRemoteRegistration $record): array => self::getRenderedSafeRequestDataForRecord($record))
                     ->collapsible(),
 
                 Section::make('Result Data')
-                    ->schema(fn ($record) => self::getRenderedSafeResultDataForRecord($record))
+                    ->schema(fn (UserRemoteRegistration $record): array => self::getRenderedSafeResultDataForRecord($record))
                     ->collapsible(),
             ]);
     }

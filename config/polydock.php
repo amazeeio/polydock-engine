@@ -32,14 +32,14 @@ $filterServiceProviders = explode(',', (string) env('POLYDOCK_DISABLED_SERVICE_P
 
 foreach ($filterServiceProviders as $filterServiceProvider) {
     $filterServiceProvider = trim($filterServiceProvider);
-    if (! empty($filterServiceProvider) && isset($serviceProviderSingletons[$filterServiceProvider])) {
+    if ($filterServiceProvider !== '' && $filterServiceProvider !== '0' && isset($serviceProviderSingletons[$filterServiceProvider])) {
         unset($serviceProviderSingletons[$filterServiceProvider]);
     }
 }
 
 return [
     'health_token' => env('POLYDOCK_HEALTH_TOKEN'),
-    'trusted_ips' => array_filter(array_map('trim', explode(',', (string) env('POLYDOCK_TRUSTED_IPS', '')))),
+    'trusted_ips' => array_filter(array_map(trim(...), explode(',', (string) env('POLYDOCK_TRUSTED_IPS', '')))),
     'lagoon_environment_type' => env('LAGOON_ENVIRONMENT_TYPE', 'development'),
     'default_user_group_id_for_unallocated_instances' => env('POLYDOCK_DEFAULT_USER_GROUP_ID_FOR_UNALLOCATED_INSTANCES', 1),
     'max_per_run_dispatch_midtrial_emails' => env('POLYDOCK_MAX_PER_RUN_DISPATCH_MIDTRIAL_EMAILS', 25),
@@ -80,8 +80,6 @@ return [
     'register_only_captures' => env('POLYDOCK_REGISTER_ONLY_CAPTURES', false),
     'register_simulate_round_robin' => env('POLYDOCK_REGISTER_SIMULATE_ROUND_ROBIN', false),
     'register_simulate_error' => env('POLYDOCK_REGISTER_SIMULATE_ERROR', false),
-    'lagoon_deploy_private_key_file' => env('POLYDOCK_LAGOON_DEPLOY_PRIVATE_KEY_FILE', 'tests/fixtures/lagoon-deploy-private-key'),
-    'ftlagoon_private_key_content' => env('FTLAGOON_PRIVATE_KEY_CONTENT'),
     'service_providers_singletons' => $serviceProviderSingletons,
     'lagoon_cores' => [
         'http://lagoon-api.172.22.0.240.nip.io/graphql' => [

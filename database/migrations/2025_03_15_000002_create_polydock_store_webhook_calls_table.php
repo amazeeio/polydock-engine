@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('polydock_store_webhook_calls', function (Blueprint $table) {
+        Schema::create('polydock_store_webhook_calls', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('polydock_store_webhook_id')->constrained()->cascadeOnDelete();
             $table->string('event');

@@ -11,6 +11,7 @@ class EditPolydockStore extends EditRecord
 {
     protected static string $resource = PolydockStoreResource::class;
 
+    #[\Override]
     protected function getHeaderActions(): array
     {
         return [
@@ -24,11 +25,13 @@ class EditPolydockStore extends EditRecord
         ];
     }
 
+    #[\Override]
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('view', ['record' => $this->getRecord()]);
     }
 
+    #[\Override]
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $key = $data['lagoon_deploy_private_key'] ?? null;

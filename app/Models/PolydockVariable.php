@@ -17,11 +17,6 @@ class PolydockVariable extends Model
         'is_encrypted',
     ];
 
-    protected $casts = [
-        'scope' => PolydockVariableScopeEnum::class,
-        'is_encrypted' => 'boolean',
-    ];
-
     /**
      * Get the decrypted value if encrypted, or raw value if not
      */
@@ -63,5 +58,14 @@ class PolydockVariable extends Model
     public function variabled(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'scope' => PolydockVariableScopeEnum::class,
+            'is_encrypted' => 'boolean',
+        ];
     }
 }

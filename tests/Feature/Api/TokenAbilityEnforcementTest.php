@@ -19,9 +19,9 @@ class TokenAbilityEnforcementTest extends TestCase
     use RefreshDatabase;
 
     /** Param-free read route, so a pass through the middleware lands on 200. */
-    private const READ_ROUTE = '/api/enums';
+    private const string READ_ROUTE = '/api/enums';
 
-    private const WRITE_ROUTE = '/api/groups';
+    private const string WRITE_ROUTE = '/api/groups';
 
     public function test_read_token_cannot_reach_a_write_route(): void
     {

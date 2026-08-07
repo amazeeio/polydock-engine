@@ -61,7 +61,7 @@ class FormController extends Controller
 
         // Fetch public stores offering available trial apps this form may
         // provision; stores with none of the form's apps are not listed.
-        $allowedApps = function ($query) use ($form) {
+        $allowedApps = function ($query) use ($form): void {
             $query->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
                 ->where('available_for_trials', true)
                 ->whereIn('uuid', $form->getAllowedTrialAppUuids());
@@ -73,10 +73,10 @@ class FormController extends Controller
             ->with(['apps' => $allowedApps])
             ->get();
 
-        $regionsData = $regions->map(fn ($store) => [
+        $regionsData = $regions->map(fn ($store): array => [
             'id' => $store->id,
             'name' => $store->name,
-            'apps' => $store->apps->map(fn ($app) => [
+            'apps' => $store->apps->map(fn ($app): array => [
                 'uuid' => $app->uuid,
                 'name' => $app->name,
             ]),

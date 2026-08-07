@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_remote_registrations', function (Blueprint $table) {
+        Schema::create('user_remote_registrations', function (Blueprint $table): void {
             $table->id();
             $table->char('uuid', 36)->unique();
             $table->string('email');

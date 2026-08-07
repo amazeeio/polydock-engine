@@ -58,7 +58,7 @@ trait HasWebhookSensitiveData
 
         $retData = array_filter(
             $data,
-            fn ($key) => ! $this->shouldFilterKey($key, $sensitiveKeys),
+            fn ($key): bool => ! $this->shouldFilterKey($key, $sensitiveKeys),
             ARRAY_FILTER_USE_KEY,
         );
 

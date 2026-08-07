@@ -41,17 +41,13 @@ class PolydockHostedForm extends Model
         'seo_description',
     ];
 
-    protected $casts = [
-        'enabled' => 'boolean',
-    ];
-
     /**
      * Plain-text fields rendered into headings and <head> tags — HTML is
      * stripped on write so an admin paste mistake can't inject markup.
      *
      * @var list<string>
      */
-    private const PLAIN_TEXT_FIELDS = ['title', 'seo_title', 'seo_description'];
+    private const array PLAIN_TEXT_FIELDS = ['title', 'seo_title', 'seo_description'];
 
     #[\Override]
     public function setAttribute($key, $value)
@@ -80,5 +76,13 @@ class PolydockHostedForm extends Model
             PolydockStoreApp::class,
             'polydock_hosted_form_store_app',
         );
+    }
+
+    #[\Override]
+    protected function casts(): array
+    {
+        return [
+            'enabled' => 'boolean',
+        ];
     }
 }

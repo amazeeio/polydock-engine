@@ -21,7 +21,7 @@ return new class extends Migration
         // Get the current enum values, excluding 'new' since we're adding it
         $currentEnumValues = implode("','", array_filter(
             PolydockAppInstanceStatus::getValues(),
-            fn ($value) => $value !== 'new'
+            fn (string $value): bool => $value !== 'new'
         ));
 
         // Add NEW to the enum
@@ -71,7 +71,7 @@ return new class extends Migration
         // Get the original enum values (excluding NEW)
         $originalEnumValues = array_filter(
             PolydockAppInstanceStatus::getValues(),
-            fn ($value) => ! in_array($value, $newStatuses)
+            fn (string $value): bool => ! in_array($value, $newStatuses)
         );
 
         $enumString = implode("','", array_merge($originalEnumValues, $newStatuses));

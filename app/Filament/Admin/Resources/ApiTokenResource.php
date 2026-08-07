@@ -27,12 +27,14 @@ class ApiTokenResource extends Resource
 
     protected static ?int $navigationSort = 120;
 
+    #[\Override]
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
             ->where('tokenable_type', User::class);
     }
 
+    #[\Override]
     public static function table(Table $table): Table
     {
         return $table
@@ -69,11 +71,13 @@ class ApiTokenResource extends Resource
             ->toolbarActions([]);
     }
 
+    #[\Override]
     public static function canCreate(): bool
     {
         return false;
     }
 
+    #[\Override]
     public static function getPages(): array
     {
         return [

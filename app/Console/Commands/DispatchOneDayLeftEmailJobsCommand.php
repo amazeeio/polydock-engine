@@ -36,7 +36,7 @@ class DispatchOneDayLeftEmailJobsCommand extends BaseCommand
         $eligibleInstances = PolydockAppInstance::query()
             ->with(['storeApp', 'userGroup.owners']) // Eager load relationships
             ->where('is_trial', true)
-            ->whereHas('storeApp', function ($query) {
+            ->whereHas('storeApp', function ($query): void {
                 $query->where('send_one_day_left_email', true);
             })
             ->whereNotNull('send_one_day_left_email_at')

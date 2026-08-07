@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('polydock_stores', function (Blueprint $table) {
+        Schema::table('polydock_stores', function (Blueprint $table): void {
             $table->renameColumn('amazee_ai_backend_region_id', 'amazee_ai_backend_region_id_ext');
             $table->renameColumn('lagoon_deploy_organization_id', 'lagoon_deploy_organization_id_ext');
             $table->renameColumn('lagoon_deploy_region_id', 'lagoon_deploy_region_id_ext');
@@ -17,7 +17,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('polydock_stores', function (Blueprint $table) {
+        Schema::table('polydock_stores', function (Blueprint $table): void {
             $table->renameColumn('amazee_ai_backend_region_id_ext', 'amazee_ai_backend_region_id');
             $table->renameColumn('lagoon_deploy_organization_id_ext', 'lagoon_deploy_organization_id');
             $table->renameColumn('lagoon_deploy_region_id_ext', 'lagoon_deploy_region_id');

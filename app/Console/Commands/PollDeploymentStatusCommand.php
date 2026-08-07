@@ -33,7 +33,7 @@ class PollDeploymentStatusCommand extends BaseCommand
         while (now()->lt($endTime)) {
             $instances = PolydockAppInstance::query()
                 ->where('status', PolydockAppInstanceStatus::DEPLOY_RUNNING)
-                ->where(function ($query) {
+                ->where(function ($query): void {
                     $query->whereNull('next_poll_after')
                         ->orWhere('next_poll_after', '<=', now());
                 })

@@ -81,7 +81,7 @@ trait ProjectEnvironmentTrait
             'returnData' => true,
         ];
 
-        if (! empty($buildVariables)) {
+        if ($buildVariables !== []) {
             $formattedVars = [];
             foreach ($buildVariables as $key => $value) {
                 $formattedVars[] = [
@@ -102,12 +102,11 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            $data = $response->getData();
-
-            return $data;
         }
+        // Returns an array with all the data returned by the GraphQL server.
+        $data = $response->getData();
+
+        return $data;
     }
 
     /**
@@ -164,7 +163,7 @@ trait ProjectEnvironmentTrait
             'environments' => $envInputs,
         ];
 
-        if (! empty($buildVariables)) {
+        if ($buildVariables !== []) {
             $formattedVars = [];
             foreach ($buildVariables as $key => $value) {
                 $formattedVars[] = [
@@ -185,11 +184,9 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            $data = $response->getData();
-
-            return $data;
         }
+
+        return $response->getData();
     }
 
     /**
@@ -229,11 +226,10 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            $data = $response->getData();
-
-            return $data['deploymentsByBulkId'] ?? [];
         }
+        $data = $response->getData();
+
+        return $data['deploymentsByBulkId'] ?? [];
     }
 
     /**
@@ -279,12 +275,11 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            $data = $response->getData();
-
-            return $data['environmentByName']['deployments'][0] ?? ['error' => 'Deployment not found: '.$deploymentName, 'errorData' => $data];
         }
+        // Returns an array with all the data returned by the GraphQL server.
+        $data = $response->getData();
+
+        return $data['environmentByName']['deployments'][0] ?? ['error' => 'Deployment not found: '.$deploymentName, 'errorData' => $data];
     }
 
     /**
@@ -416,7 +411,7 @@ trait ProjectEnvironmentTrait
             }
         }
 
-        if (! empty($environmentName)) {
+        if (! in_array($environmentName, [null, '', '0'], true)) {
             return isset($deployments[$environmentName]) ? [$environmentName => $deployments[$environmentName]] : [];
         }
 
@@ -456,12 +451,11 @@ trait ProjectEnvironmentTrait
 
         if ($response->hasErrors()) {
             return ['error' => $response->getErrors()];
-        } else {
-            // Returns an array with all the data returned by the GraphQL server.
-            $data = $response->getData();
-
-            return $data;
         }
+        // Returns an array with all the data returned by the GraphQL server.
+        $data = $response->getData();
+
+        return $data;
     }
 
     /**

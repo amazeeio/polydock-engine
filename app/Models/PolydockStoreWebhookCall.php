@@ -28,13 +28,6 @@ class PolydockStoreWebhookCall extends Model
         'exception',
     ];
 
-    protected $casts = [
-        'payload' => 'array',
-        'processed_at' => 'datetime',
-        'attempt' => 'integer',
-        'status' => PolydockStoreWebhookCallStatusEnum::class,
-    ];
-
     /**
      * Boot the model.
      */
@@ -43,7 +36,7 @@ class PolydockStoreWebhookCall extends Model
     {
         parent::boot();
 
-        static::created(function ($webhookCall) {
+        static::created(function ($webhookCall): void {
             Log::info('Queuing webhook call for processing', [
                 'webhook_call_id' => $webhookCall->id,
                 'event' => $webhookCall->event,
@@ -62,5 +55,16 @@ class PolydockStoreWebhookCall extends Model
     public function webhook(): BelongsTo
     {
         return $this->belongsTo(PolydockStoreWebhook::class, 'polydock_store_webhook_id');
+    }
+
+    #[Override]
+    protected function casts(): array
+    {
+        return [
+            'payload' => 'array',
+            'processed_at' => 'datetime',
+            'attempt' => 'integer',
+            'status' => PolydockStoreWebhookCallStatusEnum::class,
+        ];
     }
 }

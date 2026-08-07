@@ -34,7 +34,7 @@ trait ClaimAppInstanceTrait
             function (PolydockAppInstanceInterface $appInstance, array $logContext) use ($functionName): ?PolydockAppInstanceInterface {
                 $projectName = $appInstance->getKeyValue('lagoon-project-name');
                 $deployEnvironment = $appInstance->getKeyValue('lagoon-deploy-branch');
-                $logContext = $logContext + ['projectName' => $projectName, 'deployEnvironment' => $deployEnvironment];
+                $logContext += ['projectName' => $projectName, 'deployEnvironment' => $deployEnvironment];
 
                 $this->info($functionName.': starting claim of project: '.$projectName, $logContext);
 
@@ -43,7 +43,7 @@ trait ClaimAppInstanceTrait
                 $claimScriptService = $appInstance->getKeyValue('lagoon-claim-script-service') ?? 'cli';
                 $claimScriptContainer = $appInstance->getKeyValue('lagoon-claim-script-container') ?? 'cli';
 
-                $logContext = $logContext + ['claimScript' => $claimScript, 'claimScriptService' => $claimScriptService, 'claimScriptContainer' => $claimScriptContainer];
+                $logContext += ['claimScript' => $claimScript, 'claimScriptService' => $claimScriptService, 'claimScriptContainer' => $claimScriptContainer];
 
                 if (! empty($claimScript)) {
                     $this->info('Claim script', $logContext);
@@ -119,7 +119,7 @@ trait ClaimAppInstanceTrait
      */
     private function resolveClaimUrlFromLagoonRoutes(string $projectName, string $deployEnvironment, array $logContext = []): ?string
     {
-        if (empty($projectName) || empty($deployEnvironment)) {
+        if ($projectName === '' || $projectName === '0' || ($deployEnvironment === '' || $deployEnvironment === '0')) {
             return null;
         }
 

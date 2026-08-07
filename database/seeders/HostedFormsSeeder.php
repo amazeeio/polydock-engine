@@ -35,7 +35,7 @@ class HostedFormsSeeder extends Seeder
         $previouslyOfferedAppIds = PolydockStoreApp::query()
             ->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
             ->where('available_for_trials', true)
-            ->whereHas('store', function ($query) {
+            ->whereHas('store', function ($query): void {
                 $query->where('status', PolydockStoreStatusEnum::PUBLIC);
             })
             ->pluck('id');

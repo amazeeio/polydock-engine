@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('user_remote_registrations', function (Blueprint $table) {
+        Schema::table('user_remote_registrations', function (Blueprint $table): void {
             $table->enum('type', UserRemoteRegistrationType::getValues())
                 ->nullable()
                 ->after('uuid');
@@ -18,7 +18,7 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('user_remote_registrations', function (Blueprint $table) {
+        Schema::table('user_remote_registrations', function (Blueprint $table): void {
             $table->dropColumn('type');
         });
     }

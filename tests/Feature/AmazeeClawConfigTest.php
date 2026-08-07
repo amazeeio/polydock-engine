@@ -172,7 +172,6 @@ class AmazeeClawConfigTest extends TestCase
         // Call the protected method using reflection
         $reflection = new \ReflectionClass($app);
         $method = $reflection->getMethod('buildClaimScriptWithInlineEnvironmentVariables');
-        $method->setAccessible(true);
 
         $result = $method->invoke($app, $claimScript, $envVars);
 

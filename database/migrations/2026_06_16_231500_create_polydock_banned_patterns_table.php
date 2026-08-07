@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('polydock_banned_patterns', function (Blueprint $table) {
+        Schema::create('polydock_banned_patterns', function (Blueprint $table): void {
             $table->id();
             $table->string('pattern')->unique();
             $table->string('reason')->nullable();

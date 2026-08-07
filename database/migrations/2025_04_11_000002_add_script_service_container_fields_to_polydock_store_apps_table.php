@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             // Post Deploy
             $table->string('lagoon_post_deploy_service')->nullable();
             $table->string('lagoon_post_deploy_container')->nullable();
@@ -47,7 +47,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('polydock_store_apps', function (Blueprint $table) {
+        Schema::table('polydock_store_apps', function (Blueprint $table): void {
             // Post Deploy
             $table->dropColumn('lagoon_post_deploy_service');
             $table->dropColumn('lagoon_post_deploy_container');

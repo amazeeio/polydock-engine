@@ -9,7 +9,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('polydock_app_instances', function (Blueprint $table) {
+        Schema::create('polydock_app_instances', function (Blueprint $table): void {
             $table->id();
             $table->foreignId('polydock_store_app_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_group_id')->constrained()->cascadeOnDelete();

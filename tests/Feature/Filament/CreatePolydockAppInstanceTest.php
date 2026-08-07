@@ -216,7 +216,7 @@ class CreatePolydockAppInstanceTest extends TestCase
 
         ProcessUserRemoteRegistration::dispatch($registration);
 
-        Queue::assertPushed(ProcessUserRemoteRegistration::class, function ($job) use ($registration) {
+        Queue::assertPushed(ProcessUserRemoteRegistration::class, function ($job) use ($registration): bool {
             // Use reflection to access the private registration property
             $reflection = new \ReflectionClass($job);
             $property = $reflection->getProperty('registration');

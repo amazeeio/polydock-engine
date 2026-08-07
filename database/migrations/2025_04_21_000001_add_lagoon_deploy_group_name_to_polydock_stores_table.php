@@ -13,7 +13,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('polydock_stores', function (Blueprint $table) {
+        Schema::table('polydock_stores', function (Blueprint $table): void {
             $table->string('lagoon_deploy_group_name')->nullable();
         });
     }
@@ -23,7 +23,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('polydock_stores', function (Blueprint $table) {
+        Schema::table('polydock_stores', function (Blueprint $table): void {
             $table->dropColumn('lagoon_deploy_group_name');
         });
     }

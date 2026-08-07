@@ -27,11 +27,10 @@ trait UsesAmazeeAiBackend
 
         if (! method_exists($amazeeAiBackendClientProvider, 'getAmazeeAiBackendClient')) {
             throw new PolydockAppInstanceStatusFlowException('Amazee AI backend client provider does not have getAmazeeAiBackendClient method');
-        } else {
-            // TODO: Fix this, this is a hack to get around the fact that the lagoon client provider is not typed
-            /** @phpstan-ignore-next-line */
-            $this->amazeeAiBackendClient = $this->amazeeAiBackendClientProvider->getAmazeeAiBackendClient();
         }
+        // TODO: Fix this, this is a hack to get around the fact that the lagoon client provider is not typed
+        /** @phpstan-ignore-next-line */
+        $this->amazeeAiBackendClient = $this->amazeeAiBackendClientProvider->getAmazeeAiBackendClient();
 
         if (! $this->amazeeAiBackendClient) {
             throw new PolydockAppInstanceStatusFlowException('Amazee AI backend client not found');
@@ -115,19 +114,17 @@ trait UsesAmazeeAiBackend
                     $this->info('amazeeAI backend is healthy', $logContext + $response);
 
                     return true;
-                } else {
-                    $this->error('amazeeAI backend is not healthy: ', $logContext + $response);
-
-                    return false;
                 }
-            } else {
-                $this->error('Error pinging amazeeAI backend: ', $logContext + $response);
+                $this->error('amazeeAI backend is not healthy: ', $logContext + $response);
 
                 return false;
             }
+            $this->error('Error pinging amazeeAI backend: ', $logContext + $response);
+
+            return false;
         } catch (Exception $e) {
             $this->error('Error pinging amazeeAI backend: ', $logContext + ['error' => $e->getMessage()]);
-            throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage());
+            throw new PolydockAppInstanceStatusFlowException('Error pinging Lagoon API: '.$e->getMessage(), $e->getCode(), $e);
         }
     }
 

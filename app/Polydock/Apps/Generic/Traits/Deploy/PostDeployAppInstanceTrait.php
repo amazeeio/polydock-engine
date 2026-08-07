@@ -34,14 +34,14 @@ trait PostDeployAppInstanceTrait
             function (PolydockAppInstanceInterface $appInstance, array $logContext) use ($functionName): ?PolydockAppInstanceInterface {
                 $projectName = $appInstance->getKeyValue('lagoon-project-name');
                 $deployEnvironment = $appInstance->getKeyValue('lagoon-deploy-branch');
-                $logContext = $logContext + ['projectName' => $projectName, 'deployEnvironment' => $deployEnvironment];
+                $logContext += ['projectName' => $projectName, 'deployEnvironment' => $deployEnvironment];
 
                 $this->info($functionName.': starting for project: '.$projectName, $logContext);
 
                 $postDeployScript = $appInstance->getKeyValue('lagoon-post-deploy-script');
                 $postDeployScriptService = $appInstance->getKeyValue('lagoon-post-deploy-script-service') ?? 'cli';
                 $postDeployScriptContainer = $appInstance->getKeyValue('lagoon-post-deploy-script-container') ?? 'cli';
-                $logContext = $logContext + ['postDeployScript' => $postDeployScript, 'postDeployScriptService' => $postDeployScriptService, 'postDeployScriptContainer' => $postDeployScriptContainer];
+                $logContext += ['postDeployScript' => $postDeployScript, 'postDeployScriptService' => $postDeployScriptService, 'postDeployScriptContainer' => $postDeployScriptContainer];
 
                 if (! empty($postDeployScript)) {
                     $this->info('Post-deploy script', $logContext);

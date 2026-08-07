@@ -22,7 +22,7 @@ class CreateStore extends BaseCommand
                           {--org-id= : Lagoon deploy organization ID}
                           {--ai-region-id= : Amazee AI backend region ID}
                           {--group-name= : Lagoon deploy group name}
-                          {--deploy-key= : Custom deploy private key (optional)}';
+                          {--deploy-key= : Store deploy private key (prompted if omitted)}';
 
     /**
      * The console command description.
@@ -77,25 +77,15 @@ class CreateStore extends BaseCommand
             return 1;
         }
 
-        // Get deploy key - allow override
-        $customDeployKey = $this->option('deploy-key');
+        $deployKey = $this->option('deploy-key');
 
-        if (
-            ! $customDeployKey
-            && $this->confirm('Do you want to use a custom deploy private key? (Press no to use default from config)')
-        ) {
-            $this->info('Please paste your private key (multi-line input supported):');
-            $customDeployKey = $this->secret('Deploy private key');
-        }
-
-        if ($customDeployKey) {
-            $deployKey = $customDeployKey;
-        } else {
-            $deployKey = file_get_contents(config('polydock.lagoon_deploy_private_key_file'));
+        if (! $deployKey) {
+            $this->info('Please paste the store deploy private key (multi-line input supported):');
+            $deployKey = $this->secret('Deploy private key');
         }
 
         if (empty($deployKey)) {
-            $this->error('No deploy key available - either provide one or ensure config file exists');
+            $this->error('A deploy key is required - pass --deploy-key or paste one when prompted');
 
             return 1;
         }

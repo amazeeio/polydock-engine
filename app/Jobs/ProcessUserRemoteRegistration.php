@@ -14,21 +14,15 @@ use App\Models\UserRemoteRegistration;
 use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use App\Services\PolydockAppClassDiscovery;
 use Exception;
-use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Foundation\Bus\Dispatchable;
-use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Queue\SerializesModels;
+use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ProcessUserRemoteRegistration implements ShouldQueue
 {
-    use Dispatchable;
-    use InteractsWithQueue;
     use Queueable;
-    use SerializesModels;
 
     /**
      * Required fields in the request data
@@ -383,7 +377,7 @@ class ProcessUserRemoteRegistration implements ShouldQueue
             }
         }
 
-        if (! empty($storedFields)) {
+        if ($storedFields !== []) {
             Log::info('Stored instance config fields as PolydockVariables', [
                 'registration_id' => $this->registration->id,
                 'app_instance_id' => $appInstance->id,

@@ -8,6 +8,7 @@ use App\Polydock\Apps\AmazeeClaw\PolydockAmazeeClawAiApp;
 use App\Polydock\Apps\DependencyTrack\PolydockDependencyTrackApp;
 use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use App\Services\PolydockAppClassDiscovery;
+use Filament\Schemas\Components\Component;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -54,7 +55,7 @@ class AppInstanceFormSchemaTest extends TestCase
             $appClass.' declares instance fields but discovery returned none — the schema walk is swallowing an error.',
         );
 
-        $names = array_map(static fn ($component) => $component->getName(), $schema);
+        $names = array_map(static fn (Component $component) => $component->getName(), $schema);
 
         $this->assertContains(PolydockAppInstanceFields::FIELD_PREFIX.$expectedField, $names);
     }

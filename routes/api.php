@@ -9,11 +9,11 @@ use App\Http\Controllers\Api\RegisterController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware('auth:sanctum')->group(function (): void {
     Route::get('/user', fn (Request $request) => $request->user());
 
     // Routes consumed by MoaD - read operations
-    Route::middleware('instances.read.ability')->group(function () {
+    Route::middleware('instances.read.ability')->group(function (): void {
         Route::get('/groups', [AuthenticatedApiController::class, 'getGroups'])->name('api.groups.get');
         Route::get('/store-apps', [AuthenticatedApiController::class, 'getStoreApps'])->name('api.store-apps');
         Route::get('/instances', [AuthenticatedApiController::class, 'getInstances'])->name('api.instances.get');
@@ -22,7 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // Routes consumed by MoaD - write operations
-    Route::middleware('instances.write.ability')->group(function () {
+    Route::middleware('instances.write.ability')->group(function (): void {
         Route::post('/groups', [AuthenticatedApiController::class, 'createGroup'])->name('api.groups.create');
         Route::post('/instance', [AuthenticatedApiController::class, 'createInstance'])->name('api.instance.create');
         Route::patch('/instance/{uuid}/group', [AuthenticatedApiController::class, 'assignInstanceToGroup'])->name('api.instance.assign-group');
