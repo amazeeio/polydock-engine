@@ -82,6 +82,26 @@ class RegionsApiTest extends TestCase
         $this->assertCount(1, $responseData['data']['regions'][0]['apps']);
     }
 
+    public function test_apps_not_listed_in_marketplace_are_not_included(): void
+    {
+        $publicStore = PolydockStore::factory()->create([
+            'status' => PolydockStoreStatusEnum::PUBLIC,
+            'listed_in_marketplace' => true,
+        ]);
+
+        PolydockStoreApp::factory()->create([
+            'polydock_store_id' => $publicStore->id,
+            'name' => 'Unlisted App',
+            'status' => PolydockStoreAppStatusEnum::AVAILABLE,
+            'listed_in_marketplace' => false,
+        ]);
+
+        $response = $this->getJson('/api/regions');
+
+        $response->assertStatus(200)
+            ->assertJsonCount(0, 'data.regions.0.apps');
+    }
+
     public function test_private_stores_are_not_included(): void
     {
         // Create a private store

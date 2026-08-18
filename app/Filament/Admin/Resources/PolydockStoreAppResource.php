@@ -135,6 +135,11 @@ class PolydockStoreAppResource extends Resource
                     ->label('Available for Trials')
                     ->required()
                     ->columnSpanFull(),
+                Toggle::make('listed_in_marketplace')
+                    ->label('Listed in Marketplace')
+                    ->helperText('Controls whether this app appears in the public /api/regions listing.')
+                    ->default(false)
+                    ->columnSpanFull(),
                 Section::make('Pre-warm Settings')
                     ->description('Controls how unallocated pre-warm instances are refreshed over time.')
                     ->schema([
@@ -354,6 +359,9 @@ class PolydockStoreAppResource extends Resource
                 TextColumn::make('status'),
                 IconColumn::make('available_for_trials')
                     ->label('Trials')
+                    ->boolean(),
+                IconColumn::make('listed_in_marketplace')
+                    ->label('Listed')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -575,6 +583,9 @@ class PolydockStoreAppResource extends Resource
                             ->schema([
                                 IconEntry::make('available_for_trials')
                                     ->label('Available for Trials')
+                                    ->boolean(),
+                                IconEntry::make('listed_in_marketplace')
+                                    ->label('Listed in Marketplace')
                                     ->boolean(),
                                 TextEntry::make('trial_duration_days')
                                     ->label('Trial Duration')
