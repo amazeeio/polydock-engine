@@ -25,6 +25,7 @@ class PolydockStoreAppFactory extends Factory
             'lagoon_deploy_branch' => 'main',
             'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => fake()->boolean(),
+            'listed_in_marketplace' => true,
         ];
     }
 

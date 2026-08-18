@@ -74,6 +74,7 @@ class LocalstackSeeder extends Seeder
             'lagoon_deploy_branch' => 'main',
             'status' => PolydockStoreAppStatusEnum::AVAILABLE,
             'available_for_trials' => true,
+            'listed_in_marketplace' => true,
             'target_unallocated_app_instances' => 0,
         ]);
     }
