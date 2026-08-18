@@ -27,7 +27,8 @@ class RegionsController extends Controller
                 ->where('status', PolydockStoreStatusEnum::PUBLIC)
                 ->where('listed_in_marketplace', true)
                 ->with(['apps' => function ($query): void {
-                    $query->where('status', PolydockStoreAppStatusEnum::AVAILABLE);
+                    $query->where('status', PolydockStoreAppStatusEnum::AVAILABLE)
+                        ->where('listed_in_marketplace', true);
                 }])
                 ->get()
                 ->map(fn ($store): array => [

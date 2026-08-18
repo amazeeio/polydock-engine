@@ -157,6 +157,7 @@ class DatabaseSeeder extends Seeder
                 'lagoon_deploy_branch' => 'main',
                 'status' => PolydockStoreAppStatusEnum::AVAILABLE,
                 'available_for_trials' => true,
+                'listed_in_marketplace' => true,
                 'target_unallocated_app_instances' => 0,
             ]);
 
@@ -172,6 +173,7 @@ class DatabaseSeeder extends Seeder
                 'lagoon_deploy_branch' => 'main',
                 'status' => PolydockStoreAppStatusEnum::AVAILABLE,
                 'available_for_trials' => true,
+                'listed_in_marketplace' => true,
                 'target_unallocated_app_instances' => 0,
             ]);
 
@@ -187,6 +189,7 @@ class DatabaseSeeder extends Seeder
                 'lagoon_deploy_branch' => 'main',
                 'status' => PolydockStoreAppStatusEnum::AVAILABLE,
                 'available_for_trials' => true,
+                'listed_in_marketplace' => true,
                 'target_unallocated_app_instances' => 1,
                 'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
                 'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
@@ -204,6 +207,7 @@ class DatabaseSeeder extends Seeder
                 'lagoon_deploy_branch' => 'main',
                 'status' => PolydockStoreAppStatusEnum::AVAILABLE,
                 'available_for_trials' => true,
+                'listed_in_marketplace' => true,
                 'target_unallocated_app_instances' => 0,
                 'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
                 'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
@@ -221,6 +225,7 @@ class DatabaseSeeder extends Seeder
                 'lagoon_deploy_branch' => 'main',
                 'status' => PolydockStoreAppStatusEnum::AVAILABLE,
                 'available_for_trials' => true,
+                'listed_in_marketplace' => true,
                 'target_unallocated_app_instances' => 0,
                 'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
                 'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
@@ -238,6 +243,7 @@ class DatabaseSeeder extends Seeder
                 'lagoon_deploy_branch' => 'main',
                 'status' => PolydockStoreAppStatusEnum::AVAILABLE,
                 'available_for_trials' => true,
+                'listed_in_marketplace' => true,
                 'target_unallocated_app_instances' => 0,
                 'lagoon_post_deploy_script' => '/app/.lagoon/scripts/polydock_post_deploy.sh',
                 'lagoon_claim_script' => '/app/.lagoon/scripts/polydock_claim.sh',
