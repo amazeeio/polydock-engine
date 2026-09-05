@@ -5,6 +5,7 @@ namespace Tests\Feature\Console\Commands;
 use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
 use App\Models\PolydockStoreApp;
+use App\Models\UserGroup;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Queue;
@@ -25,6 +26,7 @@ class RemoveStaleFailedInstancesCommandTest extends TestCase
         PolydockStoreApp $storeApp,
         PolydockAppInstanceStatus $status,
         ?string $updatedAt = null,
+        ?int $userGroupId = null,
     ): PolydockAppInstance {
         $instance = new PolydockAppInstance;
         $instance->uuid = 'test-'.uniqid();
@@ -32,6 +34,7 @@ class RemoveStaleFailedInstancesCommandTest extends TestCase
         $instance->name = 'test-instance-'.uniqid();
         $instance->status = $status;
         $instance->app_type = 'test_app_type';
+        $instance->user_group_id = $userGroupId;
         $instance->data = [];
         $instance->saveQuietly();
 
@@ -93,13 +96,14 @@ class RemoveStaleFailedInstancesCommandTest extends TestCase
         ]);
     }
 
-    public function test_recent_failures_are_left_alone(): void
+    public function test_recent_claimed_failures_are_left_alone(): void
     {
         $storeApp = $this->createStoreApp();
         $instance = $this->createInstance(
             $storeApp,
             PolydockAppInstanceStatus::DEPLOY_FAILED,
             now()->subDays(2)->toDateTimeString(),
+            UserGroup::factory()->create()->id,
         );
 
         $this->artisan('polydock:remove-stale-failed-instances', ['--days' => 7])
@@ -108,6 +112,46 @@ class RemoveStaleFailedInstancesCommandTest extends TestCase
         $instance->refresh();
         $this->assertEquals(PolydockAppInstanceStatus::DEPLOY_FAILED, $instance->status);
         $this->assertNull($instance->force_purge_requested_at);
+    }
+
+    public function test_recent_unclaimed_failure_is_swept_immediately(): void
+    {
+        $storeApp = $this->createStoreApp();
+        // Never allocated to a user group, so no grace period applies: the
+        // retention window exists to protect somebody's instance, and this is
+        // nobody's.
+        $instance = $this->createInstance(
+            $storeApp,
+            PolydockAppInstanceStatus::DEPLOY_FAILED,
+            now()->subMinutes(5)->toDateTimeString(),
+        );
+
+        $this->artisan('polydock:remove-stale-failed-instances', ['--days' => 7])
+            ->assertSuccessful();
+
+        $instance->refresh();
+        $this->assertEquals(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, $instance->status);
+        $this->assertNotNull($instance->force_purge_requested_at);
+    }
+
+    public function test_recent_unclaimed_is_swept_while_recent_claimed_survives(): void
+    {
+        $storeApp = $this->createStoreApp();
+        $recent = now()->subMinutes(5)->toDateTimeString();
+
+        $unclaimed = $this->createInstance($storeApp, PolydockAppInstanceStatus::DEPLOY_FAILED, $recent);
+        $claimed = $this->createInstance(
+            $storeApp,
+            PolydockAppInstanceStatus::DEPLOY_FAILED,
+            $recent,
+            UserGroup::factory()->create()->id,
+        );
+
+        $this->artisan('polydock:remove-stale-failed-instances', ['--days' => 7])
+            ->assertSuccessful();
+
+        $this->assertEquals(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, $unclaimed->fresh()->status);
+        $this->assertEquals(PolydockAppInstanceStatus::DEPLOY_FAILED, $claimed->fresh()->status);
     }
 
     public function test_purge_failed_is_excluded(): void
