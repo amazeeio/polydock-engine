@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -83,7 +84,7 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
 
         $eligible = PolydockAppInstance::query()
             ->whereIn('status', array_merge($this->preRemovalFailedStatuses(), $this->removeStageFailedStatuses()))
-            ->where(function ($query) use ($cutoff): void {
+            ->where(function (Builder $query) use ($cutoff): void {
                 $query->whereNull('user_group_id')
                     ->orWhere('updated_at', '<=', $cutoff);
             })
