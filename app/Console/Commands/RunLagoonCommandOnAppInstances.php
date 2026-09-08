@@ -330,7 +330,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
             return 1;
         }
 
-        if (! $client) {
+        if (! $client instanceof Client) {
             try {
                 $client = app(LagoonClientService::class)->getAuthenticatedClient();
             } catch (Exception $e) {

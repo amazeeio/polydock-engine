@@ -48,9 +48,7 @@ class PolydockServiceProviderFTLagoon implements PolydockServiceProviderInterfac
             throw new PolydockEngineServiceProviderInitializationException('ssh_private_key_file is not set');
         }
 
-        if (! isset($config['debug'])) {
-            $config['debug'] = false;
-        }
+        $config['debug'] ??= false;
 
         if ($config['debug']) {
             $this->debug('Configuration: ', $config);

@@ -15,7 +15,7 @@ use App\Polydock\Apps\Generic\PolydockAiApp;
 use App\Polydock\Apps\Generic\PolydockApp;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
-use phpseclib3\Crypt\EC;
+use phpseclib4\Crypt\EC;
 
 class DatabaseSeeder extends Seeder
 {

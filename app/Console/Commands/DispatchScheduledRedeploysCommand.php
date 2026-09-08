@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Enums\PolydockDeploymentRunStatusEnum;
 use App\Enums\PolydockDeploymentRunTriggerSourceEnum;
 use App\Models\PolydockAppInstance;
+use App\Models\PolydockDeploymentRun;
 use App\Services\PolydockDeploymentService;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
@@ -42,7 +43,7 @@ class DispatchScheduledRedeploysCommand extends BaseCommand
 
         foreach ($due->groupBy('polydock_store_app_id') as $group) {
             $run = $service->redeploy($group->all(), PolydockDeploymentRunTriggerSourceEnum::SCHEDULED);
-            if (! $run) {
+            if (! $run instanceof PolydockDeploymentRun) {
                 // Leave next_redeploy_at untouched so these retry on a later tick.
                 continue;
             }
