@@ -55,7 +55,7 @@ class FormController extends Controller
     {
         $form = $this->getFormBySlug($formSlug);
 
-        if (! $form) {
+        if (! $form instanceof HostedFormInterface) {
             abort(404, 'Form not found.');
         }
 
@@ -111,7 +111,7 @@ class FormController extends Controller
     {
         $form = $this->getFormBySlug($formSlug);
 
-        if (! $form) {
+        if (! $form instanceof HostedFormInterface) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Form not found.',

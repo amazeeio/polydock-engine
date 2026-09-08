@@ -636,7 +636,7 @@ class AuthenticatedApiController extends Controller
     private function resolveTargetGroup(Request $request, User $user): UserGroup
     {
         $existing = $this->resolveExistingGroupFromRequest($request, required: false);
-        if ($existing) {
+        if ($existing instanceof UserGroup) {
             return $existing;
         }
 

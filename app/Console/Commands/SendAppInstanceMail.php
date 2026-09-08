@@ -64,7 +64,7 @@ class SendAppInstanceMail extends BaseCommand
 
         // Find the user remote registration
         $registration = $this->findUserRemoteRegistration($registrationUuid);
-        if (! $registration) {
+        if (! $registration instanceof UserRemoteRegistration) {
             $this->error("User remote registration not found: {$registrationUuid}");
 
             return 1;

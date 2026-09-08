@@ -416,7 +416,7 @@ class PolydockStoreApp extends Model
 
         $query = $this->removableUnallocatedInstancesQuery();
 
-        if ($olderThan) {
+        if ($olderThan instanceof CarbonInterface) {
             $query->where('created_at', '<=', $olderThan);
         }
 

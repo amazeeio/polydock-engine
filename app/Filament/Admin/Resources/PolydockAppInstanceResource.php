@@ -481,9 +481,7 @@ class PolydockAppInstanceResource extends Resource
                                     $value = SensitiveDataRedactor::REDACTED_VALUE;
                                 }
 
-                                if ($value === null) {
-                                    $value = 'N/A';
-                                }
+                                $value ??= 'N/A';
 
                                 if (\is_array($value)) {
                                     $value = json_encode($value);

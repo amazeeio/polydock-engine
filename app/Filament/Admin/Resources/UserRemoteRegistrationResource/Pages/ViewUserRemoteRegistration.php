@@ -119,9 +119,7 @@ class ViewUserRemoteRegistration extends ViewRecord
                 $value = SensitiveDataRedactor::REDACTED_VALUE;
             }
 
-            if ($value === null) {
-                $value = 'N/A';
-            }
+            $value ??= 'N/A';
 
             $renderKey = 'request_data_'.$key;
             $renderedItem = TextEntry::make($renderKey)
