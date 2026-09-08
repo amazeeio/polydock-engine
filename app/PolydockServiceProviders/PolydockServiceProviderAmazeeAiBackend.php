@@ -30,9 +30,7 @@ class PolydockServiceProviderAmazeeAiBackend implements PolydockServiceProviderI
     {
         $this->setLogger($logger);
 
-        if (! isset($config['debug'])) {
-            $config['debug'] = false;
-        }
+        $config['debug'] ??= false;
 
         if ($config['debug']) {
             $this->debug('Configuration: ', $config);

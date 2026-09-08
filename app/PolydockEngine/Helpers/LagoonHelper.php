@@ -4,7 +4,7 @@ namespace App\PolydockEngine\Helpers;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
-use phpseclib3\Crypt\PublicKeyLoader;
+use phpseclib4\Crypt\PublicKeyLoader;
 use Throwable;
 
 class LagoonHelper
@@ -64,7 +64,7 @@ class LagoonHelper
         }
 
         try {
-            $key = PublicKeyLoader::load($privateKey);
+            $key = PublicKeyLoader::loadPrivateKey($privateKey);
 
             return $key->getPublicKey()->toString('OpenSSH');
         } catch (Throwable) {

@@ -64,49 +64,49 @@ class PolydockStoreResource extends Resource
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
-                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record instanceof PolydockStore || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record instanceof PolydockStore && $record->apps()->whereHas('instances')->exists(),
                     ),
                 TextInput::make('lagoon_deploy_project_prefix')
                     ->label('Lagoon Deploy Project Prefix')
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
-                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record instanceof PolydockStore || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record instanceof PolydockStore && $record->apps()->whereHas('instances')->exists(),
                     ),
                 TextInput::make('lagoon_deploy_organization_id_ext')
                     ->label('Lagoon Deploy Organization ID')
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
-                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record instanceof PolydockStore || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record instanceof PolydockStore && $record->apps()->whereHas('instances')->exists(),
                     ),
                 TextInput::make('amazee_ai_backend_region_id_ext')
                     ->label('amazee.ai Backend Region ID')
                     ->numeric()
                     ->dehydrated(
-                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record instanceof PolydockStore || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record instanceof PolydockStore && $record->apps()->whereHas('instances')->exists(),
                     ),
                 TextInput::make('lagoon_deploy_group_name')
                     ->label('Lagoon Deploy Group Name')
                     ->required()
                     ->maxLength(255)
                     ->dehydrated(
-                        fn (?PolydockStore $record): bool => ! $record || ! $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => ! $record instanceof PolydockStore || ! $record->apps()->whereHas('instances')->exists(),
                     )
                     ->disabled(
-                        fn (?PolydockStore $record): bool => $record && $record->apps()->whereHas('instances')->exists(),
+                        fn (?PolydockStore $record): bool => $record instanceof PolydockStore && $record->apps()->whereHas('instances')->exists(),
                     ),
                 Textarea::make('lagoon_deploy_private_key')
                     ->label('Lagoon Deploy Private Key')

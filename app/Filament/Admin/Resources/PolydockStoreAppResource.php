@@ -69,8 +69,8 @@ class PolydockStoreAppResource extends Resource
                     ->options(PolydockStore::all()->pluck('name', 'id'))
                     ->required()
                     ->live()
-                    ->disabled(fn (?PolydockStoreApp $record): bool => $record && $record->instances()->exists())
-                    ->dehydrated(fn (?PolydockStoreApp $record): bool => ! $record || ! $record->instances()->exists()),
+                    ->disabled(fn (?PolydockStoreApp $record): bool => $record instanceof PolydockStoreApp && $record->instances()->exists())
+                    ->dehydrated(fn (?PolydockStoreApp $record): bool => ! $record instanceof PolydockStoreApp || ! $record->instances()->exists()),
                 Select::make('polydock_app_class')
                     ->label('Polydock App Class')
                     ->options(fn () => app(PolydockAppClassDiscovery::class)->getAvailableAppClasses())
@@ -87,8 +87,8 @@ class PolydockStoreAppResource extends Resource
                         }
                     })
                     ->helperText('The application class that controls deployment and lifecycle behaviour.')
-                    ->disabled(fn (?PolydockStoreApp $record): bool => $record && $record->instances()->exists())
-                    ->dehydrated(fn (?PolydockStoreApp $record): bool => ! $record || ! $record->instances()->exists()),
+                    ->disabled(fn (?PolydockStoreApp $record): bool => $record instanceof PolydockStoreApp && $record->instances()->exists())
+                    ->dehydrated(fn (?PolydockStoreApp $record): bool => ! $record instanceof PolydockStoreApp || ! $record->instances()->exists()),
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),

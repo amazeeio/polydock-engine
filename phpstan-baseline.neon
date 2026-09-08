@@ -49,12 +49,6 @@ parameters:
 			path: app/Console/Commands/AttachWebhook.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 8
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
 			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orWhereRaw\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 2
@@ -523,12 +517,6 @@ parameters:
 			path: app/Console/Commands/ExtendAppInstanceTrial.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
-			path: app/Console/Commands/ExtendAppInstanceTrial.php
-
-		-
 			message: '#^Only booleans are allowed in an if condition, App\\Models\\PolydockAppInstance\|null given\.$#'
 			identifier: if.condNotBoolean
 			count: 1
@@ -973,6 +961,12 @@ parameters:
 			path: app/Console/Commands/RemoveStaleFailedInstancesCommand.php
 
 		-
+			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNull\(\)\.$#'
+			identifier: staticMethod.dynamicCall
+			count: 1
+			path: app/Console/Commands/RemoveStaleFailedInstancesCommand.php
+
+		-
 			message: '#^Cannot call method format\(\) on Carbon\\Carbon\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -1007,18 +1001,6 @@ parameters:
 			identifier: assign.propertyType
 			count: 1
 			path: app/Console/Commands/RemoveUnclaimedAppInstancesCommand.php
-
-		-
-			message: '#^Argument of an invalid type Illuminate\\Process\\ProcessPoolResults supplied for foreach, only iterables are supported\.$#'
-			identifier: foreach.nonIterable
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
-			message: '#^Call to an undefined method App\\Models\\PolydockAppInstance\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\PolydockAppInstance\>\:\:getKeyValue\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
 			message: '#^Call to an undefined method Illuminate\\Process\\Pool\:\:concurrency\(\)\.$#'
@@ -1057,15 +1039,9 @@ parameters:
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
-			message: '#^Casting to string something that''s already string\.$#'
-			identifier: cast.useless
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 3
+			count: 2
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
@@ -1081,15 +1057,9 @@ parameters:
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockAppInstance\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\PolydockAppInstance\>\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockAppInstance\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
-			count: 1
+			count: 2
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
@@ -1399,15 +1369,9 @@ parameters:
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
 
 		-
-			message: '#^Casting to string something that''s already string\.$#'
-			identifier: cast.useless
-			count: 1
-			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
-
-		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 3
+			count: 2
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
 
 		-
@@ -1861,12 +1825,6 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
 
 		-
-			message: '#^Casting to string something that''s already string\.$#'
-			identifier: cast.useless
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
-
-		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
 			count: 4
@@ -1922,18 +1880,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$options of method Filament\\Tables\\Filters\\SelectFilter\:\:options\(\) expects array\<array\<string\>\|string\>\|class\-string\|Closure\|Illuminate\\Contracts\\Support\\Arrayable\|null, array\<mixed\> given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
-
-		-
-			message: '#^Parameter \#1 \$regionId of static method App\\PolydockEngine\\Helpers\\AmazeeAiBackendHelper\:\:getAmazeeAiBackendCodeDataValueForRegion\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
-
-		-
-			message: '#^Parameter \#1 \$regionId of static method App\\PolydockEngine\\Helpers\\LagoonHelper\:\:getLagoonCodeDataValueForRegion\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
@@ -2223,7 +2169,7 @@ parameters:
 		-
 			message: '#^Cannot access offset ''manual_hook_rerun'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
+			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
 
 		-
@@ -2235,54 +2181,24 @@ parameters:
 		-
 			message: '#^Cannot access property \$data on mixed\.$#'
 			identifier: property.nonObject
-			count: 5
+			count: 2
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
 
 		-
 			message: '#^Cannot access property \$force_purge_requested_at on mixed\.$#'
 			identifier: property.nonObject
-			count: 5
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
-
-		-
-			message: '#^Cannot access property \$purge_attempts on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
-
-		-
-			message: '#^Cannot access property \$purge_eligible_at on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
-
-		-
-			message: '#^Cannot access property \$purge_failure_reason on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
-
-		-
-			message: '#^Cannot access property \$purge_last_attempted_at on mixed\.$#'
-			identifier: property.nonObject
-			count: 2
+			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
 
 		-
 			message: '#^Cannot access property \$status on mixed\.$#'
 			identifier: property.nonObject
-			count: 8
+			count: 7
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
 
 		-
 			message: '#^Cannot access property \$trial_ends_at on mixed\.$#'
 			identifier: property.nonObject
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
-
-		-
-			message: '#^Cannot call method calculateAndSetTrialDatesFromEndDate\(\) on mixed\.$#'
-			identifier: method.nonObject
 			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
 
@@ -2313,19 +2229,19 @@ parameters:
 		-
 			message: '#^Cannot call method save\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 6
+			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
 
 		-
 			message: '#^Cannot call method saveQuietly\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 2
+			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
 
 		-
 			message: '#^Cannot call method setStatus\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 5
+			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
 
 		-
@@ -2391,7 +2307,7 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$model of method Spatie\\Activitylog\\Support\\ActivityLogger\:\:performedOn\(\) expects Illuminate\\Database\\Eloquent\\Model, mixed given\.$#'
 			identifier: argument.type
-			count: 8
+			count: 2
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ViewPolydockAppInstance.php
 
 		-
@@ -2629,12 +2545,6 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
 
 		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 2
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
-
-		-
 			message: '#^Parameter \#1 \$callback of method Illuminate\\Support\\Collection\<\(int\|string\),mixed\>\:\:map\(\) expects callable\(mixed, int\|string\)\: string, Closure\(array, string\)\: string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -2689,12 +2599,6 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockStoreAppResource/Pages/CreatePolydockStoreApp.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource/Pages/CreatePolydockStoreApp.php
-
-		-
 			message: '#^Only booleans are allowed in an if condition, mixed given\.$#'
 			identifier: if.condNotBoolean
 			count: 1
@@ -2703,12 +2607,6 @@ parameters:
 		-
 			message: '#^Parameter \#1 \$className of method App\\Services\\PolydockAppClassDiscovery\:\:getStoreAppFormFieldNames\(\) expects string, mixed given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource/Pages/CreatePolydockStoreApp.php
-
-		-
-			message: '#^Variable \$appConfig in empty\(\) always exists and is not falsy\.$#'
-			identifier: empty.variable
 			count: 1
 			path: app/Filament/Admin/Resources/PolydockStoreAppResource/Pages/CreatePolydockStoreApp.php
 
@@ -2821,12 +2719,6 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockStoreAppResource/Pages/EditPolydockStoreApp.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource/Pages/EditPolydockStoreApp.php
-
-		-
 			message: '#^Dynamic call to static method Filament\\Resources\\Pages\\Page\:\:getResource\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 1
@@ -2853,12 +2745,6 @@ parameters:
 		-
 			message: '#^Possibly invalid array key type mixed\.$#'
 			identifier: offsetAccess.invalidOffset
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource/Pages/EditPolydockStoreApp.php
-
-		-
-			message: '#^Variable \$appConfig in empty\(\) always exists and is not falsy\.$#'
-			identifier: empty.variable
 			count: 1
 			path: app/Filament/Admin/Resources/PolydockStoreAppResource/Pages/EditPolydockStoreApp.php
 
@@ -3082,18 +2968,6 @@ parameters:
 			message: '#^Parameter \#1 \$privateKey of static method App\\PolydockEngine\\Helpers\\LagoonHelper\:\:getPublicKeyFromPrivateKey\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
-			path: app/Filament/Admin/Resources/PolydockStoreResource.php
-
-		-
-			message: '#^Parameter \#1 \$regionId of static method App\\PolydockEngine\\Helpers\\AmazeeAiBackendHelper\:\:getAmazeeAiBackendCodeDataValueForRegion\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Filament/Admin/Resources/PolydockStoreResource.php
-
-		-
-			message: '#^Parameter \#1 \$regionId of static method App\\PolydockEngine\\Helpers\\LagoonHelper\:\:getLagoonCodeDataValueForRegion\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Filament/Admin/Resources/PolydockStoreResource.php
 
 		-
@@ -3393,7 +3267,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$email on mixed\.$#'
 			identifier: property.nonObject
-			count: 6
+			count: 4
 			path: app/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManager.php
 
 		-
@@ -3405,7 +3279,7 @@ parameters:
 		-
 			message: '#^Cannot access property \$id on mixed\.$#'
 			identifier: property.nonObject
-			count: 3
+			count: 2
 			path: app/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManager.php
 
 		-
@@ -3445,12 +3319,6 @@ parameters:
 			path: app/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManager.php
 
 		-
-			message: '#^Parameter \#1 \$model of method Spatie\\Activitylog\\Support\\ActivityLogger\:\:performedOn\(\) expects Illuminate\\Database\\Eloquent\\Model, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManager.php
-
-		-
 			message: '#^Parameter \#1 \$user of method App\\Services\\GroupMembershipService\:\:addUserToGroup\(\) expects App\\Models\\User, App\\Models\\User\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\User\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -3477,7 +3345,7 @@ parameters:
 		-
 			message: '#^Part \$record\-\>email \(mixed\) of encapsed string cannot be cast to string\.$#'
 			identifier: encapsedStringPart.nonString
-			count: 3
+			count: 2
 			path: app/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManager.php
 
 		-
@@ -3590,18 +3458,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$label of method Filament\\Infolists\\Components\\Entry\:\:label\(\) expects Closure\|Illuminate\\Contracts\\Support\\Htmlable\|string\|null, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Filament/Admin/Resources/UserRemoteRegistrationResource/Pages/ViewUserRemoteRegistration.php
-
-		-
-			message: '#^Parameter \#1 \$record of static method App\\Filament\\Admin\\Resources\\UserRemoteRegistrationResource\\Pages\\ViewUserRemoteRegistration\:\:getRenderedSafeRequestDataForRecord\(\) expects App\\Models\\UserRemoteRegistration, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Filament/Admin/Resources/UserRemoteRegistrationResource/Pages/ViewUserRemoteRegistration.php
-
-		-
-			message: '#^Parameter \#1 \$record of static method App\\Filament\\Admin\\Resources\\UserRemoteRegistrationResource\\Pages\\ViewUserRemoteRegistration\:\:getRenderedSafeResultDataForRecord\(\) expects App\\Models\\UserRemoteRegistration, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Filament/Admin/Resources/UserRemoteRegistrationResource/Pages/ViewUserRemoteRegistration.php
@@ -4189,12 +4045,6 @@ parameters:
 			path: app/Http/Controllers/Api/PolydockInstanceHealthController.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
-			path: app/Http/Controllers/Api/PolydockInstanceHealthController.php
-
-		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockAppInstance\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
@@ -4207,15 +4057,21 @@ parameters:
 			path: app/Http/Controllers/Api/PolydockInstanceHealthController.php
 
 		-
-			message: '#^Anonymous function should return array\{id\: int, label\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, label\: mixed\}\>\} but returns array\{id\: int, label\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, label\: string\}\>\}\.$#'
-			identifier: return.type
+			message: '#^Cannot call method where\(\) on mixed\.$#'
+			identifier: method.nonObject
+			count: 2
+			path: app/Http/Controllers/Api/RegionsController.php
+
+		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PolydockStore\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
 			count: 1
 			path: app/Http/Controllers/Api/RegionsController.php
 
 		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PolydockStore\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
+			count: 1
 			path: app/Http/Controllers/Api/RegionsController.php
 
 		-
@@ -4327,12 +4183,6 @@ parameters:
 			path: app/Http/Controllers/Auth/OktaController.php
 
 		-
-			message: '#^Anonymous function should return array\{id\: int, name\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, name\: mixed\}\>\} but returns array\{id\: int, name\: string, apps\: Illuminate\\Support\\Collection\<int, array\{uuid\: mixed, name\: string\}\>\}\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
 			message: '#^Cannot call method where\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 2
@@ -4363,6 +4213,12 @@ parameters:
 			path: app/Http/Controllers/FormController.php
 
 		-
+			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PolydockStore\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 1
+			path: app/Http/Controllers/FormController.php
+
+		-
 			message: '#^Parameter \#1 \$validatedData of method App\\Forms\\HostedFormInterface\:\:transformPayload\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
@@ -4371,6 +4227,12 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<string, mixed\> given\.$#'
 			identifier: argument.type
+			count: 1
+			path: app/Http/Controllers/FormController.php
+
+		-
+			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PolydockStore\>\:\:map\(\) contains unresolvable type\.$#'
+			identifier: method.unresolvableReturnType
 			count: 1
 			path: app/Http/Controllers/FormController.php
 
@@ -4485,18 +4347,6 @@ parameters:
 		-
 			message: '#^Only booleans are allowed in an if condition, mixed given\.$#'
 			identifier: if.condNotBoolean
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/BaseJob.php
-
-		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 1
-			path: app/Jobs/ProcessPolydockAppInstanceJobs/BaseJob.php
-
-		-
-			message: '#^Property App\\Jobs\\ProcessPolydockAppInstanceJobs\\BaseJob\:\:\$appInstanceId on left side of \?\? is not nullable nor uninitialized\.$#'
-			identifier: nullCoalesce.initializedProperty
 			count: 1
 			path: app/Jobs/ProcessPolydockAppInstanceJobs/BaseJob.php
 
@@ -4689,12 +4539,6 @@ parameters:
 		-
 			message: '#^Casting to string something that''s already string\.$#'
 			identifier: cast.useless
-			count: 1
-			path: app/Jobs/ProcessUserRemoteRegistration.php
-
-		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
 			count: 1
 			path: app/Jobs/ProcessUserRemoteRegistration.php
 
@@ -5155,18 +4999,6 @@ parameters:
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^Casting to float something that''s already float\.$#'
-			identifier: cast.useless
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Casting to string something that''s already string\.$#'
-			identifier: cast.useless
-			count: 2
-			path: app/Models/PolydockAppInstance.php
-
-		-
 			message: '#^Class App\\Models\\PolydockAppInstance has PHPDoc tag @property for property \$data with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
@@ -5175,7 +5007,7 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 6
+			count: 4
 			path: app/Models/PolydockAppInstance.php
 
 		-
@@ -5311,12 +5143,6 @@ parameters:
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 2
-			path: app/Models/PolydockAppInstance.php
-
-		-
 			message: '#^Parameter \#1 \$appInstance of class App\\Events\\PolydockAppInstanceCreatedWithNewStatus constructor expects App\\Models\\PolydockAppInstance, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -5389,12 +5215,6 @@ parameters:
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^Property App\\Models\\PolydockAppInstance\:\:\$sensitiveDataKeys \(list\<string\>\) on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.property
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
 			message: '#^Short ternary operator is not allowed\. Use null coalesce operator if applicable or consider using long ternary\.$#'
 			identifier: ternary.shortNotAllowed
 			count: 2
@@ -5457,12 +5277,6 @@ parameters:
 		-
 			message: '#^Method App\\Models\\PolydockHostedForm\:\:storeApps\(\) return type with generic class Illuminate\\Database\\Eloquent\\Relations\\BelongsToMany does not specify its types\: TRelatedModel, TDeclaringModel, TPivotModel, TAccessor \(2\-4 required\)$#'
 			identifier: missingType.generics
-			count: 1
-			path: app/Models/PolydockHostedForm.php
-
-		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
 			count: 1
 			path: app/Models/PolydockHostedForm.php
 
@@ -5668,12 +5482,6 @@ parameters:
 			message: '#^Only booleans are allowed in an if condition, Carbon\\CarbonInterface\|null given\.$#'
 			identifier: if.condNotBoolean
 			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 2
 			path: app/Models/PolydockStoreApp.php
 
 		-
@@ -6031,12 +5839,6 @@ parameters:
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
 		-
-			message: '#^Call to function method_exists\(\) with \$this\(App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\) and ''extractAiCredential…'' will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
 			message: '#^Cannot access offset ''request_data'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -6051,18 +5853,12 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 3
+			count: 2
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
 		-
 			message: '#^Method App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\:\:provisionAndInjectManualAmazeeAiCredentials\(\) should return array\<string, string\> but returns array\<string, mixed\>\.$#'
 			identifier: return.type
-			count: 1
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
-			message: '#^Offset ''result'' on non\-empty\-array\<string, mixed\> on left side of \?\? always exists and is not nullable\.$#'
-			identifier: nullCoalesce.offset
 			count: 1
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
@@ -6157,6 +5953,18 @@ parameters:
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
 		-
+			message: '#^Offset ''result'' on non\-empty\-array\<string, mixed\> on left side of \?\? always exists and is not nullable\.$#'
+			identifier: nullCoalesce.offset
+			count: 1
+			path: app/Polydock/Apps/AmazeeClaw/Traits/Claim/ClaimAppInstanceTrait.php
+
+		-
+			message: '#^Call to function method_exists\(\) with \$this\(App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\) and ''extractAiCredential…'' will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Polydock/Apps/AmazeeClaw/Traits/Create/PreCreateAppInstanceTrait.php
+
+		-
 			message: '#^Cannot access offset ''message'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -6231,7 +6039,7 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 9
+			count: 7
 			path: app/Polydock/Apps/DependencyTrack/PolydockDependencyTrackApp.php
 
 		-
@@ -6373,32 +6181,8 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockAiApp.php
 
 		-
-			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 2
-			path: app/Polydock/Apps/Generic/PolydockAiApp.php
-
-		-
-			message: '#^Call to function is_array\(\) with non\-empty\-array\<string, mixed\> will always evaluate to true\.$#'
-			identifier: function.alreadyNarrowedType
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockAiApp.php
-
-		-
 			message: '#^Cannot access offset ''id'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockAiApp.php
-
-		-
-			message: '#^Instanceof between App\\Polydock\\Clients\\AmazeeAi\\Client and App\\Polydock\\Clients\\AmazeeAi\\Client will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockAiApp.php
-
-		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
 			count: 1
 			path: app/Polydock/Apps/Generic/PolydockAiApp.php
 
@@ -6675,19 +6459,7 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 10
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Expression on left side of \?\? is not nullable\.$#'
-			identifier: nullCoalesce.expr
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Instanceof between App\\Polydock\\Clients\\Lagoon\\Client and App\\Polydock\\Clients\\Lagoon\\Client will always evaluate to true\.$#'
-			identifier: instanceof.alwaysTrue
-			count: 1
+			count: 8
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
@@ -7051,10 +6823,34 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
+			message: '#^Expression on left side of \?\? is not nullable\.$#'
+			identifier: nullCoalesce.expr
 			count: 1
-			path: app/Polydock/Clients/AmazeeAi/Client.php
+			path: app/Polydock/Apps/Generic/Traits/Create/CreateAppInstanceTrait.php
+
+		-
+			message: '#^Call to function is_array\(\) with array\<string, mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 2
+			path: app/Polydock/Apps/Generic/Traits/UsesAmazeeAiBackend.php
+
+		-
+			message: '#^Call to function is_array\(\) with non\-empty\-array\<string, mixed\> will always evaluate to true\.$#'
+			identifier: function.alreadyNarrowedType
+			count: 1
+			path: app/Polydock/Apps/Generic/Traits/UsesAmazeeAiBackend.php
+
+		-
+			message: '#^Instanceof between App\\Polydock\\Clients\\AmazeeAi\\Client and App\\Polydock\\Clients\\AmazeeAi\\Client will always evaluate to true\.$#'
+			identifier: instanceof.alwaysTrue
+			count: 1
+			path: app/Polydock/Apps/Generic/Traits/UsesAmazeeAiBackend.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/Polydock/Apps/Generic/Traits/UsesAmazeeAiBackend.php
 
 		-
 			message: '#^Method App\\Polydock\\Clients\\AmazeeAi\\Client\:\:request\(\) should return array\<string, mixed\> but returns mixed\.$#'
@@ -7167,7 +6963,7 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 73
+			count: 57
 			path: app/Polydock/Clients/Lagoon/Client.php
 
 		-
@@ -7321,12 +7117,6 @@ parameters:
 			path: app/Polydock/Clients/Lagoon/GraphQLClient.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
-			path: app/Polydock/Clients/Lagoon/GraphQLResponse.php
-
-		-
 			message: '#^Method App\\Polydock\\Clients\\Lagoon\\Ssh\:\:createLagoonConfigured\(\) should return static\(App\\Polydock\\Clients\\Lagoon\\Ssh\) but returns Spatie\\Ssh\\Ssh\.$#'
 			identifier: return.type
 			count: 1
@@ -7345,12 +7135,6 @@ parameters:
 			path: app/Polydock/Core/Loggers/PolydockAppCacheLogger.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
-			path: app/Polydock/Core/Loggers/PolydockAppEchoLogger.php
-
-		-
 			message: '#^Cannot access offset ''context'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -7366,12 +7150,6 @@ parameters:
 			message: '#^Cannot access offset ''message'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 6
 			path: app/Polydock/Core/PolydockAppBase.php
 
 		-
@@ -7525,12 +7303,6 @@ parameters:
 			path: app/PolydockEngine/Engine.php
 
 		-
-			message: '#^Negated boolean expression is always false\.$#'
-			identifier: booleanNot.alwaysFalse
-			count: 1
-			path: app/PolydockEngine/Engine.php
-
-		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Polydock\\Core\\PolydockAppInterface given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
@@ -7681,12 +7453,6 @@ parameters:
 			path: app/PolydockEngine/Helpers/AmazeeAiBackendHelper.php
 
 		-
-			message: '#^Call to an undefined method phpseclib3\\Crypt\\Common\\AsymmetricKey\:\:getPublicKey\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: app/PolydockEngine/Helpers/LagoonHelper.php
-
-		-
 			message: '#^Cannot access offset ''lagoon_deploy_regions'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -7705,18 +7471,6 @@ parameters:
 			path: app/PolydockEngine/Helpers/LagoonHelper.php
 
 		-
-			message: '#^Cannot call method toString\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: app/PolydockEngine/Helpers/LagoonHelper.php
-
-		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
-			path: app/PolydockEngine/Helpers/LagoonHelper.php
-
-		-
 			message: '#^Method App\\PolydockEngine\\Helpers\\LagoonHelper\:\:getLagoonCodeDataValueForRegion\(\) should return string\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -7726,12 +7480,6 @@ parameters:
 			message: '#^Method App\\PolydockEngine\\Helpers\\LagoonHelper\:\:getLagoonCoreDataForRegion\(\) should return array\<string, mixed\>\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 2
-			path: app/PolydockEngine/Helpers/LagoonHelper.php
-
-		-
-			message: '#^Method App\\PolydockEngine\\Helpers\\LagoonHelper\:\:getPublicKeyFromPrivateKey\(\) should return string\|null but returns mixed\.$#'
-			identifier: return.type
-			count: 1
 			path: app/PolydockEngine/Helpers/LagoonHelper.php
 
 		-
@@ -7745,6 +7493,12 @@ parameters:
 			identifier: encapsedStringPart.nonString
 			count: 2
 			path: app/PolydockEngine/Helpers/LagoonHelper.php
+
+		-
+			message: '#^Negated boolean expression is always false\.$#'
+			identifier: booleanNot.alwaysFalse
+			count: 1
+			path: app/PolydockEngine/Traits/PolydockEngineFunctionCallerTrait.php
 
 		-
 			message: '#^Binary operation "\." between ''amazee_ai_backend…'' and mixed results in an error\.$#'
@@ -7875,7 +7629,7 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 2
+			count: 1
 			path: app/PolydockServiceProviders/PolydockServiceProviderFTLagoon.php
 
 		-
@@ -7951,12 +7705,6 @@ parameters:
 			path: app/Providers/ActivityLogServiceProvider.php
 
 		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 1
-			path: app/Providers/ActivityLogServiceProvider.php
-
-		-
 			message: '#^Argument of an invalid type mixed supplied for foreach, only iterables are supported\.$#'
 			identifier: foreach.nonIterable
 			count: 1
@@ -7969,25 +7717,7 @@ parameters:
 			path: app/Providers/AppServiceProvider.php
 
 		-
-			message: '#^Cannot access offset ''config'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Providers/AppServiceProvider.php
-
-		-
 			message: '#^Cannot access offset ''database'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Providers/AppServiceProvider.php
-
-		-
-			message: '#^Cannot access offset ''db'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: app/Providers/AppServiceProvider.php
-
-		-
-			message: '#^Cannot access offset ''queue\.failed'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: app/Providers/AppServiceProvider.php
@@ -8126,12 +7856,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#1 \$object_or_class of function method_exists expects object\|string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Providers/AppServiceProvider.php
-
-		-
-			message: '#^Parameter \#1 \$resolver of class App\\Queue\\Failed\\SafeDatabaseUuidFailedJobProvider constructor expects Illuminate\\Database\\ConnectionResolverInterface, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Providers/AppServiceProvider.php
@@ -8293,12 +8017,6 @@ parameters:
 			path: app/Services/ClaimExistingProjectService.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 2
-			path: app/Services/EmailBlockerService.php
-
-		-
 			message: '#^Method App\\Services\\EmailBlockerService\:\:loadDisposableDomains\(\) should return array\<string, mixed\> but returns array\<mixed, true\>\.$#'
 			identifier: return.type
 			count: 1
@@ -8421,7 +8139,7 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 3
+			count: 2
 			path: app/Services/LagoonClientService.php
 
 		-
@@ -8581,12 +8299,6 @@ parameters:
 			path: app/Services/PolydockAppClassDiscovery.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 13
-			path: app/Services/PolydockAppClassDiscovery.php
-
-		-
 			message: '#^Method App\\Services\\PolydockAppClassDiscovery\:\:childComponentsOf\(\) should return array\<mixed\> but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -8727,7 +8439,7 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 4
+			count: 3
 			path: app/Services/PolydockDeploymentService.php
 
 		-
@@ -8779,21 +8491,9 @@ parameters:
 			path: app/Support/EnumHelper.php
 
 		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 1
-			path: app/Support/HostedFormHtml.php
-
-		-
 			message: '#^Only booleans are allowed in an if condition, int\|false given\.$#'
 			identifier: if.condNotBoolean
 			count: 1
-			path: app/Support/SensitiveDataRedactor.php
-
-		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 2
 			path: app/Support/SensitiveDataRedactor.php
 
 		-
@@ -8881,12 +8581,6 @@ parameters:
 			path: config/polydock.php
 
 		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
-			path: config/polydock.php
-
-		-
 			message: '#^Loose comparison via "\=\=" is not allowed\.$#'
 			identifier: equal.notAllowed
 			count: 1
@@ -8901,7 +8595,7 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 2
+			count: 1
 			path: database/migrations/2026_02_05_133703_move_lagoon_deploy_private_key_to_variables.php
 
 		-
@@ -9169,12 +8863,6 @@ parameters:
 			path: database/migrations/2026_07_17_140000_create_polydock_app_instance_status_transitions_table.php
 
 		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 1
-			path: database/migrations/2026_07_17_140000_create_polydock_app_instance_status_transitions_table.php
-
-		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 1
@@ -9385,18 +9073,6 @@ parameters:
 			path: tests/Doubles/DoublePolydockAppInstance.php
 
 		-
-			message: '#^Property Tests\\Doubles\\DoublePolydockAppInstance\:\:\$storeApp has no type specified\.$#'
-			identifier: missingType.property
-			count: 1
-			path: tests/Doubles/DoublePolydockAppInstance.php
-
-		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
-			path: tests/Doubles/FakeLagoonClient.php
-
-		-
 			message: '#^Return type \(array\<mixed\>\) of method Tests\\Doubles\\FakeLagoonClient\:\:getDeploymentsByBulkId\(\) should be covariant with return type \(array\<string, mixed\>\) of method App\\Polydock\\Clients\\Lagoon\\Client\:\:getDeploymentsByBulkId\(\)$#'
 			identifier: method.childReturnType
 			count: 1
@@ -9407,12 +9083,6 @@ parameters:
 			identifier: constructor.missingParentCall
 			count: 1
 			path: tests/Doubles/FakeLagoonClient.php
-
-		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 1
-			path: tests/Doubles/TestLifecycleApp.php
 
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertEquals\(\)\.$#'
@@ -9767,12 +9437,6 @@ parameters:
 			identifier: argument.type
 			count: 4
 			path: tests/Feature/Api/RegionsApiTest.php
-
-		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 2
-			path: tests/Feature/Api/TokenAbilityEnforcementTest.php
 
 		-
 			message: '#^Cannot call method toArray\(\) on Illuminate\\Support\\Collection\|null\.$#'
@@ -10465,12 +10129,6 @@ parameters:
 			path: tests/Feature/Console/Commands/RemoveAppInstancesTest.php
 
 		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 7
-			path: tests/Feature/Console/Commands/RemoveEmptyProjectsCommandTest.php
-
-		-
 			message: '#^Cannot call method expectsConfirmation\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
 			count: 2
@@ -10483,27 +10141,15 @@ parameters:
 			path: tests/Feature/Console/Commands/RemoveEmptyProjectsCommandTest.php
 
 		-
-			message: '#^Cannot call method once\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 5
-			path: tests/Feature/Console/Commands/RemoveEmptyProjectsCommandTest.php
-
-		-
-			message: '#^Cannot call method twice\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Feature/Console/Commands/RemoveEmptyProjectsCommandTest.php
-
-		-
 			message: '#^Cannot access property \$status on App\\Models\\PolydockAppInstance\|null\.$#'
 			identifier: property.nonObject
-			count: 2
+			count: 4
 			path: tests/Feature/Console/Commands/RemoveStaleFailedInstancesCommandTest.php
 
 		-
 			message: '#^Cannot call method assertSuccessful\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
-			count: 6
+			count: 8
 			path: tests/Feature/Console/Commands/RemoveStaleFailedInstancesCommandTest.php
 
 		-
@@ -10521,13 +10167,13 @@ parameters:
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertEquals\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 4
+			count: 7
 			path: tests/Feature/Console/Commands/RemoveStaleFailedInstancesCommandTest.php
 
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 3
+			count: 4
 			path: tests/Feature/Console/Commands/RemoveStaleFailedInstancesCommandTest.php
 
 		-
@@ -10561,12 +10207,6 @@ parameters:
 			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
 
 		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
-
-		-
 			message: '#^Cannot call method assertExitCode\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -10576,12 +10216,6 @@ parameters:
 			message: '#^Cannot call method expectsOutput\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
 			count: 2
-			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
-
-		-
-			message: '#^Cannot call method once\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 4
 			path: tests/Feature/Console/Commands/RunLagoonCommandOnAppInstancesTest.php
 
 		-
@@ -10627,27 +10261,9 @@ parameters:
 			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
 
 		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 34
-			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
-
-		-
-			message: '#^Cannot call method andThrow\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
-
-		-
 			message: '#^Cannot call method expectsOutput\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
 			count: 9
-			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
-
-		-
-			message: '#^Cannot call method once\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 44
 			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
 
 		-
@@ -10663,12 +10279,6 @@ parameters:
 			path: tests/Feature/Console/Commands/SyncLagoonMetadataTest.php
 
 		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Feature/Console/Commands/TriggerLagoonDeployOnAppInstancesTest.php
-
-		-
 			message: '#^Cannot call method assertExitCode\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -10678,18 +10288,6 @@ parameters:
 			message: '#^Cannot call method expectsOutput\(\) on Illuminate\\Testing\\PendingCommand\|int\.$#'
 			identifier: method.nonObject
 			count: 5
-			path: tests/Feature/Console/Commands/TriggerLagoonDeployOnAppInstancesTest.php
-
-		-
-			message: '#^Cannot call method once\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 6
-			path: tests/Feature/Console/Commands/TriggerLagoonDeployOnAppInstancesTest.php
-
-		-
-			message: '#^Cannot call method zeroOrMoreTimes\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 1
 			path: tests/Feature/Console/Commands/TriggerLagoonDeployOnAppInstancesTest.php
 
 		-
@@ -10753,12 +10351,6 @@ parameters:
 			path: tests/Feature/Controllers/Api/RegisterControllerTest.php
 
 		-
-			message: '#^Cannot access offset ''registration'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: tests/Feature/Controllers/Api/RegisterControllerTest.php
-
-		-
 			message: '#^Cannot access offset ''request'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -10815,12 +10407,6 @@ parameters:
 		-
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\) with string will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
-			count: 1
-			path: tests/Feature/Controllers/FormControllerTest.php
-
-		-
-			message: '#^Cannot access offset ''response'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Feature/Controllers/FormControllerTest.php
 
@@ -11425,18 +11011,6 @@ parameters:
 			path: tests/Feature/Filament/ResourcePagesSmokeTest.php
 
 		-
-			message: '#^Cannot access offset ''artisan_argv'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: tests/Feature/GeneralApplicationTest.php
-
-		-
-			message: '#^Cannot access offset ''artisan_command'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: tests/Feature/GeneralApplicationTest.php
-
-		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertEquals\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 4
@@ -11911,12 +11485,6 @@ parameters:
 			path: tests/Feature/Polydock/AmazeeAiBackendCredentialsTest.php
 
 		-
-			message: '#^Out of 29 possible constant types, only 12 \- 41\.3 %% actually have it\. Add more constant types to get over 99 %%$#'
-			identifier: typeCoverage.constantTypeCoverage
-			count: 1
-			path: tests/Feature/Polydock/AmazeeAiBackendCredentialsTest.php
-
-		-
 			message: '#^Parameter \#1 \$haystack of function str_contains expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 4
@@ -12025,7 +11593,7 @@ parameters:
 			path: tests/Feature/PolydockEngine/EngineDispatchTest.php
 
 		-
-			message: '#^Parameter \#1 \$logger of class App\\PolydockEngine\\Engine constructor expects App\\Polydock\\Core\\PolydockAppLoggerInterface, Mockery\\LegacyMockInterface given\.$#'
+			message: '#^Parameter \#1 \$logger of class App\\PolydockEngine\\Engine constructor expects App\\Polydock\\Core\\PolydockAppLoggerInterface, Mockery\\MockInterface given\.$#'
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/PolydockEngine/EngineDispatchTest.php
@@ -12691,18 +12259,6 @@ parameters:
 			path: tests/Unit/PolydockEngine/Helpers/LagoonHelperTest.php
 
 		-
-			message: '#^Cannot call method andReturn\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 10
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
-			message: '#^Cannot call method once\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Unit/PolydockEngine/PolydockEngineTest.php
-
-		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertEquals\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 1
@@ -12784,12 +12340,6 @@ parameters:
 			message: '#^Call to method PHPUnit\\Framework\\Assert\:\:assertIsArray\(\) with array\<string\> will always evaluate to true\.$#'
 			identifier: method.alreadyNarrowedType
 			count: 2
-			path: tests/Unit/Services/PolydockAppClassDiscoveryTest.php
-
-		-
-			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
-			identifier: empty.notAllowed
-			count: 1
 			path: tests/Unit/Services/PolydockAppClassDiscoveryTest.php
 
 		-

@@ -100,7 +100,7 @@ abstract class PolydockAppBase implements PolydockAppInterface
                 throw new PolydockAppValidationException('Variable definition must implement PolydockAppVariableDefinitionInterface');
             }
 
-            if ($this->getVariableDefinition($variableDefinition->getName())) {
+            if ($this->getVariableDefinition($variableDefinition->getName()) instanceof PolydockAppVariableDefinitionInterface) {
                 $this->warning('Variable definition '.$variableDefinition->getName().' already exists, overwriting');
             } else {
                 $this->info('Adding constructor variable definition '.$variableDefinition->getName());
@@ -113,7 +113,7 @@ abstract class PolydockAppBase implements PolydockAppInterface
 
     public function addVariableDefinition(PolydockAppVariableDefinitionInterface $variableDefinition): self
     {
-        if ($this->getVariableDefinition($variableDefinition->getName())) {
+        if ($this->getVariableDefinition($variableDefinition->getName()) instanceof PolydockAppVariableDefinitionInterface) {
             unset($this->variableDefinitions[$variableDefinition->getName()]);
         }
 

@@ -6,6 +6,7 @@ namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -13,12 +14,19 @@ use Illuminate\Support\Facades\Log;
  * Sweeps instances that died mid-lifecycle and pushes them into the removal
  * pipeline so their Lagoon projects don't accumulate forever.
  *
- * Two groups, both older than the retention window:
+ * Two groups:
  * - create/deploy/claim failures -> PENDING_PRE_REMOVE (normal remove flow,
  *   app-specific pre/post-remove hooks still run)
  * - remove-stage failures -> REMOVED (the remove flow already failed once;
  *   project purge deletes the whole Lagoon project, and treats an
  *   already-gone project as success)
+ *
+ * The retention window only guards instances someone owns. Allocation sets
+ * user_group_id and allocation_lock in one update and only ever targets
+ * RUNNING_HEALTHY_UNCLAIMED, so a failed instance with no user_group_id was
+ * never handed to anyone and can no longer be claimed: it is swept on sight.
+ * Claimed instances keep the full window, so a user's broken instance is not
+ * deleted out from under them while it is still being looked at.
  *
  * Both get force_purge_requested_at stamped so the purge skips the 14-day
  * grace period — failed instances hold no user data worth a grace window.
@@ -76,7 +84,10 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
 
         $eligible = PolydockAppInstance::query()
             ->whereIn('status', array_merge($this->preRemovalFailedStatuses(), $this->removeStageFailedStatuses()))
-            ->where('updated_at', '<=', $cutoff)
+            ->where(function (Builder $query) use ($cutoff): void {
+                $query->whereNull('user_group_id')
+                    ->orWhere('updated_at', '<=', $cutoff);
+            })
             ->orderBy('updated_at')
             ->limit($limit)
             ->get();
@@ -87,7 +98,15 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
             return self::SUCCESS;
         }
 
-        $this->info(sprintf('Found %d stale failed instance(s) (older than %d days).', $eligible->count(), $days));
+        $unclaimedCount = $eligible->whereNull('user_group_id')->count();
+
+        $this->info(sprintf(
+            'Found %d failed instance(s): %d unclaimed, %d claimed and older than %d days.',
+            $eligible->count(),
+            $unclaimedCount,
+            $eligible->count() - $unclaimedCount,
+            $days,
+        ));
 
         $swept = 0;
 
@@ -98,9 +117,10 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
                 : PolydockAppInstanceStatus::PENDING_PRE_REMOVE;
 
             $line = sprintf(
-                ' - %s (id=%d, %s -> %s)',
+                ' - %s (id=%d, %s, %s -> %s)',
                 $instance->name,
                 $instance->id,
+                $instance->user_group_id === null ? 'unclaimed' : 'claimed',
                 $instance->status->value,
                 $target->value,
             );
@@ -121,16 +141,22 @@ class RemoveStaleFailedInstancesCommand extends BaseCommand
                     ->lockForUpdate()
                     ->first();
 
+                // An instance that gained an owner since selection has to clear
+                // the retention window like any other claimed instance.
                 if ($fresh === null
                     || $fresh->status !== $instance->status
-                    || $fresh->updated_at > $cutoff) {
+                    || ($fresh->user_group_id !== null && $fresh->updated_at > $cutoff)) {
                     return false;
                 }
+
+                $reason = $fresh->user_group_id === null
+                    ? 'Unclaimed failed instance swept'
+                    : "Stale failed instance swept after {$days} days";
 
                 $fresh->force_purge_requested_at ??= now();
                 // Status change fires PolydockAppInstanceStatusChanged, whose
                 // listener dispatches the stage job / purge transition.
-                $fresh->setStatus($target, "Stale failed instance swept after {$days} days");
+                $fresh->setStatus($target, $reason);
                 $fresh->save();
 
                 return true;
