@@ -26,7 +26,7 @@
         "laravel/socialite": "^5.28",
         "laravel/tinker": "^3.0",
         "parfaitementweb/filament-country-field": "^2.5",
-        "phpseclib/phpseclib": "^3.0",
+        "phpseclib/phpseclib": "^4.0",
         "socialiteproviders/okta": "^4.5",
         "spatie/laravel-activitylog": "^5.0",
         "spatie/laravel-health": "^1.40",
