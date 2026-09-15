@@ -53,8 +53,11 @@ class UserGroupPolicy
 
     public function delete(User $user, UserGroup $group): bool
     {
+        // Service accounts (MoaD) may delete groups via the API; the controller
+        // refuses groups that have ever held an instance, so this cannot cascade
+        // into polydock_app_instances.
         if ($user->hasRole('service-account')) {
-            return false;
+            return true;
         }
 
         if ($user->can('delete_user_group')) {

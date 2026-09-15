@@ -191,6 +191,67 @@ class AuthenticatedApiTest extends TestCase
         $this->assertTrue($this->user->groups()->whereKey($groupId)->exists());
     }
 
+    public function test_delete_group_deletes_empty_group_for_owner(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $group = UserGroup::create(['name' => 'Empty Owned Group']);
+        $this->user->groups()->attach($group->id, ['role' => UserGroupRoleEnum::OWNER->value]);
+
+        $response = $this->deleteJson("/api/groups/{$group->id}");
+
+        $response->assertOk();
+        $this->assertEquals('Group deleted', $response->json('message'));
+        $this->assertNull(UserGroup::find($group->id));
+    }
+
+    public function test_delete_group_allows_service_account_when_not_member(): void
+    {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $group = UserGroup::create(['name' => 'Service Account Group']);
+
+        $this->deleteJson("/api/groups/{$group->id}")->assertOk();
+        $this->assertNull(UserGroup::find($group->id));
+    }
+
+    public function test_delete_group_forbidden_when_not_owner(): void
+    {
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $group = UserGroup::create(['name' => 'Someone Elses Group']);
+        $this->user->groups()->attach($group->id, ['role' => UserGroupRoleEnum::MEMBER->value]);
+
+        $this->deleteJson("/api/groups/{$group->id}")->assertForbidden();
+        $this->assertNotNull(UserGroup::find($group->id));
+    }
+
+    public function test_delete_group_refuses_group_that_has_or_had_instances(): void
+    {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $group = UserGroup::create(['name' => 'Group With History']);
+        $instance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $group->id,
+            'name' => 'group-history-instance',
+            'status' => PolydockAppInstanceStatus::REMOVED,
+        ]);
+        $instance->delete(); // soft-deleted: purge already happened, history must survive
+
+        $this->deleteJson("/api/groups/{$group->id}")->assertStatus(409);
+        $this->assertNotNull(UserGroup::find($group->id));
+        $this->assertNotNull(PolydockAppInstance::withTrashed()->find($instance->id));
+    }
+
     public function test_create_instance_provisions_instance_and_creates_user(): void
     {
         $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
