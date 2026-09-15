@@ -552,23 +552,27 @@ class AuthenticatedApiController extends Controller
         $this->authorize('assignToGroup', [$instance, $group]);
 
         $oldGroupId = $instance->user_group_id;
-        $instance->user_group_id = $group->id;
-        $instance->save();
-
         $oldGroup = UserGroup::find($oldGroupId);
 
-        activity('audit')
-            ->performedOn($instance)
-            ->causedBy($request->user())
-            ->withProperties([
-                'action' => 'api.instance.reassign_group',
-                'instance_uuid' => $instance->uuid,
-                'old_group_id' => $oldGroupId,
-                'old_group_slug' => $oldGroup?->slug,
-                'new_group_id' => $group->id,
-                'new_group_slug' => $group->slug,
-            ])
-            ->log('Instance reassigned to group via API');
+        // The FK move and its audit row must commit together: deleteGroup() reads the audit log to learn that a
+        // group once held this instance, so a gap between the two would let it delete the old group.
+        DB::transaction(function () use ($request, $instance, $group, $oldGroupId, $oldGroup): void {
+            $instance->user_group_id = $group->id;
+            $instance->save();
+
+            activity('audit')
+                ->performedOn($instance)
+                ->causedBy($request->user())
+                ->withProperties([
+                    'action' => 'api.instance.reassign_group',
+                    'instance_uuid' => $instance->uuid,
+                    'old_group_id' => $oldGroupId,
+                    'old_group_slug' => $oldGroup?->slug,
+                    'new_group_id' => $group->id,
+                    'new_group_slug' => $group->slug,
+                ])
+                ->log('Instance reassigned to group via API');
+        });
 
         return response()->json([
             'message' => 'Instance assigned to group',
