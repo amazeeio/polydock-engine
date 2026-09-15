@@ -16,6 +16,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
+use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
 use Tests\TestCase;
@@ -203,6 +204,7 @@ class AuthenticatedApiTest extends TestCase
         $response->assertOk();
         $this->assertEquals('Group deleted', $response->json('message'));
         $this->assertNull(UserGroup::find($group->id));
+        $this->assertTrue(Activity::where('properties->action', 'api.group.delete')->where('properties->group_id', $group->id)->exists());
     }
 
     public function test_delete_group_allows_service_account_when_not_member(): void
@@ -250,6 +252,29 @@ class AuthenticatedApiTest extends TestCase
         $this->deleteJson("/api/groups/{$group->id}")->assertStatus(409);
         $this->assertNotNull(UserGroup::find($group->id));
         $this->assertNotNull(PolydockAppInstance::withTrashed()->find($instance->id));
+    }
+
+    public function test_delete_group_refuses_group_whose_instance_was_reassigned_away(): void
+    {
+        $role = Role::findOrCreate('service-account', config('auth.defaults.guard'));
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $oldGroup = UserGroup::create(['name' => 'Old Home Group']);
+        $newGroup = UserGroup::create(['name' => 'New Home Group']);
+        $instance = PolydockAppInstance::create([
+            'polydock_store_app_id' => $this->storeApp->id,
+            'user_group_id' => $oldGroup->id,
+            'name' => 'reassigned-instance',
+            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        ]);
+
+        $this->patchJson('/api/instance/'.$instance->uuid.'/group', ['group_id' => $newGroup->id])->assertOk();
+
+        $this->deleteJson("/api/groups/{$oldGroup->id}")->assertStatus(409);
+        $this->assertNotNull(UserGroup::find($oldGroup->id));
     }
 
     public function test_create_instance_provisions_instance_and_creates_user(): void

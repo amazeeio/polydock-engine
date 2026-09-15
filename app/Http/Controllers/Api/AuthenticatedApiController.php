@@ -21,9 +21,11 @@ use App\Rules\BannedEmail;
 use App\Support\EnumHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Spatie\Activitylog\Models\Activity;
 
 class AuthenticatedApiController extends Controller
 {
@@ -133,8 +135,9 @@ class AuthenticatedApiController extends Controller
      * Delete a group
      *
      * Delete a group that has never held an app instance (e.g. an abandoned workspace, or a group created by an
-     * integration test). Groups with current or past instances are refused with 409 — instances must be removed
-     * through their own lifecycle first, and the historical rows stay attached to the group.
+     * integration test). Groups with current or past instances (including ones later reassigned to another group)
+     * are refused with 409 — instances must be removed through their own lifecycle first, and the historical rows
+     * stay attached to the group.
      *
      * @tags External API
      *
@@ -146,21 +149,37 @@ class AuthenticatedApiController extends Controller
 
         $this->authorize('delete', $group);
 
-        if (PolydockAppInstance::withTrashed()->where('user_group_id', $group->id)->first() !== null) {
-            abort(409, 'Group has app instances (current or removed) and cannot be deleted.');
-        }
+        // Locking the group row inside the transaction makes the guard atomic with the delete: any concurrent
+        // instance create/reassign takes an FK shared lock on this row, so it either commits before our check
+        // (we return 409) or waits until the group is gone (its FK check fails). The audit row commits with it.
+        DB::transaction(function () use ($request, $group): void {
+            UserGroup::whereKey($group->id)->lockForUpdate()->firstOrFail();
 
-        $group->delete();
+            $hasInstances = PolydockAppInstance::withTrashed()->where('user_group_id', $group->id)->exists();
 
-        activity('audit')
-            ->causedBy($request->user())
-            ->withProperties([
-                'action' => 'api.group.delete',
-                'group_id' => $group->id,
-                'group_slug' => $group->slug,
-                'group_name' => $group->name,
-            ])
-            ->log('Group deleted via API');
+            // Reassigning an instance (PATCH /api/instance/{uuid}/group) moves the FK away, so past ownership only
+            // survives in the audit log.
+            $hadInstances = Activity::where('log_name', 'audit')
+                ->where('properties->action', 'api.instance.reassign_group')
+                ->where('properties->old_group_id', $group->id)
+                ->exists();
+
+            if ($hasInstances || $hadInstances) {
+                abort(409, 'Group has app instances (current or removed) and cannot be deleted.');
+            }
+
+            $group->delete();
+
+            activity('audit')
+                ->causedBy($request->user())
+                ->withProperties([
+                    'action' => 'api.group.delete',
+                    'group_id' => $group->id,
+                    'group_slug' => $group->slug,
+                    'group_name' => $group->name,
+                ])
+                ->log('Group deleted via API');
+        });
 
         return response()->json([
             'message' => 'Group deleted',
