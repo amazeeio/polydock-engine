@@ -24,6 +24,7 @@ Route::middleware('auth:sanctum')->group(function (): void {
     // Routes consumed by MoaD - write operations
     Route::middleware('instances.write.ability')->group(function (): void {
         Route::post('/groups', [AuthenticatedApiController::class, 'createGroup'])->name('api.groups.create');
+        Route::delete('/groups/{id}', [AuthenticatedApiController::class, 'deleteGroup'])->name('api.groups.delete');
         Route::post('/instance', [AuthenticatedApiController::class, 'createInstance'])->name('api.instance.create');
         Route::patch('/instance/{uuid}/group', [AuthenticatedApiController::class, 'assignInstanceToGroup'])->name('api.instance.assign-group');
         Route::delete('/instance/{uuid}', [AuthenticatedApiController::class, 'deleteInstance'])->name('api.instance.delete');
