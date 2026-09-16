@@ -379,12 +379,6 @@ parameters:
 			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
 
 		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockDeploymentRun\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
-
-		-
 			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 1
@@ -1069,12 +1063,6 @@ parameters:
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Polydock\\Clients\\Lagoon\\Client\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
 			message: '#^Only booleans are allowed in an if condition, string\|false given\.$#'
 			identifier: if.condNotBoolean
 			count: 1
@@ -1154,12 +1142,6 @@ parameters:
 
 		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockAppInstance\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\UserRemoteRegistration\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
 			path: app/Console/Commands/SendAppInstanceMail.php
@@ -1315,12 +1297,6 @@ parameters:
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstance.php
 
 		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Polydock\\Clients\\Lagoon\\Client\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/TriggerLagoonDeployOnAppInstance.php
-
-		-
 			message: '#^Parameter \$deployBranch of method App\\Polydock\\Clients\\Lagoon\\Client\:\:deployProjectEnvironmentByName\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1388,12 +1364,6 @@ parameters:
 
 		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockStoreApp\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Polydock\\Clients\\Lagoon\\Client\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
@@ -2527,18 +2497,6 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
 
 		-
-			message: '#^Only booleans are allowed in &&, App\\Models\\PolydockStoreApp\|null given on the left side\.$#'
-			identifier: booleanAnd.leftNotBoolean
-			count: 2
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockStoreApp\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 2
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
-
-		-
 			message: '#^Only booleans are allowed in an if condition, string\|null given\.$#'
 			identifier: if.condNotBoolean
 			count: 1
@@ -2938,18 +2896,6 @@ parameters:
 			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockStoreApp\>\:\:whereHas\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 11
-			path: app/Filament/Admin/Resources/PolydockStoreResource.php
-
-		-
-			message: '#^Only booleans are allowed in &&, App\\Models\\PolydockStore\|null given on the left side\.$#'
-			identifier: booleanAnd.leftNotBoolean
-			count: 5
-			path: app/Filament/Admin/Resources/PolydockStoreResource.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockStore\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 5
 			path: app/Filament/Admin/Resources/PolydockStoreResource.php
 
 		-
@@ -3913,7 +3859,19 @@ parameters:
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
 
 		-
+			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:exists\(\)\.$#'
+			identifier: staticMethod.dynamicCall
+			count: 1
+			path: app/Http/Controllers/Api/AuthenticatedApiController.php
+
+		-
 			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
+			identifier: staticMethod.dynamicCall
+			count: 1
+			path: app/Http/Controllers/Api/AuthenticatedApiController.php
+
+		-
+			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:lockForUpdate\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 1
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
@@ -3932,6 +3890,12 @@ parameters:
 
 		-
 			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:select\(\)\.$#'
+			identifier: staticMethod.dynamicCall
+			count: 1
+			path: app/Http/Controllers/Api/AuthenticatedApiController.php
+
+		-
+			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Spatie\\Activitylog\\Models\\Activity\>\:\:exists\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 1
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
@@ -3962,12 +3926,6 @@ parameters:
 
 		-
 			message: '#^Only booleans are allowed in an if condition, \(App\\Models\\UserGroup&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null given\.$#'
-			identifier: if.condNotBoolean
-			count: 1
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
-			message: '#^Only booleans are allowed in an if condition, App\\Models\\UserGroup\|null given\.$#'
 			identifier: if.condNotBoolean
 			count: 1
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
@@ -4192,12 +4150,6 @@ parameters:
 			message: '#^Cannot call method whereIn\(\) on mixed\.$#'
 			identifier: method.nonObject
 			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Forms\\HostedFormInterface\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 2
 			path: app/Http/Controllers/FormController.php
 
 		-
@@ -5475,12 +5427,6 @@ parameters:
 		-
 			message: '#^Only booleans are allowed in a ternary operator condition, App\\Models\\PolydockVariable\|null given\.$#'
 			identifier: ternary.condNotBoolean
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Only booleans are allowed in an if condition, Carbon\\CarbonInterface\|null given\.$#'
-			identifier: if.condNotBoolean
 			count: 1
 			path: app/Models/PolydockStoreApp.php
 
@@ -7156,12 +7102,6 @@ parameters:
 			message: '#^Instanceof between App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface and App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Only booleans are allowed in an if condition, App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface\|null given\.$#'
-			identifier: if.condNotBoolean
-			count: 2
 			path: app/Polydock/Core/PolydockAppBase.php
 
 		-
@@ -9235,6 +9175,12 @@ parameters:
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
+			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Spatie\\Activitylog\\Models\\Activity\>\:\:exists\(\)\.$#'
+			identifier: staticMethod.dynamicCall
+			count: 1
+			path: tests/Feature/Api/AuthenticatedApiTest.php
+
+		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 2
@@ -9249,7 +9195,7 @@ parameters:
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertEquals\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 62
+			count: 63
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
@@ -9267,13 +9213,13 @@ parameters:
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 7
+			count: 11
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertNull\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 3
+			count: 5
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
@@ -9291,7 +9237,7 @@ parameters:
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 3
+			count: 4
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
@@ -9327,7 +9273,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$guardName of static method Spatie\\Permission\\Models\\Role\:\:findOrCreate\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 7
+			count: 10
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
