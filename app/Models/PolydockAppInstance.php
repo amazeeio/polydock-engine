@@ -694,6 +694,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
      */
     private const array ENCRYPTED_KEYS = [
         'secret',
+        // Bearer token third parties present to this instance's MCP endpoint.
+        'openclaw-mcp-token',
     ];
 
     /**
