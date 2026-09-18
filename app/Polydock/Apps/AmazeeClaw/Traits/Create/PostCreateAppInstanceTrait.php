@@ -36,6 +36,8 @@ trait PostCreateAppInstanceTrait
                         $this->addOrUpdateLagoonProjectVariable($appInstance, 'AMAZEEAI_DEFAULT_MODEL', $amazeeClawDefaultModel, 'GLOBAL');
                     }
 
+                    $this->ensureMcpServerConfiguration($appInstance, $logContext);
+
                     // AI credentials configuration. Anonymous keys are generated now;
                     // user-scoped keys are generated at claim time (see the claim trait),
                     // when the claiming user's email is known.

@@ -9,6 +9,7 @@ use App\Polydock\Apps\AmazeeClaw\Traits\Claim\ClaimAppInstanceTrait;
 use App\Polydock\Apps\AmazeeClaw\Traits\Create\PostCreateAppInstanceTrait;
 use App\Polydock\Apps\AmazeeClaw\Traits\Create\PreCreateAppInstanceTrait;
 use App\Polydock\Apps\AmazeeClaw\Traits\UsesManualAmazeeAiCredentials;
+use App\Polydock\Apps\AmazeeClaw\Traits\UsesMcpServer;
 use App\Polydock\Apps\Generic\PolydockAiApp as GenericPolydockAiApp;
 use App\Polydock\Core\Attributes\PolydockAppInstanceFields;
 use App\Polydock\Core\Attributes\PolydockAppStoreFields;
@@ -27,8 +28,9 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
     use PostCreateAppInstanceTrait;
     use PreCreateAppInstanceTrait;
     use UsesManualAmazeeAiCredentials;
+    use UsesMcpServer;
 
-    public static string $version = '0.1.10';
+    public static string $version = '0.1.11';
 
     /**
      * Fallback themed word lists for project-name variants, used when the
@@ -77,6 +79,14 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
                 ])
                 ->default(AmazeeAiKeyMode::Injected->value)
                 ->helperText('How AI keys are provided to this app: injected externally, auto-generated per project (anonymous), or auto-generated for the claiming user.'),
+            Forms\Components\Select::make('mcp_enabled')
+                ->label('MCP Server')
+                ->options([
+                    'off' => 'Off — no MCP endpoint',
+                    'on' => 'On — expose /mcp for MCP clients',
+                ])
+                ->default('off')
+                ->helperText('Default for new instances of this app. When on, the instance is an MCP server other people can connect to at https://<instance>/mcp with a generated token.'),
         ];
     }
 
@@ -90,6 +100,9 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
             Infolists\Components\TextEntry::make('amazeeai_key_mode')
                 ->label('Amazee AI Key Mode')
                 ->placeholder('Injected — supplied in request data / secret'),
+            Infolists\Components\TextEntry::make('mcp_enabled')
+                ->label('MCP Server')
+                ->placeholder('Off'),
         ];
     }
 
@@ -102,6 +115,13 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
                 ->placeholder('e.g. kimi-k2.5')
                 ->maxLength(255)
                 ->helperText('Optional override for this specific instance.'),
+            Forms\Components\Select::make('mcp_enabled')
+                ->label('MCP Server')
+                ->options([
+                    'on' => 'On — expose /mcp for MCP clients',
+                    'off' => 'Off — no MCP endpoint',
+                ])
+                ->helperText('Leave empty to inherit the store app setting. Read when the instance is created; changing it later does not reconfigure a running instance. Pre-warmed instances are created before they are allocated, so they follow the store app setting.'),
         ];
     }
 
@@ -112,6 +132,9 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
             Infolists\Components\TextEntry::make('openclaw_default_model')
                 ->label('openClawDefaultModel')
                 ->placeholder('Not configured'),
+            Infolists\Components\TextEntry::make('mcp_enabled')
+                ->label('MCP Server')
+                ->placeholder('Inherited from store app'),
         ];
     }
 }
