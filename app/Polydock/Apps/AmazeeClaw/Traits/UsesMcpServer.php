@@ -14,11 +14,15 @@ use App\Polydock\Core\PolydockAppInstanceInterface;
  * on the OPENCLAW_MCP_TOKEN project variable this trait writes: no variable, no
  * plugin load path, no endpoint.
  *
- * Applied at post-create, which is the last point before the instance is first
- * deployed. A Lagoon variable only reaches the container on a deploy, so a
- * pre-warmed instance — already built and deployed before anyone is allocated
- * to it — follows its store app's setting; the per-instance override applies to
- * instances created on demand and to any later redeploy or upgrade.
+ * Read once, at post-create: the last point before the instance is first
+ * deployed, and a Lagoon variable only reaches the container on a deploy.
+ *
+ * So this is a creation-time decision, the same as every other instance config
+ * field on this app. Changing the knob afterwards does not reconfigure a
+ * running instance — nothing reruns post-create, and PolydockDeploymentService
+ * redeploys straight through Lagoon without the lifecycle stages. A pre-warmed
+ * instance is likewise built and deployed before anyone is allocated to it, so
+ * it follows its store app's setting rather than the claimant's.
  *
  * Depends on resolveInstanceOrAppConfig() from UsesManualAmazeeAiCredentials,
  * which the app class composes alongside this trait.

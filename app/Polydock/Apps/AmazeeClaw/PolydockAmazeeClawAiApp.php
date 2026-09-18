@@ -86,7 +86,7 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
                     'on' => 'On — expose /mcp for MCP clients',
                 ])
                 ->default('off')
-                ->helperText('Default for instances of this app. When on, the instance is an MCP server other people can connect to at https://<instance>/mcp with a generated token.'),
+                ->helperText('Default for new instances of this app. When on, the instance is an MCP server other people can connect to at https://<instance>/mcp with a generated token.'),
         ];
     }
 
@@ -121,7 +121,7 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
                     'on' => 'On — expose /mcp for MCP clients',
                     'off' => 'Off — no MCP endpoint',
                 ])
-                ->helperText('Leave empty to inherit the store app setting. Applies from the next deploy onwards — a pre-warmed instance is already deployed when it is allocated, so those follow the store app setting.'),
+                ->helperText('Leave empty to inherit the store app setting. Read when the instance is created; changing it later does not reconfigure a running instance. Pre-warmed instances are created before they are allocated, so they follow the store app setting.'),
         ];
     }
 
