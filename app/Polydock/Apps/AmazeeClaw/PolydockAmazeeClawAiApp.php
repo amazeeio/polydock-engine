@@ -121,7 +121,7 @@ class PolydockAmazeeClawAiApp extends GenericPolydockAiApp implements HasAppInst
                     'on' => 'On — expose /mcp for MCP clients',
                     'off' => 'Off — no MCP endpoint',
                 ])
-                ->helperText('Leave empty to inherit the store app setting. Turning this on generates a consumer token and takes effect on the next deploy.'),
+                ->helperText('Leave empty to inherit the store app setting. Applies from the next deploy onwards — a pre-warmed instance is already deployed when it is allocated, so those follow the store app setting.'),
         ];
     }
 

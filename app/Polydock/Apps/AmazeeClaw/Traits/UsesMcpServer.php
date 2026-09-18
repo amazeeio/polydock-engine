@@ -14,6 +14,12 @@ use App\Polydock\Core\PolydockAppInstanceInterface;
  * on the OPENCLAW_MCP_TOKEN project variable this trait writes: no variable, no
  * plugin load path, no endpoint.
  *
+ * Applied at post-create, which is the last point before the instance is first
+ * deployed. A Lagoon variable only reaches the container on a deploy, so a
+ * pre-warmed instance — already built and deployed before anyone is allocated
+ * to it — follows its store app's setting; the per-instance override applies to
+ * instances created on demand and to any later redeploy or upgrade.
+ *
  * Depends on resolveInstanceOrAppConfig() from UsesManualAmazeeAiCredentials,
  * which the app class composes alongside this trait.
  */
@@ -26,7 +32,9 @@ trait UsesMcpServer
     public const string MCP_TOKEN_VARIABLE = 'OPENCLAW_MCP_TOKEN';
 
     /**
-     * Resolves the knob through the usual instance -> app -> store app chain.
+     * Resolves the knob through the usual instance -> app -> store app chain,
+     * so it is set the same way as every other instance config field
+     * (instance_config_mcp_enabled, stored from the registration request).
      *
      * The value is 'on'/'off' rather than a boolean because the resolver treats
      * an empty string as "not set and inherit", which would make an instance
@@ -38,35 +46,8 @@ trait UsesMcpServer
     }
 
     /**
-     * Records an MCP decision that arrived with the registration request (MOAD
-     * and other callers post it as request data), so the normal
-     * instance -> app -> store app resolution picks it up from here on.
-     *
-     * @param  array<string, mixed>  $requestData
-     */
-    protected function captureMcpServerRequestData(PolydockAppInstanceInterface $appInstance, array $requestData): void
-    {
-        if (! array_key_exists('mcp_enabled', $requestData)) {
-            return;
-        }
-
-        $raw = $requestData['mcp_enabled'];
-        $normalized = match (true) {
-            is_bool($raw) => $raw ? 'on' : 'off',
-            is_string($raw) || is_int($raw) => in_array(strtolower(trim((string) $raw)), ['on', 'true', '1', 'yes', 'enabled'], true) ? 'on' : 'off',
-            default => 'off',
-        };
-
-        $appInstance->storeKeyValue('instance_config_mcp_enabled', $normalized);
-    }
-
-    /**
      * Brings the Lagoon variable in line with the knob, minting the consumer
      * token once and reusing it afterwards.
-     *
-     * Idempotent, and called from both post-create and claim: pre-warmed
-     * instances run post-create long before anyone asks for MCP, so claim is
-     * the first point where a per-instance (or MOAD-supplied) answer exists.
      *
      * @param  array<string, mixed>  $logContext
      */
@@ -82,7 +63,13 @@ trait UsesMcpServer
                 return;
             }
             $this->info('MCP server turned off — removing the token variable', $logContext);
-            $this->deleteMcpServerTokenVariable($appInstance, $logContext);
+            if (! $this->deleteMcpServerTokenVariable($appInstance, $logContext)) {
+                // Keep the stored token: it is the only record that a variable is
+                // still out there granting access. Clearing it here would make
+                // every later run take the "never enabled" branch above and leave
+                // the endpoint live forever.
+                return;
+            }
             $appInstance->storeKeyValue(self::MCP_TOKEN_KEY, '');
 
             return;
@@ -101,26 +88,33 @@ trait UsesMcpServer
     }
 
     /**
-     * Deleting the variable is how the endpoint goes away, but a missing
-     * variable is already the desired state — log and carry on rather than
-     * failing the lifecycle phase over it.
+     * Deletes the token variable, reporting whether the endpoint is actually
+     * revoked. Lagoon returns GraphQL errors in the payload rather than
+     * throwing, so the caller has to be told about a failure to retry it.
      *
      * @param  array<string, mixed>  $logContext
+     * @return bool True when the variable is gone (or the project never had one).
      */
-    protected function deleteMcpServerTokenVariable(PolydockAppInstanceInterface $appInstance, array $logContext = []): void
+    protected function deleteMcpServerTokenVariable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
     {
         $projectName = $appInstance->getKeyValue('lagoon-project-name');
         if (! is_string($projectName) || $projectName === '') {
-            return;
+            $this->warning('Cannot revoke the MCP token without a Lagoon project name', $logContext);
+
+            return false;
         }
 
         $result = $this->lagoonClient->deleteProjectVariableByName($projectName, self::MCP_TOKEN_VARIABLE);
         if (isset($result['error'])) {
-            $this->warning('Could not delete the MCP token variable', $logContext + [
+            $this->warning('Could not delete the MCP token variable — will retry on the next run', $logContext + [
                 'projectName' => $projectName,
                 'variable' => self::MCP_TOKEN_VARIABLE,
                 'error' => $result['error'],
             ]);
+
+            return false;
         }
+
+        return true;
     }
 }

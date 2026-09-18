@@ -52,10 +52,6 @@ trait ClaimAppInstanceTrait
                         $this->addOrUpdateLagoonProjectVariable($appInstance, 'POLYDOCK_USER_EMAIL', $userEmail, 'GLOBAL');
                     }
 
-                    // Pre-warmed instances ran post-create before anyone asked for
-                    // MCP, so this is the first point a per-instance answer exists.
-                    $this->ensureMcpServerConfiguration($appInstance, $logContext);
-
                     // User-mode keys are generated here, at claim time — the claiming
                     // user's email is not known during pre-warm/post-create.
                     if ($this->getRequiresAiInfrastructure()

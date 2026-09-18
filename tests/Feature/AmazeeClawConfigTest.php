@@ -27,15 +27,20 @@ class TestablePolydockAmazeeClawAiApp extends PolydockAmazeeClawAiApp
         $this->injectedVariables[$variableName] = $variableValue;
     }
 
+    /** Simulates Lagoon refusing the delete (it reports errors in the payload, it does not throw). */
+    public bool $deleteSucceeds = true;
+
     /**
      * Records the delete decision instead of reaching for the Lagoon GraphQL client.
      *
      * @param  array<string, mixed>  $logContext
      */
     #[\Override]
-    protected function deleteMcpServerTokenVariable(PolydockAppInstanceInterface $appInstance, array $logContext = []): void
+    protected function deleteMcpServerTokenVariable(PolydockAppInstanceInterface $appInstance, array $logContext = []): bool
     {
         $this->deletedVariables[] = self::MCP_TOKEN_VARIABLE;
+
+        return $this->deleteSucceeds;
     }
 
     /**
@@ -44,14 +49,6 @@ class TestablePolydockAmazeeClawAiApp extends PolydockAmazeeClawAiApp
     public function callEnsureMcpServerConfiguration(PolydockAppInstanceInterface $appInstance, array $logContext = []): void
     {
         $this->ensureMcpServerConfiguration($appInstance, $logContext);
-    }
-
-    /**
-     * @param  array<string, mixed>  $requestData
-     */
-    public function callCaptureMcpServerRequestData(PolydockAppInstanceInterface $appInstance, array $requestData): void
-    {
-        $this->captureMcpServerRequestData($appInstance, $requestData);
     }
 }
 
@@ -240,28 +237,6 @@ class AmazeeClawConfigTest extends TestCase
         ])));
     }
 
-    public function test_mcp_request_data_from_moad_is_normalized(): void
-    {
-        $app = new TestablePolydockAmazeeClawAiApp('Test App', 'Description', 'Author', 'https://example.com', 'support@example.com');
-
-        foreach ([true, 'true', 'On', '1', 'yes'] as $truthy) {
-            $instance = $this->createAppInstance();
-            $app->callCaptureMcpServerRequestData($instance, ['mcp_enabled' => $truthy]);
-            self::assertSame('on', $instance->getKeyValue('instance_config_mcp_enabled'));
-        }
-
-        foreach ([false, 'false', 'nope', ''] as $falsy) {
-            $instance = $this->createAppInstance();
-            $app->callCaptureMcpServerRequestData($instance, ['mcp_enabled' => $falsy]);
-            self::assertSame('off', $instance->getKeyValue('instance_config_mcp_enabled'));
-        }
-
-        // Absent means absent: never overwrite a store app default with a guess.
-        $instance = $this->createAppInstance();
-        $app->callCaptureMcpServerRequestData($instance, []);
-        self::assertSame('', $instance->getKeyValue('instance_config_mcp_enabled'));
-    }
-
     public function test_enabling_mcp_issues_one_token_and_injects_it(): void
     {
         $app = new TestablePolydockAmazeeClawAiApp('Test App', 'Description', 'Author', 'https://example.com', 'support@example.com');
@@ -297,5 +272,26 @@ class AmazeeClawConfigTest extends TestCase
         $app->callEnsureMcpServerConfiguration($wasOn);
         self::assertSame(['OPENCLAW_MCP_TOKEN'], $app->deletedVariables);
         self::assertSame('', $wasOn->getKeyValue(TestablePolydockAmazeeClawAiApp::MCP_TOKEN_KEY));
+    }
+
+    public function test_a_failed_revocation_keeps_the_token_so_the_next_run_retries(): void
+    {
+        $app = new TestablePolydockAmazeeClawAiApp('Test App', 'Description', 'Author', 'https://example.com', 'support@example.com');
+        $app->deleteSucceeds = false;
+
+        $instance = $this->createAppInstance([
+            'data' => [TestablePolydockAmazeeClawAiApp::MCP_TOKEN_KEY => 'an-existing-token'],
+        ]);
+
+        // Lagoon refused: the variable is still out there granting access, so the
+        // stored token has to survive as the record that it needs removing.
+        $app->callEnsureMcpServerConfiguration($instance);
+        self::assertSame('an-existing-token', $instance->getKeyValue(TestablePolydockAmazeeClawAiApp::MCP_TOKEN_KEY));
+
+        // Next lifecycle run retries instead of taking the "never enabled" path.
+        $app->deleteSucceeds = true;
+        $app->callEnsureMcpServerConfiguration($instance);
+        self::assertSame(['OPENCLAW_MCP_TOKEN', 'OPENCLAW_MCP_TOKEN'], $app->deletedVariables);
+        self::assertSame('', $instance->getKeyValue(TestablePolydockAmazeeClawAiApp::MCP_TOKEN_KEY));
     }
 }
