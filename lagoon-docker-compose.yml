@@ -61,7 +61,7 @@ services:
         build:
             context: .
             dockerfile: lagoon/redis.dockerfile
-        image: uselagoon/redis-7-persistent
+        image: uselagoon/redis-8
         labels:
             lagoon.type: redis-persistent
 

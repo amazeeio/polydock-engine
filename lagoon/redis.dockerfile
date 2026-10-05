@@ -1,4 +1,4 @@
-FROM uselagoon/redis-7-persistent
+FROM uselagoon/redis-8
 
 #######################################################
 # Finalize Environment
