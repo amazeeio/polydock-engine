@@ -49,6 +49,12 @@ parameters:
         -
             message: '#^Call to an undefined method Mockery\\ExpectationInterface\|Mockery\\HigherOrderMessage::\w+\(\)\.$#'
             path: tests/*
+        # Eloquent Builder and Livewire Testable proxy calls via __call, but their
+        # @method static docblocks make strict-rules read every chained call as a
+        # dynamic call to a static method. False positive on runtime-valid code.
+        -
+            identifier: staticMethod.dynamicCall
+            message: '#^Dynamic call to static method (Illuminate\\Database\\Eloquent\\Builder|Livewire\\Features\\SupportTesting\\Testable)<#'
 
     excludePaths:
         - vendor/*

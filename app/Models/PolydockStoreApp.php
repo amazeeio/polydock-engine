@@ -20,7 +20,7 @@ use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
 
 /**
- * @property int $id
+ * @property positive-int $id
  * @property int $polydock_store_id
  * @property string $polydock_app_class
  * @property array|null $app_config

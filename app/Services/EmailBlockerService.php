@@ -12,7 +12,7 @@ class EmailBlockerService
     private const string FILE_NAME = 'disposable_domains.json';
 
     /**
-     * @var array<string, mixed>
+     * @var array<array-key, true>|null
      */
     private ?array $disposableDomainsCache = null;
 
@@ -88,7 +88,7 @@ class EmailBlockerService
     /**
      * Load disposable domains from local storage fallback.
      *
-     * @return array<string, mixed>
+     * @return array<array-key, true>
      */
     private function loadDisposableDomains(): array
     {

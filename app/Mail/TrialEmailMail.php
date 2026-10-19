@@ -28,6 +28,7 @@ abstract class TrialEmailMail extends Mailable
 
     protected string $defaultSubject;
 
+    /** @var view-string */
     protected string $mailView;
 
     public function __construct(
