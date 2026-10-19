@@ -49,54 +49,6 @@ parameters:
 			path: app/Console/Commands/AttachWebhook.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orWhereRaw\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNotIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:orWhereRaw\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserRemoteRegistration\>\:\:orWhereRaw\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserRemoteRegistration\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<TRelatedModel of Illuminate\\Database\\Eloquent\\Model\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/BanEmailsCommand.php
-
-		-
 			message: '#^Parameter \#1 \$inputs of method App\\Console\\Commands\\BanEmailsCommand\:\:normalizePatterns\(\) expects list\<string\>, array\<int, string\> given\.$#'
 			identifier: argument.type
 			count: 1
@@ -253,34 +205,10 @@ parameters:
 			path: app/Console/Commands/CreateStoreApp.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchMidtrialEmailJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchMidtrialEmailJobsCommand.php
-
-		-
 			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Console/Commands/DispatchMidtrialEmailJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchOneDayLeftEmailJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchOneDayLeftEmailJobsCommand.php
 
 		-
 			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\) expects int, mixed given\.$#'
@@ -301,118 +229,16 @@ parameters:
 			path: app/Console/Commands/DispatchProjectPurgeJobsCommand.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchProjectPurgeJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orWhereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchProjectPurgeJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchProjectPurgeJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchProjectPurgeJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchProjectPurgeJobsCommand.php
-
-		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orderByRaw\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:whereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockDeploymentRun\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/DispatchScheduledRedeploysCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchTrialCompleteEmailJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchTrialCompleteEmailJobsCommand.php
-
-		-
 			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\) expects int, mixed given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Console/Commands/DispatchTrialCompleteEmailJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchTrialCompleteStageRemovalJobsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/DispatchTrialCompleteStageRemovalJobsCommand.php
 
 		-
 			message: '#^Parameter \#1 \$value of method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\) expects int, mixed given\.$#'
@@ -547,12 +373,6 @@ parameters:
 			path: app/Console/Commands/ListUnclaimedAppInstancesCommand.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereDate\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/ListUnclaimedAppInstancesCommand.php
-
-		-
 			message: '#^Only booleans are allowed in a ternary operator condition, string\|null given\.$#'
 			identifier: ternary.condNotBoolean
 			count: 3
@@ -568,12 +388,6 @@ parameters:
 			message: '#^Casting to bool something that''s already bool\.$#'
 			identifier: cast.useless
 			count: 1
-			path: app/Console/Commands/MaintainPreWarmInstancesCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 4
 			path: app/Console/Commands/MaintainPreWarmInstancesCommand.php
 
 		-
@@ -595,46 +409,10 @@ parameters:
 			path: app/Console/Commands/MarkStuckInstancesFailedCommand.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/MarkStuckInstancesFailedCommand.php
-
-		-
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
 			path: app/Console/Commands/PollDeploymentRunsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockDeploymentRun\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/PollDeploymentRunsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockDeploymentRun\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/PollDeploymentRunsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockDeploymentRun\>\:\:whereNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/PollDeploymentRunsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/PollDeploymentStatusCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/PollDeploymentStatusCommand.php
 
 		-
 			message: '#^Cannot call method orWhereIn\(\) on mixed\.$#'
@@ -703,24 +481,6 @@ parameters:
 			path: app/Console/Commands/PruneInstanceLogsCommand.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstanceLog\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/PruneInstanceLogsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstanceLog\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/PruneInstanceLogsCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstanceLog\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/PruneInstanceLogsCommand.php
-
-		-
 			message: '#^Cannot call method format\(\) on Carbon\\Carbon\|null\.$#'
 			identifier: method.nonObject
 			count: 1
@@ -742,30 +502,6 @@ parameters:
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
 			count: 8
-			path: app/Console/Commands/RemoveAppInstances.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RemoveAppInstances.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RemoveAppInstances.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereJsonContains\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RemoveAppInstances.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNotIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
 			path: app/Console/Commands/RemoveAppInstances.php
 
 		-
@@ -937,50 +673,8 @@ parameters:
 			path: app/Console/Commands/RemoveStaleFailedInstancesCommand.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RemoveStaleFailedInstancesCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:lockForUpdate\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RemoveStaleFailedInstancesCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RemoveStaleFailedInstancesCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RemoveStaleFailedInstancesCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RemoveStaleFailedInstancesCommand.php
-
-		-
 			message: '#^Cannot call method format\(\) on Carbon\\Carbon\|null\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: app/Console/Commands/RemoveUnclaimedAppInstancesCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RemoveUnclaimedAppInstancesCommand.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereDate\(\)\.$#'
-			identifier: staticMethod.dynamicCall
 			count: 1
 			path: app/Console/Commands/RemoveUnclaimedAppInstancesCommand.php
 
@@ -1045,18 +739,6 @@ parameters:
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
-			message: '#^Foreach overwrites \$instanceId with its key variable\.$#'
-			identifier: foreach.keyOverwrite
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockAppInstance\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 2
@@ -1064,12 +746,6 @@ parameters:
 
 		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockStoreApp\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Polydock\\Clients\\Lagoon\\Client\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
 			path: app/Console/Commands/RunLagoonCommandOnAppInstances.php
@@ -1159,12 +835,6 @@ parameters:
 			path: app/Console/Commands/SendAppInstanceMail.php
 
 		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\UserRemoteRegistration\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/SendAppInstanceMail.php
-
-		-
 			message: '#^Only booleans are allowed in a negated boolean, string\|false given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
@@ -1231,30 +901,6 @@ parameters:
 			path: app/Console/Commands/SyncLagoonMetadata.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:getConnection\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/SyncLagoonMetadata.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/SyncLagoonMetadata.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNotIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/SyncLagoonMetadata.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereRaw\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: app/Console/Commands/SyncLagoonMetadata.php
-
-		-
 			message: '#^Only booleans are allowed in &&, App\\Models\\PolydockStoreApp given on the right side\.$#'
 			identifier: booleanAnd.rightNotBoolean
 			count: 1
@@ -1315,12 +961,6 @@ parameters:
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstance.php
 
 		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Polydock\\Clients\\Lagoon\\Client\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/TriggerLagoonDeployOnAppInstance.php
-
-		-
 			message: '#^Parameter \$deployBranch of method App\\Polydock\\Clients\\Lagoon\\Client\:\:deployProjectEnvironmentByName\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -1375,12 +1015,6 @@ parameters:
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
-
-		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockDeploymentRun\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
@@ -1388,12 +1022,6 @@ parameters:
 
 		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockStoreApp\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 1
-			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Polydock\\Clients\\Lagoon\\Client\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
 			path: app/Console/Commands/TriggerLagoonDeployOnAppInstances.php
@@ -1609,18 +1237,6 @@ parameters:
 			path: app/Filament/Admin/Resources/ActivityLogResource.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Spatie\\Activitylog\\Models\\Activity\>\:\:distinct\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/ActivityLogResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Spatie\\Activitylog\\Models\\Activity\>\:\:whereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/ActivityLogResource.php
-
-		-
 			message: '#^Only booleans are allowed in a ternary operator condition, mixed given\.$#'
 			identifier: ternary.condNotBoolean
 			count: 1
@@ -1676,18 +1292,6 @@ parameters:
 
 		-
 			message: '#^Dynamic call to static method Illuminate\\Contracts\\Auth\\Guard\:\:user\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/ApiTokenResource/Pages/ListApiTokens.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/ApiTokenResource/Pages/ListApiTokens.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:orderBy\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 1
 			path: app/Filament/Admin/Resources/ApiTokenResource/Pages/ListApiTokens.php
@@ -1834,30 +1438,6 @@ parameters:
 			message: '#^Dynamic call to static method Illuminate\\Contracts\\Auth\\Guard\:\:user\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 3
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstanceStatusTransition\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:select\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:whereRaw\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource.php
 
 		-
@@ -2066,30 +1646,6 @@ parameters:
 
 		-
 			message: '#^Dynamic call to static method Illuminate\\Contracts\\Auth\\Guard\:\:user\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ListPolydockAppInstances.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockStoreApp\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ListPolydockAppInstances.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockStoreApp\>\:\:whereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ListPolydockAppInstances.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ListPolydockAppInstances.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:whereIn\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 1
 			path: app/Filament/Admin/Resources/PolydockAppInstanceResource/Pages/ListPolydockAppInstances.php
@@ -2503,39 +2059,9 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 5
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:with\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
-
-		-
 			message: '#^Expression on left side of \?\? is not nullable\.$#'
 			identifier: nullCoalesce.expr
 			count: 1
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
-
-		-
-			message: '#^Only booleans are allowed in &&, App\\Models\\PolydockStoreApp\|null given on the left side\.$#'
-			identifier: booleanAnd.leftNotBoolean
-			count: 2
-			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockStoreApp\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 2
 			path: app/Filament/Admin/Resources/PolydockStoreAppResource.php
 
 		-
@@ -2929,30 +2455,6 @@ parameters:
 			path: app/Filament/Admin/Resources/PolydockStoreResource.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockStoreApp\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 11
-			path: app/Filament/Admin/Resources/PolydockStoreResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockStoreApp\>\:\:whereHas\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 11
-			path: app/Filament/Admin/Resources/PolydockStoreResource.php
-
-		-
-			message: '#^Only booleans are allowed in &&, App\\Models\\PolydockStore\|null given on the left side\.$#'
-			identifier: booleanAnd.leftNotBoolean
-			count: 5
-			path: app/Filament/Admin/Resources/PolydockStoreResource.php
-
-		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockStore\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 5
-			path: app/Filament/Admin/Resources/PolydockStoreResource.php
-
-		-
 			message: '#^Only booleans are allowed in a negated boolean, string\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
@@ -3097,12 +2599,6 @@ parameters:
 			path: app/Filament/Admin/Resources/RoleResource.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/RoleResource.php
-
-		-
 			message: '#^Trying to invoke mixed but it''s not a callable\.$#'
 			identifier: callable.nonCallable
 			count: 1
@@ -3241,24 +2737,6 @@ parameters:
 			path: app/Filament/Admin/Resources/UserGroupResource.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:select\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/UserGroupResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/UserGroupResource.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:whereRaw\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/UserGroupResource.php
-
-		-
 			message: '#^Anonymous function should return string\|null but returns mixed\.$#'
 			identifier: return.type
 			count: 1
@@ -3304,18 +2782,6 @@ parameters:
 			message: '#^Dynamic call to static method Illuminate\\Contracts\\Auth\\Guard\:\:user\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 3
-			path: app/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManager.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManager.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:whereNotIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
 			path: app/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManager.php
 
 		-
@@ -3535,12 +3001,6 @@ parameters:
 			path: app/Filament/Admin/Resources/UserResource.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:whereRaw\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Resources/UserResource.php
-
-		-
 			message: '#^Using nullsafe property access "\?\-\>display_name" on left side of \?\? is unnecessary\. Use \-\> instead\.$#'
 			identifier: nullsafe.neverNull
 			count: 1
@@ -3559,30 +3019,6 @@ parameters:
 			path: app/Filament/Admin/Resources/UserResource/Pages/EditUser.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:groupBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByStoreChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:join\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByStoreChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByStoreChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:select\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByStoreChart.php
-
-		-
 			message: '#^Parameter \#1 \$value of static method Illuminate\\Database\\Connection\:\:raw\(\) expects float\|int\|literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -3593,30 +3029,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByStoreChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:groupBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByTypeChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:join\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByTypeChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByTypeChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:select\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByTypeChart.php
 
 		-
 			message: '#^Parameter \#1 \$value of static method Illuminate\\Database\\Connection\:\:raw\(\) expects float\|int\|literal\-string, non\-falsy\-string given\.$#'
@@ -3631,24 +3043,6 @@ parameters:
 			path: app/Filament/Admin/Widgets/PolydockAppInstancesCreatedByTypeChart.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:groupBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/UserCreatedChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/UserCreatedChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:select\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/UserCreatedChart.php
-
-		-
 			message: '#^Parameter \#1 \$value of static method Illuminate\\Database\\Connection\:\:raw\(\) expects float\|int\|literal\-string, non\-falsy\-string given\.$#'
 			identifier: argument.type
 			count: 1
@@ -3659,24 +3053,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: app/Filament/Admin/Widgets/UserCreatedChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserRemoteRegistration\>\:\:groupBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/UserRemoteRegistrationsChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserRemoteRegistration\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/UserRemoteRegistrationsChart.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserRemoteRegistration\>\:\:select\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Filament/Admin/Widgets/UserRemoteRegistrationsChart.php
 
 		-
 			message: '#^Match arm comparison between ''failed'' and ''failed'' is always true\.$#'
@@ -3789,12 +3165,6 @@ parameters:
 		-
 			message: '#^Cannot call method whereExists\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: app/Forms/BaseHostedForm.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:pluck\(\)\.$#'
-			identifier: staticMethod.dynamicCall
 			count: 1
 			path: app/Forms/BaseHostedForm.php
 
@@ -3913,30 +3283,6 @@ parameters:
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:pluck\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:select\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
 			message: '#^Dynamic call to static method Illuminate\\Http\\Request\:\:validate\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 5
@@ -3962,12 +3308,6 @@ parameters:
 
 		-
 			message: '#^Only booleans are allowed in an if condition, \(App\\Models\\UserGroup&object\{pivot\: Illuminate\\Database\\Eloquent\\Relations\\Pivot\}\)\|null given\.$#'
-			identifier: if.condNotBoolean
-			count: 1
-			path: app/Http/Controllers/Api/AuthenticatedApiController.php
-
-		-
-			message: '#^Only booleans are allowed in an if condition, App\\Models\\UserGroup\|null given\.$#'
 			identifier: if.condNotBoolean
 			count: 1
 			path: app/Http/Controllers/Api/AuthenticatedApiController.php
@@ -4055,24 +3395,6 @@ parameters:
 			identifier: if.condNotBoolean
 			count: 1
 			path: app/Http/Controllers/Api/PolydockInstanceHealthController.php
-
-		-
-			message: '#^Cannot call method where\(\) on mixed\.$#'
-			identifier: method.nonObject
-			count: 2
-			path: app/Http/Controllers/Api/RegionsController.php
-
-		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PolydockStore\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/Api/RegionsController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PolydockStore\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
-			count: 1
-			path: app/Http/Controllers/Api/RegionsController.php
 
 		-
 			message: '#^Call to function in_array\(\) requires parameter \#3 to be set\.$#'
@@ -4195,12 +3517,6 @@ parameters:
 			path: app/Http/Controllers/FormController.php
 
 		-
-			message: '#^Only booleans are allowed in a negated boolean, App\\Forms\\HostedFormInterface\|null given\.$#'
-			identifier: booleanNot.exprNotBoolean
-			count: 2
-			path: app/Http/Controllers/FormController.php
-
-		-
 			message: '#^Only booleans are allowed in a negated boolean, App\\Models\\PolydockHostedForm\|null given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
@@ -4213,12 +3529,6 @@ parameters:
 			path: app/Http/Controllers/FormController.php
 
 		-
-			message: '#^Parameter \#1 \$callback of method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PolydockStore\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: argument.unresolvableType
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
 			message: '#^Parameter \#1 \$validatedData of method App\\Forms\\HostedFormInterface\:\:transformPayload\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
@@ -4227,12 +3537,6 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$array of function implode expects array\<string\>, array\<string, mixed\> given\.$#'
 			identifier: argument.type
-			count: 1
-			path: app/Http/Controllers/FormController.php
-
-		-
-			message: '#^Return type of call to method Illuminate\\Database\\Eloquent\\Collection\<int,App\\Models\\PolydockStore\>\:\:map\(\) contains unresolvable type\.$#'
-			identifier: method.unresolvableReturnType
 			count: 1
 			path: app/Http/Controllers/FormController.php
 
@@ -4306,24 +3610,6 @@ parameters:
 			message: '#^Cannot cast mixed to int\.$#'
 			identifier: cast.int
 			count: 2
-			path: app/Jobs/EnsureUnallocatedAppInstancesJob.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Jobs/EnsureUnallocatedAppInstancesJob.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Jobs/EnsureUnallocatedAppInstancesJob.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:min\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
 			path: app/Jobs/EnsureUnallocatedAppInstancesJob.php
 
 		-
@@ -4543,12 +3829,6 @@ parameters:
 			path: app/Jobs/ProcessUserRemoteRegistration.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Jobs/ProcessUserRemoteRegistration.php
-
-		-
 			message: '#^Loose comparison via "\!\=" is not allowed\.$#'
 			identifier: notEqual.notAllowed
 			count: 1
@@ -4591,27 +3871,9 @@ parameters:
 			path: app/Jobs/ProcessUserRemoteRegistration.php
 
 		-
-			message: '#^Property App\\Models\\UserRemoteRegistration\:\:\$user_group_id \(int\<0, max\>\|null\) does not accept int\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Jobs/ProcessUserRemoteRegistration.php
-
-		-
-			message: '#^Property App\\Models\\UserRemoteRegistration\:\:\$user_id \(int\<0, max\>\|null\) does not accept int\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Jobs/ProcessUserRemoteRegistration.php
-
-		-
 			message: '#^Cannot access property \$value on mixed\.$#'
 			identifier: property.nonObject
 			count: 2
-			path: app/Listeners/CreateWebhookCallForAppInstanceStatusChanged.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockStoreWebhook\>\:\:where\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
 			path: app/Listeners/CreateWebhookCallForAppInstanceStatusChanged.php
 
 		-
@@ -4629,12 +3891,6 @@ parameters:
 		-
 			message: '#^Cannot call method toArray\(\) on App\\Models\\User\|null\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: app/Listeners/CreateWebhookCallForRegistrationStatusSuccessOrFailed.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockStoreWebhook\>\:\:where\(\)\.$#'
-			identifier: staticMethod.dynamicCall
 			count: 1
 			path: app/Listeners/CreateWebhookCallForRegistrationStatusSuccessOrFailed.php
 
@@ -5011,42 +4267,6 @@ parameters:
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstanceStatusTransition\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:delete\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:first\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:value\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockAppInstance.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:where\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 3
-			path: app/Models/PolydockAppInstance.php
-
-		-
 			message: '#^Method App\\Models\\PolydockAppInstance\:\:getDataForLagoonScript\(\) should return array\<string, string\> but returns array\<string, mixed\>\.$#'
 			identifier: return.type
 			count: 1
@@ -5323,30 +4543,6 @@ parameters:
 			path: app/Models/PolydockStore.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:delete\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStore.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:first\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStore.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:value\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStore.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:where\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 3
-			path: app/Models/PolydockStore.php
-
-		-
 			message: '#^Only booleans are allowed in a ternary operator condition, App\\Models\\PolydockVariable\|null given\.$#'
 			identifier: ternary.condNotBoolean
 			count: 1
@@ -5374,72 +4570,6 @@ parameters:
 			message: '#^Class App\\Models\\PolydockStoreApp has PHPDoc tag @property for property \$app_config with no value type specified in iterable type array\.$#'
 			identifier: missingType.iterableValue
 			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orWhereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:orderBy\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:where\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 4
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNotNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 4
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:delete\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:first\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:value\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockVariable\>\:\:where\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 3
 			path: app/Models/PolydockStoreApp.php
 
 		-
@@ -5475,12 +4605,6 @@ parameters:
 		-
 			message: '#^Only booleans are allowed in a ternary operator condition, App\\Models\\PolydockVariable\|null given\.$#'
 			identifier: ternary.condNotBoolean
-			count: 1
-			path: app/Models/PolydockStoreApp.php
-
-		-
-			message: '#^Only booleans are allowed in an if condition, Carbon\\CarbonInterface\|null given\.$#'
-			identifier: if.condNotBoolean
 			count: 1
 			path: app/Models/PolydockStoreApp.php
 
@@ -5539,12 +4663,6 @@ parameters:
 			path: app/Models/User.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:whereKey\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/User.php
-
-		-
 			message: '#^Property App\\Models\\User\:\:\$app_authentication_recovery_codes \(array\<int, string\>\|null\) does not accept array\<string\>\|null\.$#'
 			identifier: assign.propertyType
 			count: 1
@@ -5565,30 +4683,6 @@ parameters:
 		-
 			message: '#^Construct empty\(\) is not allowed\. Use more strict comparison\.$#'
 			identifier: empty.notAllowed
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:limit\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereIn\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 6
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereNull\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: app/Models/UserGroup.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
 			count: 1
 			path: app/Models/UserGroup.php
 
@@ -5773,42 +4867,6 @@ parameters:
 			path: app/Models/UserRemoteRegistration.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Policies/PolydockAppInstancePolicy.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:whereKey\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Policies/PolydockAppInstancePolicy.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockStoreApp\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Policies/PolydockStorePolicy.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockStoreApp\>\:\:whereHas\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Policies/PolydockStorePolicy.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Policies/UserGroupPolicy.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:whereKey\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: app/Policies/UserGroupPolicy.php
-
-		-
 			message: '#^Access to an undefined property App\\Polydock\\Core\\PolydockAppInstanceInterface\:\:\$config\.$#'
 			identifier: property.notFound
 			count: 1
@@ -5887,18 +4945,6 @@ parameters:
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
 		-
-			message: '#^Parameter \#2 \$context of method App\\Polydock\\Core\\PolydockAppBase\:\:error\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
-			message: '#^Parameter \#2 \$context of method App\\Polydock\\Core\\PolydockAppBase\:\:info\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 9
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
 			message: '#^Parameter \#2 \$data of method App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\:\:extractAiCredentialsFromHookData\(\) expects array\<string, mixed\>, mixed given\.$#'
 			identifier: argument.type
 			count: 1
@@ -5908,18 +4954,6 @@ parameters:
 			message: '#^Parameter \#2 \$environmentName of method App\\Polydock\\Clients\\Lagoon\\Client\:\:executeCommandOnProjectEnvironment\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
-			message: '#^Parameter \#2 \$logContext of method App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\:\:generateAndStoreAmazeeAiCredentials\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
-
-		-
-			message: '#^Parameter \#2 \$logContext of method App\\Polydock\\Apps\\AmazeeClaw\\PolydockAmazeeClawAiApp\:\:provisionAndInjectManualAmazeeAiCredentials\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 2
 			path: app/Polydock/Apps/AmazeeClaw/PolydockAmazeeClawAiApp.php
 
 		-
@@ -6094,12 +5128,6 @@ parameters:
 			message: '#^Parameter \#1 \$projectName of method App\\Polydock\\Clients\\Lagoon\\Client\:\:projectExistsByName\(\) expects string, mixed given\.$#'
 			identifier: argument.type
 			count: 1
-			path: app/Polydock/Apps/DependencyTrack/PolydockDependencyTrackApp.php
-
-		-
-			message: '#^Parameter \#2 \$context of method App\\Polydock\\Core\\PolydockAppBase\:\:info\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 7
 			path: app/Polydock/Apps/DependencyTrack/PolydockDependencyTrackApp.php
 
 		-
@@ -6463,12 +5491,6 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
-			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:runLifecyclePhase\(\) has parameter \$body with no value type specified in iterable type array\.$#'
-			identifier: missingType.iterableValue
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
 			message: '#^Method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:validateAppInstanceStatusIsExpectedAndConfigureLagoonClientAndVerifyLagoonValues\(\) has parameter \$logContext with no type specified\.$#'
 			identifier: missingType.parameter
 			count: 1
@@ -6595,37 +5617,13 @@ parameters:
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
-			message: '#^Parameter \#2 \$context of method App\\Polydock\\Core\\PolydockAppBase\:\:error\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 7
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
 			message: '#^Parameter \#2 \$context of method App\\Polydock\\Core\\PolydockAppBase\:\:error\(\) expects array\<string, mixed\>, mixed given\.$#'
 			identifier: argument.type
 			count: 3
 			path: app/Polydock/Apps/Generic/PolydockApp.php
 
 		-
-			message: '#^Parameter \#2 \$context of method App\\Polydock\\Core\\PolydockAppBase\:\:info\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 25
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
 			message: '#^Parameter \#2 \$context of method App\\Polydock\\Core\\PolydockAppBase\:\:info\(\) expects array\<string, mixed\>, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Parameter \#2 \$context of method App\\Polydock\\Core\\PolydockAppBase\:\:warning\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 2
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Parameter \#2 \$context of method App\\Polydock\\Core\\PolydockAppInstanceInterface\:\:warning\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Polydock/Apps/Generic/PolydockApp.php
@@ -6704,18 +5702,6 @@ parameters:
 
 		-
 			message: '#^Parameter \#3 \$deploymentName of method App\\Polydock\\Clients\\Lagoon\\Client\:\:getProjectDeploymentByProjectIdDeploymentName\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Parameter \#3 \$logContext of method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:addLagoonCustomRouteVariable\(\) expects array\<string, mixed\>, array given\.$#'
-			identifier: argument.type
-			count: 1
-			path: app/Polydock/Apps/Generic/PolydockApp.php
-
-		-
-			message: '#^Parameter \#3 \$logContext of method App\\Polydock\\Apps\\Generic\\PolydockApp\:\:resolveClaimUrlFromLagoonRoutes\(\) expects array\<string, mixed\>, array given\.$#'
 			identifier: argument.type
 			count: 1
 			path: app/Polydock/Apps/Generic/PolydockApp.php
@@ -7156,12 +6142,6 @@ parameters:
 			message: '#^Instanceof between App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface and App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface will always evaluate to true\.$#'
 			identifier: instanceof.alwaysTrue
 			count: 1
-			path: app/Polydock/Core/PolydockAppBase.php
-
-		-
-			message: '#^Only booleans are allowed in an if condition, App\\Polydock\\Core\\PolydockAppVariableDefinitionInterface\|null given\.$#'
-			identifier: if.condNotBoolean
-			count: 2
 			path: app/Polydock/Core/PolydockAppBase.php
 
 		-
@@ -8017,12 +6997,6 @@ parameters:
 			path: app/Services/ClaimExistingProjectService.php
 
 		-
-			message: '#^Method App\\Services\\EmailBlockerService\:\:loadDisposableDomains\(\) should return array\<string, mixed\> but returns array\<mixed, true\>\.$#'
-			identifier: return.type
-			count: 1
-			path: app/Services/EmailBlockerService.php
-
-		-
 			message: '#^Only booleans are allowed in a negated boolean, string\|false given\.$#'
 			identifier: booleanNot.exprNotBoolean
 			count: 1
@@ -8047,12 +7021,6 @@ parameters:
 			path: app/Services/EmailBlockerService.php
 
 		-
-			message: '#^Property App\\Services\\EmailBlockerService\:\:\$disposableDomainsCache \(array\<string, mixed\>\|null\) does not accept array\<mixed, true\>\.$#'
-			identifier: assign.propertyType
-			count: 1
-			path: app/Services/EmailBlockerService.php
-
-		-
 			message: '#^Short ternary operator is not allowed\. Use null coalesce operator if applicable or consider using long ternary\.$#'
 			identifier: ternary.shortNotAllowed
 			count: 1
@@ -8062,12 +7030,6 @@ parameters:
 			message: '#^Dynamic call to static method Illuminate\\Contracts\\Auth\\Guard\:\:user\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 4
-			path: app/Services/GroupMembershipService.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:whereKey\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
 			path: app/Services/GroupMembershipService.php
 
 		-
@@ -8611,18 +7573,6 @@ parameters:
 			path: database/migrations/2026_02_05_133703_move_lagoon_deploy_private_key_to_variables.php
 
 		-
-			message: '#^Cannot access offset ''model_has_permissions'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: database/migrations/2026_05_13_132126_create_permission_tables.php
-
-		-
-			message: '#^Cannot access offset ''model_has_roles'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: database/migrations/2026_05_13_132126_create_permission_tables.php
-
-		-
 			message: '#^Cannot access offset ''model_morph_key'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 8
@@ -8635,27 +7585,9 @@ parameters:
 			path: database/migrations/2026_05_13_132126_create_permission_tables.php
 
 		-
-			message: '#^Cannot access offset ''permissions'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
-			path: database/migrations/2026_05_13_132126_create_permission_tables.php
-
-		-
-			message: '#^Cannot access offset ''role_has_permissions'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 2
-			path: database/migrations/2026_05_13_132126_create_permission_tables.php
-
-		-
 			message: '#^Cannot access offset ''role_pivot_key'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
-			path: database/migrations/2026_05_13_132126_create_permission_tables.php
-
-		-
-			message: '#^Cannot access offset ''roles'' on mixed\.$#'
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 4
 			path: database/migrations/2026_05_13_132126_create_permission_tables.php
 
 		-
@@ -8728,24 +7660,6 @@ parameters:
 			message: '#^Parameter \#1 \$name of method Illuminate\\Cache\\CacheManager\:\:store\(\) expects string\|UnitEnum\|null, mixed given\.$#'
 			identifier: argument.type
 			count: 1
-			path: database/migrations/2026_05_13_132126_create_permission_tables.php
-
-		-
-			message: '#^Parameter \#1 \$table of method Illuminate\\Database\\Schema\\ForeignKeyDefinition\:\:on\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 4
-			path: database/migrations/2026_05_13_132126_create_permission_tables.php
-
-		-
-			message: '#^Parameter \#1 \$table of static method Illuminate\\Support\\Facades\\Schema\:\:create\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 5
-			path: database/migrations/2026_05_13_132126_create_permission_tables.php
-
-		-
-			message: '#^Parameter \#1 \$table of static method Illuminate\\Support\\Facades\\Schema\:\:dropIfExists\(\) expects string, mixed given\.$#'
-			identifier: argument.type
-			count: 5
 			path: database/migrations/2026_05_13_132126_create_permission_tables.php
 
 		-
@@ -9217,24 +8131,6 @@ parameters:
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Api/AuthenticatedApiTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 3
-			path: tests/Feature/Api/AuthenticatedApiTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\UserGroup\>\:\:whereKey\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: tests/Feature/Api/AuthenticatedApiTest.php
-
-		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertArrayHasKey\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 2
@@ -9249,7 +8145,7 @@ parameters:
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertEquals\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 62
+			count: 63
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
@@ -9267,13 +8163,13 @@ parameters:
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertNotNull\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 7
+			count: 11
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertNull\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 3
+			count: 5
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
@@ -9291,7 +8187,7 @@ parameters:
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertTrue\(\)\.$#'
 			identifier: staticMethod.dynamicCall
-			count: 3
+			count: 4
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
@@ -9327,7 +8223,7 @@ parameters:
 		-
 			message: '#^Parameter \#2 \$guardName of static method Spatie\\Permission\\Models\\Role\:\:findOrCreate\(\) expects string\|null, mixed given\.$#'
 			identifier: argument.type
-			count: 7
+			count: 10
 			path: tests/Feature/Api/AuthenticatedApiTest.php
 
 		-
@@ -9613,18 +8509,6 @@ parameters:
 			path: tests/Feature/Audit/GroupMembershipAuditTest.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: tests/Feature/Audit/GroupMembershipAuditTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:whereKey\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 3
-			path: tests/Feature/Audit/GroupMembershipAuditTest.php
-
-		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertCount\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 3
@@ -9784,18 +8668,6 @@ parameters:
 			message: '#^Cannot call method hasRole\(\) on App\\Models\\User\|null\.$#'
 			identifier: method.nonObject
 			count: 5
-			path: tests/Feature/Auth/OktaLoginTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Spatie\\Activitylog\\Models\\Activity\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Auth/OktaLoginTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:fillForm\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 3
 			path: tests/Feature/Auth/OktaLoginTest.php
 
 		-
@@ -10447,18 +9319,6 @@ parameters:
 			path: tests/Feature/Controllers/FormControllerTest.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Database/HostedFormsSeederTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:pluck\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Database/HostedFormsSeederTest.php
-
-		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertCount\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 1
@@ -10485,18 +9345,6 @@ parameters:
 		-
 			message: '#^Cannot call method is\(\) on App\\Models\\PolydockStoreApp\|null\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/Deployment/DeploymentModelTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Deployment/DeploymentModelTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:whereKey\(\)\.$#'
-			identifier: staticMethod.dynamicCall
 			count: 1
 			path: tests/Feature/Deployment/DeploymentModelTest.php
 
@@ -10699,42 +9547,6 @@ parameters:
 			path: tests/Feature/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManagerTest.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:exists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: tests/Feature/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManagerTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\User\>\:\:where\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 4
-			path: tests/Feature/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManagerTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Spatie\\Activitylog\\Models\\Activity\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManagerTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:assertHasNoTableActionErrors\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 4
-			path: tests/Feature/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManagerTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:assertHasTableActionErrors\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: tests/Feature/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManagerTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:callTableAction\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 6
-			path: tests/Feature/Filament/Admin/Resources/UserGroupResource/RelationManagers/UsersRelationManagerTest.php
-
-		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertEquals\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 5
@@ -10774,24 +9586,6 @@ parameters:
 			message: '#^Cannot access property \$id on mixed\.$#'
 			identifier: property.nonObject
 			count: 1
-			path: tests/Feature/Filament/CreatePolydockAppInstanceTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:assertHasFormErrors\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/CreatePolydockAppInstanceTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:assertHasNoFormErrors\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: tests/Feature/Filament/CreatePolydockAppInstanceTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:fillForm\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 4
 			path: tests/Feature/Filament/CreatePolydockAppInstanceTest.php
 
 		-
@@ -10837,36 +9631,6 @@ parameters:
 			path: tests/Feature/Filament/CreatePolydockAppInstanceTest.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Testing\\TestResponse\<Symfony\\Component\\HttpFoundation\\Response\>\:\:assertSuccessful\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/DeploymentAdminTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:assertFormFieldExists\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 3
-			path: tests/Feature/Filament/DeploymentAdminTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:assertHasNoFormErrors\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/DeploymentAdminTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:callTableBulkAction\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/DeploymentAdminTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:fillForm\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/DeploymentAdminTest.php
-
-		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertCount\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 1
@@ -10903,12 +9667,6 @@ parameters:
 			path: tests/Feature/Filament/DeploymentAdminTest.php
 
 		-
-			message: '#^Dynamic call to static method Illuminate\\Testing\\TestResponse\<Symfony\\Component\\HttpFoundation\\Response\>\:\:assertSuccessful\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/InstanceListTabBadgesTest.php
-
-		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertSame\(\)\.$#'
 			identifier: staticMethod.dynamicCall
 			count: 9
@@ -10919,30 +9677,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/Filament/InstanceListTabBadgesTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<Illuminate\\Database\\Eloquent\\Model\>\:\:pluck\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/PolydockHostedFormResourceTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Testing\\TestResponse\<Symfony\\Component\\HttpFoundation\\Response\>\:\:assertSuccessful\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/PolydockHostedFormResourceTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:assertHasNoFormErrors\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/PolydockHostedFormResourceTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:fillForm\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Feature/Filament/PolydockHostedFormResourceTest.php
 
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertEquals\(\)\.$#'
@@ -10957,12 +9691,6 @@ parameters:
 			path: tests/Feature/Filament/PolydockHostedFormResourceTest.php
 
 		-
-			message: '#^Call to an undefined method Illuminate\\Testing\\TestResponse\:\:assertFormFieldExists\(\)\.$#'
-			identifier: method.notFound
-			count: 1
-			path: tests/Feature/Filament/ResourcePagesSmokeTest.php
-
-		-
 			message: '#^Cannot access offset ''create''\|''index'' on mixed\.$#'
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -10971,18 +9699,6 @@ parameters:
 		-
 			message: '#^Cannot call method getPage\(\) on mixed\.$#'
 			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/Filament/ResourcePagesSmokeTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Testing\\TestResponse\<Symfony\\Component\\HttpFoundation\\Response\>\:\:assertSuccessful\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 2
-			path: tests/Feature/Filament/ResourcePagesSmokeTest.php
-
-		-
-			message: '#^Dynamic call to static method Livewire\\Features\\SupportTesting\\Testable\<Livewire\\Component\>\:\:fillForm\(\)\.$#'
-			identifier: staticMethod.dynamicCall
 			count: 1
 			path: tests/Feature/Filament/ResourcePagesSmokeTest.php
 
@@ -11044,12 +9760,6 @@ parameters:
 			message: '#^Cannot access property \$status on App\\Models\\PolydockAppInstance\|null\.$#'
 			identifier: property.nonObject
 			count: 9
-			path: tests/Feature/Jobs/EnsureUnallocatedThrottlingTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
 			path: tests/Feature/Jobs/EnsureUnallocatedThrottlingTest.php
 
 		-
@@ -12071,12 +10781,6 @@ parameters:
 			identifier: staticMethod.dynamicCall
 			count: 5
 			path: tests/Unit/Models/PolydockProductTypeTest.php
-
-		-
-			message: '#^Dynamic call to static method Illuminate\\Database\\Eloquent\\Builder\<App\\Models\\PolydockAppInstance\>\:\:count\(\)\.$#'
-			identifier: staticMethod.dynamicCall
-			count: 1
-			path: tests/Unit/Models/PolydockStoreAppNamingConfigTest.php
 
 		-
 			message: '#^Dynamic call to static method PHPUnit\\Framework\\Assert\:\:assertEquals\(\)\.$#'

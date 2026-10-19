@@ -371,10 +371,10 @@ class PolydockApp extends PolydockAppBase
      * and mark *_COMPLETED — mapping thrown exceptions to *_FAILED. The body
      * may itself set a failure status and return non-null to short-circuit.
      *
-     * @param  callable(PolydockAppInstanceInterface, array): ?PolydockAppInstanceInterface  $body
-     *                                                                                              Receives ($appInstance, $logContext). Return the instance to
-     *                                                                                              short-circuit (body already set a terminal status), or null to
-     *                                                                                              let the template mark the stage completed.
+     * @param  callable(PolydockAppInstanceInterface, array<string, mixed>): ?PolydockAppInstanceInterface  $body
+     *                                                                                                             Receives ($appInstance, $logContext). Return the instance to
+     *                                                                                                             short-circuit (body already set a terminal status), or null to
+     *                                                                                                             let the template mark the stage completed.
      */
     protected function runLifecyclePhase(
         PolydockAppInstanceInterface $appInstance,
