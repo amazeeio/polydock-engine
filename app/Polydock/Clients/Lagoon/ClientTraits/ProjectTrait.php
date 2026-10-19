@@ -235,8 +235,6 @@ trait ProjectTrait
             throw new LagoonClientInitializeRequiredToInteractException;
         }
 
-        $projectId = $projectIdOrName;
-
         // If a non-numeric string is passed, treat it as a project name and look up the ID.
         if (! is_numeric($projectIdOrName)) {
             $projectData = $this->getProjectByName($projectIdOrName);
