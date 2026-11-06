@@ -733,7 +733,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
 
         if ($key === 'polydock-app-instance-health-webhook-url' && ! empty($value)) {
             $token = config('polydock.health_token');
-            if (! empty($token)) {
+            if (is_string($token) && $token !== '') {
                 $value = $this->stripTokenFromUrl((string) $value);
                 $separator = str_contains($value, '?') ? '&' : '?';
 
