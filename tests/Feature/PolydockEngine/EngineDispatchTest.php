@@ -174,7 +174,7 @@ class EngineDispatchTest extends TestCase
             $this->fail('Expected a status flow exception');
         } catch (PolydockAppInstanceStatusFlowException) {
             // The failed run must leave the instance in the stage's FAILED status.
-            $this->assertSame(PolydockAppInstanceStatus::CREATE_FAILED, $instance->fresh()->status);
+            self::assertSame(PolydockAppInstanceStatus::CREATE_FAILED, $instance->fresh()?->status);
         }
     }
 
@@ -189,7 +189,7 @@ class EngineDispatchTest extends TestCase
             $this->engine->processPolydockAppInstance($instance);
             $this->fail('Expected a status flow exception');
         } catch (PolydockAppInstanceStatusFlowException) {
-            $this->assertSame(PolydockAppInstanceStatus::PRE_CREATE_FAILED, $instance->fresh()->status);
+            self::assertSame(PolydockAppInstanceStatus::PRE_CREATE_FAILED, $instance->fresh()?->status);
         }
     }
 

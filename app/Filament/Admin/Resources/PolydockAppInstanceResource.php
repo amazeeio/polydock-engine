@@ -163,11 +163,7 @@ class PolydockAppInstanceResource extends Resource
             ])
             ->filters([
                 SelectFilter::make('status')
-                    ->options(
-                        collect(PolydockAppInstanceStatus::cases())
-                            ->mapWithKeys(fn ($status): array => [$status->value => $status->getLabel()])
-                            ->toArray(),
-                    )
+                    ->options(PolydockAppInstanceStatus::getOptions())
                     ->multiple()
                     ->label('Instance Status')
                     ->indicator('Status'),
