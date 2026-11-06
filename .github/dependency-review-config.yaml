@@ -20,6 +20,8 @@ allow-licenses:
 - 'UPL-1.0'
 - 'X11'
 - 'Zlib'
+# permissive, OSI-approved (isaacs: glob, minimatch, path-scurry)
+- 'BlueOak-1.0.0'
 # Google's patent licence for Go
 - 'LicenseRef-scancode-google-patent-license-golang'
 # nette/* are dual-licensed (BSD-3-Clause OR GPL); GitHub misreads the composer list as AND
@@ -27,3 +29,5 @@ allow-dependencies-licenses:
 - 'pkg:composer/nette/php-generator'
 - 'pkg:composer/nette/schema'
 - 'pkg:composer/nette/utils'
+# browser-support data (CC-BY-4.0), build-time only
+- 'pkg:npm/caniuse-lite'
