@@ -43,7 +43,9 @@ class ResourcePagesSmokeTest extends TestCase
         Filament::setCurrentPanel(Filament::getPanel('admin'));
         $this->actingAs($admin);
 
-        $resources = Filament::getPanel('admin')->getResources();
+        $panel = Filament::getPanel('admin');
+        self::assertNotNull($panel);
+        $resources = $panel->getResources();
         $this->assertNotEmpty($resources, 'No Filament resources were discovered.');
 
         // Collect rather than fail fast, so one broken schema does not hide
