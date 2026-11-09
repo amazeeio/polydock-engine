@@ -66,7 +66,7 @@ class ActivityLogServiceProvider extends ServiceProvider
         // Always record whether the causer is a service-account
         $properties['is_service_account'] = $user !== null
             && method_exists($user, 'hasRole')
-            && $user->hasRole('service-account');
+            && $user->hasRole('service-account') === true;
 
         $activity->properties = collect($properties);
     }

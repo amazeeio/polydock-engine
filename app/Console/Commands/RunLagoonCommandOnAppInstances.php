@@ -267,7 +267,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
 
                 $projectName = $instance->getKeyValue(key: 'lagoon-project-name');
 
-                if ($result->successful()) {
+                if ($result->successful() === true) {
                     // Output already contains "SUCCESS" or "FAILED" messages from child process
                     $this->output->write(messages: $result->output());
                 } else {

@@ -67,7 +67,7 @@ trait PostCreateAppInstanceTrait
 
                     $productType = $appInstance->getKeyValue('product-type') ?: 'generic';
                     if ($productType === 'generic' && method_exists($appInstance, 'storeApp') && $appInstance->storeApp) {
-                        if (isset($appInstance->storeApp->productType) && $appInstance->storeApp->productType) {
+                        if (isset($appInstance->storeApp->productType)) {
                             $productType = $appInstance->storeApp->productType->slug;
                         }
                     }
