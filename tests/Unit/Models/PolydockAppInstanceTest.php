@@ -86,6 +86,12 @@ class PolydockAppInstanceTest extends TestCase
         // THEN getKeyValue() returns the rotated token immediately without any DB update
         $this->assertStringContainsString('token=rotated-token-v2', $instance->getKeyValue('polydock-app-instance-health-webhook-url'));
         $this->assertStringNotContainsString('token-v1', $instance->getKeyValue('polydock-app-instance-health-webhook-url'));
+
+        // AND a token of literally "0" is still a configured token
+        Config::set('polydock.health_token', '0');
+        $url = $instance->getKeyValue('polydock-app-instance-health-webhook-url');
+        self::assertIsString($url);
+        self::assertStringContainsString('token=0', $url);
     }
 
     public function test_backward_compatibility_with_old_baked_in_tokens(): void

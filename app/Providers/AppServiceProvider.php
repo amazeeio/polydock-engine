@@ -97,7 +97,7 @@ class AppServiceProvider extends ServiceProvider
             // A valid health token isn't guessing, so let it through unthrottled.
             $expectedToken = config('polydock.health_token');
             $suppliedToken = $request->query('token');
-            if (! empty($expectedToken) && is_string($suppliedToken) && hash_equals((string) $expectedToken, $suppliedToken)) {
+            if (is_string($expectedToken) && $expectedToken !== '' && is_string($suppliedToken) && hash_equals($expectedToken, $suppliedToken)) {
                 return Limit::none();
             }
 
