@@ -459,7 +459,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             }
         });
 
-        static::updated(function ($appInstance): void {
+        static::updated(function (PolydockAppInstance $appInstance): void {
             if ($appInstance->wasChanged('status')) {
                 $appInstance->info('MODEL: Status changed for app instance', [
                     'app_instance_id' => $appInstance->id,
@@ -486,16 +486,16 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         $fieldKeyContainer = 'lagoon_'.$fieldKeyPart.'_container';
         $dataKeyContainer = 'lagoon-'.$dataKeyPart.'-script-container';
 
-        if ($storeApp->{$fieldKeyScript}) {
+        if (filled($storeApp->{$fieldKeyScript})) {
             $data[$dataKeyScript] = $storeApp->{$fieldKeyScript};
 
-            if ($storeApp->{$fieldKeyService}) {
+            if (filled($storeApp->{$fieldKeyService})) {
                 $data[$dataKeyService] = $storeApp->{$fieldKeyService};
             } else {
                 $data[$dataKeyService] = 'cli';
             }
 
-            if ($storeApp->{$fieldKeyContainer}) {
+            if (filled($storeApp->{$fieldKeyContainer})) {
                 $data[$dataKeyContainer] = $storeApp->{$fieldKeyContainer};
             } else {
                 $data[$dataKeyContainer] = 'cli';

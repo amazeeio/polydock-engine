@@ -10,6 +10,7 @@ use App\Models\PolydockStoreWebhook;
 use App\Models\PolydockStoreWebhookCall;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
@@ -59,7 +60,7 @@ class ProcessPolydockStoreWebhookCallTest extends TestCase
         $this->assertNotNull($call->processed_at);
         $this->assertNull($call->exception);
 
-        Http::assertSent(fn ($request): bool => $request->url() === 'https://example.test/hook'
+        Http::assertSent(fn (Request $request): bool => $request->url() === 'https://example.test/hook'
             && $request->hasHeader('X-Polydock-Event', 'app.created')
             && $request->hasHeader('X-Polydock-Delivery', (string) $call->id)
             && $request->hasHeader('X-Polydock-Attempt'));

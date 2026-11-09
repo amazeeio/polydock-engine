@@ -208,7 +208,7 @@ class UserResource extends Resource
                             ->label('Member of')
                             ->listWithLineBreaks()
                             ->bulleted()
-                            ->url(fn ($record): ?string => $record->groups->isNotEmpty() ? UserGroupResource::getUrl('view', ['record' => $record->groups->first()]) : null)
+                            ->url(fn (User $record): ?string => $record->groups->isNotEmpty() ? UserGroupResource::getUrl('view', ['record' => $record->groups->first()]) : null)
                             ->openUrlInNewTab(),
                     ])
                     ->columnSpan(1),

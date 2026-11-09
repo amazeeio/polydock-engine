@@ -181,7 +181,7 @@ class UsersRelationManager extends RelationManager
                             $userId = $user->id;
                         }
 
-                        if ($userId) {
+                        if (filled($userId)) {
                             $user ??= User::findOrFail($userId);
                             /** @var UserGroup $group */
                             $group = $livewire->getOwnerRecord();

@@ -86,33 +86,29 @@ class PolydockAppInstanceResource extends Resource
                     ->searchable(),
                 TextColumn::make('status')
                     ->badge()
-                    ->color(fn ($state, $record) => $record->trashed() ? 'gray' : PolydockAppInstanceStatus::from($state->value)->getColor())
-                    ->icon(fn ($state, $record) => $record->trashed() ? 'heroicon-o-archive-box-x-mark' : PolydockAppInstanceStatus::from($state->value)->getIcon())
-                    ->formatStateUsing(fn ($state, $record) => $record->trashed() ? 'Purged' : PolydockAppInstanceStatus::from($state->value)->getLabel())
+                    ->color(fn ($state, PolydockAppInstance $record) => $record->trashed() ? 'gray' : PolydockAppInstanceStatus::from($state->value)->getColor())
+                    ->icon(fn ($state, PolydockAppInstance $record) => $record->trashed() ? 'heroicon-o-archive-box-x-mark' : PolydockAppInstanceStatus::from($state->value)->getIcon())
+                    ->formatStateUsing(fn ($state, PolydockAppInstance $record) => $record->trashed() ? 'Purged' : PolydockAppInstanceStatus::from($state->value)->getLabel())
                     ->sortable(),
                 TextColumn::make('is_trial')
-                    ->state(fn ($record): string => $record->is_trial ? 'Yes' : 'No')
+                    ->state(fn (PolydockAppInstance $record): string => $record->is_trial ? 'Yes' : 'No')
                     ->label('Trial'),
                 TextColumn::make('trial_ends_at')
                     ->label('Trial Ends At')
-                    ->description(fn ($record): string => $record->trial_completed ? 'Trial completed' : 'Trial active')
+                    ->description(fn (PolydockAppInstance $record): string => $record->trial_completed ? 'Trial completed' : 'Trial active')
                     ->dateTime()
                     ->sortable(),
                 TextColumn::make('send_midtrial_email_at')
                     ->label('Midtrial Email')
-                    ->description(fn ($record): string => $record->midtrial_email_sent ? 'Sent' : 'Pending')
-                    ->state(fn ($record) => $record->send_midtrial_email_at
-                        ? $record->send_midtrial_email_at->format('Y-m-d H:i:s')
-                        : ''),
+                    ->description(fn (PolydockAppInstance $record): string => $record->midtrial_email_sent ? 'Sent' : 'Pending')
+                    ->state(fn (PolydockAppInstance $record) => $record->send_midtrial_email_at?->format('Y-m-d H:i:s') ?? ''),
                 TextColumn::make('send_one_day_left_email_at')
                     ->label('1D Left Email')
-                    ->description(fn ($record): string => $record->one_day_left_email_sent ? 'Sent' : 'Pending')
-                    ->state(fn ($record) => $record->send_one_day_left_email_at
-                        ? $record->send_one_day_left_email_at->format('Y-m-d H:i:s')
-                        : ''),
+                    ->description(fn (PolydockAppInstance $record): string => $record->one_day_left_email_sent ? 'Sent' : 'Pending')
+                    ->state(fn (PolydockAppInstance $record) => $record->send_one_day_left_email_at?->format('Y-m-d H:i:s') ?? ''),
                 TextColumn::make('trial_complete_email_sent')
                     ->label('Trial Complete Email')
-                    ->state(fn ($record): string => $record->is_trial && $record->trial_complete_email_sent
+                    ->state(fn (PolydockAppInstance $record): string => $record->is_trial && $record->trial_complete_email_sent
                         ? 'Sent'
                         : ($record->is_trial ? 'Pending' : '')),
                 TextColumn::make('last_deployment_status')
@@ -176,7 +172,7 @@ class PolydockAppInstanceResource extends Resource
                         'polling' => 'Polling',
                     ])
                     ->query(function ($query, array $data) {
-                        if (! $data['value']) {
+                        if (blank($data['value'])) {
                             return $query;
                         }
 
@@ -203,7 +199,7 @@ class PolydockAppInstanceResource extends Resource
                         'purge' => 'Purge Stage',
                     ])
                     ->query(function ($query, array $data) {
-                        if (! $data['value']) {
+                        if (blank($data['value'])) {
                             return $query;
                         }
 
@@ -322,10 +318,10 @@ class PolydockAppInstanceResource extends Resource
                             ->schema([
                                 TextEntry::make('status')
                                     ->badge()
-                                    ->color(fn ($state, $record) => $record->trashed() ? 'gray' : PolydockAppInstanceStatus::from($state->value)->getColor())
-                                    ->icon(fn ($state, $record) => $record->trashed() ? 'heroicon-o-archive-box-x-mark' : PolydockAppInstanceStatus::from($state->value)->getIcon())
+                                    ->color(fn ($state, PolydockAppInstance $record) => $record->trashed() ? 'gray' : PolydockAppInstanceStatus::from($state->value)->getColor())
+                                    ->icon(fn ($state, PolydockAppInstance $record) => $record->trashed() ? 'heroicon-o-archive-box-x-mark' : PolydockAppInstanceStatus::from($state->value)->getIcon())
                                     ->formatStateUsing(
-                                        fn ($state, $record) => $record->trashed() ? 'Purged' : PolydockAppInstanceStatus::from($state->value)->getLabel(),
+                                        fn ($state, PolydockAppInstance $record) => $record->trashed() ? 'Purged' : PolydockAppInstanceStatus::from($state->value)->getLabel(),
                                     ),
                                 TextEntry::make('status_message')
                                     ->label('Status Message'),
@@ -369,7 +365,7 @@ class PolydockAppInstanceResource extends Resource
                         TextEntry::make('userGroup.name')
                             ->label('User Group')
                             ->visible(fn ($record): bool => $record->userGroup !== null)
-                            ->url(fn ($record): ?string => $record->userGroup ? UserGroupResource::getUrl('view', ['record' => $record->userGroup]) : null)
+                            ->url(fn (PolydockAppInstance $record): ?string => $record->userGroup !== null ? UserGroupResource::getUrl('view', ['record' => $record->userGroup]) : null)
                             ->openUrlInNewTab()
                             ->icon('heroicon-m-user-group')
                             ->iconColor('success'),

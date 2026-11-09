@@ -24,7 +24,7 @@ class ConsoleCommandsTest extends TestCase
 
         $count = 0;
         foreach ($files as $file) {
-            if ($file->isDir()) {
+            if (! $file instanceof \SplFileInfo || $file->isDir()) {
                 continue;
             }
             if ($file->getExtension() !== 'php') {

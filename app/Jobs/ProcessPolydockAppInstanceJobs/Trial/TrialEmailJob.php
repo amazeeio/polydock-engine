@@ -4,6 +4,7 @@ namespace App\Jobs\ProcessPolydockAppInstanceJobs\Trial;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\BaseJob;
 use App\Mail\TrialEmailMail;
+use Carbon\CarbonInterface;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
@@ -45,12 +46,14 @@ abstract class TrialEmailJob extends BaseJob
             $this->sentFlag => $instance->{$this->sentFlag},
         ];
 
+        $sendAt = $instance->{$this->atField};
+
         if (
             ! $instance->is_trial
-            || ! $instance->storeApp->{$this->enabledField}
-            || ! $instance->{$this->atField}
-            || ! $instance->{$this->atField}->isPast()
-            || $instance->{$this->sentFlag}
+            || $instance->storeApp->{$this->enabledField} !== true
+            || ! $sendAt instanceof CarbonInterface
+            || ! $sendAt->isPast()
+            || $instance->{$this->sentFlag} === true
         ) {
             $instance->info("{$this->label} email not sent", $context);
             Log::info("{$this->label} email not sent", $context);

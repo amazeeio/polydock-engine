@@ -190,8 +190,8 @@ class CreatePolydockAppInstance extends Page
                 'job_title' => $data['job_title'] ?? '',
                 'register_type' => 'REQUEST_TRIAL',
                 'trial_app' => $data['trial_app'],
-                'aup_and_privacy_acceptance' => $data['aup_and_privacy_acceptance'] ? 1 : 0,
-                'opt_in_to_product_updates' => $data['opt_in_to_product_updates'] ? 1 : 0,
+                'aup_and_privacy_acceptance' => filter_var($data['aup_and_privacy_acceptance'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
+                'opt_in_to_product_updates' => filter_var($data['opt_in_to_product_updates'], FILTER_VALIDATE_BOOLEAN) ? 1 : 0,
                 'admin_created' => true,
                 'is_trial' => $data['is_trial'],
             ];

@@ -151,7 +151,9 @@ class ViewPolydockAppInstance extends ViewRecord
                                     ->latest()
                                     ->first();
 
-                                return $lastDeployLog ? $lastDeployLog->created_at->toDateTimeString().' (Polydock DB)' : 'Never';
+                                $deployedAt = $lastDeployLog?->created_at?->toDateTimeString();
+
+                                return $deployedAt !== null ? $deployedAt.' (Polydock DB)' : 'Never';
                             } catch (Throwable $e) {
                                 return 'Error loading: '.$e->getMessage();
                             }
@@ -421,7 +423,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->label('Force Full Delete (Lagoon)')
                 ->icon('heroicon-o-trash')
                 ->color('danger')
-                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::REMOVED && ! $record->trashed())
+                ->visible(fn (PolydockAppInstance $record): bool => $record->status === PolydockAppInstanceStatus::REMOVED && ! $record->trashed())
                 ->requiresConfirmation()
                 ->modalHeading('Force full Lagoon project deletion?')
                 ->modalDescription('This skips the grace period and immediately tries to delete the Lagoon project. If environments are still being torn down, this will keep retrying until they are gone or the polling cap is reached.')
@@ -455,7 +457,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->label('Retry Purge')
                 ->icon('heroicon-o-arrow-path')
                 ->color('warning')
-                ->visible(fn ($record): bool => $record->status === PolydockAppInstanceStatus::PURGE_FAILED && ! $record->trashed())
+                ->visible(fn (PolydockAppInstance $record): bool => $record->status === PolydockAppInstanceStatus::PURGE_FAILED && ! $record->trashed())
                 ->requiresConfirmation()
                 ->modalDescription('Resets purge attempts and returns the instance to REMOVED with a fresh grace period before purge dispatch.')
                 ->action(function (PolydockAppInstance $record): void {
@@ -489,7 +491,7 @@ class ViewPolydockAppInstance extends ViewRecord
                 ->label('Cancel Force Delete')
                 ->icon('heroicon-o-x-circle')
                 ->color('gray')
-                ->visible(fn ($record): bool => $record->force_purge_requested_at !== null
+                ->visible(fn (PolydockAppInstance $record): bool => $record->force_purge_requested_at !== null
                     && $record->status === PolydockAppInstanceStatus::REMOVED
                     && ! $record->trashed())
                 ->requiresConfirmation()
