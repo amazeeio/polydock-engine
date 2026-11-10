@@ -10,12 +10,19 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessTrialCompleteStageRemovalJob extends BaseJob
 {
+    /** @var list<PolydockAppInstanceStatus> */
+    public const array REMOVABLE_STATUSES = [
+        PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
+        PolydockAppInstanceStatus::RUNNING_UNHEALTHY,
+        PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE,
+    ];
+
     public function handle(): void
     {
         $this->polydockJobStart();
 
         if (
-            $this->appInstance->status !== PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED
+            ! \in_array($this->appInstance->status, self::REMOVABLE_STATUSES, true)
             || ! $this->appInstance->isTrialExpired()
         ) {
             $this->appInstance->info('Trial complete stage removal not initiated - instance not in correct status', [
