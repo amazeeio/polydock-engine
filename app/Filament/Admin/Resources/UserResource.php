@@ -26,6 +26,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use UnitEnum;
 
 class UserResource extends Resource
@@ -89,6 +90,8 @@ class UserResource extends Resource
                     ->getOptionLabelFromRecordUsing(fn ($record) => $record->display_name)
                     ->label('Roles')
                     ->helperText('Assign platform-level roles to this user.')
+                    // Role assignment is a super_admin action; update_user alone must not grant roles.
+                    ->visible(fn (): bool => Auth::user()?->hasRole('super_admin') ?? false)
                     ->columns(2),
             ]);
     }
