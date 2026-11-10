@@ -87,7 +87,9 @@ abstract class BaseHostedForm implements HostedFormInterface
             'www.amazee.ai',
         ];
 
-        if (! app()->isProduction()) {
+        // APP_ENV on Lagoon is the environment name (prod, main, dev), never "production",
+        // so the Lagoon environment type is the reliable production signal.
+        if (config('polydock.lagoon_environment_type') !== 'production') {
             $domains[] = 'localhost';
         }
 

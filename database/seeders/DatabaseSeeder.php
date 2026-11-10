@@ -48,7 +48,9 @@ class DatabaseSeeder extends Seeder
             SupportRoleSeeder::class,
         ]);
 
-        if (! app()->environment('production', 'prod')) {
+        // Demo users (password "password") must never be seeded on a production Lagoon
+        // environment, whatever its branch is called (prod, main, ...).
+        if (config('polydock.lagoon_environment_type') !== 'production' && ! app()->environment('production', 'prod')) {
             // Create Fred and his team
             $fred = User::create([
                 'first_name' => 'Fred',
