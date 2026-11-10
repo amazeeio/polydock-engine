@@ -1,5 +1,10 @@
 docker-compose-yaml: ./lagoon-docker-compose.yml
 
+routes:
+  autogenerate:
+    # Never serve the app (login page included) over plain HTTP.
+    insecure: Redirect
+
 tasks:
   pre-rollout:
     - run:
