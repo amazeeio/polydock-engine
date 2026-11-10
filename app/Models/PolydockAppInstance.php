@@ -136,6 +136,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'ssh_key',
         'lagoon_deploy_private_key',
         'recaptcha',
+        'credentials',             // e.g. amazee-ai-generated-credentials (LLM token, vector DB password)
+        'claim-command-output',    // one-time login URL, may embed an API key
 
         // Regex patterns
         '/^.*_key$/',              // Anything ending with _key
