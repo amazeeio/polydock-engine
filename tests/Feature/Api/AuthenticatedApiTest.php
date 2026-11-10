@@ -16,6 +16,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\Sanctum;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
@@ -275,6 +276,60 @@ class AuthenticatedApiTest extends TestCase
 
         $this->deleteJson("/api/groups/{$oldGroup->id}")->assertStatus(409);
         $this->assertNotNull(UserGroup::find($oldGroup->id));
+    }
+
+    #[DataProvider('reservedConfigKeys')]
+    public function test_create_instance_rejects_reserved_config_keys(string $key): void
+    {
+        $role = Role::findOrCreate('service-account');
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $response = $this->postJson('/api/instance', [
+            'email' => 'new.user@example.com',
+            'storeAppId' => $this->storeApp->uuid,
+            'config' => [$key => 'attacker-value'],
+        ]);
+
+        $response->assertUnprocessable()->assertJsonValidationErrors('config');
+        self::assertSame(0, PolydockAppInstance::count());
+    }
+
+    /**
+     * @return array<string, array{string}>
+     */
+    public static function reservedConfigKeys(): array
+    {
+        return [
+            'deploy git' => ['lagoon-deploy-git'],
+            'deploy branch' => ['lagoon-deploy-branch'],
+            'deploy key' => ['lagoon-deploy-private-key'],
+            'post-deploy script' => ['lagoon-post-deploy-script'],
+            'post-deploy service' => ['lagoon-post-deploy-script-service'],
+            'claim container' => ['lagoon-claim-script-container'],
+            'health webhook' => ['polydock-app-instance-health-webhook-url'],
+            'admin api key' => ['app-admin-api-key'],
+            'adopted flag' => ['adopted'],
+            'purge project name' => ['project_name'],
+            'dot path' => ['some.nested'],
+        ];
+    }
+
+    public function test_create_instance_allows_auto_idle_override_in_config(): void
+    {
+        $role = Role::findOrCreate('service-account');
+        app(PermissionRegistrar::class)->forgetCachedPermissions();
+        $this->user->assignRole($role);
+
+        Sanctum::actingAs($this->user, ['instances.write']);
+
+        $this->postJson('/api/instance', [
+            'email' => 'new.user@example.com',
+            'storeAppId' => $this->storeApp->uuid,
+            'config' => ['lagoon-auto-idle' => '1', 'some_key' => 'some_value'],
+        ])->assertCreated();
     }
 
     public function test_create_instance_provisions_instance_and_creates_user(): void
