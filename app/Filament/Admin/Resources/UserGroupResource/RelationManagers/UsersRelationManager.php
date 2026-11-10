@@ -256,7 +256,7 @@ class UsersRelationManager extends RelationManager
             ->toolbarActions([
                 BulkActionGroup::make([
                     DetachBulkAction::make(),
-                    DeleteBulkAction::make(),
+                    DeleteBulkAction::make()->authorizeIndividualRecords('delete'),
                 ]),
             ]);
     }

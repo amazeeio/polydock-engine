@@ -6,14 +6,19 @@ namespace App\Providers;
 
 use App\Auth\FakeOktaProvider;
 use App\Models\PolydockAppInstance;
+use App\Models\PolydockHostedForm;
 use App\Models\PolydockStore;
+use App\Models\PolydockStoreApp;
+use App\Models\PolydockStoreWebhook;
+use App\Models\PolydockStoreWebhookCall;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\UserGroup;
+use App\Models\UserRemoteRegistration;
 use App\Policies\ActivityPolicy;
 use App\Policies\PolydockAppInstancePolicy;
-use App\Policies\PolydockStorePolicy;
 use App\Policies\RolePolicy;
+use App\Policies\SuperAdminOnlyPolicy;
 use App\Policies\UserGroupPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Auth\Events\Login;
@@ -21,6 +26,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\PersonalAccessToken;
 use SocialiteProviders\Manager\SocialiteWasCalled;
 use SocialiteProviders\Okta\Provider as OktaProvider;
 use Spatie\Activitylog\Models\Activity;
@@ -31,7 +37,13 @@ class AuthServiceProvider extends ServiceProvider
      * @var array<class-string, class-string>
      */
     protected $policies = [
-        PolydockStore::class => PolydockStorePolicy::class,
+        PolydockStore::class => SuperAdminOnlyPolicy::class,
+        PolydockStoreApp::class => SuperAdminOnlyPolicy::class,
+        PolydockStoreWebhook::class => SuperAdminOnlyPolicy::class,
+        PolydockStoreWebhookCall::class => SuperAdminOnlyPolicy::class,
+        PolydockHostedForm::class => SuperAdminOnlyPolicy::class,
+        UserRemoteRegistration::class => SuperAdminOnlyPolicy::class,
+        PersonalAccessToken::class => SuperAdminOnlyPolicy::class,
         UserGroup::class => UserGroupPolicy::class,
         PolydockAppInstance::class => PolydockAppInstancePolicy::class,
         User::class => UserPolicy::class,

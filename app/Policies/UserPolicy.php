@@ -29,14 +29,20 @@ class UserPolicy
 
     public function update(User $user, User $model): bool
     {
-        if ($user->can('update_user')) {
+        if ($user->getKey() === $model->getKey()) {
             return true;
         }
 
-        return $user->getKey() === $model->getKey();
+        // Only a super_admin (allowed by Gate::before) may change another super_admin.
+        return ! $model->hasRole('super_admin') && $user->can('update_user');
     }
 
     public function delete(User $user, User $model): bool
+    {
+        return ! $model->hasRole('super_admin') && $user->can('delete_user');
+    }
+
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_user');
     }
