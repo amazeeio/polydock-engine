@@ -337,7 +337,7 @@ class AuthenticatedApiController extends Controller
      * API callers may not set them through `config`: they feed Lagoon project creation
      * and the SSH commands the workers run.
      */
-    private const string RESERVED_CONFIG_KEY_PATTERN = '/^(lagoon[-_]|amazee-ai-|polydock-|app-admin-|claim-|user-|anythingllm-|openclaw-mcp-)|^(uuid|adopted|product-type|project_name|instance-label|available-for-trials)$|\\./';
+    private const string RESERVED_CONFIG_KEY_PATTERN = '/^(lagoon[-_]|amazee-ai-|polydock-|app-admin-|claim-|user-|anythingllm-|openclaw-mcp-)|^(uuid|adopted|product-type|project_name|instance-label|available-for-trials)$|[.*]/';
 
     /** @var list<string> */
     private const array OVERRIDABLE_CONFIG_KEYS = ['lagoon-auto-idle', 'lagoon-project-name'];

@@ -314,6 +314,8 @@ class AuthenticatedApiTest extends TestCase
             'adopted flag' => ['adopted'],
             'purge project name' => ['project_name'],
             'dot path' => ['some.nested'],
+            'wildcard' => ['*'],
+            'wildcard segment' => ['foo*'],
         ];
     }
 
