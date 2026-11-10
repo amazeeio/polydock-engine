@@ -38,7 +38,7 @@ class Ssh extends SpatieSsh
         $extraOptions = implode(' ', $this->getExtraOptions());
         $target = $this->getTargetForSsh();
 
-        return "ssh {$extraOptions} {$target} token";
+        return "ssh {$extraOptions} ".escapeshellarg($target).' token';
     }
 
     public function getCommandForExecute(string $execute, string $serviceName = 'cli', string $containerName = 'cli'): string
@@ -46,9 +46,13 @@ class Ssh extends SpatieSsh
         $extraOptions = implode(' ', $this->getExtraOptions());
         $target = $this->getTargetForSsh();
 
-        // Quote the remote command so the engine's local shell doesn't split it
-        // on &&, > etc. and run the tail of the command locally.
-        return "ssh {$extraOptions} {$target} service={$serviceName} container={$containerName} ".escapeshellarg($execute);
+        // Quote every caller-influenced part so the engine's local shell can't split it
+        // on ;, &&, > etc. and run the tail locally. Target, service and container come
+        // from instance data.
+        return "ssh {$extraOptions} ".escapeshellarg($target)
+            .' '.escapeshellarg("service={$serviceName}")
+            .' '.escapeshellarg("container={$containerName}")
+            .' '.escapeshellarg($execute);
     }
 
     /**

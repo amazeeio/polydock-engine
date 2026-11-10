@@ -333,6 +333,22 @@ class AuthenticatedApiController extends Controller
     }
 
     /**
+     * Instance data keys the engine owns (deploy source, lifecycle scripts, credentials).
+     * API callers may not set them through `config`: they feed Lagoon project creation
+     * and the SSH commands the workers run.
+     */
+    private const string RESERVED_CONFIG_KEY_PATTERN = '/^(lagoon[-_]|amazee-ai-|polydock-|app-admin-|claim-|user-|anythingllm-|openclaw-mcp-)|^(uuid|adopted|product-type|project_name|instance-label|available-for-trials)$|[.*]/';
+
+    /** @var list<string> */
+    private const array OVERRIDABLE_CONFIG_KEYS = ['lagoon-auto-idle', 'lagoon-project-name'];
+
+    private function isReservedConfigKey(string $key): bool
+    {
+        return ! \in_array($key, self::OVERRIDABLE_CONFIG_KEYS, true)
+            && preg_match(self::RESERVED_CONFIG_KEY_PATTERN, $key) === 1;
+    }
+
+    /**
      * Create/Provision a new instance
      *
      * Deploy a new PolydockStoreApp instance. If the user associated with the email does not exist, a new user account will automatically be created using the provided first and last names. For existing users, names will be updated only if current values are placeholders or empty.
@@ -382,7 +398,17 @@ class AuthenticatedApiController extends Controller
             'secret.vector.db_name' => 'nullable|string',
             'secret.vector.db_user' => 'nullable|string',
             'secret.vector.db_pass' => 'nullable|string',
-            'config' => 'nullable|array',
+            'config' => [
+                'nullable',
+                'array',
+                function (string $attribute, mixed $value, \Closure $fail): void {
+                    foreach (array_keys((array) $value) as $key) {
+                        if ($this->isReservedConfigKey((string) $key)) {
+                            $fail("The config key [{$key}] is reserved and cannot be set.");
+                        }
+                    }
+                },
+            ],
             'config.*' => [
                 'nullable',
                 function ($attribute, $value, $fail): void {
@@ -492,6 +518,10 @@ class AuthenticatedApiController extends Controller
                 // If it's a known root column we could update it, otherwise data blob key-value store
                 // Skip if we already stored it from top-level secret to avoid overwriting with potentially partial data
                 if ((string) $key === 'secret' && $request->filled('secret')) {
+                    continue;
+                }
+                // Already applied as the instance name; the model stores the de-duplicated value.
+                if ($key === 'lagoon-project-name') {
                     continue;
                 }
                 $instance->storeKeyValue((string) $key, $value ?? '');
