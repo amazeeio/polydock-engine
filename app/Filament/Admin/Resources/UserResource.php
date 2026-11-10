@@ -141,7 +141,9 @@ class UserResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    // deleteAny() only checks the permission; check delete() per user
+                    // so a selection can't sweep in a super_admin.
+                    DeleteBulkAction::make()->authorizeIndividualRecords('delete'),
                 ]),
             ]);
     }

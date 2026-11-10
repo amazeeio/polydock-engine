@@ -12,6 +12,7 @@ use App\Filament\Admin\Resources\PolydockStoreWebhookCallResource;
 use App\Filament\Admin\Resources\PolydockStoreWebhookResource;
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource;
 use App\Filament\Admin\Resources\UserResource\Pages\EditUser;
+use App\Filament\Admin\Resources\UserResource\Pages\ListUsers;
 use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\SuperAdminRoleSeeder;
@@ -20,6 +21,7 @@ use Filament\Facades\Filament;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
 
 /**
@@ -125,5 +127,18 @@ class PanelResourceAccessTest extends TestCase
             ->assertHasNoFormErrors();
 
         self::assertTrue($target->fresh()?->hasRole('support'));
+    }
+
+    public function test_bulk_delete_skips_super_admins_for_non_super_admins(): void
+    {
+        $this->support->givePermissionTo(Permission::findOrCreate('delete_user', 'web'));
+        $this->actingAs($this->support);
+        $other = User::factory()->create();
+
+        Livewire::test(ListUsers::class)
+            ->callTableBulkAction('delete', [$this->admin, $other]);
+
+        self::assertNotNull($this->admin->fresh());
+        self::assertNull($other->fresh());
     }
 }
