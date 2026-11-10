@@ -11,6 +11,7 @@ use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Queue;
 use Tests\TestCase;
 
@@ -125,6 +126,17 @@ class DispatchTrialCompleteStageRemovalJobsCommandTest extends TestCase
         }
 
         $this->artisan('polydock:dispatch-trial-complete-stage-removal')->assertExitCode(0);
+
+        Queue::assertPushed(ProcessTrialCompleteStageRemovalJob::class, 2);
+    }
+
+    public function test_dispatches_for_expired_trials_that_report_unhealthy(): void
+    {
+        $storeApp = $this->createStoreApp();
+        $this->createInstance($storeApp, status: PolydockAppInstanceStatus::RUNNING_UNHEALTHY, trialEndsAt: now()->subDay());
+        $this->createInstance($storeApp, status: PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE, trialEndsAt: now()->subDay());
+
+        self::assertSame(0, Artisan::call('polydock:dispatch-trial-complete-stage-removal'));
 
         Queue::assertPushed(ProcessTrialCompleteStageRemovalJob::class, 2);
     }

@@ -12,6 +12,8 @@ use ValueError;
 
 class PolydockInstanceHealthController extends Controller
 {
+    private const string LAST_CLAIM_STATUS_KEY = 'polydock-health-last-claim-status';
+
     public function __invoke(Request $request, string $uuid, string $status): JsonResponse
     {
         $expectedToken = config('polydock.health_token');
@@ -110,13 +112,23 @@ class PolydockInstanceHealthController extends Controller
         // Health reports must not change the claim dimension: a claimed instance
         // flipped to unclaimed becomes eligible for the unclaimed-cleanup job,
         // destroying a live tenant's app. Only the claim flow may cross this axis.
+        // The claim state lives only in the status, so it is remembered when a
+        // report moves an instance out of a healthy status and required again on
+        // the way back; otherwise unhealthy would be a stepping stone across.
         $claimStatuses = [
             PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
             PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
         ];
-        $crossesClaimAxis = in_array($instance->status, $claimStatuses, true)
-            && in_array($statusEnum, $claimStatuses, true)
-            && $instance->status !== $statusEnum;
+        $rememberedClaimStatus = $instance->getKeyValue(self::LAST_CLAIM_STATUS_KEY);
+        $knownClaimStatus = match (true) {
+            in_array($instance->status, $claimStatuses, true) => $instance->status,
+            // A freshly deployed instance has not been through the claim flow yet.
+            $instance->status === PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED => PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+            default => is_string($rememberedClaimStatus) ? PolydockAppInstanceStatus::tryFrom($rememberedClaimStatus) : null,
+        };
+        $crossesClaimAxis = in_array($statusEnum, $claimStatuses, true)
+            && $knownClaimStatus instanceof PolydockAppInstanceStatus
+            && $knownClaimStatus !== $statusEnum;
 
         if ($crossesClaimAxis) {
             Log::error('Health check may not change claimed/unclaimed state', $logContext + ['status_code' => 409]);
@@ -135,6 +147,10 @@ class PolydockInstanceHealthController extends Controller
         // Log debug data if present
         if ($debugData !== []) {
             $instance->debug('Health check data received', $logContext);
+        }
+
+        if (in_array($instance->status, $claimStatuses, true) && ! in_array($statusEnum, $claimStatuses, true)) {
+            $instance->storeKeyValue(self::LAST_CLAIM_STATUS_KEY, $instance->status->value);
         }
 
         // Update instance status

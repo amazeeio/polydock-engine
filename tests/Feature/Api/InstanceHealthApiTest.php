@@ -217,4 +217,45 @@ class InstanceHealthApiTest extends TestCase
 
         parent::tearDown();
     }
+
+    public function test_health_check_cannot_unclaim_a_claimed_instance_via_unhealthy(): void
+    {
+        Config::set('polydock.health_token', 'secure-test-token');
+        $url = fn (string $status): string => "/api/instance/{$this->uuid}/health/{$status}?token=secure-test-token";
+
+        // GIVEN a claimed instance that reported itself unhealthy
+        $this->getJson($url('running-unhealthy'))->assertStatus(200);
+
+        // WHEN it then reports healthy-unclaimed THEN that is rejected
+        $this->getJson($url('running-healthy-unclaimed'))->assertStatus(409);
+        $this->instance->refresh();
+        self::assertSame(PolydockAppInstanceStatus::RUNNING_UNHEALTHY, $this->instance->status);
+
+        // AND it can still recover to the claim state it had
+        $this->getJson($url('running-healthy-claimed'))->assertStatus(200);
+        $this->instance->refresh();
+        self::assertSame(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, $this->instance->status);
+    }
+
+    public function test_health_check_cannot_claim_an_unclaimed_instance_via_unresponsive(): void
+    {
+        Config::set('polydock.health_token', 'secure-test-token');
+        $url = fn (string $status): string => "/api/instance/{$this->uuid}/health/{$status}?token=secure-test-token";
+        $this->instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED;
+        $this->instance->saveQuietly();
+
+        $this->getJson($url('running-unresponsive'))->assertStatus(200);
+        $this->getJson($url('running-healthy-claimed'))->assertStatus(409);
+        $this->getJson($url('running-healthy-unclaimed'))->assertStatus(200);
+    }
+
+    public function test_health_check_cannot_claim_a_freshly_deployed_instance(): void
+    {
+        Config::set('polydock.health_token', 'secure-test-token');
+        $this->instance->status = PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED;
+        $this->instance->saveQuietly();
+
+        $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed?token=secure-test-token")
+            ->assertStatus(409);
+    }
 }
