@@ -45,4 +45,16 @@ class DatabaseSeederTest extends TestCase
         $this->assertEquals(0, User::count());
         $this->assertEquals(0, PolydockStore::count());
     }
+
+    public function test_it_does_not_seed_mock_data_on_a_lagoon_production_environment(): void
+    {
+        // Lagoon sets APP_ENV to the branch name, so only the environment type says production.
+        $this->app->detectEnvironment(fn (): string => 'main');
+        config()->set('polydock.lagoon_environment_type', 'production');
+
+        $this->artisan('db:seed', ['--force' => true]);
+
+        $this->assertEquals(0, User::count());
+        $this->assertEquals(0, PolydockStore::count());
+    }
 }

@@ -6,6 +6,7 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
 use App\Models\PolydockHostedForm;
 use App\Rules\BannedEmail;
+use App\Support\Environment;
 use Illuminate\Validation\Rule;
 
 abstract class BaseHostedForm implements HostedFormInterface
@@ -87,9 +88,7 @@ abstract class BaseHostedForm implements HostedFormInterface
             'www.amazee.ai',
         ];
 
-        // APP_ENV on Lagoon is the environment name (prod, main, dev), never "production",
-        // so the Lagoon environment type is the reliable production signal.
-        if (config('polydock.lagoon_environment_type') !== 'production') {
+        if (! Environment::isProduction()) {
             $domains[] = 'localhost';
         }
 

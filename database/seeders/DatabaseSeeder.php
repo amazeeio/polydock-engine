@@ -5,14 +5,15 @@ namespace Database\Seeders;
 use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
 use App\Enums\UserGroupRoleEnum;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\PolydockStore;
+// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\PolydockStoreApp;
 use App\Models\PolydockStoreWebhook;
 use App\Models\User;
 use App\Models\UserGroup;
 use App\Polydock\Apps\Generic\PolydockAiApp;
 use App\Polydock\Apps\Generic\PolydockApp;
+use App\Support\Environment;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use phpseclib4\Crypt\EC;
@@ -48,9 +49,8 @@ class DatabaseSeeder extends Seeder
             SupportRoleSeeder::class,
         ]);
 
-        // Demo users (password "password") must never be seeded on a production Lagoon
-        // environment, whatever its branch is called (prod, main, ...).
-        if (config('polydock.lagoon_environment_type') !== 'production' && ! app()->environment('production', 'prod')) {
+        // Demo users (password "password") must never be seeded on production.
+        if (! Environment::isProduction()) {
             // Create Fred and his team
             $fred = User::create([
                 'first_name' => 'Fred',
