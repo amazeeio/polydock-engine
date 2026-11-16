@@ -142,6 +142,7 @@ class DispatchTrialCompleteStageRemovalJobsCommandTest extends TestCase
         Queue::assertPushed(ProcessTrialCompleteStageRemovalJob::class, 2);
     }
 
+    /** @return array<string, array{PolydockAppInstanceStatus}> */
     public static function removableUnhealthyStatuses(): array
     {
         return [
@@ -169,7 +170,7 @@ class DispatchTrialCompleteStageRemovalJobsCommandTest extends TestCase
         new ProcessTrialCompleteStageRemovalJob($instance->id)->handle();
 
         $instance->refresh();
-        self::assertFalse((bool) $instance->trial_completed);
+        self::assertFalse($instance->trial_completed);
         self::assertSame(PolydockAppInstanceStatus::RUNNING_UNHEALTHY, $instance->status);
     }
 }
