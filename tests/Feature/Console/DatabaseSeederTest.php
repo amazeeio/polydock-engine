@@ -54,7 +54,7 @@ class DatabaseSeederTest extends TestCase
 
         $this->artisan('db:seed', ['--force' => true]);
 
-        $this->assertEquals(0, User::count());
-        $this->assertEquals(0, PolydockStore::count());
+        self::assertSame(0, User::count());
+        self::assertSame(0, PolydockStore::count());
     }
 }
