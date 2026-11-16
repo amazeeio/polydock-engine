@@ -194,6 +194,13 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
     ];
 
     /**
+     * The claim side (claimed/unclaimed) the instance last held. The claim state
+     * lives only in the status, so health reports use this to stop an
+     * unhealthy/unresponsive detour from crossing the claim axis.
+     */
+    public const string LAST_CLAIM_STATUS_KEY = 'polydock-health-last-claim-status';
+
+    /**
      * @var array<mixed>
      */
     public static array $completedStatuses = [
@@ -610,6 +617,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $graceDays = (int) config('polydock.cleanup.project_grace_period_days', 14);
                 $this->removed_at = $now;
                 $this->purge_eligible_at = $now->copy()->addDays($graceDays);
+            }
+
+            if (in_array($status, [PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED], true)) {
+                $this->data = [...$this->data ?? [], self::LAST_CLAIM_STATUS_KEY => $status->value];
             }
 
             if ($statusMessage !== '' && $statusMessage !== '0') {

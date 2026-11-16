@@ -258,4 +258,36 @@ class InstanceHealthApiTest extends TestCase
         $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed?token=secure-test-token")
             ->assertStatus(409);
     }
+
+    public function test_health_check_cannot_claim_a_freshly_deployed_instance_via_unhealthy(): void
+    {
+        Config::set('polydock.health_token', 'secure-test-token');
+        $url = fn (string $status): string => "/api/instance/{$this->uuid}/health/{$status}?token=secure-test-token";
+        $this->instance->status = PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED;
+        $this->instance->saveQuietly();
+
+        $this->getJson($url('running-unhealthy'))->assertStatus(200);
+        $this->getJson($url('running-healthy-claimed'))->assertStatus(409);
+        $this->getJson($url('running-healthy-unclaimed'))->assertStatus(200);
+    }
+
+    public function test_claim_flow_refreshes_the_remembered_claim_side(): void
+    {
+        Config::set('polydock.health_token', 'secure-test-token');
+        $url = fn (string $status): string => "/api/instance/{$this->uuid}/health/{$status}?token=secure-test-token";
+
+        // GIVEN an instance remembered as unclaimed that the claim flow then claims
+        $this->instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED;
+        $this->instance->saveQuietly();
+        $this->getJson($url('running-unhealthy'))->assertStatus(200);
+        $this->getJson($url('running-healthy-unclaimed'))->assertStatus(200);
+        $this->instance->refresh();
+        $this->instance->setStatus(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED)->saveQuietly();
+        $this->instance->status = PolydockAppInstanceStatus::POST_UPGRADE_COMPLETED;
+        $this->instance->saveQuietly();
+
+        // WHEN it reports after an upgrade THEN the claimed side is accepted
+        $this->getJson($url('running-healthy-unclaimed'))->assertStatus(409);
+        $this->getJson($url('running-healthy-claimed'))->assertStatus(200);
+    }
 }
