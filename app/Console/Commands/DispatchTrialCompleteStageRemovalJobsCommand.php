@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\Trial\ProcessTrialCompleteStageRemovalJob;
 use App\Models\PolydockAppInstance;
-use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -36,7 +35,8 @@ class DispatchTrialCompleteStageRemovalJobsCommand extends BaseCommand
         // Find eligible instances
         $eligibleInstances = PolydockAppInstance::query()
             ->where('is_trial', true)
-            ->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED)
+            // An expired trial that reports unhealthy must still be removed.
+            ->whereIn('status', ProcessTrialCompleteStageRemovalJob::REMOVABLE_STATUSES)
             ->whereNotNull('trial_ends_at')
             ->where('trial_ends_at', '<=', now())
             ->limit($maxPerRun)
