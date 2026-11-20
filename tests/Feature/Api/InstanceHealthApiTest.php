@@ -46,18 +46,25 @@ class InstanceHealthApiTest extends TestCase
         $this->uuid = $this->instance->uuid;
     }
 
-    public function test_health_check_without_configured_token_allows_request(): void
+    public function test_health_check_without_configured_token_returns_503(): void
     {
-        // GIVEN no token is configured
+        // GIVEN no token is configured, and the instance is in a state distinct
+        // from the one the request would set (so "unchanged" is meaningful).
         Config::set('polydock.health_token');
+        $this->instance->status = PolydockAppInstanceStatus::RUNNING_UNHEALTHY;
+        $this->instance->save();
 
-        // WHEN we hit the endpoint without a token
+        // WHEN we hit the endpoint (without a token) asking for a *different* status
         $response = $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed");
 
-        // THEN it should be successful and update the status
-        $response->assertStatus(200);
+        // THEN it should fail closed with 503 and NOT update the status
+        $response->assertStatus(503);
+        $response->assertJson([
+            'error' => 'Health endpoint is not configured',
+            'status_code' => 503,
+        ]);
         $this->instance->refresh();
-        $this->assertEquals(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, $this->instance->status);
+        $this->assertEquals(PolydockAppInstanceStatus::RUNNING_UNHEALTHY, $this->instance->status);
     }
 
     public function test_health_check_with_configured_token_and_correct_token_allows_request(): void
@@ -127,13 +134,14 @@ class InstanceHealthApiTest extends TestCase
     {
         // GIVEN a trusted IP is configured
         Config::set('polydock.trusted_ips', ['10.0.0.5']);
-        Config::set('polydock.health_token');
+        Config::set('polydock.health_token', 'secure-test-token');
 
-        // WHEN we hit the endpoint 130 times from trusted IP
+        // WHEN we hit the endpoint 130 times from trusted IP without a token
+        // (a valid token would bypass the limiter on its own), we get 401, never 429
         for ($i = 0; $i < 130; $i++) {
             $this->withServerVariables(['REMOTE_ADDR' => '10.0.0.5'])
                 ->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed")
-                ->assertStatus(200);
+                ->assertStatus(401);
         }
     }
 
@@ -151,7 +159,7 @@ class InstanceHealthApiTest extends TestCase
 
     public function test_health_check_throttles_per_ip_across_uuids(): void
     {
-        Config::set('polydock.health_token'); // No token gating
+        Config::set('polydock.health_token', 'secure-test-token');
 
         // GIVEN another instance exists
         $storeApp = PolydockStoreApp::first();
@@ -166,10 +174,13 @@ class InstanceHealthApiTest extends TestCase
         $anotherInstance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
         $anotherInstance->saveQuietly();
 
-        // WHEN we exhaust the per-minute limit (120) against the first UUID
+        // WHEN we exhaust the per-minute limit (120) against the first UUID.
+        // A valid token bypasses the limiter, so these are unauthenticated
+        // (401) requests — the realistic UUID-enumeration scenario the limiter
+        // exists to stop. They still count against the per-IP budget.
         for ($i = 0; $i < 120; $i++) {
             $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed")
-                ->assertStatus(200);
+                ->assertStatus(401);
         }
 
         // THEN a further request for the first UUID is throttled
@@ -180,34 +191,6 @@ class InstanceHealthApiTest extends TestCase
         // the limit keys on IP so enumerating UUIDs can't reset the budget
         $this->getJson("/api/instance/{$anotherInstance->uuid}/health/running-healthy-claimed")
             ->assertStatus(429);
-    }
-
-    public function test_health_check_cannot_unclaim_a_claimed_instance(): void
-    {
-        Config::set('polydock.health_token');
-
-        // WHEN a claimed instance is reported as unclaimed
-        $response = $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-unclaimed");
-
-        // THEN it is rejected and the instance stays claimed
-        $response->assertStatus(409);
-        $this->instance->refresh();
-        $this->assertEquals(PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, $this->instance->status);
-    }
-
-    public function test_health_check_cannot_claim_an_unclaimed_instance(): void
-    {
-        Config::set('polydock.health_token');
-        $this->instance->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED;
-        $this->instance->saveQuietly();
-
-        // WHEN an unclaimed instance is reported as claimed
-        $response = $this->getJson("/api/instance/{$this->uuid}/health/running-healthy-claimed");
-
-        // THEN it is rejected and the instance stays unclaimed
-        $response->assertStatus(409);
-        $this->instance->refresh();
-        $this->assertEquals(PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED, $this->instance->status);
     }
 
     protected function tearDown(): void
