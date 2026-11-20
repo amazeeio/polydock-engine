@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Models\PolydockAppInstance;
+use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use App\Services\LagoonClientService;
 use Exception;
 use Illuminate\Console\Command;
@@ -20,20 +21,30 @@ class RemoveSharedLagoonDefaultUsersCommand extends BaseCommand
 {
     protected $signature = 'polydock:remove-shared-lagoon-default-users
                             {--uuid= : Only process a specific app instance UUID}
+                            {--include-removed : Also check removed / purge-stage instances (their projects are usually gone)}
                             {--dry-run : Only list what would be removed}
                             {--force : Skip confirmation prompt}';
 
-    protected $description = 'Removes default-users (incl. the one shared via the old store deploy key) from every instance\'s Lagoon project group that still exists';
+    protected $description = 'Removes default-users (incl. the one shared via the old store deploy key) from the Lagoon project group of every instance that still has a project';
 
     public function handle(): int
     {
-        // Every status: removed/purge-failed instances can still have live Lagoon projects.
-        // Lagoon itself decides below which projects are gone.
         $query = PolydockAppInstance::query();
+
+        // Removed / purge-stage projects are almost always gone from Lagoon already. A purge can
+        // leave a project behind, so --include-removed (or --uuid) still lets an operator check them.
+        if ($this->option('include-removed') !== true) {
+            $query->whereNotIn('status', [
+                PolydockAppInstanceStatus::REMOVED,
+                PolydockAppInstanceStatus::PENDING_PURGE,
+                PolydockAppInstanceStatus::PURGE_RUNNING,
+                PolydockAppInstanceStatus::PURGE_FAILED,
+            ]);
+        }
 
         $uuid = $this->option('uuid');
         if (is_string($uuid) && $uuid !== '') {
-            $query->where('uuid', $uuid);
+            $query = PolydockAppInstance::where('uuid', $uuid);
         }
 
         $instances = $query->get();
