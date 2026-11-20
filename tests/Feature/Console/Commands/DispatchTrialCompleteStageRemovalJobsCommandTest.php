@@ -11,7 +11,9 @@ use App\Models\PolydockStoreApp;
 use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Carbon\Carbon;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Queue;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class DispatchTrialCompleteStageRemovalJobsCommandTest extends TestCase
@@ -127,5 +129,48 @@ class DispatchTrialCompleteStageRemovalJobsCommandTest extends TestCase
         $this->artisan('polydock:dispatch-trial-complete-stage-removal')->assertExitCode(0);
 
         Queue::assertPushed(ProcessTrialCompleteStageRemovalJob::class, 2);
+    }
+
+    public function test_dispatches_for_expired_trials_that_report_unhealthy(): void
+    {
+        $storeApp = $this->createStoreApp();
+        $this->createInstance($storeApp, status: PolydockAppInstanceStatus::RUNNING_UNHEALTHY, trialEndsAt: now()->subDay());
+        $this->createInstance($storeApp, status: PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE, trialEndsAt: now()->subDay());
+
+        self::assertSame(0, Artisan::call('polydock:dispatch-trial-complete-stage-removal'));
+
+        Queue::assertPushed(ProcessTrialCompleteStageRemovalJob::class, 2);
+    }
+
+    /** @return array<string, array{PolydockAppInstanceStatus}> */
+    public static function removableUnhealthyStatuses(): array
+    {
+        return [
+            'unhealthy' => [PolydockAppInstanceStatus::RUNNING_UNHEALTHY],
+            'unresponsive' => [PolydockAppInstanceStatus::RUNNING_UNRESPONSIVE],
+        ];
+    }
+
+    #[DataProvider('removableUnhealthyStatuses')]
+    public function test_job_removes_expired_unhealthy_trial(PolydockAppInstanceStatus $status): void
+    {
+        $instance = $this->createInstance($this->createStoreApp(), status: $status, trialEndsAt: now()->subDay());
+
+        new ProcessTrialCompleteStageRemovalJob($instance->id)->handle();
+
+        $instance->refresh();
+        self::assertTrue($instance->trial_completed);
+        self::assertSame(PolydockAppInstanceStatus::PENDING_PRE_REMOVE, $instance->status);
+    }
+
+    public function test_job_leaves_unexpired_unhealthy_trial_alone(): void
+    {
+        $instance = $this->createInstance($this->createStoreApp(), status: PolydockAppInstanceStatus::RUNNING_UNHEALTHY, trialEndsAt: now()->addDay());
+
+        new ProcessTrialCompleteStageRemovalJob($instance->id)->handle();
+
+        $instance->refresh();
+        self::assertFalse($instance->trial_completed);
+        self::assertSame(PolydockAppInstanceStatus::RUNNING_UNHEALTHY, $instance->status);
     }
 }

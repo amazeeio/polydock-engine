@@ -69,7 +69,7 @@ class UserRemoteRegistration extends Model
             UserRemoteRegistrationCreated::dispatch($model);
         });
 
-        static::updating(function ($model): void {
+        static::updating(function (UserRemoteRegistration $model): void {
             // If status is changing, fire the event
             if ($model->isDirty('status')) {
                 UserRemoteRegistrationStatusChanged::dispatch(

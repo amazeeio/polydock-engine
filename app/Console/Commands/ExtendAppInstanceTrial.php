@@ -87,7 +87,7 @@ class ExtendAppInstanceTrial extends BaseCommand
 
             foreach ($instances as $instance) {
                 $email = $instance->getKeyValue('user-email');
-                $currentEnd = $instance->trial_ends_at ? $instance->trial_ends_at->toDateTimeString() : 'N/A';
+                $currentEnd = $instance->trial_ends_at?->toDateTimeString() ?? 'N/A';
 
                 $data = [
                     'id' => (string) $instance->id,

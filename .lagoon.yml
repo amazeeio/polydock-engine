@@ -1,5 +1,10 @@
 docker-compose-yaml: ./lagoon-docker-compose.yml
 
+routes:
+  autogenerate:
+    # Never serve the app (login page included) over plain HTTP.
+    insecure: Redirect
+
 tasks:
   pre-rollout:
     - run:
@@ -61,6 +66,9 @@ tasks:
 
 environments:
   prod:
+    # Production: no mail catcher at all.
+    types:
+      mailpit: none
     cronjobs:
       - name: Horizon Radiator
         schedule: "*/3 * * * *"
@@ -82,6 +90,9 @@ environments:
         service: worker
 
   main:
+    # Production: no mail catcher at all.
+    types:
+      mailpit: none
     cronjobs:
       - name: Horizon Radiator
         schedule: "*/3 * * * *"

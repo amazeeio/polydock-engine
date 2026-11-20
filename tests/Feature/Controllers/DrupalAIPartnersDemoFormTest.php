@@ -187,4 +187,24 @@ class DrupalAIPartnersDemoFormTest extends TestCase
 
         Queue::assertPushed(ProcessUserRemoteRegistration::class);
     }
+
+    #[Test]
+    public function it_does_not_allow_localhost_framing_on_a_lagoon_production_environment(): void
+    {
+        $this->app->detectEnvironment(fn (): string => 'main');
+        config()->set('polydock.lagoon_environment_type', 'production');
+
+        $this->get('/f/drupal-ai-partners-demo')
+            ->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai");
+    }
+
+    #[Test]
+    public function it_does_not_allow_localhost_framing_on_a_non_lagoon_production_environment(): void
+    {
+        $this->app->detectEnvironment(fn (): string => 'production');
+        config()->set('polydock.lagoon_environment_type', 'development');
+
+        $this->get('/f/drupal-ai-partners-demo')
+            ->assertHeader('Content-Security-Policy', "frame-ancestors 'self' https://amazee.ai https://www.amazee.ai");
+    }
 }

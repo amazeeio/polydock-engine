@@ -110,13 +110,25 @@ class PolydockInstanceHealthController extends Controller
         // Health reports must not change the claim dimension: a claimed instance
         // flipped to unclaimed becomes eligible for the unclaimed-cleanup job,
         // destroying a live tenant's app. Only the claim flow may cross this axis.
+        // The claim state lives only in the status, so setStatus() remembers the
+        // last claim side and it is required again on the way back; otherwise
+        // unhealthy would be a stepping stone across.
         $claimStatuses = [
             PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
             PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
         ];
-        $crossesClaimAxis = in_array($instance->status, $claimStatuses, true)
-            && in_array($statusEnum, $claimStatuses, true)
-            && $instance->status !== $statusEnum;
+        $rememberedClaimStatus = $instance->getKeyValue(PolydockAppInstance::LAST_CLAIM_STATUS_KEY);
+        $knownClaimStatus = match (true) {
+            in_array($instance->status, $claimStatuses, true) => $instance->status,
+            is_string($rememberedClaimStatus) && $rememberedClaimStatus !== '' => PolydockAppInstanceStatus::tryFrom($rememberedClaimStatus),
+            // A freshly deployed instance has not been through the claim flow yet.
+            $instance->status === PolydockAppInstanceStatus::POST_DEPLOY_COMPLETED => PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED,
+            // ponytail: instances that predate the key are let through until they next hold a claim status.
+            default => null,
+        };
+        $crossesClaimAxis = in_array($statusEnum, $claimStatuses, true)
+            && $knownClaimStatus instanceof PolydockAppInstanceStatus
+            && $knownClaimStatus !== $statusEnum;
 
         if ($crossesClaimAxis) {
             Log::error('Health check may not change claimed/unclaimed state', $logContext + ['status_code' => 409]);
@@ -135,6 +147,11 @@ class PolydockInstanceHealthController extends Controller
         // Log debug data if present
         if ($debugData !== []) {
             $instance->debug('Health check data received', $logContext);
+        }
+
+        // Carry the known side through an unhealthy detour (e.g. straight out of POST_DEPLOY_COMPLETED).
+        if ($knownClaimStatus instanceof PolydockAppInstanceStatus && ! in_array($statusEnum, $claimStatuses, true)) {
+            $instance->data = [...$instance->data ?? [], PolydockAppInstance::LAST_CLAIM_STATUS_KEY => $knownClaimStatus->value];
         }
 
         // Update instance status

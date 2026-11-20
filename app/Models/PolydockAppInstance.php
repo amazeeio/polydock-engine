@@ -136,6 +136,8 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         'ssh_key',
         'lagoon_deploy_private_key',
         'recaptcha',
+        'credentials',             // e.g. amazee-ai-generated-credentials (LLM token, vector DB password)
+        'claim-command-output',    // one-time login URL, may embed an API key
 
         // Regex patterns
         '/^.*_key$/',              // Anything ending with _key
@@ -192,6 +194,13 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         PolydockAppInstanceStatus::PENDING_POST_UPGRADE,
         PolydockAppInstanceStatus::PENDING_PURGE,
     ];
+
+    /**
+     * The claim side (claimed/unclaimed) the instance last held. The claim state
+     * lives only in the status, so health reports use this to stop an
+     * unhealthy/unresponsive detour from crossing the claim axis.
+     */
+    public const string LAST_CLAIM_STATUS_KEY = 'polydock-health-last-claim-status';
 
     /**
      * @var array<mixed>
@@ -414,7 +423,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'lagoon-deploy-organization-id' => $storeApp->lagoon_deploy_organization_id_ext,
                     'lagoon-deploy-group-name' => $storeApp->lagoon_deploy_group_name,
                     'lagoon-deploy-region-id' => $storeApp->lagoon_deploy_region_id_ext,
-                    'lagoon-deploy-private-key' => $storeApp->lagoon_deploy_private_key,
+                    'lagoon-deploy-organization-key-id' => $storeApp->lagoon_deploy_organization_key_id,
                     'lagoon-deploy-project-prefix' => $storeApp->lagoon_deploy_project_prefix,
                     'lagoon-project-name' => $model->name,
                     'amazee-ai-backend-region-id' => $storeApp->amazee_ai_backend_region_id_ext,
@@ -459,7 +468,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
             }
         });
 
-        static::updated(function ($appInstance): void {
+        static::updated(function (PolydockAppInstance $appInstance): void {
             if ($appInstance->wasChanged('status')) {
                 $appInstance->info('MODEL: Status changed for app instance', [
                     'app_instance_id' => $appInstance->id,
@@ -486,16 +495,16 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
         $fieldKeyContainer = 'lagoon_'.$fieldKeyPart.'_container';
         $dataKeyContainer = 'lagoon-'.$dataKeyPart.'-script-container';
 
-        if ($storeApp->{$fieldKeyScript}) {
+        if (filled($storeApp->{$fieldKeyScript})) {
             $data[$dataKeyScript] = $storeApp->{$fieldKeyScript};
 
-            if ($storeApp->{$fieldKeyService}) {
+            if (filled($storeApp->{$fieldKeyService})) {
                 $data[$dataKeyService] = $storeApp->{$fieldKeyService};
             } else {
                 $data[$dataKeyService] = 'cli';
             }
 
-            if ($storeApp->{$fieldKeyContainer}) {
+            if (filled($storeApp->{$fieldKeyContainer})) {
                 $data[$dataKeyContainer] = $storeApp->{$fieldKeyContainer};
             } else {
                 $data[$dataKeyContainer] = 'cli';
@@ -610,6 +619,10 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                 $graceDays = (int) config('polydock.cleanup.project_grace_period_days', 14);
                 $this->removed_at = $now;
                 $this->purge_eligible_at = $now->copy()->addDays($graceDays);
+            }
+
+            if (in_array($status, [PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED, PolydockAppInstanceStatus::RUNNING_HEALTHY_UNCLAIMED], true)) {
+                $this->data = [...$this->data ?? [], self::LAST_CLAIM_STATUS_KEY => $status->value];
             }
 
             if ($statusMessage !== '' && $statusMessage !== '0') {

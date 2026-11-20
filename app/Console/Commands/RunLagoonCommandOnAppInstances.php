@@ -81,7 +81,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
             // to avoid each worker independently fetching the token via SSH.
             $prefetchedToken = getenv('LAGOON_PREFETCHED_TOKEN');
             if ($prefetchedToken) {
-                app()->instance('polydock.lagoon.token_fetcher', fn ($config) => $prefetchedToken);
+                app()->instance('polydock.lagoon.token_fetcher', fn ($config): string => $prefetchedToken);
             }
 
             return $this->runCommandOnInstance(
@@ -267,7 +267,7 @@ class RunLagoonCommandOnAppInstances extends BaseCommand
 
                 $projectName = $instance->getKeyValue(key: 'lagoon-project-name');
 
-                if ($result->successful()) {
+                if ($result->successful() === true) {
                     // Output already contains "SUCCESS" or "FAILED" messages from child process
                     $this->output->write(messages: $result->output());
                 } else {

@@ -15,14 +15,12 @@ class CreatePolydockStore extends CreateRecord
     #[\Override]
     protected function handleRecordCreation(array $data): Model
     {
-        $key = $data['lagoon_deploy_private_key'] ?? null;
-        unset($data['lagoon_deploy_private_key']);
+        $orgKeyId = $data['lagoon_deploy_organization_key_id'] ?? null;
+        unset($data['lagoon_deploy_organization_key_id']);
 
         $record = static::getModel()::create($data);
 
-        if ($key) {
-            $record->setPolydockVariableValue('lagoon_deploy_private_key', $key, true);
-        }
+        $record->setPolydockVariableValue('lagoon_deploy_organization_key_id', is_numeric($orgKeyId) ? (string) $orgKeyId : null);
 
         return $record;
     }

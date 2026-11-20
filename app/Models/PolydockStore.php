@@ -42,6 +42,14 @@ class PolydockStore extends Model
     }
 
     /**
+     * Lagoon organization deploy key attached to every new project so builds can pull private repos.
+     */
+    public function getLagoonDeployOrganizationKeyIdAttribute(): ?string
+    {
+        return $this->getPolydockVariableValue('lagoon_deploy_organization_key_id');
+    }
+
+    /**
      * @return HasMany<PolydockStoreApp, $this>
      */
     public function apps(): HasMany

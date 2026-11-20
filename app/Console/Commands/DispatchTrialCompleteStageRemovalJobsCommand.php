@@ -4,7 +4,6 @@ namespace App\Console\Commands;
 
 use App\Jobs\ProcessPolydockAppInstanceJobs\Trial\ProcessTrialCompleteStageRemovalJob;
 use App\Models\PolydockAppInstance;
-use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 
@@ -29,14 +28,15 @@ class DispatchTrialCompleteStageRemovalJobsCommand extends BaseCommand
      */
     public function handle(): void
     {
-        $maxPerRun = config('polydock.max_per_run_dispatch_trial_complete_stage_removal');
+        $maxPerRun = filter_var(config('polydock.max_per_run_dispatch_trial_complete_stage_removal'), FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE); // unset or empty = no limit
         $this->info('Finding eligible app instances for trial complete stage removal...');
         Log::info('Finding eligible app instances for trial complete stage removal...');
 
         // Find eligible instances
         $eligibleInstances = PolydockAppInstance::query()
             ->where('is_trial', true)
-            ->where('status', PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED)
+            // An expired trial that reports unhealthy must still be removed.
+            ->whereIn('status', ProcessTrialCompleteStageRemovalJob::REMOVABLE_STATUSES)
             ->whereNotNull('trial_ends_at')
             ->where('trial_ends_at', '<=', now())
             ->limit($maxPerRun)

@@ -74,6 +74,7 @@ use Spatie\Activitylog\Support\LogOptions;
  * @property string $lagoon_deploy_project_prefix
  * @property string $lagoon_deploy_organization_id_ext
  * @property string $lagoon_deploy_private_key
+ * @property string|null $lagoon_deploy_organization_key_id
  * @property string|null $amazee_ai_backend_region_id_ext
  * @property int $unallocated_instances_count
  * @property bool $needs_more_unallocated_instances
@@ -300,6 +301,11 @@ class PolydockStoreApp extends Model
     public function getLagoonDeployPrivateKeyAttribute(): ?string
     {
         return $this->store->lagoon_deploy_private_key;
+    }
+
+    public function getLagoonDeployOrganizationKeyIdAttribute(): ?string
+    {
+        return $this->store->lagoon_deploy_organization_key_id;
     }
 
     /**

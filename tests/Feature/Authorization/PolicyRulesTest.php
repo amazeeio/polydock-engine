@@ -6,15 +6,11 @@ namespace Tests\Feature\Authorization;
 
 use App\Events\PolydockAppInstanceCreatedWithNewStatus;
 use App\Events\PolydockAppInstanceStatusChanged;
-use App\Models\PolydockAppInstance;
 use App\Models\PolydockStore;
-use App\Models\PolydockStoreApp;
 use App\Models\Role;
 use App\Models\User;
-use App\Polydock\Core\Enums\PolydockAppInstanceStatus;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Event;
-use Illuminate\Support\Str;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Permission\Models\Permission;
 use Tests\TestCase;
@@ -104,34 +100,15 @@ class PolicyRulesTest extends TestCase
         $this->assertTrue($user->can('delete', $other));
     }
 
-    public function test_store_cannot_be_deleted_while_an_app_has_instances(): void
+    public function test_stores_are_managed_by_super_admin_only(): void
     {
-        $user = User::factory()->create();
-
-        $store = PolydockStore::factory()->create();
-        $storeApp = PolydockStoreApp::factory()->create(['polydock_store_id' => $store->id]);
-
-        $this->assertTrue($user->can('delete', $store->fresh()));
-
-        $instance = new PolydockAppInstance;
-        $instance->fill([
-            'polydock_store_app_id' => $storeApp->id,
-            'name' => 'policy-'.Str::random(6),
-            'app_type' => 'test-app',
-            'status' => PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED,
-        ]);
-        $instance->uuid = (string) Str::uuid();
-        $instance->saveQuietly();
-
-        $this->assertFalse($user->can('delete', $store->fresh()));
-    }
-
-    public function test_empty_store_is_deletable(): void
-    {
-        $user = User::factory()->create();
+        $user = $this->userWith('access_admin_panel');
         $store = PolydockStore::factory()->create();
 
-        $this->assertTrue($user->can('delete', $store));
+        self::assertFalse($user->can('viewAny', PolydockStore::class));
+        self::assertFalse($user->can('create', PolydockStore::class));
+        self::assertFalse($user->can('update', $store));
+        self::assertFalse($user->can('delete', $store));
     }
 
     /**
