@@ -76,6 +76,9 @@ class RemoveSharedLagoonDefaultUsersCommandTest extends TestCase
         $gone->saveQuietly();
 
         self::assertSame(0, Artisan::call('polydock:remove-shared-lagoon-default-users', ['--force' => true]));
+        self::assertSame([], $this->client->groupUserRemovals, 'removed instances are skipped by default');
+
+        self::assertSame(0, Artisan::call('polydock:remove-shared-lagoon-default-users', ['--force' => true, '--include-removed' => true]));
 
         self::assertCount(2, $this->client->groupUserRemovals);
         self::assertSame(['project-site-b'], array_values(array_unique(array_column($this->client->groupUserRemovals, 'group'))));
@@ -90,5 +93,23 @@ class RemoveSharedLagoonDefaultUsersCommandTest extends TestCase
         self::assertSame(0, Artisan::call('polydock:remove-shared-lagoon-default-users', ['--force' => true]));
 
         self::assertSame([], $this->client->groupUserRemovals);
+    }
+
+    public function test_uuid_targets_one_instance_even_when_removed(): void
+    {
+        PolydockAppInstance::query()->update(['status' => PolydockAppInstanceStatus::REMOVED]);
+
+        $other = PolydockAppInstance::query()->firstOrFail()->replicate();
+        $other->uuid = 'uuid-2';
+        $other->name = 'site-c';
+        $other->status = PolydockAppInstanceStatus::RUNNING_HEALTHY_CLAIMED;
+        $other->data = ['lagoon-project-name' => 'site-c'];
+        $other->saveQuietly();
+        $this->client->registerProject('site-c');
+        $this->client->groupUsers['project-site-c'] = ['default-user@site-a'];
+
+        self::assertSame(0, Artisan::call('polydock:remove-shared-lagoon-default-users', ['--force' => true, '--uuid' => 'uuid-1']));
+
+        self::assertSame(['project-site-b'], array_values(array_unique(array_column($this->client->groupUserRemovals, 'group'))));
     }
 }
