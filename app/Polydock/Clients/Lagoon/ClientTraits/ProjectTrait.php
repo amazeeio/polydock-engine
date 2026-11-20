@@ -48,12 +48,16 @@ trait ProjectTrait
     /**
      * Creates a new Lagoon project within an organization
      *
+     * No privateKey is sent on purpose: Lagoon then generates a unique key and
+     * default-user per project. A shared key would put one default-user into
+     * every project's group, letting any project ssh into all the others.
+     * Private repos are pulled via an organization deploy key instead.
+     *
      * @param  string  $projectName  The name of the project
      * @param  string  $gitUrl  The Git repository URL
      * @param  string  $branches  The branches to deploy
      * @param  string  $productionEnvironment  The production environment
      * @param  int  $clusterId  The Kubernetes cluster ID
-     * @param  string  $privateKey  The private key for Git access
      * @param  int  $orgId  The organization ID
      * @param  bool  $addOrgOwnerToProject  Whether to add organization owner to project
      * @param  int|null  $autoIdle  Whether to enable autoIdle (0 = disabled, 1 = enabled)
@@ -67,7 +71,6 @@ trait ProjectTrait
         string $branches,
         string $productionEnvironment,
         int $clusterId,
-        string $privateKey,
         int $orgId,
         bool $addOrgOwnerToProject,
         ?int $autoIdle = 0): array
@@ -83,10 +86,6 @@ trait ProjectTrait
             'addOrgOwner' => $addOrgOwnerToProject,
             'autoIdle' => $autoIdle ?? 0,
         ];
-
-        if ($privateKey !== '' && $privateKey !== '0') {
-            $projectInput['privateKey'] = $privateKey;
-        }
 
         return $this->addProjectMutation($projectInput);
     }

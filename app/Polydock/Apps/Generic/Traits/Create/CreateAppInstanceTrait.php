@@ -47,7 +47,6 @@ trait CreateAppInstanceTrait
                     branches: $appInstance->getKeyValue('lagoon-deploy-branch'),
                     productionEnvironment: $productionEnvironment,
                     clusterId: $appInstance->getKeyValue('lagoon-deploy-region-id'),
-                    privateKey: $appInstance->getKeyValue('lagoon-deploy-private-key'),
                     orgId: $appInstance->getKeyValue('lagoon-deploy-organization-id'),
                     addOrgOwnerToProject: $addOrgOwnerToProject,
                     autoIdle: $autoIdle
@@ -72,6 +71,18 @@ trait CreateAppInstanceTrait
                 }
 
                 $appInstance->storeKeyValue('lagoon-project-id', $createdProjectData['addProject']['id']);
+
+                $orgKeyId = $appInstance->getKeyValue('lagoon-deploy-organization-key-id');
+                if (is_numeric($orgKeyId) && is_string($projectName)) {
+                    $keyResult = $this->lagoonClient->addOrganizationKeyToProject((int) $orgKeyId, $projectName);
+                    $attachedKey = $keyResult['addOrganizationKeyToProject'] ?? null;
+                    if (! is_array($attachedKey) || ! isset($attachedKey['id'])) {
+                        $this->error('Failed to attach organization deploy key', $logContext + ['error' => $keyResult['error'] ?? $keyResult]);
+                        $appInstance->setStatus(PolydockAppInstanceStatus::CREATE_FAILED, 'Failed to attach organization deploy key')->save();
+
+                        return $appInstance;
+                    }
+                }
 
                 return null;
             },

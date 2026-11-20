@@ -34,14 +34,12 @@ class EditPolydockStore extends EditRecord
     #[\Override]
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        $key = $data['lagoon_deploy_private_key'] ?? null;
-        unset($data['lagoon_deploy_private_key']);
+        $orgKeyId = $data['lagoon_deploy_organization_key_id'] ?? null;
+        unset($data['lagoon_deploy_organization_key_id']);
 
         $record->update($data);
 
-        if ($key) {
-            $record->setPolydockVariableValue('lagoon_deploy_private_key', $key, true);
-        }
+        $record->setPolydockVariableValue('lagoon_deploy_organization_key_id', is_numeric($orgKeyId) ? (string) $orgKeyId : null);
 
         return $record;
     }

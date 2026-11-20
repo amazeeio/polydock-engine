@@ -11,14 +11,12 @@ use App\Models\PolydockStore;
 use App\PolydockEngine\Helpers\AmazeeAiBackendHelper;
 use App\PolydockEngine\Helpers\LagoonHelper;
 use BackedEnum;
-use Closure;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\IconEntry;
@@ -26,7 +24,6 @@ use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
-use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -108,39 +105,11 @@ class PolydockStoreResource extends Resource
                     ->disabled(
                         fn (?PolydockStore $record): bool => $record instanceof PolydockStore && $record->apps()->whereHas('instances')->exists(),
                     ),
-                Textarea::make('lagoon_deploy_private_key')
-                    ->label('Lagoon Deploy Private Key')
-                    ->columnSpanFull()
-                    ->rows(3)
-                    ->formatStateUsing(fn ($state): null => null)
-                    ->dehydrated(fn ($state): bool => filled($state))
-                    ->placeholder(fn ($record): string => filled($record?->lagoon_deploy_private_key)
-                        ? 'Current key is set. Leave empty to keep it, or enter a new one to replace it.'
-                        : 'No key is currently set. Enter a new key here.'
-                    )
-                    ->live(onBlur: true)
-                    ->afterStateUpdated(function (Set $set, ?string $state, ?PolydockStore $record): void {
-                        $keyToUse = filled($state) ? $state : $record?->lagoon_deploy_private_key;
-                        $set('derived_public_key', $keyToUse ? LagoonHelper::getPublicKeyFromPrivateKey($keyToUse) : null);
-                    })
-                    ->rules([
-                        fn (): Closure => function (string $attribute, $value, Closure $fail): void {
-                            if (filled($value) && ! LagoonHelper::getPublicKeyFromPrivateKey($value)) {
-                                $fail('The private key is invalid.');
-                            }
-                        },
-                    ]),
-                Textarea::make('derived_public_key')
-                    ->label('Lagoon Deploy Public Key')
-                    ->helperText('This is the public key derived from the stored private key (or the one you just entered).')
-                    ->disabled()
-                    ->dehydrated(false)
-                    ->columnSpanFull()
-                    ->rows(5)
-                    ->formatStateUsing(fn (?PolydockStore $record): ?string => $record?->lagoon_deploy_private_key
-                            ? LagoonHelper::getPublicKeyFromPrivateKey($record->lagoon_deploy_private_key)
-                            : null
-                    ),
+                TextInput::make('lagoon_deploy_organization_key_id')
+                    ->label('Lagoon Organization Deploy Key ID')
+                    ->helperText('Needed only for private git repos. Create the key in the Lagoon organization, add its public key to the repo as a read-only deploy key, and enter its ID here. It is attached to each new project.')
+                    ->numeric()
+                    ->formatStateUsing(fn (?PolydockStore $record): ?string => $record?->lagoon_deploy_organization_key_id),
             ]);
     }
 
