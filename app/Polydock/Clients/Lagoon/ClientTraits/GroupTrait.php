@@ -188,6 +188,11 @@ trait GroupTrait
 
         $data = $response->getData();
 
+        // A non-JSON error page parses to empty data without errors; don't report it as an empty group.
+        if (! is_array($data['groupByName'] ?? null)) {
+            return ['error' => "Group {$groupName} not returned by Lagoon"];
+        }
+
         $emails = [];
         foreach ($data['groupByName']['members'] ?? [] as $member) {
             if (isset($member['user']['email'])) {

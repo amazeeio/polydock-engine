@@ -423,7 +423,7 @@ class PolydockAppInstance extends Model implements PolydockAppInstanceInterface
                     'lagoon-deploy-organization-id' => $storeApp->lagoon_deploy_organization_id_ext,
                     'lagoon-deploy-group-name' => $storeApp->lagoon_deploy_group_name,
                     'lagoon-deploy-region-id' => $storeApp->lagoon_deploy_region_id_ext,
-                    'lagoon-deploy-private-key' => $storeApp->lagoon_deploy_private_key,
+                    'lagoon-deploy-organization-key-id' => $storeApp->lagoon_deploy_organization_key_id,
                     'lagoon-deploy-project-prefix' => $storeApp->lagoon_deploy_project_prefix,
                     'lagoon-project-name' => $model->name,
                     'amazee-ai-backend-region-id' => $storeApp->amazee_ai_backend_region_id_ext,

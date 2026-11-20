@@ -135,6 +135,32 @@ class FakeLagoonClient extends Client
         return $this->addGroupResponse ?? ['addGroupsToProject' => ['id' => 1]];
     }
 
+    /** @var array<string, array<int, string>> Canned getGroupUsers responses keyed by group name. */
+    public array $groupUsers = [];
+
+    /** @var array<int, array{group: string, email: string}> Recorded removeUserFromGroup calls. */
+    public array $groupUserRemovals = [];
+
+    /**
+     * @return array<mixed>
+     */
+    #[\Override]
+    public function getGroupUsers(string $groupName): array
+    {
+        return $this->groupUsers[$groupName] ?? ['error' => "Group {$groupName} not returned by Lagoon"];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    #[\Override]
+    public function removeUserFromGroup(string $groupName, string $userEmail): array
+    {
+        $this->groupUserRemovals[] = ['group' => $groupName, 'email' => $userEmail];
+
+        return ['removeUserFromGroup' => ['id' => 1]];
+    }
+
     /** Register a canned project so getProjectByName finds it. */
     public function registerProject(string $name, int $id = 1, string $productionEnvironment = 'main', ?int $openshiftId = 7, string $gitUrl = 'git@example.com:acme/site.git'): void
     {

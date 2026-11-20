@@ -22,7 +22,7 @@ class CreateStore extends BaseCommand
                           {--org-id= : Lagoon deploy organization ID}
                           {--ai-region-id= : Amazee AI backend region ID}
                           {--group-name= : Lagoon deploy group name}
-                          {--deploy-key= : Store deploy private key (prompted if omitted)}';
+                          {--org-key-id= : Lagoon organization deploy key ID (only for private git repos)}';
 
     /**
      * The console command description.
@@ -77,19 +77,6 @@ class CreateStore extends BaseCommand
             return 1;
         }
 
-        $deployKey = $this->option('deploy-key');
-
-        if (! $deployKey) {
-            $this->info('Please paste the store deploy private key (multi-line input supported):');
-            $deployKey = $this->secret('Deploy private key');
-        }
-
-        if (empty($deployKey)) {
-            $this->error('A deploy key is required - pass --deploy-key or paste one when prompted');
-
-            return 1;
-        }
-
         // Create the store
         $store = PolydockStore::create([
             'name' => $name,
@@ -102,7 +89,10 @@ class CreateStore extends BaseCommand
             'lagoon_deploy_group_name' => $groupName,
         ]);
 
-        $store->setPolydockVariableValue('lagoon_deploy_private_key', $deployKey, true);
+        $orgKeyId = $this->option('org-key-id');
+        if (is_numeric($orgKeyId)) {
+            $store->setPolydockVariableValue('lagoon_deploy_organization_key_id', $orgKeyId);
+        }
 
         $this->info("✅ Store '{$store->name}' created successfully with ID: {$store->id}");
 
