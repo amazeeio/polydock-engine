@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\UserRemoteRegistrationType;
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages\ListUserRemoteRegistrations;
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages\ViewUserRemoteRegistration;
 use App\Models\PolydockStore;
@@ -47,8 +48,8 @@ class UserRemoteRegistrationResource extends Resource
             ->columns([
                 TextColumn::make('type')
                     ->badge()
-                    ->color(fn ($state): string => $state ? $state->getColor() : 'gray')
-                    ->icon(fn ($state): string => $state ? $state->getIcon() : '')
+                    ->color(fn ($state): ?string => $state instanceof UserRemoteRegistrationType ? $state->getColor() : 'gray')
+                    ->icon(fn ($state): ?string => $state instanceof UserRemoteRegistrationType ? $state->getIcon() : '')
                     ->sortable(),
                 TextColumn::make('email')
                     ->searchable()

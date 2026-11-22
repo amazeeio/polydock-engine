@@ -164,9 +164,9 @@ class ActivityLogResource extends Resource
                                     ->placeholder('-'),
                                 TextEntry::make('properties.is_service_account')
                                     ->label('Service Account')
-                                    ->formatStateUsing(fn ($state): string => $state ? 'Yes' : 'No')
+                                    ->formatStateUsing(fn ($state): string => $state === true ? 'Yes' : 'No')
                                     ->badge()
-                                    ->color(fn ($state): string => $state ? 'warning' : 'gray'),
+                                    ->color(fn ($state): string => $state === true ? 'warning' : 'gray'),
                                 TextEntry::make('properties.user_agent')
                                     ->label('User Agent')
                                     ->placeholder('-')

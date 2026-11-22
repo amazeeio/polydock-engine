@@ -508,7 +508,7 @@ class Engine extends PolydockEngineBase implements PolydockEngineInterface
         $productType = $appInstance->getKeyValue('product-type') ?: 'generic';
         if ($productType === 'generic' && $appInstance instanceof Model && \method_exists($appInstance, 'storeApp')) {
             $appInstance->loadMissing('storeApp.productType');
-            if ($appInstance->storeApp && $appInstance->storeApp->productType) {
+            if ($appInstance->storeApp && $appInstance->storeApp->productType !== null) {
                 $productType = $appInstance->storeApp->productType->slug;
             }
         }

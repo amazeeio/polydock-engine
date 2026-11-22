@@ -72,7 +72,6 @@ class PolydockApp extends PolydockAppBase
             new PolydockAppVariableDefinitionBase('lagoon-deploy-git'),
             new PolydockAppVariableDefinitionBase('lagoon-deploy-branch'),
             new PolydockAppVariableDefinitionBase('lagoon-deploy-region-id'),
-            new PolydockAppVariableDefinitionBase('lagoon-deploy-private-key'),
             new PolydockAppVariableDefinitionBase('lagoon-deploy-organization-id'),
             new PolydockAppVariableDefinitionBase('lagoon-deploy-project-prefix'),
             new PolydockAppVariableDefinitionBase('lagoon-project-name'),
@@ -184,7 +183,6 @@ class PolydockApp extends PolydockAppBase
     {
         $lagoonDeployGit = $appInstance->getKeyValue('lagoon-deploy-git');
         $lagoonRegionId = $appInstance->getKeyValue('lagoon-deploy-region-id');
-        $lagoonPrivateKey = $appInstance->getKeyValue('lagoon-deploy-private-key');
         $lagoonOrganizationId = $appInstance->getKeyValue('lagoon-deploy-organization-id');
         $lagoonGroupName = $appInstance->getKeyValue('lagoon-deploy-group-name');
         $lagoonProjectPrefix = $appInstance->getKeyValue('lagoon-deploy-project-prefix');
@@ -203,14 +201,6 @@ class PolydockApp extends PolydockAppBase
         if (! $lagoonRegionId) {
             if ($this->lagoonClient->getDebug()) {
                 $this->debug('Lagoon region id value not set', $logContext);
-            }
-
-            return false;
-        }
-
-        if (! $lagoonPrivateKey) {
-            if ($this->lagoonClient->getDebug()) {
-                $this->debug('Lagoon private key value not set', $logContext);
             }
 
             return false;

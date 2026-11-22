@@ -321,7 +321,7 @@ enum PolydockAppInstanceStatus: string implements HasColor, HasIcon, HasLabel
     }
 
     /**
-     * @return array<string, mixed>
+     * @return array<string, string>
      */
     public static function getOptions(): array
     {

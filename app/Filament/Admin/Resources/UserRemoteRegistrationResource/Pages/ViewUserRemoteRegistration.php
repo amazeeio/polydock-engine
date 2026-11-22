@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\UserRemoteRegistrationResource\Pages;
 
+use App\Enums\UserRemoteRegistrationType;
 use App\Filament\Admin\Resources\UserRemoteRegistrationResource;
 use App\Models\UserRemoteRegistration;
 use App\Support\SensitiveDataRedactor;
@@ -49,8 +50,8 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     }),
                                 TextEntry::make('type')
                                     ->badge()
-                                    ->color(fn ($state): string => $state ? $state->getColor() : 'gray')
-                                    ->icon(fn ($state): string => $state ? $state->getIcon() : ''),
+                                    ->color(fn ($state): ?string => $state instanceof UserRemoteRegistrationType ? $state->getColor() : 'gray')
+                                    ->icon(fn ($state): ?string => $state instanceof UserRemoteRegistrationType ? $state->getIcon() : ''),
                                 TextEntry::make('created_at')
                                     ->label('Requested')
                                     ->dateTime(),
@@ -67,7 +68,7 @@ class ViewUserRemoteRegistration extends ViewRecord
                                     ->label('App'),
                                 TextEntry::make('appInstance.name')
                                     ->label('Instance')
-                                    ->url(fn ($record): ?string => $record->appInstance
+                                    ->url(fn ($record): ?string => $record->appInstance !== null
                                         ? route(
                                             'filament.admin.resources.polydock-app-instances.view',
                                             ['record' => $record->appInstance],

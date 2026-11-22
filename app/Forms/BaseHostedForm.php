@@ -6,6 +6,7 @@ use App\Enums\PolydockStoreAppStatusEnum;
 use App\Enums\PolydockStoreStatusEnum;
 use App\Models\PolydockHostedForm;
 use App\Rules\BannedEmail;
+use App\Support\Environment;
 use Illuminate\Validation\Rule;
 
 abstract class BaseHostedForm implements HostedFormInterface
@@ -87,7 +88,7 @@ abstract class BaseHostedForm implements HostedFormInterface
             'www.amazee.ai',
         ];
 
-        if (! app()->isProduction()) {
+        if (! Environment::isProduction()) {
             $domains[] = 'localhost';
         }
 

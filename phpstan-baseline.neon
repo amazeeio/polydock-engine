@@ -4081,7 +4081,7 @@ parameters:
 			path: app/Models/PolydockAppInstance.php
 
 		-
-			message: '#^Access to an undefined property App\\Models\\PolydockStoreApp\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\PolydockStoreApp\>\:\:\$lagoon_deploy_private_key\.$#'
+			message: '#^Access to an undefined property App\\Models\\PolydockStoreApp\|Illuminate\\Database\\Eloquent\\Collection\<int, App\\Models\\PolydockStoreApp\>\:\:\$lagoon_deploy_organization_key_id\.$#'
 			identifier: property.notFound
 			count: 1
 			path: app/Models/PolydockAppInstance.php

@@ -60,7 +60,7 @@ return new class extends Migration
 
         foreach ($variables as $variable) {
             try {
-                $value = $variable->is_encrypted
+                $value = filter_var($variable->is_encrypted, FILTER_VALIDATE_BOOLEAN)
                     ? Crypt::decryptString($variable->value)
                     : $variable->value;
 

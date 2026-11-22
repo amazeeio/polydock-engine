@@ -31,7 +31,7 @@ return new class extends Migration
             ->orderBy('id')
             ->chunkById(500, function ($rows) use ($graceDays): void {
                 foreach ($rows as $row) {
-                    $updatedAt = $row->updated_at ? Carbon::parse($row->updated_at) : Carbon::now();
+                    $updatedAt = $row->updated_at !== null ? Carbon::parse($row->updated_at) : Carbon::now();
 
                     DB::table('polydock_app_instances')
                         ->where('id', $row->id)

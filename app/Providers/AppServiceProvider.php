@@ -28,6 +28,8 @@ use Spatie\Health\Checks\Checks\DatabaseCheck;
 use Spatie\Health\Checks\Checks\HorizonCheck;
 use Spatie\Health\Checks\Checks\RedisCheck;
 use Spatie\Health\Facades\Health;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputOption;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -155,13 +157,17 @@ class AppServiceProvider extends ServiceProvider
                     $commandInstance = $allCommandsFallback[$command] ?? null;
                 }
 
+                if (! $commandInstance instanceof Command) {
+                    $commandInstance = null;
+                }
+
                 $explicitSensitiveKeys = [];
-                if ($commandInstance && method_exists($commandInstance, 'sensitiveInputs')) {
+                if ($commandInstance instanceof Command && method_exists($commandInstance, 'sensitiveInputs')) {
                     $explicitSensitiveKeys = array_map('strtolower', $commandInstance->sensitiveInputs());
                 }
 
                 $definedArguments = [];
-                if ($commandInstance) {
+                if ($commandInstance instanceof Command) {
                     $definedArguments = array_values($commandInstance->getDefinition()->getArguments());
                 }
 
@@ -199,7 +205,7 @@ class AppServiceProvider extends ServiceProvider
                         }
                         $redactNext = false;
                         $optionExpectingValue = null;
-                    } elseif ($optionExpectingValue) {
+                    } elseif ($optionExpectingValue instanceof InputOption) {
                         if (! str_starts_with($arg, '-')) {
                             $redactedArgv[] = $arg;
                             $optionExpectingValue = null;
@@ -215,7 +221,7 @@ class AppServiceProvider extends ServiceProvider
                             $optionName = ltrim($key, '-');
 
                             $option = null;
-                            if ($commandInstance) {
+                            if ($commandInstance instanceof Command) {
                                 $definition = $commandInstance->getDefinition();
                                 if ($definition->hasOption($optionName)) {
                                     $option = $definition->getOption($optionName);
@@ -224,7 +230,7 @@ class AppServiceProvider extends ServiceProvider
                                 }
                             }
 
-                            $optionNameToCheck = $option ? $option->getName() : $optionName;
+                            $optionNameToCheck = $option?->getName() ?? $optionName;
                             if ($isKeySensitive($optionNameToCheck)) {
                                 $redactedArgv[] = $key.'=[REDACTED]';
                             } else {
@@ -234,7 +240,7 @@ class AppServiceProvider extends ServiceProvider
                             $optionName = ltrim($arg, '-');
 
                             $option = null;
-                            if ($commandInstance) {
+                            if ($commandInstance instanceof Command) {
                                 $definition = $commandInstance->getDefinition();
                                 if ($definition->hasOption($optionName)) {
                                     $option = $definition->getOption($optionName);
@@ -243,11 +249,11 @@ class AppServiceProvider extends ServiceProvider
                                 }
                             }
 
-                            $optionNameToCheck = $option ? $option->getName() : $optionName;
+                            $optionNameToCheck = $option?->getName() ?? $optionName;
                             if ($isKeySensitive($optionNameToCheck)) {
                                 $redactNext = true;
                             } else {
-                                if ($option && $option->acceptValue()) {
+                                if ($option instanceof InputOption && $option->acceptValue()) {
                                     $optionExpectingValue = $option;
                                 }
                             }
@@ -263,7 +269,7 @@ class AppServiceProvider extends ServiceProvider
                             $definedArg = $definedArguments[$positionalIndex] ?? null;
                             $positionalIndex++;
 
-                            if ($definedArg && $isKeySensitive($definedArg->getName())) {
+                            if ($definedArg !== null && $isKeySensitive($definedArg->getName())) {
                                 $redactedArgv[] = '[REDACTED]';
                             } else {
                                 $redactedArgv[] = $arg;
